@@ -1,6 +1,6 @@
-#include <iostream>
+#include "ganim/render/render.hpp"
 
 int main()
 {
-    std::cout << "Hello, world!\n";
+    video_encode_example("Test.mp4");
 }
