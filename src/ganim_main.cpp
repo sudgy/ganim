@@ -1,4 +1,4 @@
-#include "ganim/render/render.hpp"
+#include "ganim/video_writer/video_writer.hpp"
 
 int main()
 {
