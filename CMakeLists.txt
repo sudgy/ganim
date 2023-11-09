@@ -42,6 +42,8 @@ find_package(Catch2 3 REQUIRED)
 
 find_library(AVCODEC avcodec)
 find_library(AVUTIL avutil)
+find_library(SFML sfml-window)
+find_library(OPENGL GL)
 
 file(GLOB_RECURSE GANIM_FILES CONFIGURE_DEPENDS src/ganim/*.cpp)
 file(GLOB_RECURSE GANIM_EDITOR_FILES CONFIGURE_DEPENDS src/editor/*.cpp)
@@ -59,6 +61,8 @@ target_include_directories(test PUBLIC src)
 
 target_link_libraries(ganim PUBLIC "${AVCODEC}")
 target_link_libraries(ganim PUBLIC "${AVUTIL}")
+target_link_libraries(ganim PUBLIC "${SFML}")
+target_link_libraries(ganim PUBLIC "${OPENGL}")
 target_link_libraries(ganim_exe PRIVATE ganim)
 target_link_libraries(ganim_exe PRIVATE ganim_editor)
 target_link_libraries(test PRIVATE ganim)
