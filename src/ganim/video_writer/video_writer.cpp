@@ -6,6 +6,7 @@
 
 using namespace ganim;
 
+/// @private
 struct VideoWriter::Impl {
     int width = 0;
     int height = 0;

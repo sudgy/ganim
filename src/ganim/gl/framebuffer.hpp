@@ -1,7 +1,18 @@
 #ifndef GANIM_GL_FRAMEBUFFER_H
 #define GANIM_GL_FRAMEBUFFER_H
 
+/** @file
+ * @brief Contains just the @ref ganim::gl::Framebuffer "Framebuffer" class
+ */
+
 namespace ganim::gl {
+    /** @brief A thin RAII wrapper around OpenGL framebuffers.
+     *
+     * The constructor calls `glGenFramebuffers` while the destructor calls
+     * `glDeleteFramebuffers`.  This type is implicitly convertible to an
+     * unsigned integer, which is the framebuffer id, so you can pass this type
+     * to OpenGL functions that expect a framebuffer id.
+     */
     class Framebuffer {
         public:
             Framebuffer();

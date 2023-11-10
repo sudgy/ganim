@@ -1,7 +1,18 @@
 #ifndef GANIM_GL_TEXTURE_H
 #define GANIM_GL_TEXTURE_H
 
+/** @file
+ * @brief Contains just the @ref ganim::gl::Texture "Texture" class
+ */
+
 namespace ganim::gl {
+    /** @brief A thin RAII wrapper around OpenGL textures.
+     *
+     * The constructor calls `glGenTextures` while the destructor calls
+     * `glDeleteTextures`.  This type is implicitly convertible to an unsigned
+     * integer, which is the texture id, so you can pass this type to OpenGL
+     * functions that expect a texture id.
+     */
     class Texture {
         public:
             Texture();

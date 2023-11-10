@@ -1,10 +1,22 @@
 #ifndef GANIM_PGA3_H
 #define GANIM_PGA3_H
 
+/** @file
+ * @brief Aliases and definitions for using 3D PGA
+ */
+
 #include "sga.hpp"
 
 namespace ganim::pga3 {
+    /** @brief The PGA metric.  You shouldn't need to use this. */
     constexpr auto metric = std::array<std::int8_t, 4>{0, 1, 1, 1};
+    /** @brief A general 3D PGA multivector.
+     *
+     * While you should be able to get away with using the other type aliases,
+     * if you ever need to do something more funky, you can use this instead.
+     * @tparam bases The basis multivectors present in this multivector.  See
+     * @ref sga.hpp for more information.
+     */
     template <std::uint64_t... bases>
     using Multivector = Multivector<double, metric, bases...>;
     using Scalar = Multivector<0>;

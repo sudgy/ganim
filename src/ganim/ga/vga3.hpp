@@ -1,10 +1,22 @@
 #ifndef GANIM_VGA3_H
 #define GANIM_VGA3_H
 
+/** @file
+ * @brief Aliases and definitions for using 3D VGA
+ */
+
 #include "sga.hpp"
 
 namespace ganim::vga3 {
+    /** @brief The VGA metric.  You shouldn't need to use this. */
     constexpr auto metric = std::array<std::int8_t, 3>{1, 1, 1};
+    /** @brief A general 2D VGA multivector.
+     *
+     * While you should be able to get away with using the other type aliases,
+     * if you ever need to do something more funky, you can use this instead.
+     * @tparam bases The basis multivectors present in this multivector.  See
+     * @ref sga.hpp for more information.
+     */
     template <std::uint64_t... bases>
     using Multivector = Multivector<double, metric, bases...>;
     using Scalar = Multivector<0>;
