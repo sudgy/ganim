@@ -42,6 +42,8 @@ find_package(Catch2 3 REQUIRED)
 
 find_library(AVCODEC avcodec)
 find_library(AVUTIL avutil)
+find_library(AVFORMAT avformat)
+find_library(SWSCALE swscale)
 find_library(SFML sfml-window)
 find_library(OPENGL GL)
 
@@ -61,6 +63,8 @@ target_include_directories(test PUBLIC src)
 
 target_link_libraries(ganim PUBLIC "${AVCODEC}")
 target_link_libraries(ganim PUBLIC "${AVUTIL}")
+target_link_libraries(ganim PUBLIC "${AVFORMAT}")
+target_link_libraries(ganim PUBLIC "${SWSCALE}")
 target_link_libraries(ganim PUBLIC "${SFML}")
 target_link_libraries(ganim PUBLIC "${OPENGL}")
 target_link_libraries(ganim_exe PRIVATE ganim)

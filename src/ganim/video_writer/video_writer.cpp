@@ -2,133 +2,160 @@
 
 #include "libav.h"
 
-#define INBUF_SIZE 4096
-#define AUDIO_INBUF_SIZE 20480
-#define AUDIO_REFILL_THRESH 4096
+#include <iostream>
 
-void video_encode_example(const char *filename)
+using namespace ganim;
+
+struct VideoWriter::Impl {
+    int width = 0;
+    int height = 0;
+    int fps = 0;
+    int frame = 0;
+    const AVOutputFormat* oformat = nullptr;
+    AVFormatContext* fcontext = nullptr;
+    AVCodecContext* ccontext = nullptr;
+    SwsContext* sws_context = nullptr;
+    AVFrame* video_frame = nullptr;
+    AVPacket* packet = nullptr;
+};
+
+VideoWriter::VideoWriter(std::string filename, int width, int height, int fps) :
+    M_impl(std::make_unique<Impl>())
 {
-    auto codec_id = AV_CODEC_ID_MPEG1VIDEO;
-    const AVCodec *codec;
-    AVCodecContext *c= NULL;
-    int i, ret, x, y, got_output;
-    FILE *f;
-    AVFrame *frame;
-    AVPacket* pkt;
-    uint8_t endcode[] = { 0, 0, 1, 0xb7 };
-    printf("Encode video file %s\n", filename);
-    /* find the mpeg1 video encoder */
-    codec = avcodec_find_encoder(static_cast<AVCodecID>(codec_id));
+    M_impl->width = width;
+    M_impl->height = height;
+    M_impl->fps = fps;
+
+    M_impl->oformat = av_guess_format(nullptr, filename.c_str(), nullptr);
+    if (!M_impl->oformat) {
+        throw std::runtime_error("Unable to create output format");
+    }
+    auto error = avformat_alloc_output_context2(
+        &M_impl->fcontext, M_impl->oformat, nullptr, filename.c_str());
+    if (error) {
+        throw std::runtime_error("Unable to create output context");
+    }
+    auto codec = avcodec_find_encoder(M_impl->oformat->video_codec);
     if (!codec) {
-        fprintf(stderr, "Codec not found\n");
-        exit(1);
+        throw std::runtime_error("Unable to create codec");
     }
-    c = avcodec_alloc_context3(codec);
-    if (!c) {
-        fprintf(stderr, "Could not allocate video codec context\n");
-        exit(1);
+    auto stream = avformat_new_stream(M_impl->fcontext, codec);
+    if (!stream) {
+        throw std::runtime_error("Unable to create stream");
     }
-    /* put sample parameters */
-    c->bit_rate = 400000;
-    /* resolution must be a multiple of two */
-    c->width = 352;
-    c->height = 288;
-    /* frames per second */
-    c->time_base = AVRational{1,25};
-    c->gop_size = 10; /* emit one intra frame every ten frames */
-    c->max_b_frames = 1;
-    c->pix_fmt = AV_PIX_FMT_YUV420P;
-    if (codec_id == AV_CODEC_ID_H264)
-        av_opt_set(c->priv_data, "preset", "slow", 0);
-    /* open it */
-    if (avcodec_open2(c, codec, NULL) < 0) {
-        fprintf(stderr, "Could not open codec\n");
-        exit(1);
+    M_impl->ccontext = avcodec_alloc_context3(codec);
+    if (!M_impl->ccontext) {
+        throw std::runtime_error("Unable to create codec context");
     }
-    f = fopen(filename, "wb");
-    if (!f) {
-        fprintf(stderr, "Could not open %s\n", filename);
-        exit(1);
+    M_impl->ccontext->log_level_offset = 1;
+
+    stream->codecpar->codec_id = M_impl->oformat->video_codec;
+    stream->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
+    stream->codecpar->width = width;
+    stream->codecpar->height = height;
+    stream->codecpar->format = AV_PIX_FMT_YUV420P;
+    stream->codecpar->bit_rate = 4000;
+    avcodec_parameters_to_context(M_impl->ccontext, stream->codecpar);
+
+    M_impl->ccontext->time_base = AVRational(1, 1);
+    M_impl->ccontext->max_b_frames = 1;
+    M_impl->ccontext->gop_size = 10;
+    M_impl->ccontext->framerate = AVRational(fps, 1);
+    av_opt_set(M_impl->ccontext, "preset", "ultrafast", 0);
+    avcodec_parameters_from_context(stream->codecpar, M_impl->ccontext);
+
+    error = avcodec_open2(M_impl->ccontext, codec, nullptr);
+    if (error < 0) {
+        throw std::runtime_error("Unable to open codec");
     }
-    frame = av_frame_alloc();
-    if (!frame) {
-        fprintf(stderr, "Could not allocate video frame\n");
-        exit(1);
+    error = avio_open(&M_impl->fcontext->pb, filename.c_str(), AVIO_FLAG_WRITE);
+    if (error < 0) {
+        throw std::runtime_error("Unable to open file");
     }
-    frame->format = c->pix_fmt;
-    frame->width  = c->width;
-    frame->height = c->height;
-    /* the image can be allocated by any means and av_image_alloc() is
-     * just the most convenient way if av_malloc() is to be used */
-    ret = av_image_alloc(frame->data, frame->linesize, c->width, c->height,
-                         c->pix_fmt, 32);
-    if (ret < 0) {
-        fprintf(stderr, "Could not allocate raw picture buffer\n");
-        exit(1);
+    error = avformat_write_header(M_impl->fcontext, nullptr);
+    if (error < 0) {
+        throw std::runtime_error("Unable to write header");
     }
-    /* encode 1 second of video */
-    for (i = 0; i < 25; i++) {
-        pkt = av_packet_alloc(); // Error check this
-        pkt->data = NULL;    // packet data will be allocated by the encoder
-        pkt->size = 0;
-        fflush(stdout);
-        /* prepare a dummy image */
-        /* Y */
-        for (y = 0; y < c->height; y++) {
-            for (x = 0; x < c->width; x++) {
-                frame->data[0][y * frame->linesize[0] + x] = x + y + i * 3;
-            }
+
+    M_impl->sws_context = sws_getContext(
+        width, height, AV_PIX_FMT_RGB24,
+        width, height, AV_PIX_FMT_YUV420P,
+        SWS_BILINEAR, nullptr, nullptr, nullptr
+    );
+
+    M_impl->video_frame = av_frame_alloc();
+    M_impl->video_frame->format = AV_PIX_FMT_YUV420P;
+    M_impl->video_frame->width = width;
+    M_impl->video_frame->height = height;
+    error = av_frame_get_buffer(M_impl->video_frame, 32);
+    if (error < 0) {
+        throw std::runtime_error("Unable to allocate frame");
+    }
+
+    M_impl->packet = av_packet_alloc();
+    M_impl->packet->data = nullptr;
+    M_impl->packet->size = 0;
+    M_impl->packet->flags |= AV_PKT_FLAG_KEY;
+}
+
+VideoWriter::~VideoWriter()
+{
+    finish();
+}
+VideoWriter::VideoWriter(VideoWriter&&)=default;
+VideoWriter& VideoWriter::operator=(VideoWriter&&)=default;
+
+void VideoWriter::write_frame(std::span<std::uint8_t> image)
+{
+    if (ssize(image) != M_impl->width * M_impl->height * 3) {
+        throw std::invalid_argument(
+            "The image passed to VideoWriter::write_frame has an incorrect "
+            "size.");
+    }
+    int linesize = 3*M_impl->width;
+    auto data = image.data();
+    sws_scale(M_impl->sws_context, &data, &linesize, 0, M_impl->height,
+            M_impl->video_frame->data, M_impl->video_frame->linesize);
+    // I honestly have no idea where the 90000 comes from, I hope that's not
+    // tied to the framerate or bitrate somehow
+    M_impl->video_frame->pts = (1.0 / M_impl->fps) * 90000 * (M_impl->frame++);
+
+    auto error = avcodec_send_frame(M_impl->ccontext, M_impl->video_frame);
+    if (error < 0) {
+        throw std::runtime_error("Unable to send frame");
+    }
+
+    receive_packets();
+}
+
+void VideoWriter::receive_packets()
+{
+    auto ret = 0;
+    while (ret == 0) {
+        ret = avcodec_receive_packet(M_impl->ccontext, M_impl->packet);
+        if (ret == 0) {
+            av_interleaved_write_frame(M_impl->fcontext, M_impl->packet);
         }
-        /* Cb and Cr */
-        for (y = 0; y < c->height/2; y++) {
-            for (x = 0; x < c->width/2; x++) {
-                frame->data[1][y * frame->linesize[1] + x] = 128 + y + i * 2;
-                frame->data[2][y * frame->linesize[2] + x] = 64 + x + i * 5;
-            }
-        }
-        frame->pts = i;
-        /* encode the image */
-        ret = avcodec_send_frame(c, frame);
-        if (ret < 0) {
-            fprintf(stderr, "Error encoding frame\n");
-            exit(1);
-        }
-        got_output = avcodec_receive_packet(c, pkt);
-        if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF){
-            printf("Error receiving packet\n");
-            return;
-        }
-        if (got_output >= 0) {
-            printf("Write frame %3d (size=%5d)\n", i, pkt->size);
-            fwrite(pkt->data, 1, pkt->size, f);
-            av_packet_free(&pkt);
-        }
     }
-    /* get the delayed frames */
-    //for (got_output = 1; got_output >= 0; i++) {
-    //    fflush(stdout);
-    //    ret = avcodec_send_frame(c, frame);
-    //    if (ret < 0) {
-    //        fprintf(stderr, "Error encoding frame\n");
-    //        exit(1);
-    //    }
-    //    got_output = avcodec_receive_packet(c, pkt);
-    //    if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF){
-    //        printf("Error receiving packet\n");
-    //        return;
-    //    }
-    //    if (got_output >= 0) {
-    //        printf("Write frame %3d (size=%5d)\n", i, pkt->size);
-    //        fwrite(pkt->data, 1, pkt->size, f);
-    //        av_packet_free(&pkt);
-    //    }
-    //}
-    /* add sequence end code to have a real mpeg file */
-    fwrite(endcode, 1, sizeof(endcode), f);
-    fclose(f);
-    avcodec_close(c);
-    av_free(c);
-    av_freep(&frame->data[0]);
-    av_frame_free(&frame);
-    printf("\n");
+}
+
+void VideoWriter::finish()
+{
+    if (!M_impl) return;
+    avcodec_send_frame(M_impl->ccontext, nullptr);
+    receive_packets();
+
+    av_write_trailer(M_impl->fcontext);
+    int error = avio_close(M_impl->fcontext->pb);
+    if (error < 0) {
+        throw std::runtime_error("Failed to close file");
+    }
+
+    if (M_impl->packet) av_packet_free(&M_impl->packet);
+    if (M_impl->video_frame) av_frame_free(&M_impl->video_frame);
+    if (M_impl->ccontext) avcodec_free_context(&M_impl->ccontext);
+    if (M_impl->fcontext) avformat_free_context(M_impl->fcontext);
+    if (M_impl->sws_context) sws_freeContext(M_impl->sws_context);
+
+    M_impl.reset();
 }
