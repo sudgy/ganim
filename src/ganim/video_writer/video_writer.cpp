@@ -108,6 +108,10 @@ VideoWriter& VideoWriter::operator=(VideoWriter&&)=default;
 
 void VideoWriter::write_frame(std::span<std::uint8_t> image)
 {
+    if (!M_impl) {
+        throw std::logic_error(
+            "Trying to write a frame to an already finished VideoWriter");
+    }
     if (ssize(image) != M_impl->width * M_impl->height * 3) {
         throw std::invalid_argument(
             "The image passed to VideoWriter::write_frame has an incorrect "
