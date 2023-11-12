@@ -31,7 +31,12 @@ void SceneBase::frame_advance()
 {
     glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
     glViewport(0, 0, M_pixel_width, M_pixel_height);
-    glClearColor(0, 0, 0, 1);
+    glClearColor(
+        M_background_color.r / 255.0,
+        M_background_color.g / 255.0,
+        M_background_color.b / 255.0,
+        1
+    );
     glClear(GL_COLOR_BUFFER_BIT);
     process_frame();
 }

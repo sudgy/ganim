@@ -5,6 +5,7 @@
  * @brief The @ref ganim::SceneBase "SceneBase" class
  */
 
+#include "ganim/color.hpp"
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/texture.hpp"
 
@@ -43,6 +44,9 @@ namespace ganim {
             constexpr int pixel_width() const {return M_pixel_width;}
             /** @brief Get the height, in pixels, of this scene. */
             constexpr int pixel_height() const {return M_pixel_height;}
+            /** @brief Set the background color of this scene. */
+            constexpr void set_background_color(const Color& color)
+                {M_background_color = color;}
 
         private:
             /** @brief Used for subclasses to process the frames.
@@ -56,6 +60,7 @@ namespace ganim {
             gl::Texture M_framebuffer_texture;
             int M_pixel_width = 0;
             int M_pixel_height = 0;
+            Color M_background_color;
     };
 }
 
