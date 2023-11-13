@@ -566,7 +566,9 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         template <std::uint64_t... bases2>
         constexpr auto operator*(const MV<bases2...>& b) const
         {
-            return generic_mult<[](auto, auto){return true;}>(b);
+            if constexpr (sizeof...(bases) == 0) return b;
+            if constexpr (sizeof...(bases2) == 0) return b;
+            else return generic_mult<[](auto, auto){return true;}>(b);
         }
 
         /** @brief Multiplies this multivector by a scalar */
