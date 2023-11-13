@@ -147,6 +147,13 @@ struct BasisBlade {
  * "pga2.hpp", or @ref src/ganim/ga/pga3.hpp "pga3.hpp".  Those files, along
  * with the description of the basis blades in @ref sga.hpp, should be enough to
  * help you if you find yourself needing your own specialization.
+ *
+ * Note that while this class derives from several @ref BasisBlade
+ * "BasisBlade"s, that is an implementation detail, and you should never use it!
+ * In fact, they were originally private bases of this class, but I changed it
+ * to public later just to allow for multivectors to be used as non-type
+ * template arguments.
+ *
  * @tparam Scalar a @ref ganim::scalar "scalar" type that represents the
  * coefficients used in this multivector
  * @tparam metric The metric being used.  See @ref sga.hpp for more details.
@@ -162,7 +169,7 @@ template <
     std::uint64_t... bases
 > requires(std::ranges::is_sorted(
             std::array<std::uint64_t, sizeof...(bases)>{bases...}))
-class Multivector : private BasisBlade<Scalar, metric, bases>... {
+class Multivector : public BasisBlade<Scalar, metric, bases>... {
     template <scalar Scalar2, auto metric2, std::uint64_t... bases2>
         requires(std::ranges::is_sorted(
             std::array<std::uint64_t, sizeof...(bases2)>{bases2...}))
@@ -273,7 +280,8 @@ class Multivector : private BasisBlade<Scalar, metric, bases>... {
             ((BB<bases>::coefficient = b.BB<bases>::coefficient), ...);
         }
 
-        /** @brief Projects the multivector onto a particular blade
+        /** @brief Projects the multivector onto a particular blade using the
+         * binary representation of it
          *
          * An example: `(2*e1 + 3*e2).blade_project<1> == 2`.  Note that you
          * need to know the binary representation of the blade you are
@@ -282,12 +290,32 @@ class Multivector : private BasisBlade<Scalar, metric, bases>... {
          * projecting onto
          */
         template <std::uint64_t basis>
-        constexpr Scalar blade_project() const
+        constexpr Scalar binary_blade_project() const
         {
             if constexpr ((... || (bases == basis))) {
                 return BB<basis>::coefficient;
             }
             else return 0;
+        }
+        /** @brief Projects the multivector onto a particular blade
+         *
+         * The basis blade you are projecting onto must be an actual basis
+         * blade!  If it's not, the behavior is undefined.  Note that this
+         * accepts any scalar multiple of a basis blade, and it will work as you
+         * would expect: `v.blade_project<e1>() == 2*v.blade_project<2*e1>()`.
+         * Just make sure that there is always exactly one nonzero component in
+         * `b`.
+         *
+         * @tparam b The basis blade you are projecting onto.  If the number of
+         * nonzero components in `b` is not equal to one, the behavior is
+         * undefined.
+         */
+        template <auto b>
+        Scalar blade_project() const
+        {
+            constexpr auto basis = b.component();
+            return binary_blade_project<basis>() /
+                b.template binary_blade_project<basis>();
         }
 
         /** @brief Grade projection
@@ -512,7 +540,7 @@ class Multivector : private BasisBlade<Scalar, metric, bases>... {
          */
         constexpr Scalar norm2() const
         {
-            return (*this * reverse()).template blade_project<0>();
+            return (*this * reverse()).template binary_blade_project<0>();
         }
         /** @brief Calculates the norm of this multivector.
          *
@@ -733,6 +761,10 @@ class Multivector : private BasisBlade<Scalar, metric, bases>... {
             }>();
             gm_calc<pairs>::calc(result, *this, b);
             return result;
+        }
+        constexpr std::uint64_t component() const
+        {
+            return ((BB<bases>::coefficient ? bases : 0) + ...);
         }
 };
 

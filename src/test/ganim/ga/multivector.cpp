@@ -80,11 +80,11 @@ TEST_CASE("Multivector basics", "[ga]") {
 
     const auto test = Multivector<double, metric, 1, 3>(2, 3);
 
-    REQUIRE(test.blade_project<0>() == 0);
-    REQUIRE(test.blade_project<1>() == 2);
-    REQUIRE(test.blade_project<2>() == 0);
-    REQUIRE(test.blade_project<3>() == 3);
-    REQUIRE(test.blade_project<4>() == 0);
+    REQUIRE(test.binary_blade_project<0>() == 0);
+    REQUIRE(test.binary_blade_project<1>() == 2);
+    REQUIRE(test.binary_blade_project<2>() == 0);
+    REQUIRE(test.binary_blade_project<3>() == 3);
+    REQUIRE(test.binary_blade_project<4>() == 0);
 }
 
 TEST_CASE("Multivector Equality", "[ga]") {
@@ -130,8 +130,8 @@ TEST_CASE("Multivector addition 1", "[ga]") {
     auto test1 = Multivector<double, metric, 1, 3>(2, 3);
     const auto test2 = Multivector<double, metric, 1>(2);
     test1 += test2;
-    REQUIRE(test1.blade_project<1>() == 4);
-    REQUIRE(test1.blade_project<3>() == 3);
+    REQUIRE(test1.binary_blade_project<1>() == 4);
+    REQUIRE(test1.binary_blade_project<3>() == 3);
 }
 
 TEST_CASE("Multivector addition 2", "[ga]") {
@@ -155,20 +155,20 @@ TEST_CASE("Multivector addition 2", "[ga]") {
         decltype(test6),
         const Multivector<double, metric, 1, 2>
     >);
-    REQUIRE(test4.blade_project<0>() == 0);
-    REQUIRE(test4.blade_project<1>() == 2);
-    REQUIRE(test4.blade_project<2>() == 3);
-    REQUIRE(test4.blade_project<3>() == 0);
+    REQUIRE(test4.binary_blade_project<0>() == 0);
+    REQUIRE(test4.binary_blade_project<1>() == 2);
+    REQUIRE(test4.binary_blade_project<2>() == 3);
+    REQUIRE(test4.binary_blade_project<3>() == 0);
 
-    REQUIRE(test5.blade_project<0>() == 0);
-    REQUIRE(test5.blade_project<1>() == 6);
-    REQUIRE(test5.blade_project<2>() == 5);
-    REQUIRE(test5.blade_project<3>() == 0);
+    REQUIRE(test5.binary_blade_project<0>() == 0);
+    REQUIRE(test5.binary_blade_project<1>() == 6);
+    REQUIRE(test5.binary_blade_project<2>() == 5);
+    REQUIRE(test5.binary_blade_project<3>() == 0);
 
-    REQUIRE(test6.blade_project<0>() == 0);
-    REQUIRE(test6.blade_project<1>() == 6);
-    REQUIRE(test6.blade_project<2>() == 5);
-    REQUIRE(test6.blade_project<3>() == 0);
+    REQUIRE(test6.binary_blade_project<0>() == 0);
+    REQUIRE(test6.binary_blade_project<1>() == 6);
+    REQUIRE(test6.binary_blade_project<2>() == 5);
+    REQUIRE(test6.binary_blade_project<3>() == 0);
 }
 
 TEST_CASE("Multivector Scalar Multiplication", "[ga]") {
@@ -178,20 +178,20 @@ TEST_CASE("Multivector Scalar Multiplication", "[ga]") {
     const auto test2 = 2 * test1;
     const auto test3 = test1 * 2;
     test1 *= 2;
-    REQUIRE(test1.blade_project<0>() == 0);
-    REQUIRE(test1.blade_project<1>() == 2);
-    REQUIRE(test1.blade_project<2>() == 0);
-    REQUIRE(test1.blade_project<3>() == 6);
+    REQUIRE(test1.binary_blade_project<0>() == 0);
+    REQUIRE(test1.binary_blade_project<1>() == 2);
+    REQUIRE(test1.binary_blade_project<2>() == 0);
+    REQUIRE(test1.binary_blade_project<3>() == 6);
 
-    REQUIRE(test2.blade_project<0>() == 0);
-    REQUIRE(test2.blade_project<1>() == 2);
-    REQUIRE(test2.blade_project<2>() == 0);
-    REQUIRE(test2.blade_project<3>() == 6);
+    REQUIRE(test2.binary_blade_project<0>() == 0);
+    REQUIRE(test2.binary_blade_project<1>() == 2);
+    REQUIRE(test2.binary_blade_project<2>() == 0);
+    REQUIRE(test2.binary_blade_project<3>() == 6);
 
-    REQUIRE(test3.blade_project<0>() == 0);
-    REQUIRE(test3.blade_project<1>() == 2);
-    REQUIRE(test3.blade_project<2>() == 0);
-    REQUIRE(test3.blade_project<3>() == 6);
+    REQUIRE(test3.binary_blade_project<0>() == 0);
+    REQUIRE(test3.binary_blade_project<1>() == 2);
+    REQUIRE(test3.binary_blade_project<2>() == 0);
+    REQUIRE(test3.binary_blade_project<3>() == 6);
 }
 
 TEST_CASE("Multivector Scalar Division", "[ga]") {
@@ -239,7 +239,7 @@ TEST_CASE("Multivector multiplication", "[ga]") {
 
     REQUIRE(test6 == 30*e1 + 24*e2);
 
-    REQUIRE(test7.blade_project<0>() == -11);
+    REQUIRE(test7.binary_blade_project<0>() == -11);
     REQUIRE(test7 == -11 - 2*e12);
 }
 
@@ -412,4 +412,20 @@ TEST_CASE("Multivector norm", "[ga]") {
     REQUIRE(test1.normalized() == 1 + 0.5*e1 + 0.5*e2 + 0.5*e3);
     REQUIRE(test2.norm2() == 0);
     REQUIRE(test2.norm() == 0);
+}
+
+TEST_CASE("Multivector component blade projection", "[ga]") {
+    constexpr auto metric = std::array<std::int8_t, 3>{1, -1, 0};
+    constexpr auto e1 = Multivector<double, metric, 1, 2, 4>(1, 0, 0);
+    constexpr auto e2 = Multivector<double, metric, 1, 2, 4>(0, 1, 0);
+    constexpr auto e3 = Multivector<double, metric, 1, 2, 4>(0, 0, 1);
+    constexpr auto e12 = Multivector<double, metric, 3, 5, 6>(1, 0, 0);
+    constexpr auto e21 = -e12;
+    auto test = 2*e1 + 3*e2 + 4*e3 + 5*e12;
+    REQUIRE(test.blade_project<e1>() == 2);
+    REQUIRE(test.blade_project<e2>() == 3);
+    REQUIRE(test.blade_project<e3>() == 4);
+    REQUIRE(test.blade_project<e12>() == 5);
+    REQUIRE(test.blade_project<e21>() == -5);
+    REQUIRE(test.blade_project<2*e2>() == 1.5);
 }
