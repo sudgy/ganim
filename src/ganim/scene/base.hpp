@@ -27,10 +27,12 @@ namespace ganim {
              *
              * @param pixel_width The width, in pixels, of this scene.
              * @param pixel_height The height, in pixels, of this scene.
+             * @param fps The framerate, in frames per second, of this scene.
              */
             SceneBase(
                 int pixel_width,
-                int pixel_height
+                int pixel_height,
+                int fps
             );
             virtual ~SceneBase()=default;
             /** @brief Process the scene for one frame.
@@ -39,6 +41,19 @@ namespace ganim {
              * internal framebuffer, and then call @ref process_frame.
              */
             void frame_advance();
+            /** @brief Process the scene for several frames.
+             *
+             * @param amount The number of frames to process.
+             */
+            void frame_advance(int amount);
+            /** @brief Process the scene for a certain amount of time.
+             *
+             * @param time The time, in seconds, to process.  This time will
+             * actually be converted to the nearest number of frames, so the
+             * amount of time that this functions waits may not be exactly what
+             * was passed into this function.
+             */
+            void wait(double time);
 
             /** @brief Get the width, in pixels, of this scene. */
             constexpr int pixel_width() const {return M_pixel_width;}
@@ -60,6 +75,7 @@ namespace ganim {
             gl::Texture M_framebuffer_texture;
             int M_pixel_width = 0;
             int M_pixel_height = 0;
+            int M_fps;
             Color M_background_color;
     };
 }

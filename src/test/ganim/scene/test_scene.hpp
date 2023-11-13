@@ -9,7 +9,7 @@
 
 class TestScene : public ganim::SceneBase {
     public:
-        TestScene(int width, int height);
+        TestScene(int width, int height, int fps);
         ganim::Color get_pixel(int t, int x, int y);
         constexpr int time_size() const {return M_data.size();}
 

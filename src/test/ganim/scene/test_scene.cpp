@@ -2,8 +2,8 @@
 
 #include "ganim/gl/gl.hpp"
 
-TestScene::TestScene(int width, int height)
-    : SceneBase(width, height) {}
+TestScene::TestScene(int width, int height, int fps)
+    : SceneBase(width, height, fps) {}
 
 ganim::Color TestScene::get_pixel(int t, int x, int y)
 {
