@@ -6,6 +6,7 @@
  */
 
 #include "sga.hpp"
+#include "print.hpp"
 
 namespace ganim::vga3 {
     /** @brief The VGA metric.  You shouldn't need to use this. */
@@ -39,6 +40,17 @@ namespace ganim::vga3 {
     constexpr auto e213 = -e123;
     constexpr auto e132 = -e123;
     constexpr auto e321 = -e123;
+
+    constexpr const char names[] = "123";
+    template <std::uint64_t... bases>
+    std::ostream& operator<<(
+        std::ostream& stream,
+        const Multivector<bases...>& m
+    )
+    {
+        output_multivector<names>(stream, m);
+        return stream;
+    }
 }
 
 #endif

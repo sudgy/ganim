@@ -6,6 +6,7 @@
  */
 
 #include "sga.hpp"
+#include "print.hpp"
 
 namespace ganim::pga3 {
     /** @brief The PGA metric.  You shouldn't need to use this. */
@@ -89,6 +90,17 @@ namespace ganim::pga3 {
     constexpr auto e3120 = -e0123;
     constexpr auto e3201 = -e0123;
     constexpr auto e3210 = e0123;
+
+    constexpr const char names[] = "0123";
+    template <std::uint64_t... bases>
+    std::ostream& operator<<(
+        std::ostream& stream,
+        const Multivector<bases...>& m
+    )
+    {
+        output_multivector<names>(stream, m);
+        return stream;
+    }
 }
 
 #endif
