@@ -429,3 +429,11 @@ TEST_CASE("Multivector component blade projection", "[ga]") {
     REQUIRE(test.blade_project<e21>() == -5);
     REQUIRE(test.blade_project<2*e2>() == 1.5);
 }
+
+TEST_CASE("Multivector empty products", "[ga]") {
+    constexpr auto metric = std::array<std::int8_t, 1>{1};
+    constexpr auto e1 = Multivector<double, metric, 1>(1);
+    constexpr auto z = Multivector<double, metric>();
+    REQUIRE(e1 * z == z);
+    REQUIRE(z * e1 == z);
+}

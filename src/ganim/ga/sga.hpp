@@ -375,7 +375,8 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
             auto result = from_wrapper<[&]{
                 auto result = std::vector<std::uint64_t>();
                 result.reserve(sizeof...(bases) + sizeof...(bases2));
-                auto bs1 = std::array{bases...};
+                auto bs1 = std::array<std::uint64_t, sizeof...(bases)>
+                    {bases...};
                 auto bs2 = std::array<std::uint64_t, sizeof...(bases2)>
                     {bases2...};
                 auto i1 = 0UL;
@@ -566,7 +567,7 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         template <std::uint64_t... bases2>
         constexpr auto operator*(const MV<bases2...>& b) const
         {
-            if constexpr (sizeof...(bases) == 0) return b;
+            if constexpr (sizeof...(bases) == 0) return *this;
             else if constexpr (sizeof...(bases2) == 0) return b;
             else return generic_mult<[](auto, auto){return true;}>(b);
         }
