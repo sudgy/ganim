@@ -567,7 +567,7 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         constexpr auto operator*(const MV<bases2...>& b) const
         {
             if constexpr (sizeof...(bases) == 0) return b;
-            if constexpr (sizeof...(bases2) == 0) return b;
+            else if constexpr (sizeof...(bases2) == 0) return b;
             else return generic_mult<[](auto, auto){return true;}>(b);
         }
 
