@@ -437,3 +437,29 @@ TEST_CASE("Multivector empty products", "[ga]") {
     REQUIRE(e1 * z == z);
     REQUIRE(z * e1 == z);
 }
+
+TEST_CASE("Multivector constructing from parts", "[ga]") {
+    constexpr auto metric = std::array<std::int8_t, 2>{1, 1};
+    const auto e1 = Multivector<double, metric, 1>(1);
+    const auto e2 = Multivector<double, metric, 2>(1);
+    Multivector<double, metric, 0, 1, 2> test = e1 + e2;
+    REQUIRE(test.binary_blade_project<0>() == 0);
+    REQUIRE(test.binary_blade_project<1>() == 1);
+    REQUIRE(test.binary_blade_project<2>() == 1);
+    test = 2*e1;
+    REQUIRE(test.binary_blade_project<0>() == 0);
+    REQUIRE(test.binary_blade_project<1>() == 2);
+    REQUIRE(test.binary_blade_project<2>() == 0);
+    test = 3*e2;
+    REQUIRE(test.binary_blade_project<0>() == 0);
+    REQUIRE(test.binary_blade_project<1>() == 0);
+    REQUIRE(test.binary_blade_project<2>() == 3);
+
+    Multivector<double, metric, 0, 1> test2 = 1;
+    REQUIRE(test2.binary_blade_project<0>() == 1);
+    REQUIRE(test2.binary_blade_project<1>() == 0);
+    test2 = {1, 1};
+    test2 = 2;
+    REQUIRE(test2.binary_blade_project<0>() == 2);
+    REQUIRE(test2.binary_blade_project<1>() == 0);
+}

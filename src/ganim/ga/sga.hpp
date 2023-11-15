@@ -207,6 +207,32 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         constexpr Multivector(BB<bases>... values)
             requires(sizeof...(bases) > 0)
             : BB<bases>(values)... {}
+        /** @brief Constructs a multivector from another multivector.
+         *
+         * All of the components in the other multivector must be valid in this
+         * one.  All components in this multivector that are not in the other
+         * one are set to zero.
+         *
+         * @tparam bases2 The bases present in `other`.  If `bases2` is not a
+         * subset of `bases`, the program is ill-formed.
+         * @param other The multivector to construct this one from.
+         */
+        template <std::uint64_t... bases2>
+        constexpr Multivector(const MV<bases2...>& other)
+        {
+            ((BB<bases2>::coefficient = other.BB<bases2>::coefficient), ...);
+        }
+        /** @brief Constructs a multivector from a single scalar value.
+         *
+         * This allows you to write things like "Rotor r = 1".  This will only
+         * be valid in overload resolution if this multivector actually has a
+         * scalar component.
+         */
+        constexpr Multivector(Scalar value)
+            requires((bases == 0) or ...)
+        {
+            BB<0>::coefficient = value;
+        }
 
         /** Note that comparison only works between multivectors of the same
          * type.
