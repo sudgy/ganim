@@ -25,6 +25,7 @@ namespace ganim::pga3 {
     using Bivector = Multivector<3, 5, 6, 9, 10, 12>;
     using Trivector = Multivector<7, 11, 13, 14>;
     using Quadvector = Multivector<15>;
+    using Even = Multivector<0, 3, 5, 6, 9, 10, 12, 15>;
     constexpr auto e = Scalar(1);
     constexpr auto e0 = Vector(1, 0, 0, 0);
     constexpr auto e1 = Vector(0, 1, 0, 0);
