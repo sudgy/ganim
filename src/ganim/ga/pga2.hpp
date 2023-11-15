@@ -42,15 +42,16 @@ namespace ganim::pga2 {
     constexpr auto e210 = -e012;
 
     constexpr const char names[] = "012";
-    template <std::uint64_t... bases>
-    std::ostream& operator<<(
-        std::ostream& stream,
-        const Multivector<bases...>& m
-    )
-    {
-        output_multivector<names>(stream, m);
-        return stream;
-    }
+}
+
+template <std::uint64_t... bases>
+std::ostream& operator<<(
+    std::ostream& stream,
+    const ganim::pga2::Multivector<bases...>& m
+)
+{
+    output_multivector<ganim::pga2::names>(stream, m);
+    return stream;
 }
 
 #endif

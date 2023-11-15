@@ -30,15 +30,16 @@ namespace ganim::vga2 {
     constexpr auto e21 = -e12;
 
     constexpr const char names[] = "12";
-    template <std::uint64_t... bases>
-    std::ostream& operator<<(
-        std::ostream& stream,
-        const Multivector<bases...>& m
-    )
-    {
-        output_multivector<names>(stream, m);
-        return stream;
-    }
+}
+
+template <std::uint64_t... bases>
+std::ostream& operator<<(
+    std::ostream& stream,
+    const ganim::vga2::Multivector<bases...>& m
+)
+{
+    output_multivector<ganim::vga2::names>(stream, m);
+    return stream;
 }
 
 #endif

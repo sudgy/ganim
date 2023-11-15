@@ -587,6 +587,13 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
             else if constexpr (sizeof...(bases2) == 0) return b;
             else return generic_mult<[](auto, auto){return true;}>(b);
         }
+        /** @brief Right-multiplies this multivector by another */
+        template <std::uint64_t... bases2>
+        constexpr Multivector& operator*=(const MV<bases2...>& b)
+        {
+            *this = *this * b;
+            return *this;
+        }
 
         /** @brief Multiplies this multivector by a scalar */
         constexpr auto operator*=(const Scalar& s)
