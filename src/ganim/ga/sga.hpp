@@ -234,15 +234,30 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
             BB<0>::coefficient = value;
         }
 
-        /** Note that comparison only works between multivectors of the same
-         * type.
-         */
+        /** @brief Checks if all components are equal. */
         constexpr bool operator==(const Multivector& other) const=default;
+        /** @brief Checks if all components are equal. */
         constexpr bool operator!=(const Multivector& other) const=default;
+        /** @brief Checks if two multivector of different types are equal
+         *
+         * For components that are shared by both multivectors, it checks if
+         * they are equal.  For components that are not shared, it checks if
+         * they are zero.
+         */
         template <std::uint64_t... bases2>
-        constexpr bool operator==(const MV<bases2...>&) const=delete;
+        constexpr bool operator==(const MV<bases2...>& other) const
+        {
+            return ((binary_blade_project<bases>() ==
+                    other.template binary_blade_project<bases>()) and ...) and
+                   ((binary_blade_project<bases2>() ==
+                    other.template binary_blade_project<bases2>()) and ...);
+        }
+        /** @brief Checks if two multivector of different types are not equal */
         template <std::uint64_t... bases2>
-        constexpr bool operator!=(const MV<bases2...>&) const=delete;
+        constexpr bool operator!=(const MV<bases2...>& other) const
+        {
+            return !(*this == other);
+        }
         /** @brief Comparison with a scalar when no basis blades are present
          *
          * When no basis blades are present, the multivector is zero, so this

@@ -463,3 +463,11 @@ TEST_CASE("Multivector constructing from parts", "[ga]") {
     REQUIRE(test2.binary_blade_project<0>() == 2);
     REQUIRE(test2.binary_blade_project<1>() == 0);
 }
+
+TEST_CASE("Multivector different comparisons", "[ga]") {
+    constexpr auto metric = std::array<std::int8_t, 2>{1, 1};
+    const auto e1 = Multivector<double, metric, 1>(1);
+    const auto e2 = Multivector<double, metric, 2>(1);
+    REQUIRE(e1 == e1 + e2 - e2);
+    REQUIRE(e1 != e1 + e2);
+}
