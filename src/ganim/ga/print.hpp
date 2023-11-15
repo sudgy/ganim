@@ -29,7 +29,7 @@ void output_multivector(
 )
 {
     bool outputted = false;
-    auto process_basis = [&]<std::uint64_t b>() {
+    [[maybe_unused]] auto process_basis = [&]<std::uint64_t b>() {
         auto coef = m.template binary_blade_project<b>();
         if (coef == 0) return;
         if (outputted) {

@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "test/ganim/ga_equals.hpp"
+
 #include "ganim/ga/sga.hpp"
 
 using namespace ganim;
@@ -119,9 +121,9 @@ TEST_CASE("Multivector grade project", "[ga]") {
         const Multivector<double, metric>
     >);
 
-    REQUIRE(test0 == 1);
-    REQUIRE(test1 == 2*e1 + 3*e2);
-    REQUIRE(test2 == 4*e12);
+    REQUIRE_THAT(test0, GAEquals(1));
+    REQUIRE_THAT(test1, GAEquals(2*e1 + 3*e2));
+    REQUIRE_THAT(test2, GAEquals(4*e12));
 }
 
 TEST_CASE("Multivector addition 1", "[ga]") {
@@ -201,8 +203,8 @@ TEST_CASE("Multivector Scalar Division", "[ga]") {
     auto test1 = 2*e1 + 3*e2;
     auto test2 = test1 / 2;
     test1 /= 4;
-    REQUIRE(test1 == 0.5*e1 + 0.75*e2);
-    REQUIRE(test2 == 1*e1 + 1.5*e2);
+    REQUIRE_THAT(test1, GAEquals(0.5*e1 + 0.75*e2));
+    REQUIRE_THAT(test2, GAEquals(1*e1 + 1.5*e2));
 }
 
 TEST_CASE("Multivector subtraction", "[ga]") {
@@ -216,10 +218,10 @@ TEST_CASE("Multivector subtraction", "[ga]") {
     const auto test5 = test1 - test2;
     const auto test6 = test1 - test3;
     const auto test7 = test3 - test1;
-    REQUIRE(test4 == -4*e1 + -5*e2);
-    REQUIRE(test5 == 2*e1 + -3*e2);
-    REQUIRE(test6 == -2*e1 + -5*e2);
-    REQUIRE(test7 == 2*e1 + 5*e2);
+    REQUIRE_THAT(test4, GAEquals(-4*e1 + -5*e2));
+    REQUIRE_THAT(test5, GAEquals(2*e1 + -3*e2));
+    REQUIRE_THAT(test6, GAEquals(-2*e1 + -5*e2));
+    REQUIRE_THAT(test7, GAEquals(2*e1 + 5*e2));
 }
 
 TEST_CASE("Multivector multiplication", "[ga]") {
@@ -235,12 +237,9 @@ TEST_CASE("Multivector multiplication", "[ga]") {
     const auto test5 = test1 * test2;
     const auto test6 = test3 * test5;
     const auto test7 = test3 * test4;
-    REQUIRE(test5 == 6*e12);
-
-    REQUIRE(test6 == 30*e1 + 24*e2);
-
-    REQUIRE(test7.binary_blade_project<0>() == -11);
-    REQUIRE(test7 == -11 - 2*e12);
+    REQUIRE_THAT(test5, GAEquals(6*e12));
+    REQUIRE_THAT(test6, GAEquals(30*e1 + 24*e2));
+    REQUIRE_THAT(test7, GAEquals(-11 - 2*e12));
 }
 
 TEST_CASE("Multivector Scalar Addition", "[ga]") {
@@ -251,9 +250,9 @@ TEST_CASE("Multivector Scalar Addition", "[ga]") {
     const auto test2 = 2 + test1;
     const auto test3 = test1 + 2;
     test1 += 2;
-    REQUIRE(test1 == 3 + 4*e12);
-    REQUIRE(test2 == 3 + 4*e12);
-    REQUIRE(test3 == 3 + 4*e12);
+    REQUIRE_THAT(test1, GAEquals(3 + 4*e12));
+    REQUIRE_THAT(test2, GAEquals(3 + 4*e12));
+    REQUIRE_THAT(test3, GAEquals(3 + 4*e12));
 }
 
 TEST_CASE("Multivector Outer Product", "[ga]") {
@@ -273,8 +272,8 @@ TEST_CASE("Multivector Outer Product", "[ga]") {
         decltype(test6),
         const Multivector<double, metric>
     >);
-    REQUIRE(test5 == 6*e12);
-    REQUIRE(test7 == -2*e12);
+    REQUIRE_THAT(test5, GAEquals(6*e12));
+    REQUIRE_THAT(test7, GAEquals(-2*e12));
 }
 
 TEST_CASE("Multivector Inner Product", "[ga]") {
@@ -297,7 +296,7 @@ TEST_CASE("Multivector Inner Product", "[ga]") {
         decltype(test6),
         const Multivector<double, metric>
     >);
-    REQUIRE(test7 == -11);
+    REQUIRE_THAT(test7, GAEquals(-11));
 }
 
 TEST_CASE("Multivector Contractions", "[ga]") {
@@ -334,10 +333,10 @@ TEST_CASE("Multivector Contractions", "[ga]") {
         decltype(test11),
         const Multivector<double, metric>
     >);
-    REQUIRE(test4 == 6*e1 + 8*e2);
-    REQUIRE(test5 == 20*e1 + 15*e2);
-    REQUIRE(test6 == 6*e1 + 8*e2);
-    REQUIRE(test7 == -20*e1 - 15*e2);
+    REQUIRE_THAT(test4, GAEquals(6*e1 + 8*e2));
+    REQUIRE_THAT(test5, GAEquals(20*e1 + 15*e2));
+    REQUIRE_THAT(test6, GAEquals(6*e1 + 8*e2));
+    REQUIRE_THAT(test7, GAEquals(-20*e1 - 15*e2));
 }
 
 TEST_CASE("Multivector dual", "[ga]") {
@@ -351,28 +350,28 @@ TEST_CASE("Multivector dual", "[ga]") {
     const auto e23 = Multivector<double, metric, 6>(1);
     const auto e123 = Multivector<double, metric, 7>(1);
 
-    REQUIRE(e1.dual() == !e1);
-    REQUIRE(e2.dual() == !e2);
+    REQUIRE_THAT(e1.dual(), GAEquals(!e1));
+    REQUIRE_THAT(e2.dual(), GAEquals(!e2));
 
-    REQUIRE((!e) == e123);
-    REQUIRE((!e1) == e23);
-    REQUIRE((!e2) == -e13);
-    REQUIRE((!e3) == e12);
-    REQUIRE((!e12) == e3);
-    REQUIRE((!e13) == -e2);
-    REQUIRE((!e23) == e1);
-    REQUIRE((!e123) == e);
+    REQUIRE_THAT((!e), GAEquals(e123));
+    REQUIRE_THAT((!e1), GAEquals(e23));
+    REQUIRE_THAT((!e2), GAEquals(-e13));
+    REQUIRE_THAT((!e3), GAEquals(e12));
+    REQUIRE_THAT((!e12), GAEquals(e3));
+    REQUIRE_THAT((!e13), GAEquals(-e2));
+    REQUIRE_THAT((!e23), GAEquals(e1));
+    REQUIRE_THAT((!e123), GAEquals(e));
 
-    REQUIRE(e.dual().undual() == e);
-    REQUIRE(e1.dual().undual() == e1);
-    REQUIRE(e2.dual().undual() == e2);
-    REQUIRE(e3.dual().undual() == e3);
-    REQUIRE(e12.dual().undual() == e12);
-    REQUIRE(e13.dual().undual() == e13);
-    REQUIRE(e23.dual().undual() == e23);
-    REQUIRE(e123.dual().undual() == e123);
+    REQUIRE_THAT(e.dual().undual(), GAEquals(e));
+    REQUIRE_THAT(e1.dual().undual(), GAEquals(e1));
+    REQUIRE_THAT(e2.dual().undual(), GAEquals(e2));
+    REQUIRE_THAT(e3.dual().undual(), GAEquals(e3));
+    REQUIRE_THAT(e12.dual().undual(), GAEquals(e12));
+    REQUIRE_THAT(e13.dual().undual(), GAEquals(e13));
+    REQUIRE_THAT(e23.dual().undual(), GAEquals(e23));
+    REQUIRE_THAT(e123.dual().undual(), GAEquals(e123));
 
-    REQUIRE((e1 + e2 + e3).dual() == e12 + e23 - e13);
+    REQUIRE_THAT((e1 + e2 + e3).dual(), GAEquals(e12 + e23 - e13));
 }
 
 TEST_CASE("Multivector regressive product", "[ga]") {
@@ -383,8 +382,8 @@ TEST_CASE("Multivector regressive product", "[ga]") {
     const auto e13 = Multivector<double, metric, 5>(1);
     const auto e23 = Multivector<double, metric, 6>(1);
 
-    REQUIRE(((e1 + e3) & e2) == 0);
-    REQUIRE((e13 & e23) == e3);
+    REQUIRE_THAT((e1 + e3) & e2, GAEquals(0));
+    REQUIRE_THAT(e13 & e23, GAEquals(e3));
 }
 
 TEST_CASE("Multivector involutions", "[ga]") {
@@ -396,8 +395,10 @@ TEST_CASE("Multivector involutions", "[ga]") {
     const auto test = 1 + e1 + e2 + (e1^e2) + (e2^e3^e4) + (e1^e2^e3^e4);
     const auto test2 = ~test;
     const auto test3 = test.involute();
-    REQUIRE(test2 == 1 + e1 + e2 - (e1^e2) - (e2^e3^e4) + (e1^e2^e3^e4));
-    REQUIRE(test3 == 1 - e1 - e2 + (e1^e2) - (e2^e3^e4) + (e1^e2^e3^e4));
+    REQUIRE_THAT(test2,
+            GAEquals(1 + e1 + e2 - (e1^e2) - (e2^e3^e4) + (e1^e2^e3^e4)));
+    REQUIRE_THAT(test3,
+            GAEquals(1 - e1 - e2 + (e1^e2) - (e2^e3^e4) + (e1^e2^e3^e4)));
 }
 
 TEST_CASE("Multivector norm", "[ga]") {
@@ -409,7 +410,7 @@ TEST_CASE("Multivector norm", "[ga]") {
     const auto test2 = 1 + (e1^e2) + (e2^e3);
     REQUIRE(test1.norm2() == 4);
     REQUIRE(test1.norm() == 2);
-    REQUIRE(test1.normalized() == 1 + 0.5*e1 + 0.5*e2 + 0.5*e3);
+    REQUIRE_THAT(test1.normalized(), GAEquals(1 + 0.5*e1 + 0.5*e2 + 0.5*e3));
     REQUIRE(test2.norm2() == 0);
     REQUIRE(test2.norm() == 0);
 }
@@ -434,8 +435,8 @@ TEST_CASE("Multivector empty products", "[ga]") {
     constexpr auto metric = std::array<std::int8_t, 1>{1};
     constexpr auto e1 = Multivector<double, metric, 1>(1);
     constexpr auto z = Multivector<double, metric>();
-    REQUIRE(e1 * z == z);
-    REQUIRE(z * e1 == z);
+    REQUIRE_THAT(e1 * z, GAEquals(z));
+    REQUIRE_THAT(z * e1, GAEquals(z));
 }
 
 TEST_CASE("Multivector constructing from parts", "[ga]") {
@@ -468,8 +469,8 @@ TEST_CASE("Multivector different comparisons", "[ga]") {
     constexpr auto metric = std::array<std::int8_t, 2>{1, 1};
     const auto e1 = Multivector<double, metric, 1>(1);
     const auto e2 = Multivector<double, metric, 2>(1);
-    REQUIRE(e1 == e1 + e2 - e2);
-    REQUIRE(e1 != e1 + e2);
+    REQUIRE_THAT(e1, GAEquals(e1 + e2 - e2));
+    REQUIRE_THAT(e1, !GAEquals(e1 + e2));
 }
 
 TEST_CASE("Multivector scalar comparisons", "[ga]") {

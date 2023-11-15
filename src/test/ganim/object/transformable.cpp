@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
+#include "test/ganim/ga_equals.hpp"
+
 #include "ganim/object/transformable.hpp"
 
 using namespace ganim;
@@ -20,13 +22,13 @@ namespace {
 TEST_CASE("Transformable basics", "[object]") {
     using namespace pga3;
     auto test = TestTransformable();
-    REQUIRE(test.get_rotor() == 1);
+    REQUIRE_THAT(test.get_rotor(), GAEquals(1));
     test = TestTransformable(e12);
-    REQUIRE(test.get_rotor() == e12);
+    REQUIRE_THAT(test.get_rotor(), GAEquals(e12));
     test.apply_rotor(e23);
-    REQUIRE(test.get_rotor() == e13);
-    REQUIRE(test.last_applied_rotor == e23);
+    REQUIRE_THAT(test.get_rotor(), GAEquals(e13));
+    REQUIRE_THAT(test.last_applied_rotor, GAEquals(e23));
     test.reset();
-    REQUIRE(test.get_rotor() == 1);
-    REQUIRE(test.last_applied_rotor == -e13);
+    REQUIRE_THAT(test.get_rotor(), GAEquals(1));
+    REQUIRE_THAT(test.last_applied_rotor, GAEquals(-e13));
 }
