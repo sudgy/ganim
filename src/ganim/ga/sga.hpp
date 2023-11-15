@@ -258,41 +258,16 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         {
             return !(*this == other);
         }
-        /** @brief Comparison with a scalar when no basis blades are present
-         *
-         * When no basis blades are present, the multivector is zero, so this
-         * actually just checks if `s` is zero.
-         */
+        /** @brief Equality operator for scalars */
         constexpr bool operator==(Scalar s) const
-            requires(sizeof...(bases) == 0)
         {
-            return s == 0;
+            return binary_blade_project<0>() == s and
+                ((binary_blade_project<bases>() == 0 or bases == 0) and ...);
         }
-        /** @brief Comparison with a scalar when no basis blades are present
-         *
-         * When no basis blades are present, the multivector is zero, so this
-         * actually just checks if `s` is not zero.
-         */
+        /** @brief Inequality operator for scalars */
         constexpr bool operator!=(Scalar s) const
-            requires(sizeof...(bases) == 0)
         {
-            return s != 0;
-        }
-        /** @brief Comparison with a scalar when only a scalar basis blade is
-         * present
-         */
-        constexpr bool operator==(Scalar s) const
-            requires(((bases == 0) and ...) and sizeof...(bases) > 0)
-        {
-            return this->coefficient == s;
-        }
-        /** @brief Comparison with a scalar when only a scalar basis blade is
-         * present
-         */
-        constexpr bool operator!=(Scalar s) const
-            requires(((bases == 0) and ...) and sizeof...(bases) > 0)
-        {
-            return this->coefficient != s;
+            return !(*this == s);
         }
         /** @brief Symmetric version of the above operators */
         constexpr friend bool operator==(Scalar s, const Multivector& m)

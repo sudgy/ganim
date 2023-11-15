@@ -471,3 +471,20 @@ TEST_CASE("Multivector different comparisons", "[ga]") {
     REQUIRE(e1 == e1 + e2 - e2);
     REQUIRE(e1 != e1 + e2);
 }
+
+TEST_CASE("Multivector scalar comparisons", "[ga]") {
+    constexpr auto metric = std::array<std::int8_t, 1>{1};
+    const auto e1 = Multivector<double, metric, 1>(1);
+    const auto test1 = 1 + e1;
+    const auto test2 = 1 + e1 - e1;
+    const auto test3 = 0 + e1;
+    const auto test4 = 0 + e1 - e1;
+    REQUIRE(test1 != 1);
+    REQUIRE(1 != test1);
+    REQUIRE(test2 == 1);
+    REQUIRE(1 == test2);
+    REQUIRE(test3 != 0);
+    REQUIRE(0 != test3);
+    REQUIRE(test4 == 0);
+    REQUIRE(0 == test4);
+}
