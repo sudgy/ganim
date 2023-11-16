@@ -2,7 +2,7 @@
 #define GANIM_GL_FRAMEBUFFER_HPP
 
 /** @file
- * @brief Contains just the @ref ganim::gl::Framebuffer "Framebuffer" class
+ * @brief Contains the @ref ganim::gl::Framebuffer "Framebuffer" class
  */
 
 namespace ganim::gl {
@@ -24,7 +24,7 @@ namespace ganim::gl {
             operator unsigned() const {return M_id;}
 
         private:
-            unsigned M_id {0};
+            unsigned M_id = 0;
     };
 }
 

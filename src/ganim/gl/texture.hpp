@@ -2,7 +2,7 @@
 #define GANIM_GL_TEXTURE_HPP
 
 /** @file
- * @brief Contains just the @ref ganim::gl::Texture "Texture" class
+ * @brief Contains the @ref ganim::gl::Texture "Texture" class
  */
 
 namespace ganim::gl {
@@ -21,10 +21,10 @@ namespace ganim::gl {
             Texture(const Texture&)=delete;
             Texture& operator=(Texture&&) noexcept;
             Texture& operator=(const Texture&)=delete;
-            operator unsigned() const {return M_id;} //NOLINT
+            operator unsigned() const {return M_id;}
 
         private:
-            unsigned M_id {0};
+            unsigned M_id = 0;
     };
 }
 
