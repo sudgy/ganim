@@ -1,8 +1,20 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "test_scene.hpp"
+#include "ganim/object/object.hpp"
 
 using namespace ganim;
+
+namespace {
+    class TestObject : public Object {
+        public:
+            virtual void draw() override
+            {
+                ++draw_count;
+            }
+            int draw_count = 0;
+    };
+}
 
 TEST_CASE("Scene basics", "[scene]") {
     auto scene = TestScene(10, 10, 1);
@@ -41,4 +53,22 @@ TEST_CASE("Scene waiting", "[scene]") {
     REQUIRE(scene.time_size() == 11);
     REQUIRE_THROWS(scene.frame_advance(-1));
     REQUIRE_THROWS(scene.wait(-0.1));
+}
+
+TEST_CASE("Scene objects", "[scene]") {
+    auto scene = TestScene(1, 1, 1);
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    scene.add(obj1);
+    REQUIRE(obj1.draw_count == 0);
+    REQUIRE(obj2.draw_count == 0);
+    scene.frame_advance(2);
+    REQUIRE(obj1.draw_count == 2);
+    REQUIRE(obj2.draw_count == 0);
+    scene.add(obj2);
+    REQUIRE(obj1.draw_count == 2);
+    REQUIRE(obj2.draw_count == 0);
+    scene.frame_advance(2);
+    REQUIRE(obj1.draw_count == 4);
+    REQUIRE(obj2.draw_count == 2);
 }
