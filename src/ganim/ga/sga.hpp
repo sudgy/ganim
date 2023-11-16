@@ -330,8 +330,7 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         Scalar blade_project() const
         {
             constexpr auto basis = b.component();
-            return binary_blade_project<basis>() /
-                b.template binary_blade_project<basis>();
+            return BB<basis>::coefficient / b.BB<basis>::coefficient;
         }
 
         /** @brief Grade projection
