@@ -1,0 +1,220 @@
+#include "conversions.hpp"
+
+namespace ganim {
+
+vga3::Scalar vga2_to_vga3(const vga2::Scalar& in)
+{
+    return in.coefficient;
+}
+
+vga3::Vector vga2_to_vga3(const vga2::Vector& in)
+{
+    return in.blade_project<vga2::e1>() * vga3::e1 +
+           in.blade_project<vga2::e2>() * vga3::e2;
+}
+
+vga3::Bivector vga2_to_vga3(const vga2::Bivector& in)
+{
+    return in.coefficient * vga3::e12;
+}
+
+vga3::Even vga2_to_vga3(const vga2::Even& in)
+{
+    return in.blade_project<vga2::e>() +
+           in.blade_project<vga2::e12>() * vga3::e12;
+}
+
+vga2::Scalar vga3_to_vga2(const vga3::Scalar& in)
+{
+    return in.coefficient;
+}
+
+vga2::Vector vga3_to_vga2(const vga3::Vector& in)
+{
+    return in.blade_project<vga3::e1>() * vga2::e1 +
+           in.blade_project<vga3::e2>() * vga2::e2;
+}
+
+vga2::Bivector vga3_to_vga2(const vga3::Bivector& in)
+{
+    return in.blade_project<vga3::e12>() * vga2::e12;
+}
+
+pga3::Scalar pga2_to_pga3(const pga2::Scalar& in)
+{
+    return in.coefficient;
+}
+
+pga3::Vector pga2_to_pga3(const pga2::Vector& in)
+{
+    return in.blade_project<pga2::e1>() * pga3::e1 +
+           in.blade_project<pga2::e2>() * pga3::e2 +
+           in.blade_project<pga2::e0>() * pga3::e0;
+}
+
+pga3::Bivector pga2_to_pga3(const pga2::Bivector& in)
+{
+
+    return in.blade_project<pga2::e12>() * pga3::e12 +
+           in.blade_project<pga2::e01>() * pga3::e01 +
+           in.blade_project<pga2::e02>() * pga3::e02;
+}
+
+pga3::Even pga2_to_pga3(const pga2::Even& in)
+{
+    return pga2_to_pga3(in.grade_project<0>()) +
+           pga2_to_pga3(in.grade_project<2>());
+}
+
+pga3::Bivector pga2_to_pga3_flat(const pga2::Vector& in)
+{
+    return pga2_to_pga3(in) ^ pga3::e3;
+}
+
+pga3::Trivector pga2_to_pga3_flat(const pga2::Bivector& in)
+{
+    return pga2_to_pga3(in) ^ pga3::e3;
+}
+
+pga2::Scalar pga3_to_pga2(const pga3::Scalar& in)
+{
+    return in.coefficient;
+}
+
+pga2::Vector pga3_to_pga2(const pga3::Vector& in)
+{
+    return in.blade_project<pga3::e1>() * pga2::e1 +
+           in.blade_project<pga3::e2>() * pga2::e2 +
+           in.blade_project<pga3::e0>() * pga2::e0;
+}
+
+pga2::Bivector pga3_to_pga2(const pga3::Bivector& in)
+{
+    return in.blade_project<pga3::e12>() * pga2::e12 +
+           in.blade_project<pga3::e01>() * pga2::e01 +
+           in.blade_project<pga3::e02>() * pga2::e02;
+}
+
+pga2::Bivector pga3_to_pga2(const pga3::Trivector& in)
+{
+    return pga3_to_pga2(in.undual()).dual();
+}
+
+pga2::Scalar vga2_to_pga2(const vga2::Scalar& in)
+{
+    return in.coefficient;
+}
+
+pga2::Bivector vga2_to_pga2(const vga2::Vector& in)
+{
+    return (in.blade_project<vga2::e1>() * pga2::e1 +
+            in.blade_project<vga2::e2>() * pga2::e2 + pga2::e0).dual();
+}
+
+pga2::Even vga2_to_pga2(const vga2::Even& in)
+{
+    return in.blade_project<vga2::e>() +
+           in.blade_project<vga2::e12>() * pga2::e12;
+}
+
+pga2::Vector vga2_to_pga2_full(const vga2::Vector& in)
+{
+    return pga2::e12 & vga2_to_pga2(in);
+}
+
+vga2::Scalar pga2_to_vga2(const pga2::Scalar& in)
+{
+    return in.coefficient;
+}
+
+vga2::Vector pga2_to_vga2(const pga2::Bivector& in)
+{
+    auto p = in.undual();
+    auto mag = p.blade_project<pga2::e0>();
+    if (mag != 0) p /= mag;
+    return p.blade_project<pga2::e1>() * vga2::e1 +
+           p.blade_project<pga2::e2>() * vga2::e2;
+}
+
+vga2::Vector pga2_to_vga2_cheat(const pga2::Vector& in)
+{
+    return in.blade_project<pga2::e1>() * vga2::e1 +
+           in.blade_project<pga2::e2>() * vga2::e2;
+}
+
+pga3::Scalar vga3_to_pga3(const vga3::Scalar& in)
+{
+    return in.coefficient;
+}
+
+pga3::Trivector vga3_to_pga3(const vga3::Vector& in)
+{
+    return (in.blade_project<vga3::e1>() * pga3::e1 +
+            in.blade_project<vga3::e2>() * pga3::e2 +
+            in.blade_project<vga3::e3>() * pga3::e3 + pga3::e0).dual();
+}
+
+pga3::Vector vga3_to_pga3(const vga3::Bivector& in)
+{
+    auto v = in.undual();
+    return v.blade_project<vga3::e1>() * pga3::e1 +
+           v.blade_project<vga3::e2>() * pga3::e2 +
+           v.blade_project<vga3::e3>() * pga3::e3;
+}
+
+pga3::Even vga3_to_pga3(const vga3::Even& in)
+{
+    return in.blade_project<vga3::e>() +
+           in.blade_project<vga3::e12>() * pga3::e12 +
+           in.blade_project<vga3::e13>() * pga3::e13 +
+           in.blade_project<vga3::e23>() * pga3::e23;
+}
+
+pga3::Bivector vga3_to_pga3_full(const vga3::Vector& in)
+{
+    return pga3::e123 & vga3_to_pga3(in);
+}
+
+vga3::Scalar pga3_to_vga3(const pga3::Scalar& in)
+{
+    return in.coefficient;
+}
+
+vga3::Vector pga3_to_vga3(const pga3::Trivector& in)
+{
+    auto p = in.undual();
+    auto mag = p.blade_project<pga3::e0>();
+    if (mag != 0) p /= mag;
+    return p.blade_project<pga3::e1>() * vga3::e1 +
+           p.blade_project<pga3::e2>() * vga3::e2 +
+           p.blade_project<pga3::e3>() * vga3::e3;
+}
+
+vga3::Vector pga3_to_vga3_cheat(const pga3::Vector& in)
+{
+    return in.blade_project<pga3::e1>() * vga3::e1 +
+           in.blade_project<pga3::e2>() * vga3::e2 +
+           in.blade_project<pga3::e3>() * vga3::e3;
+}
+
+pga3::Scalar vga2_to_pga3(const vga2::Scalar& in)
+{
+    return in.coefficient;
+}
+
+pga3::Trivector vga2_to_pga3(const vga2::Vector& in)
+{
+    return vga3_to_pga3(vga2_to_vga3(in));
+}
+
+pga3::Even vga2_to_pga3(const vga2::Even& in)
+{
+    return vga3_to_pga3(vga2_to_vga3(in));
+}
+
+pga3::Bivector vga2_to_pga3_full(const vga2::Vector& in)
+{
+    return vga3_to_pga3_full(vga2_to_vga3(in));
+}
+
+}
