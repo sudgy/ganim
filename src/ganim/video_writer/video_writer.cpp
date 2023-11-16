@@ -55,7 +55,7 @@ VideoWriter::VideoWriter(std::string filename, int width, int height, int fps) :
     stream->codecpar->width = width;
     stream->codecpar->height = height;
     stream->codecpar->format = AV_PIX_FMT_YUV420P;
-    stream->codecpar->bit_rate = 4000;
+    stream->codecpar->bit_rate = 4000000;
     avcodec_parameters_to_context(M_impl->ccontext, stream->codecpar);
 
     M_impl->ccontext->time_base = AVRational(1, 1);
