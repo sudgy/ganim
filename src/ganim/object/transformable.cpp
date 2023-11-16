@@ -21,19 +21,15 @@ void Transformable::apply_rotor(const Even& rotor)
 }
 
 void Transformable::move_to(const vga2::Vector& p)
-{
-    move_to(vga2_to_pga3(p));
-}
-
+    {move_to(vga2_to_pga3(p));}
 void Transformable::move_to(const vga3::Vector& p)
-{
-    move_to(vga3_to_pga3(p));
-}
-
+    {move_to(vga3_to_pga3(p));}
+void Transformable::move_to(const pga2::Vector& p)
+    {move_to(pga2_to_vga2_cheat(p));}
+void Transformable::move_to(const pga3::Vector& p)
+    {move_to(pga3_to_vga3_cheat(p));}
 void Transformable::move_to(const pga2::Bivector& p)
-{
-    move_to(pga2_to_pga3_flat(p));
-}
+    {move_to(pga2_to_pga3_flat(p));}
 
 void Transformable::move_to(const Trivector& p)
 {

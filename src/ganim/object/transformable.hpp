@@ -64,6 +64,14 @@ class Transformable {
          */
         void move_to(const vga3::Vector& p);
         /** @brief Move the center of the object to the point represented by the
+         * 2D PGA vector p interpreted as a 2D VGA vector.
+         */
+        void move_to(const pga2::Vector& p);
+        /** @brief Move the center of the object to the point represented by the
+         * 3D PGA vector p interpreted as a 3D VGA vector.
+         */
+        void move_to(const pga3::Vector& p);
+        /** @brief Move the center of the object to the point represented by the
          * 2D PGA bivector p.
          */
         void move_to(const pga2::Bivector& p);
@@ -76,6 +84,14 @@ class Transformable {
         void shift(const vga2::Vector& p);
         /** @brief Shift the object by the 3D VGA vector p. */
         void shift(const vga3::Vector& p);
+        /** @brief Shift the object by the vector represented by the 2D PGA
+         * vector p interpreted as a 2D VGA vector.
+         */
+        void shift(const pga2::Vector& p);
+        /** @brief Shift the object by the vector represented by the 3D PGA
+         * vector p interpreted as a 3D VGA vector.
+         */
+        void shift(const pga3::Vector& p);
         /** @brief Shift the object by the 2D PGA ideal bivector p.
          *
          * Note that this function assumes that `p` is a point at infinity!
@@ -95,6 +111,10 @@ class Transformable {
         void rotate(double angle);
         /** @brief Rotate the object in the xy-plane about a given point */
         void rotate(const vga2::Vector& about_point, double angle);
+        /** @brief Rotate the object in the xy-plane about a 2D PGA vector
+         * intepreted as a 2D VGA vector
+         */
+        void rotate(const pga2::Vector& about_point, double angle);
         /** @brief Rotate the object in a given plane about the origin */
         void rotate(const vga3::Bivector& about_plane, double angle);
         /** @brief Rotate the object in the xy-plane about a given point
@@ -110,7 +130,7 @@ class Transformable {
          * a line with the magnitude you want for your rotation, go ahead and do
          * so.  This is why the angle parameter default to one.
          */
-        void rotate(const pga3::Trivector& about_line, double angle = 1);
+        void rotate(const pga3::Bivector& about_line, double angle = 1);
 
     private:
         /** @brief Allows for subclasses to have special behavior when a rotor

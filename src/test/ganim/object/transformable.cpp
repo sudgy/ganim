@@ -49,4 +49,10 @@ TEST_CASE("Transformable move_to", "[object]") {
     test.move_to((-e1 + 3*e2 + 2*e3 + e0).dual());
     REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + 3*e2 + 2*e3 + e0).dual()));
     REQUIRE_THAT(~r2*e123*r2, GAEquals((-3*e1 + 4*e2 + 2*e3 + e0).dual()));
+    test.move_to(pga2::e1 + pga2::e2);
+    REQUIRE_THAT(~r*e123*r, GAEquals((e1 + e2 + e0).dual()));
+    REQUIRE_THAT(~r2*e123*r2, GAEquals((2*e1 - 2*e2 - 2*e3 + e0).dual()));
+    test.move_to(3*e1 + 2*e2 - e3);
+    REQUIRE_THAT(~r*e123*r, GAEquals((3*e1 + 2*e2 - e3 + e0).dual()));
+    REQUIRE_THAT(~r2*e123*r2, GAEquals((2*e1 + e2 - e3 + e0).dual()));
 }
