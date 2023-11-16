@@ -1,5 +1,5 @@
-#ifndef GANIM_GA_CONVERSIONS_H
-#define GANIM_GA_CONVERSIONS_H
+#ifndef GANIM_GA_CONVERSIONS_HPP
+#define GANIM_GA_CONVERSIONS_HPP
 
 /** @file
  * @brief Contains various conversion functions between different algebras

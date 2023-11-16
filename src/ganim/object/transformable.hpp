@@ -1,5 +1,5 @@
-#ifndef GANIM_OBJECT_TRANSFORMABLE_H
-#define GANIM_OBJECT_TRANSFORMABLE_H
+#ifndef GANIM_OBJECT_TRANSFORMABLE_HPP
+#define GANIM_OBJECT_TRANSFORMABLE_HPP
 
 /** @file
  * @brief Contains the @ref ganim::Transformable "Transformable" class.

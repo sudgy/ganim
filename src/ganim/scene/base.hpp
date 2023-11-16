@@ -1,5 +1,5 @@
-#ifndef GANIM_SCENE_BASE_H
-#define GANIM_SCENE_BASE_H
+#ifndef GANIM_SCENE_BASE_HPP
+#define GANIM_SCENE_BASE_HPP
 
 /** @file
  * @brief The @ref ganim::SceneBase "SceneBase" class

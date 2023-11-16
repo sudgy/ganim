@@ -1,5 +1,5 @@
-#ifndef GANIM_VIDEO_WRITER_H
-#define GANIM_VIDEO_WRITER_H
+#ifndef GANIM_VIDEO_WRITER_HPP
+#define GANIM_VIDEO_WRITER_HPP
 
 /** @file
  * @brief The @ref ganim::VideoWriter "VideoWriter" class.

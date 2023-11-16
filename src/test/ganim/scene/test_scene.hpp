@@ -1,5 +1,5 @@
-#ifndef GANIM_TEST_SCENE_H
-#define GANIM_TEST_SCENE_H
+#ifndef GANIM_TEST_SCENE_HPP
+#define GANIM_TEST_SCENE_HPP
 
 #include <vector>
 

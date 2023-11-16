@@ -1,5 +1,5 @@
-#ifndef GANIM_PGA3_H
-#define GANIM_PGA3_H
+#ifndef GANIM_PGA3_HPP
+#define GANIM_PGA3_HPP
 
 /** @file
  * @brief Aliases and definitions for using 3D PGA

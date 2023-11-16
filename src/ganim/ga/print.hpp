@@ -1,5 +1,5 @@
-#ifndef GANIM_GA_PRINT_H
-#define GANIM_GA_PRINT_H
+#ifndef GANIM_GA_PRINT_HPP
+#define GANIM_GA_PRINT_HPP
 
 /** @file
  * @brief Contains printing functions for multivectors

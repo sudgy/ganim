@@ -1,5 +1,5 @@
-#ifndef GANIM_GL_FRAMEBUFFER_H
-#define GANIM_GL_FRAMEBUFFER_H
+#ifndef GANIM_GL_FRAMEBUFFER_HPP
+#define GANIM_GL_FRAMEBUFFER_HPP
 
 /** @file
  * @brief Contains just the @ref ganim::gl::Framebuffer "Framebuffer" class

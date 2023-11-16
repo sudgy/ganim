@@ -1,5 +1,5 @@
-#ifndef GANIM_VGA2_H
-#define GANIM_VGA2_H
+#ifndef GANIM_VGA2_HPP
+#define GANIM_VGA2_HPP
 
 /** @file
  * @brief Aliases and definitions for using 2D VGA

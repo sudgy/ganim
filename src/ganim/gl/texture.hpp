@@ -1,5 +1,5 @@
-#ifndef GANIM_GL_TEXTURE_H
-#define GANIM_GL_TEXTURE_H
+#ifndef GANIM_GL_TEXTURE_HPP
+#define GANIM_GL_TEXTURE_HPP
 
 /** @file
  * @brief Contains just the @ref ganim::gl::Texture "Texture" class

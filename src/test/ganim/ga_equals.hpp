@@ -1,5 +1,5 @@
-#ifndef GANIM_TEST_GA_EQUALS_H
-#define GANIM_TEST_GA_EQUALS_H
+#ifndef GANIM_TEST_GA_EQUALS_HPP
+#define GANIM_TEST_GA_EQUALS_HPP
 
 #include "ganim/ga/vga2.hpp"
 #include "ganim/ga/vga3.hpp"

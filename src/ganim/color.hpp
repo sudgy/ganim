@@ -1,5 +1,5 @@
-#ifndef GANIM_COLOR_H
-#define GANIM_COLOR_H
+#ifndef GANIM_COLOR_HPP
+#define GANIM_COLOR_HPP
 
 /** @file
  * @brief The @ref ganim::Color "Color" struct.

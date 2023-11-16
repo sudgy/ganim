@@ -1,5 +1,5 @@
-#ifndef GANIM_GA_EXP_H
-#define GANIM_GA_EXP_H
+#ifndef GANIM_GA_EXP_HPP
+#define GANIM_GA_EXP_HPP
 
 /** @file
  * @brief Contains everything related to exponentiating in geometric algebra

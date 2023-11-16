@@ -1,5 +1,5 @@
-#ifndef GANIM_VGA3_H
-#define GANIM_VGA3_H
+#ifndef GANIM_VGA3_HPP
+#define GANIM_VGA3_HPP
 
 /** @file
  * @brief Aliases and definitions for using 3D VGA
