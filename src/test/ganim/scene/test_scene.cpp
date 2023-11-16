@@ -16,6 +16,7 @@ void TestScene::process_frame()
 {
     auto& new_frame = M_data.emplace_back();
     new_frame.resize(pixel_width() * pixel_height() * 3);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, pixel_width(), pixel_height(), GL_RGB, GL_UNSIGNED_BYTE,
                  new_frame.data());
 }

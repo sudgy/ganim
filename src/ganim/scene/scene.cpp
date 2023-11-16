@@ -16,6 +16,7 @@ Scene::Scene(
 
 void Scene::process_frame()
 {
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, pixel_width(), pixel_height(), GL_RGB, GL_UNSIGNED_BYTE,
                  M_data.get());
     auto data = std::span<uint8_t>(
