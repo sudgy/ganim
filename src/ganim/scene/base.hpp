@@ -5,9 +5,13 @@
  * @brief The @ref ganim::SceneBase "SceneBase" class
  */
 
+#include <vector>
+
 #include "ganim/color.hpp"
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/texture.hpp"
+
+#include "ganim/object/object.hpp"
 
 namespace ganim {
     /** @brief The base class for scenes, which contains most of the scene logic
@@ -63,6 +67,8 @@ namespace ganim {
             constexpr void set_background_color(const Color& color)
                 {M_background_color = color;}
 
+            void add(Object& object);
+
         private:
             /** @brief Used for subclasses to process the frames.
              *
@@ -77,6 +83,7 @@ namespace ganim {
             int M_pixel_height = 0;
             int M_fps;
             Color M_background_color;
+            std::vector<Object*> M_objects;
     };
 }
 

@@ -41,6 +41,9 @@ void SceneBase::frame_advance()
         1
     );
     glClear(GL_COLOR_BUFFER_BIT);
+    for (auto object : M_objects) {
+        object->draw();
+    }
     process_frame();
 }
 
@@ -62,4 +65,9 @@ void SceneBase::wait(double time)
     }
     auto amount = static_cast<int>(std::round(time * M_fps));
     frame_advance(amount);
+}
+
+void SceneBase::add(Object& object)
+{
+    M_objects.emplace_back(&object);
 }
