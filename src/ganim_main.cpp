@@ -2,6 +2,7 @@
 #include "ganim/gl/gl.hpp"
 
 #include "ganim/scene/scene.hpp"
+#include "ganim/object/shape.hpp"
 
 using namespace ganim;
 
@@ -10,8 +11,16 @@ int main()
     auto settings = sf::ContextSettings(24, 0, 0, 3, 3);
     auto context = sf::Context(settings, 1, 1);
 
-    auto scene = Scene("Test.mp4", 256, 144, 60);
-    for (int i = 0; i < 120; ++i) {
+    auto scene = Scene("Test.mp4", 256, 144, 15);
+    auto obj = Shape(
+        { 2,  2, 2,
+          2, -2, 2,
+         -2, -2, -2,
+         -2,  2, -2},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.add(obj);
+    for (int i = 0; i < 30; ++i) {
         scene.frame_advance();
     }
 }

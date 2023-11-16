@@ -1,0 +1,34 @@
+#ifndef GANIM_OBJECT_SHAPE_HPP
+#define GANIM_OBJECT_SHAPE_HPP
+
+// This class has several issues that I want to fix so I'll write documentation
+// for it later
+
+#include <vector>
+
+#include "object.hpp"
+
+#include "ganim/gl/buffer.hpp"
+#include "ganim/gl/vertex_array.hpp"
+#include "ganim/gl/shader.hpp"
+
+namespace ganim {
+    class Shape : public Object {
+        public:
+            Shape(
+                const std::vector<float>& vertices,
+                const std::vector<unsigned> indices
+            );
+            virtual void draw() override;
+
+        private:
+            gl::VertexArray M_vertex_array;
+            gl::Buffer M_vertex_buffer;
+            gl::Buffer M_element_buffer;
+            // I promise I'll make this better in the future
+            gl::Shader M_shader;
+            int M_index_size = -1;
+    };
+}
+
+#endif
