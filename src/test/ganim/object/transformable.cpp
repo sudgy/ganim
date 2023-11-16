@@ -4,6 +4,8 @@
 
 #include "ganim/object/transformable.hpp"
 
+#include "ganim/math.hpp"
+
 using namespace ganim;
 using namespace pga3;
 
@@ -79,4 +81,29 @@ TEST_CASE("Transformable shift", "[object]") {
     test.shift(3*e1 + 2*e2 - e3);
     REQUIRE_THAT(~r*e123*r, GAEquals((9*e1 + 8*e2 + e0).dual()));
     REQUIRE_THAT(~r2*e123*r2, GAEquals((3*e1 + 2*e2 - e3 + e0).dual()));
+}
+
+TEST_CASE("Transformable rotate", "[object]") {
+    auto test = TestTransformable();
+    const auto& r = test.get_rotor();
+    const auto& r2 = test.last_applied_rotor;
+    const auto up = (e2 + e0).dual();
+    test.rotate(τ/4);
+    REQUIRE_THAT(~r*up*r, GAEquals((-e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(~r2*up*r2, GAEquals((-e1 + e0).dual(), 1e-5));
+    test.rotate(vga2::e1, τ/4);
+    REQUIRE_THAT(~r*up*r, GAEquals((e1 - 2*e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(~r2*up*r2, GAEquals((-e2 + e0).dual(), 1e-5));
+    test.rotate(pga2::e1, -τ/4);
+    REQUIRE_THAT(~r*up*r, GAEquals((-e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(~r2*up*r2, GAEquals((2*e1 + e2 + e0).dual(), 1e-5));
+    test.rotate(vga3::e13, τ/4);
+    REQUIRE_THAT(~r*up*r, GAEquals((-e3 + e0).dual(), 1e-5));
+    REQUIRE_THAT(~r2*up*r2, GAEquals((e2 + e0).dual(), 1e-5));
+    test.rotate((pga2::e1 + pga2::e0).dual()*τ/4);
+    REQUIRE_THAT(~r*up*r, GAEquals((e1 - e2 - e3 + e0).dual(), 1e-5));
+    REQUIRE_THAT(~r2*up*r2, GAEquals((-e2 + e0).dual(), 1e-5));
+    test.rotate(2*e13 + 2*e01, τ/8);
+    REQUIRE_THAT(~r*up*r, GAEquals((2*e1 - e2 + 2*e3 + e0).dual(), 1e-5));
+    REQUIRE_THAT(~r2*up*r2, GAEquals((e1 + e2 + e3 + e0).dual(), 1e-5));
 }

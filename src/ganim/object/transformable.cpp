@@ -1,6 +1,7 @@
 #include "transformable.hpp"
 
 #include "ganim/ga/conversions.hpp"
+#include "ganim/ga/exp.hpp"
 
 using namespace ganim;
 using namespace pga3;
@@ -56,4 +57,21 @@ void Transformable::shift(const Trivector& p)
     auto new_p = p;
     new_p /= p.blade_project<e123>();
     apply_rotor(e123 * (e123 + new_p) / 2);
+}
+
+void Transformable::rotate(double angle)
+    {rotate(e12, angle);}
+void Transformable::rotate(const vga2::Vector& about_point, double angle)
+    {rotate(vga2_to_pga2(about_point), angle);}
+void Transformable::rotate(const pga2::Vector& about_point, double angle)
+    {rotate(pga2_to_vga2_cheat(about_point), angle);}
+void Transformable::rotate(const vga3::Bivector& about_plane, double angle)
+{
+    apply_rotor(vga3_to_pga3(ga_exp(about_plane * angle / 2)));
+}
+void Transformable::rotate(const pga2::Bivector& about_point, double angle)
+    {rotate(pga2_to_pga3(about_point), angle);}
+void Transformable::rotate(const pga3::Bivector& about_line, double angle)
+{
+    apply_rotor(ga_exp(about_line * angle / 2));
 }
