@@ -7,13 +7,14 @@
 #include <vector>
 
 #include "object.hpp"
+#include "transformable.hpp"
 
 #include "ganim/gl/buffer.hpp"
 #include "ganim/gl/vertex_array.hpp"
 #include "ganim/gl/shader.hpp"
 
 namespace ganim {
-    class Shape : public Object {
+    class Shape : public Object, public Transformable {
         public:
             struct Vertex {
                 float x = 0;

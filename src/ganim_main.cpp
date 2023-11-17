@@ -26,6 +26,7 @@ int main()
     for (int i = 0; i < 120; ++i) {
         auto line = ((2*e1 + e0) ^ (2*e2 + e0)).dual().normalized();
         scene.get_camera().rotate(line, τ/120);
+        obj.rotate(e12, τ/120);
         scene.frame_advance();
     }
 }
