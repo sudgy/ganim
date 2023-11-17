@@ -72,3 +72,16 @@ TEST_CASE("Scene objects", "[scene]") {
     REQUIRE(obj1.draw_count == 4);
     REQUIRE(obj2.draw_count == 2);
 }
+
+TEST_CASE("Scene animatable updates", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto obj = TestObject();
+    scene.add(static_cast<Animatable&>(obj));
+    int updated = 0;
+    obj.add_updater([&]{++updated;});
+    REQUIRE(obj.draw_count == 0);
+    REQUIRE(updated == 0);
+    scene.frame_advance(2);
+    REQUIRE(obj.draw_count == 2);
+    REQUIRE(updated == 2);
+}

@@ -75,3 +75,18 @@ void Transformable::rotate(const pga3::Bivector& about_line, double angle)
 {
     apply_rotor(ga_exp(about_line * angle / 2));
 }
+
+void Transformable::on_animation_start()
+{
+
+}
+
+void Transformable::update_animation(double t)
+{
+
+}
+
+void Transformable::on_animation_end()
+{
+
+}

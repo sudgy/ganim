@@ -44,6 +44,9 @@ SceneBase::SceneBase(
 
 void SceneBase::frame_advance()
 {
+    for (auto object : M_objects) {
+        object->update();
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
     glViewport(0, 0, M_pixel_width, M_pixel_height);
     glClearColor(
@@ -82,6 +85,12 @@ void SceneBase::wait(double time)
     }
     auto amount = static_cast<int>(std::round(time * M_fps));
     frame_advance(amount);
+}
+
+void SceneBase::add(Animatable& object)
+{
+    M_objects.emplace_back(&object);
+    if (auto p = dynamic_cast<Drawable*>(&object)) add(*p);
 }
 
 void SceneBase::add(Drawable& object)

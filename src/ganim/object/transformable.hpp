@@ -10,6 +10,8 @@
 #include "ganim/ga/pga2.hpp"
 #include "ganim/ga/pga3.hpp"
 
+#include "animatable.hpp"
+
 namespace ganim {
 
 /** @brief Represents any object that can be transformed with rigid
@@ -32,7 +34,7 @@ namespace ganim {
  * R†AR is used.  This means that to compose two rotors A and B such that A
  * happens before B, you must use A*B, not B*A.
  */
-class Transformable {
+class Transformable : public Animatable {
     public:
         /** @brief Default constuctor
          *
@@ -141,6 +143,9 @@ class Transformable {
          * implementation is to just do nothing.
          */
         virtual void on_apply_rotor(const pga3::Even&) {}
+        virtual void on_animation_start() override;
+        virtual void update_animation(double t) override;
+        virtual void on_animation_end() override;
         pga3::Even M_rotor = 1;
 };
 

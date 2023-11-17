@@ -74,6 +74,7 @@ namespace ganim {
             constexpr void set_background_color(const Color& color)
                 {M_background_color = color;}
 
+            void add(Animatable& object);
             void add(Drawable& object);
             template <typename... Ts> requires(sizeof...(Ts) > 1)
             void add(Ts&... objects)
@@ -98,8 +99,9 @@ namespace ganim {
             int M_pixel_height = 0;
             int M_fps;
             Color M_background_color;
-            std::vector<Drawable*> M_drawables;
             Camera M_camera;
+            std::vector<Animatable*> M_objects;
+            std::vector<Drawable*> M_drawables;
     };
 }
 
