@@ -13,6 +13,8 @@
 
 #include "ganim/object/object.hpp"
 
+#include "camera.hpp"
+
 namespace ganim {
     /** @brief The base class for scenes, which contains most of the scene logic
      *
@@ -36,6 +38,8 @@ namespace ganim {
             SceneBase(
                 int pixel_width,
                 int pixel_height,
+                double coord_width,
+                double coord_height,
                 int fps
             );
             virtual ~SceneBase()=default;
@@ -84,6 +88,7 @@ namespace ganim {
             int M_fps;
             Color M_background_color;
             std::vector<Object*> M_objects;
+            Camera M_camera;
     };
 }
 

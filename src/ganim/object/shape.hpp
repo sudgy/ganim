@@ -25,8 +25,6 @@ namespace ganim {
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;
             gl::Buffer M_element_buffer;
-            // I promise I'll make this better in the future
-            gl::Shader M_shader;
             int M_index_size = -1;
     };
 }

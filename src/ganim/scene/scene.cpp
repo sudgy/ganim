@@ -8,9 +8,11 @@ Scene::Scene(
     std::string filename,
     int pixel_width,
     int pixel_height,
+    double coord_width,
+    double coord_height,
     int fps
 )
-:   SceneBase(pixel_width, pixel_height, fps),
+:   SceneBase(pixel_width, pixel_height, coord_width, coord_height, fps),
     M_writer(std::move(filename), pixel_width, pixel_height, fps),
     M_data(std::make_unique<std::uint8_t[]>(pixel_width*pixel_height*3)) {}
 

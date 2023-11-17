@@ -4,17 +4,21 @@
 #include <cmath>
 
 #include "ganim/gl/gl.hpp"
+#include "ganim/object/shaders.hpp"
 
 using namespace ganim;
 
 SceneBase::SceneBase(
     int pixel_width,
     int pixel_height,
+    double coord_width,
+    double coord_height,
     int fps
 )
 :   M_pixel_width(pixel_width),
     M_pixel_height(pixel_height),
-    M_fps(fps)
+    M_fps(fps),
+    M_camera(20, coord_width, coord_height)
 {
     glBindTexture(GL_TEXTURE_2D, M_framebuffer_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pixel_width, pixel_height, 0,
@@ -41,6 +45,10 @@ void SceneBase::frame_advance()
         1
     );
     glClear(GL_COLOR_BUFFER_BIT);
+    auto& shader = shape_shader();
+    glUseProgram(shader);
+    glUniform2f(shader.get_uniform("camera_scale"),
+                M_camera.get_x_scale(), M_camera.get_y_scale());
     for (auto object : M_objects) {
         object->draw();
     }

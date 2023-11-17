@@ -17,7 +17,7 @@ namespace {
 }
 
 TEST_CASE("Scene basics", "[scene]") {
-    auto scene = TestScene(10, 10, 1);
+    auto scene = TestScene(10, 10, 1, 1, 1);
     scene.frame_advance();
     scene.frame_advance();
     scene.frame_advance();
@@ -28,7 +28,7 @@ TEST_CASE("Scene basics", "[scene]") {
 }
 
 TEST_CASE("Scene background color", "[scene]") {
-    auto scene = TestScene(1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 1);
     scene.set_background_color({255, 0, 0, 255});
     scene.frame_advance();
     scene.set_background_color({0, 255, 0, 255});
@@ -42,7 +42,7 @@ TEST_CASE("Scene background color", "[scene]") {
 }
 
 TEST_CASE("Scene waiting", "[scene]") {
-    auto scene = TestScene(1, 1, 4);
+    auto scene = TestScene(1, 1, 1, 1, 4);
     scene.frame_advance(3);
     REQUIRE(scene.time_size() == 3);
     scene.wait(0.5);
@@ -56,7 +56,7 @@ TEST_CASE("Scene waiting", "[scene]") {
 }
 
 TEST_CASE("Scene objects", "[scene]") {
-    auto scene = TestScene(1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 1);
     auto obj1 = TestObject();
     auto obj2 = TestObject();
     scene.add(obj1);

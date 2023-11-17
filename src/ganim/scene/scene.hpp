@@ -30,6 +30,8 @@ namespace ganim {
                 std::string filename,
                 int pixel_width,
                 int pixel_height,
+                double coord_width,
+                double coord_height,
                 int fps
             );
 
