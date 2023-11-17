@@ -45,7 +45,7 @@ void main()
     pos.w = -pos.z;
     pos.x *= camera_scale.x;
     pos.y *= -camera_scale.y; // ffmpeg has the y axis swapped
-    pos.z *= pos.z / 65536;
+    pos.z *= pos.z / 1024;
     gl_Position = pos;
     out_color = in_color;
 }
