@@ -24,6 +24,9 @@ namespace ganim {
              * the extension.
              * @param pixel_width The width, in pixels, of this scene.
              * @param pixel_height The height, in pixels, of this scene.
+             * @param coord_width The width, in coordinate units, of this scene.
+             * @param coord_height The height, in coordinate units, of this
+             * scene.
              * @param fps The framerate of this scene.
              */
             Scene(

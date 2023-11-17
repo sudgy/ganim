@@ -1,8 +1,9 @@
 #ifndef GANIM_OBJECT_SHAPE_HPP
 #define GANIM_OBJECT_SHAPE_HPP
 
-// This class has several issues that I want to fix so I'll write documentation
-// for it later
+/** @file
+ * @brief Contains the @ref ganim::Shape "Shape" class
+ */
 
 #include <vector>
 
@@ -14,13 +15,33 @@
 #include "ganim/gl/shader.hpp"
 
 namespace ganim {
+    /** @brief Represents any object that can be thought of as a shape
+     *
+     * This is a low-level object that can represent practically any shape of
+     * any form.  You pass in a ton of vertices representing triangles that make
+     * up the shape, and the object represents that shape.  Note that this class
+     * can't have any texture.  I'll make a separate class for that later.
+     *
+     * Note that while you can directly create instances of this class, you are
+     * not intended to do so.  Instead, you should use a subclass either
+     * provided by the library or that you created yourself.
+     */
     class Shape : public Object, public Transformable {
         public:
+            /** @brief Represents a single vertex in this shape
+             */
             struct Vertex {
-                float x = 0;
-                float y = 0;
-                float z = 0;
+                float x = 0; ///< The x coordinate of the vertex
+                float y = 0; ///< The y coordinate of the vertex
+                float z = 0; ///< The z coordinate of the vertex
             };
+            /** @brief Constructor.
+             *
+             * @param vertices The vertices that are present in this shape.
+             * @param indices The indices into the `vertices` parameter of the
+             * triangles in this shape.  Every element of this vector must be a
+             * valid index into `vertices`.  If not, the behavior is undefined.
+             */
             Shape(
                 const std::vector<Vertex>& vertices,
                 const std::vector<unsigned> indices
