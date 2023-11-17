@@ -90,3 +90,20 @@ int Shader::get_uniform(const char* name) const
     }
     return pos;
 }
+
+void Shader::set_rotor_uniform(const char* name, const pga3::Even& rotor)
+{
+    using namespace pga3;
+    auto pos = get_uniform(name);
+    auto vals = std::array<float, 8>{
+        static_cast<float>(rotor.blade_project<e>()),
+        static_cast<float>(rotor.blade_project<e23>()),
+        static_cast<float>(rotor.blade_project<e31>()),
+        static_cast<float>(rotor.blade_project<e12>()),
+        static_cast<float>(rotor.blade_project<e01>()),
+        static_cast<float>(rotor.blade_project<e02>()),
+        static_cast<float>(rotor.blade_project<e03>()),
+        static_cast<float>(rotor.blade_project<e0123>())
+    };
+    glUniform4fv(pos, 2, vals.data());
+}

@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include "ganim/ga/pga3.hpp"
+
 namespace ganim::gl {
     /** @brief An RAII wrapper around OpenGL shaders.
      *
@@ -56,6 +58,7 @@ namespace ganim::gl {
              * there's also some error checking.
              */
             int get_uniform(const char* name) const;
+            void set_rotor_uniform(const char* name, const pga3::Even& rotor);
 
         private:
             unsigned M_program_id = 0;

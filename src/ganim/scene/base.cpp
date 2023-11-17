@@ -49,6 +49,7 @@ void SceneBase::frame_advance()
     glUseProgram(shader);
     glUniform2f(shader.get_uniform("camera_scale"),
                 M_camera.get_x_scale(), M_camera.get_y_scale());
+    shader.set_rotor_uniform("view", ~M_camera.get_rotor());
     for (auto object : M_objects) {
         object->draw();
     }

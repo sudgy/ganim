@@ -73,6 +73,8 @@ namespace ganim {
 
             void add(Object& object);
 
+            Camera& get_camera() {return M_camera;}
+
         private:
             /** @brief Used for subclasses to process the frames.
              *
