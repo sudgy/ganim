@@ -88,6 +88,7 @@ namespace ganim {
 
             gl::Framebuffer M_framebuffer;
             gl::Texture M_framebuffer_texture;
+            gl::Texture M_depth_buffer;
             int M_pixel_width = 0;
             int M_pixel_height = 0;
             int M_fps;

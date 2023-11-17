@@ -29,11 +29,18 @@ namespace ganim {
     class Shape : public Object, public Transformable {
         public:
             /** @brief Represents a single vertex in this shape
+             *
+             * As floats, these colors are in the range 0-1, not 0-255.  The
+             * colors will get interpolated by OpenGL.
              */
             struct Vertex {
                 float x = 0; ///< The x coordinate of the vertex
                 float y = 0; ///< The y coordinate of the vertex
                 float z = 0; ///< The z coordinate of the vertex
+                float r = 1; ///< The red component of the vertex
+                float g = 1; ///< The green component of the vertex
+                float b = 1; ///< The blue component of the vertex
+                float a = 1; ///< The alpha component of the vertex
             };
             /** @brief Constructor.
              *

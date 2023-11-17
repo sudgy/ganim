@@ -20,6 +20,8 @@ SceneBase::SceneBase(
     M_fps(fps),
     M_camera(20, coord_width, coord_height)
 {
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
     glBindTexture(GL_TEXTURE_2D, M_framebuffer_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pixel_width, pixel_height, 0,
                  GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
@@ -32,6 +34,12 @@ SceneBase::SceneBase(
     if (status != GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Error: Framebuffer is not complete.");
     }
+    glBindTexture(GL_TEXTURE_2D, M_depth_buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
+                 pixel_width, pixel_height, 0,
+                 GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                           M_depth_buffer, 0);
 }
 
 void SceneBase::frame_advance()
@@ -44,7 +52,7 @@ void SceneBase::frame_advance()
         M_background_color.b / 255.0,
         1
     );
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     auto& shader = shape_shader();
     glUseProgram(shader);
     glUniform2f(shader.get_uniform("camera_scale"),
