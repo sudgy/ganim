@@ -11,7 +11,7 @@
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/texture.hpp"
 
-#include "ganim/object/object.hpp"
+#include "ganim/object/drawable.hpp"
 
 #include "camera.hpp"
 
@@ -74,7 +74,7 @@ namespace ganim {
             constexpr void set_background_color(const Color& color)
                 {M_background_color = color;}
 
-            void add(Object& object);
+            void add(Drawable& object);
             template <typename... Ts> requires(sizeof...(Ts) > 1)
             void add(Ts&... objects)
             {
@@ -98,7 +98,7 @@ namespace ganim {
             int M_pixel_height = 0;
             int M_fps;
             Color M_background_color;
-            std::vector<Object*> M_objects;
+            std::vector<Drawable*> M_drawables;
             Camera M_camera;
     };
 }

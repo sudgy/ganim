@@ -58,7 +58,7 @@ void SceneBase::frame_advance()
     glUniform2f(shader.get_uniform("camera_scale"),
                 M_camera.get_x_scale(), M_camera.get_y_scale());
     shader.set_rotor_uniform("view", ~M_camera.get_rotor());
-    for (auto object : M_objects) {
+    for (auto object : M_drawables) {
         object->draw();
     }
     process_frame();
@@ -84,7 +84,7 @@ void SceneBase::wait(double time)
     frame_advance(amount);
 }
 
-void SceneBase::add(Object& object)
+void SceneBase::add(Drawable& object)
 {
-    M_objects.emplace_back(&object);
+    M_drawables.emplace_back(&object);
 }

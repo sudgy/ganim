@@ -7,8 +7,7 @@
 
 #include <vector>
 
-#include "object.hpp"
-#include "transformable.hpp"
+#include "drawable.hpp"
 
 #include "ganim/gl/buffer.hpp"
 #include "ganim/gl/vertex_array.hpp"
@@ -26,7 +25,7 @@ namespace ganim {
      * not intended to do so.  Instead, you should use a subclass either
      * provided by the library or that you created yourself.
      */
-    class Shape : public Object, public Transformable {
+    class Shape : public Drawable {
         public:
             /** @brief Represents a single vertex in this shape
              *

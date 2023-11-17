@@ -1,12 +1,12 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "test_scene.hpp"
-#include "ganim/object/object.hpp"
+#include "ganim/object/drawable.hpp"
 
 using namespace ganim;
 
 namespace {
-    class TestObject : public Object {
+    class TestObject : public Drawable {
         public:
             virtual void draw() override
             {
