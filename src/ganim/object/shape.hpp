@@ -15,8 +15,13 @@
 namespace ganim {
     class Shape : public Object {
         public:
+            struct Vertex {
+                float x = 0;
+                float y = 0;
+                float z = 0;
+            };
             Shape(
-                const std::vector<float>& vertices,
+                const std::vector<Vertex>& vertices,
                 const std::vector<unsigned> indices
             );
             virtual void draw() override;

@@ -7,7 +7,7 @@
 using namespace ganim;
 
 Shape::Shape(
-    const std::vector<float>& vertices,
+    const std::vector<Vertex>& vertices,
     const std::vector<unsigned> indices
 ) : M_index_size(indices.size())
 {
@@ -15,9 +15,9 @@ Shape::Shape(
     glBindBuffer(GL_ARRAY_BUFFER, M_vertex_buffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, M_element_buffer);
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float)*vertices.size(),
-                 vertices.data(), GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(float),
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*vertices.size(),
+                 &vertices[0], GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
 

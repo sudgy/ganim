@@ -8,10 +8,10 @@ using namespace ganim;
 TEST_CASE("Shape drawing", "[scene]") {
     auto scene = TestScene(10, 10, 10, 10, 1);
     auto shape = Shape(
-        { 2,  2, 0,
-          2, -2, 0,
-         -2, -2, 0,
-         -2,  2, 0},
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
         {0, 1, 2, 0, 2, 3}
     );
     scene.add(shape);
@@ -33,10 +33,10 @@ TEST_CASE("Shape drawing", "[scene]") {
 TEST_CASE("Shape perspective", "[scene]") {
     auto scene = TestScene(20, 20, 5, 5, 1);
     auto shape = Shape(
-        { 2,  2, 2,
-          2, -2, -2,
-         -2, -2, -2,
-         -2,  2, 2},
+        {{ 2,  2,  2},
+         { 2, -2, -2},
+         {-2, -2, -2},
+         {-2,  2,  2}},
         {0, 1, 2, 0, 2, 3}
     );
     scene.add(shape);
@@ -60,4 +60,20 @@ TEST_CASE("Shape perspective", "[scene]") {
     REQUIRE(scene.get_pixel(0, 16, 2) == Color("FFFFFF"));
     REQUIRE(scene.get_pixel(0, 16, 9) == Color("FFFFFF"));
     REQUIRE(scene.get_pixel(0, 16, 15) == Color("FFFFFF"));
+}
+
+TEST_CASE("Shape behind camera", "[scene]") {
+    auto scene = TestScene(5, 5, 1, 1, 1);
+    auto shape = Shape(
+        {{ 2,  2, 30},
+         { 2, -2, 30},
+         {-2, -2, 30},
+         {-2,  2, 30}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.add(shape);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 2, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 4, 4) == Color("000000"));
 }
