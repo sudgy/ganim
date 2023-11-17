@@ -141,8 +141,7 @@ TEST_CASE("Shape depth test", "[shape]") {
          {-1,  1, 0, 0, 1, 0, 1}},
         {0, 1, 2, 0, 2, 3}
     );
-    scene.add(red);
-    scene.add(green);
+    scene.add(red, green);
     scene.frame_advance();
     green.shift(e3);
     scene.frame_advance();

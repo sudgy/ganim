@@ -75,6 +75,11 @@ namespace ganim {
                 {M_background_color = color;}
 
             void add(Object& object);
+            template <typename... Ts> requires(sizeof...(Ts) > 1)
+            void add(Ts&... objects)
+            {
+                (add(objects), ...);
+            }
 
             Camera& get_camera() {return M_camera;}
 
