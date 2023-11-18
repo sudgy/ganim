@@ -1,6 +1,4 @@
 # ganim
-A math animation engine based on geometric algebra
-
 This is the repository for ganim, a math animation library based on geometric
 algebra.  As you might have guessed from the name, it is sort of based on manim,
 but there are notable differences.
