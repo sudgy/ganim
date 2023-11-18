@@ -133,3 +133,9 @@ TEST_CASE("Transformable animate", "[object]") {
     REQUIRE_THAT(r, GAEquals(e12, 1e-5));
     REQUIRE_THAT(r2, GAEquals(std::cos(7*τ/64) + std::sin(7*τ/64)*e12, 1e-5));
 }
+
+TEST_CASE("Transformable shift negative", "[object]") {
+    auto test = TestTransformable();
+    test.shift(2*e1);
+    REQUIRE_THAT(test.get_rotor(), GAEquals(1 + e01));
+}

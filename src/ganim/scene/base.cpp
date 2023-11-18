@@ -89,11 +89,18 @@ void SceneBase::wait(double time)
 
 void SceneBase::add(Animatable& object)
 {
-    M_objects.emplace_back(&object);
     if (auto p = dynamic_cast<Drawable*>(&object)) add(*p);
+    else add_animatable(object);
 }
 
 void SceneBase::add(Drawable& object)
 {
+    add_animatable(object);
     M_drawables.emplace_back(&object);
+}
+
+void SceneBase::add_animatable(Animatable& object)
+{
+    object.set_fps(M_fps);
+    M_objects.emplace_back(&object);
 }

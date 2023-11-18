@@ -61,7 +61,7 @@ void Transformable::shift(const Trivector& p)
 {
     auto new_p = p;
     new_p /= p.blade_project<e123>();
-    apply_rotor(e123 * (e123 + new_p) / 2);
+    apply_rotor(-e123 * (e123 + new_p) / 2);
 }
 
 void Transformable::rotate(double angle)
@@ -95,7 +95,7 @@ void Transformable::on_animation_start()
 void Transformable::update_animation(double t)
 {
     auto new_rotor = M_new_rotor * ga_exp(M_new_log * t);
-    apply_rotor(new_rotor * ~M_rotor);
+    apply_rotor(~M_rotor * new_rotor);
 }
 
 void Transformable::on_animation_end() {}

@@ -151,3 +151,36 @@ TEST_CASE("Shape depth test", "[shape]") {
     REQUIRE(scene.get_pixel(1, 0, 0) == Color("00FF00"));
     REQUIRE(scene.get_pixel(2, 0, 0) == Color("FF0000"));
 }
+
+TEST_CASE("Shape animation", "[shape]") {
+    using namespace vga2;
+    auto scene = TestScene(4, 4, 4, 4, 1);
+    auto shape = Shape(
+        {{ 1,  1, 0},
+         { 1, -1, 0},
+         {-1, -1, 0},
+         {-1,  1, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.add(shape);
+    shape.shift(-e1);
+    scene.frame_advance();
+    shape.animate(2, [](double x){return x;});
+    shape.shift(2*e1);
+    scene.frame_advance(3);
+    for (int x = 0; x < 4; ++x) {
+        for (int y = 0; y < 4; ++y) {
+            INFO("x = " << x << ", y = " << y);
+            auto color = Color("000000");
+            if (x < 2 and (y == 1 or y == 2)) color = Color("FFFFFF");
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+            color = Color("000000");
+            if ((x==1 or x==2) and (y==1 or y==2)) color = Color("FFFFFF");
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+            color = Color("000000");
+            if (x >= 2 and (y == 1 or y == 2)) color = Color("FFFFFF");
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+        }
+    }
+}

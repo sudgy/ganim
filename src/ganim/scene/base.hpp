@@ -92,6 +92,8 @@ namespace ganim {
              */
             virtual void process_frame()=0;
 
+            void add_animatable(Animatable& object);
+
             gl::Framebuffer M_framebuffer;
             gl::Texture M_framebuffer_texture;
             gl::Texture M_depth_buffer;
