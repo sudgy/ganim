@@ -169,7 +169,7 @@ constexpr auto simple_log(const T& r)
  *
  * @tparam T The type of multivector you are passing in.  Assumed to be a @ref
  * ganim::Multivector "Multivector" that only contains even components.
- * @param r The rotor to find the logarithm of.  If it is a rotor that is not
+ * @param R The rotor to find the logarithm of.  If it is a rotor that is not
  * simple or is not a 3D PGA rotor, the program is ill-formed, and if it is not
  * a rotor at all, the behavior is mostly unspecified.
  */

@@ -489,3 +489,26 @@ TEST_CASE("Multivector scalar comparisons", "[ga]") {
     REQUIRE(test4 == 0);
     REQUIRE(0 == test4);
 }
+
+TEST_CASE("Multivector assignment", "[ga]") {
+    constexpr auto metric = std::array<std::int8_t, 2>{1, 1};
+    const auto e = Multivector<double, metric, 0>(1);
+    const auto e1 = Multivector<double, metric, 1>(1);
+    auto test1 = e;
+    auto test2 = e + e1;
+    auto test3 = e1;
+    auto test4 = Multivector<double, metric, 1, 2>(0);
+    (void)test4;
+    test1 = 0;
+    test2 = 0;
+    test3 = 0;
+    REQUIRE_THAT(test1, GAEquals(0));
+    REQUIRE_THAT(test2, GAEquals(0));
+    REQUIRE_THAT(test3, GAEquals(0));
+    test1 = 1;
+    test2 = 1;
+    REQUIRE_THAT(test1, GAEquals(1));
+    REQUIRE_THAT(test2, GAEquals(1));
+    test2 = e1;
+    REQUIRE_THAT(test2, GAEquals(e1));
+}

@@ -233,6 +233,17 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         {
             BB<0>::coefficient = value;
         }
+        /** @brief A super hacky way to assign zero to a multivector, even if it
+         * has no scalar part
+         *
+         * Because 0 is a null pointer constant, this overload allows you to do
+         * things like assign zero to vectors without being able to assign other
+         * scalar values to it.  Because multivectors with a scalar component
+         * are already constructible from a scalar, this constructor will only
+         * be valid in overload resolution if this multivector has no scalar
+         * component.
+         */
+        constexpr Multivector(std::nullptr_t) requires((bases != 0) and ...) {}
 
         /** @brief Checks if all components are equal. */
         constexpr bool operator==(const Multivector& other) const=default;
