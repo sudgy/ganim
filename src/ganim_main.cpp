@@ -13,7 +13,7 @@ int main()
     auto settings = sf::ContextSettings(24, 0, 0, 3, 3);
     auto context = sf::Context(settings, 1, 1);
 
-    auto scene = Scene("Test.mp4", 2560, 1440, 16, 9, 60);
+    auto scene = Scene("Test.mp4", 256, 144, 16, 9, 30);
     auto obj = Shape(
         {{ 2,  2, 0, 1, 0, 0, 1},
          { 2, -2, 0, 1, 0, 0, 1},
@@ -25,6 +25,6 @@ int main()
     using namespace pga3;
     scene.wait(1);
     obj.animate();
-    obj.shift(2*e1);
+    obj.rotate(e23 * τ/2 + e01);
     scene.wait(2);
 }

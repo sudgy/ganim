@@ -206,3 +206,14 @@ TEST_CASE("ga_log 3D PGA", "[ga]") {
     REQUIRE_THAT(res6, GAEquals(1 + e01, 1e-5));
     REQUIRE_THAT(res7, GAEquals(r, 1e-5));
 }
+
+TEST_CASE("ga_log negative translation", "[ga]") {
+    using namespace ganim::pga3;
+    auto res1 = ga_exp(ga_log(-1 - e01));
+    auto r = (3*e1 + 2*e2 + e3 + e0).dual() * (-e1 - e2 - 4*e3 + e0).dual();
+    auto res2 = ga_exp(ga_log(r));
+    auto res3 = ga_exp(ga_log(Even(-1)));
+    REQUIRE_THAT(res1, GAEquals(-1 - e01, 1e-5));
+    REQUIRE_THAT(res2, GAEquals(r, 1e-5));
+    REQUIRE_THAT(res3, GAEquals(-1, 1e-5));
+}

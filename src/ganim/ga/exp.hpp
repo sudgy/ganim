@@ -16,6 +16,8 @@
 #include "sga.hpp"
 #include "pga3.hpp"
 
+#include "ganim/math.hpp"
+
 namespace ganim {
 
 /** @brief A type trait saying whether a multivector is always simple.
@@ -172,22 +174,29 @@ constexpr auto simple_log(const T& r)
  * a rotor at all, the behavior is mostly unspecified.
  */
 template <typename T>
-constexpr auto ga_log(const T& r)
+constexpr auto ga_log(const T& R)
 {
-    if constexpr (always_simple<decltype(r.template grade_project<2>())>) {
-        return simple_log(r);
+    if constexpr (always_simple<decltype(R.template grade_project<2>())>) {
+        return simple_log(R);
     }
     else {
-        static_assert(std::is_same_v<decltype(r.template grade_project<2>()),
+        static_assert(std::is_same_v<decltype(R.template grade_project<2>()),
                 pga3::Bivector>,
             "ga_log is currently only implemented for provably-simple rotors "
             "and for 3D PGA rotors.  If you know your rotor is simple, use "
             "simple_log.  If you don't, then you're out of luck."
         );
         using namespace pga3;
-        const auto b = r.template grade_project<2>();
-        if ((b*b).template blade_project<e>() == 0) return b;
-        const auto s = r.template grade_project<4>();
+        const Even& r = R;
+        const auto b = r.grade_project<2>();
+        if ((b*b).blade_project<e>() == 0) {
+            if (r.blade_project<e>() < 0) {
+                if (b == 0) return e12*τ/2;
+                else return b.dual().normalized()*τ/2 - b;
+            }
+            else return b;
+        }
+        const auto s = r.grade_project<4>();
         const auto r1 = 1 + s * ga_inv(b);
         const auto r2 = r * ~r1;
         return simple_log(r1) + simple_log(r2);
