@@ -20,6 +20,7 @@ SceneBase::SceneBase(
     M_fps(fps),
     M_camera(20, coord_width, coord_height)
 {
+    add(M_camera);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glBindTexture(GL_TEXTURE_2D, M_framebuffer_texture);
