@@ -14,12 +14,12 @@ void Animatable::set_fps(int fps)
 
 void Animatable::animate()
 {
-    animate(1, rf::smoothstep);
+    animate(1, rf::smoothererstep);
 }
 
 void Animatable::animate(double duration)
 {
-    animate(duration, rf::smoothstep);
+    animate(duration, rf::smoothererstep);
 }
 
 void Animatable::animate(std::function<double(double)> rate_func)

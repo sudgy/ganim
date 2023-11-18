@@ -31,14 +31,14 @@ namespace ganim {
              *
              * This will just call @ref animate(double,
              * std::function<double(double)>) with a duration of 1 and the rate
-             * function set to smoothstep.
+             * function set to smoothererstep.
              */
             void animate();
             /** @brief Start an animation
              *
              * This will just call @ref animate(double,
              * std::function<double(double)>) with the given duration and the
-             * rate function set to smoothstep.
+             * rate function set to smoothererstep.
              */
             void animate(double duration);
             /** @brief Start an animation
