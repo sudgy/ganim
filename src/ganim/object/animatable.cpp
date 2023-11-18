@@ -40,11 +40,12 @@ void Animatable::animate(
         throw std::logic_error("An animation was run while another one was "
                 "already running on the same object.  This is not allowed.");
     }
-    on_animation_start();
+    on_animate();
     M_animation_time = std::round(duration * M_fps);
     M_animation_progress = 0;
     add_updater([this, rf = std::move(rate_func)]{
         ++M_animation_progress;
+        if (M_animation_progress == 1) on_animation_start();
         auto t = static_cast<double>(M_animation_progress) / M_animation_time;
         update_animation(rf(t));
         if (M_animation_progress == M_animation_time) {
@@ -54,6 +55,16 @@ void Animatable::animate(
         }
         return true;
     });
+}
+
+bool Animatable::starting_animation() const
+{
+    return M_animation_time > 0 and M_animation_progress == 0;
+}
+
+bool Animatable::in_animation() const
+{
+    return M_animation_time > 0;
 }
 
 int Animatable::add_updater_void(std::function<void()> updater)

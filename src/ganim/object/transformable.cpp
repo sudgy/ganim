@@ -17,8 +17,13 @@ void Transformable::reset()
 
 void Transformable::apply_rotor(const Even& rotor)
 {
-    M_rotor *= rotor;
-    on_apply_rotor(rotor);
+    if (starting_animation()) {
+        M_new_rotor *= rotor;
+    }
+    else {
+        M_rotor *= rotor;
+        on_apply_rotor(rotor);
+    }
 }
 
 void Transformable::move_to(const vga2::Vector& p)
@@ -76,17 +81,21 @@ void Transformable::rotate(const pga3::Bivector& about_line, double angle)
     apply_rotor(ga_exp(about_line * angle / 2));
 }
 
+void Transformable::on_animate()
+{
+    M_new_rotor = 1;
+}
+
 void Transformable::on_animation_start()
 {
-
+    M_new_log = ga_log(M_new_rotor);
+    M_new_rotor = M_rotor;
 }
 
 void Transformable::update_animation(double t)
 {
-
+    auto new_rotor = M_new_rotor * ga_exp(M_new_log * t);
+    apply_rotor(new_rotor * ~M_rotor);
 }
 
-void Transformable::on_animation_end()
-{
-
-}
+void Transformable::on_animation_end() {}

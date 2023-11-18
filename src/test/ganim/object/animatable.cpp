@@ -7,11 +7,14 @@ using namespace ganim;
 namespace {
     class TestAnimatable : public Animatable {
         public:
+            bool animated = false;
             bool animation_start = false;
             bool animation_end = false;
             double last_animation_t = -1;
             int updated = 0;
         private:
+            virtual void on_animate() override
+                {animated = true;}
             virtual void on_animation_start() override
                 {animation_start = true;}
             virtual void update_animation(double t) override
@@ -76,6 +79,9 @@ TEST_CASE("Animatable animate", "[object]") {
     auto test = TestAnimatable();
     REQUIRE_THROWS(test.animate());
     test.set_fps(2);
+    REQUIRE(!test.starting_animation());
+    REQUIRE(!test.in_animation());
+    REQUIRE(!test.animated);
     REQUIRE(!test.animation_start);
     REQUIRE(!test.animation_end);
     REQUIRE(test.last_animation_t == -1);
@@ -83,32 +89,50 @@ TEST_CASE("Animatable animate", "[object]") {
     test.animate(2, [](double t){return t*t;});
     REQUIRE_THROWS(test.animate());
     REQUIRE_THROWS(test.clear_updaters());
-    REQUIRE(test.animation_start);
+    REQUIRE(test.starting_animation());
+    REQUIRE(test.in_animation());
+    REQUIRE(test.animated);
+    REQUIRE(!test.animation_start);
     REQUIRE(!test.animation_end);
     REQUIRE(test.last_animation_t == -1);
     REQUIRE(test.updated == 0);
     test.update();
+    REQUIRE(!test.starting_animation());
+    REQUIRE(test.in_animation());
+    REQUIRE(test.animated);
     REQUIRE(test.animation_start);
     REQUIRE(!test.animation_end);
     REQUIRE(test.last_animation_t == 0.0625);
     REQUIRE(test.updated == 1);
     test.update();
+    REQUIRE(!test.starting_animation());
+    REQUIRE(test.in_animation());
+    REQUIRE(test.animated);
     REQUIRE(test.animation_start);
     REQUIRE(!test.animation_end);
     REQUIRE(test.last_animation_t == 0.25);
     REQUIRE(test.updated == 2);
     test.update();
+    REQUIRE(!test.starting_animation());
+    REQUIRE(test.in_animation());
+    REQUIRE(test.animated);
     REQUIRE(test.animation_start);
     REQUIRE(!test.animation_end);
     REQUIRE(test.last_animation_t == 0.5625);
     REQUIRE(test.updated == 3);
     test.update();
+    REQUIRE(!test.starting_animation());
+    REQUIRE(!test.in_animation());
+    REQUIRE(test.animated);
     REQUIRE(test.animation_start);
     REQUIRE(test.animation_end);
     REQUIRE(test.last_animation_t == 1);
     REQUIRE(test.updated == 4);
     REQUIRE_NOTHROW(test.clear_updaters());
     test.update();
+    REQUIRE(!test.starting_animation());
+    REQUIRE(!test.in_animation());
+    REQUIRE(test.animated);
     REQUIRE(test.animation_start);
     REQUIRE(test.animation_end);
     REQUIRE(test.last_animation_t == 1);

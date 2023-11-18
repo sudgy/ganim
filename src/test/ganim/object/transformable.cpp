@@ -107,3 +107,29 @@ TEST_CASE("Transformable rotate", "[object]") {
     REQUIRE_THAT(~r*up*r, GAEquals((2*e1 - e2 + 2*e3 + e0).dual(), 1e-5));
     REQUIRE_THAT(~r2*up*r2, GAEquals((e1 + e2 + e3 + e0).dual(), 1e-5));
 }
+
+TEST_CASE("Transformable animate", "[object]") {
+    auto test = TestTransformable();
+    const auto& r = test.get_rotor();
+    const auto& r2 = test.last_applied_rotor;
+    test.set_fps(4);
+    test.animate([](double x){return x*x;});
+    test.rotate(e12, τ/2);
+    REQUIRE_THAT(r, GAEquals(1));
+    REQUIRE_THAT(r2, GAEquals(0));
+    test.update();
+    REQUIRE_THAT(r, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));
+    REQUIRE_THAT(r2, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));
+    test.update();
+    REQUIRE_THAT(r, GAEquals(std::cos(τ/16) + std::sin(τ/16)*e12, 1e-5));
+    REQUIRE_THAT(r2, GAEquals(std::cos(3*τ/64) + std::sin(3*τ/64)*e12, 1e-5));
+    test.update();
+    REQUIRE_THAT(r, GAEquals(std::cos(9*τ/64) + std::sin(9*τ/64)*e12, 1e-5));
+    REQUIRE_THAT(r2, GAEquals(std::cos(5*τ/64) + std::sin(5*τ/64)*e12, 1e-5));
+    test.update();
+    REQUIRE_THAT(r, GAEquals(e12, 1e-5));
+    REQUIRE_THAT(r2, GAEquals(std::cos(7*τ/64) + std::sin(7*τ/64)*e12, 1e-5));
+    test.update();
+    REQUIRE_THAT(r, GAEquals(e12, 1e-5));
+    REQUIRE_THAT(r2, GAEquals(std::cos(7*τ/64) + std::sin(7*τ/64)*e12, 1e-5));
+}

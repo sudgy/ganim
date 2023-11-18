@@ -58,6 +58,14 @@ namespace ganim {
                 double duration,
                 std::function<double(double)> rate_func
             );
+            /** @brief Returns true if the object is currently preparing for an
+             * animation
+             */
+            bool starting_animation() const;
+            /** @brief Returns true if the object is currently in an animation
+             */
+            bool in_animation() const;
+
             /** @brief Add an updater
              *
              * @param updater A function to be called every frame.  It accepts
@@ -103,7 +111,9 @@ namespace ganim {
             void update();
 
         private:
-            /** @brief Called when an animation is starting */
+            /** @brief Called when @ref animate is called */
+            virtual void on_animate()=0;
+            /** @brief Called right before the animation starts */
             virtual void on_animation_start()=0;
             /** @brief Called once each frame an animation is running
              *
