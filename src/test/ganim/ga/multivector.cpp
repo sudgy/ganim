@@ -488,6 +488,10 @@ TEST_CASE("Multivector scalar comparisons", "[ga]") {
     REQUIRE(0 != test3);
     REQUIRE(test4 == 0);
     REQUIRE(0 == test4);
+    REQUIRE(e1 != 0);
+    REQUIRE(e1 - e1 == 0);
+    REQUIRE(0 != e1);
+    REQUIRE(0 == e1 - e1);
 }
 
 TEST_CASE("Multivector assignment", "[ga]") {
