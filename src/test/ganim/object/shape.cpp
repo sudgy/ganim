@@ -217,3 +217,35 @@ TEST_CASE("Shape camera animation", "[object]") {
         }
     }
 }
+
+TEST_CASE("Shape opacity", "[object]") {
+    using namespace vga2;
+    auto scene = TestScene(4, 4, 4, 4, 1);
+    auto solid = Shape(
+        {{ 1,  1, 0, 1, 1, 1, 1},
+         { 1, -1, 0, 1, 1, 1, 1},
+         {-1, -1, 0, 1, 1, 1, 1},
+         {-1,  1, 0, 1, 1, 1, 1}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    solid.shift(e1);
+    auto red_trans = Shape(
+        {{ 1,  1, 0, 1, 0, 0, 0.5},
+         { 1, -1, 0, 1, 0, 0, 0.5},
+         {-1, -1, 0, 1, 0, 0, 0.5},
+         {-1,  1, 0, 1, 0, 0, 0.5}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto invisible = Shape(
+        {{ 1,  1, 0, 1, 1, 1, 0},
+         { 1, -1, 0, 1, 1, 1, 0},
+         {-1, -1, 0, 1, 1, 1, 0},
+         {-1,  1, 0, 1, 1, 1, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.add(solid, red_trans, invisible);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 1, 1) == Color("800000"));
+    REQUIRE(scene.get_pixel(0, 2, 1) == Color("FF8080"));
+    REQUIRE(scene.get_pixel(0, 3, 1) == Color("FFFFFF"));
+}

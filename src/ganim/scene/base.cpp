@@ -22,6 +22,8 @@ SceneBase::SceneBase(
 {
     add(M_camera);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthFunc(GL_LEQUAL);
     glBindTexture(GL_TEXTURE_2D, M_framebuffer_texture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pixel_width, pixel_height, 0,
