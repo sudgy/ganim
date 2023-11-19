@@ -15,6 +15,10 @@ namespace ganim {
      * along for the ride because they are necessary for animations to work.  To
      * make your own animatable object, derive from this one and overload @ref
      * on_animation_start, @ref update_animation, and @ref on_animation_end.
+     *
+     * All of the @ref animate functions return `*this` to allow for chaining.
+     * If you want the chaining to work on subclasses, use the @ref
+     * GANIM_ANIMATABLE_CHAIN_DECLS macro.
      */
     class Animatable {
         public:
@@ -32,29 +36,37 @@ namespace ganim {
              * This will just call @ref animate(double,
              * std::function<double(double)>) with a duration of 1 and the rate
              * function set to smoothererstep.
+             *
+             * @return `*this`
              */
-            void animate();
+            Animatable& animate();
             /** @brief Start an animation
              *
              * This will just call @ref animate(double,
              * std::function<double(double)>) with the given duration and the
              * rate function set to smoothererstep.
+             *
+             * @return `*this`
              */
-            void animate(double duration);
+            Animatable& animate(double duration);
             /** @brief Start an animation
              *
              * This will just call @ref animate(double,
              * std::function<double(double)>) with a duration of 1 and the given
              * rate function.
+             *
+             * @return `*this`
              */
-            void animate(std::function<double(double)> rate_func);
+            Animatable& animate(std::function<double(double)> rate_func);
             /** @brief Start an animation
              *
              * @param duration The duration, in seconds, of this animation.
              * @param rate_func The rate function used to specify how fast the
              * animation proceeds at different points.
+             *
+             * @return `*this`
              */
-            void animate(
+            Animatable& animate(
                 double duration,
                 std::function<double(double)> rate_func
             );
@@ -137,5 +149,21 @@ namespace ganim {
             int M_animation_time = 0;
     };
 }
+
+/** @brief Defines the @ref ganim::Animatable "Animatable" chainable functions
+ * in a subclass to allow chaining in the subclass as well
+ *
+ * To use it, just call this macro in the public part of the class declaration,
+ * where the Type parameter is the name of the subclass.
+ */
+#define GANIM_ANIMATABLE_CHAIN_DECLS(Type) \
+    Type& animate() \
+        {Animatable::animate(); return *this;} \
+    Type& animate(double duration) \
+        {Animatable::animate(duration); return *this;} \
+    Type& animate(std::function<double(double)> rate_func) \
+        {Animatable::animate(std::move(rate_func)); return *this;} \
+    Type& animate(double duration, std::function<double(double)> rate_func) \
+        {Animatable::animate(duration, std::move(rate_func)); return *this;} \
 
 #endif

@@ -12,22 +12,22 @@ void Animatable::set_fps(int fps)
     M_fps = fps;
 }
 
-void Animatable::animate()
+Animatable& Animatable::animate()
 {
-    animate(1, rf::smoothererstep);
+    return animate(1, rf::smoothererstep);
 }
 
-void Animatable::animate(double duration)
+Animatable& Animatable::animate(double duration)
 {
-    animate(duration, rf::smoothererstep);
+    return animate(duration, rf::smoothererstep);
 }
 
-void Animatable::animate(std::function<double(double)> rate_func)
+Animatable& Animatable::animate(std::function<double(double)> rate_func)
 {
-    animate(1, std::move(rate_func));
+    return animate(1, std::move(rate_func));
 }
 
-void Animatable::animate(
+Animatable& Animatable::animate(
     double duration,
     std::function<double(double)> rate_func
 )
@@ -55,6 +55,7 @@ void Animatable::animate(
         }
         return true;
     });
+    return *this;
 }
 
 bool Animatable::starting_animation() const

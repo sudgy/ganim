@@ -165,8 +165,8 @@ TEST_CASE("Shape animation", "[object]") {
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
-    shape.animate(2, [](double x){return x;});
-    shape.shift(2*e1);
+    shape.animate(2, [](double x){return x;}).shift(2*e1);
+    static_assert(std::is_same_v<decltype(shape.animate().shift(e1)), Shape&>);
     scene.frame_advance(3);
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -198,8 +198,7 @@ TEST_CASE("Shape camera animation", "[object]") {
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
-    scene.get_camera().animate(2, [](double x){return x;});
-    scene.get_camera().shift(-2*e1);
+    scene.get_camera().animate(2, [](double x){return x;}).shift(-2*e1);
     scene.frame_advance(3);
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {

@@ -33,6 +33,10 @@ namespace ganim {
  * people do!  Most people use RAR† to do their transformations, whereas here
  * R†AR is used.  This means that to compose two rotors A and B such that A
  * happens before B, you must use A*B, not B*A.
+ *
+ * Most of the functions in this class return `*this` to allow for chaining.
+ * If you want the chaining to work on subclasses, use the @ref
+ * GANIM_TRANSFORMABLE_CHAIN_DECLS macro.
  */
 class Transformable : public Animatable {
     public:
@@ -44,7 +48,7 @@ class Transformable : public Animatable {
         /** @brief Constructor with a preset rotor */
         Transformable(const pga3::Even& rotor);
         /** @brief Resets the rotor to the identity */
-        void reset();
+        Transformable& reset();
         /** @brief Get the rotor that transforms this object */
         constexpr const pga3::Even& get_rotor() const {return M_rotor;}
 
@@ -55,84 +59,92 @@ class Transformable : public Animatable {
          * This function will also pass the rotor parameter to @ref
          * on_apply_rotor.
          */
-        void apply_rotor(const pga3::Even& rotor);
+        Transformable& apply_rotor(const pga3::Even& rotor);
 
         /** @brief Move the center of the object to the point represented by the
          * 2D VGA vector p.
          */
-        void move_to(const vga2::Vector& p);
+        Transformable& move_to(const vga2::Vector& p);
         /** @brief Move the center of the object to the point represented by the
          * 3D VGA vector p.
          */
-        void move_to(const vga3::Vector& p);
+        Transformable& move_to(const vga3::Vector& p);
         /** @brief Move the center of the object to the point represented by the
          * 2D PGA vector p interpreted as a 2D VGA vector.
          */
-        void move_to(const pga2::Vector& p);
+        Transformable& move_to(const pga2::Vector& p);
         /** @brief Move the center of the object to the point represented by the
          * 3D PGA vector p interpreted as a 3D VGA vector.
          */
-        void move_to(const pga3::Vector& p);
+        Transformable& move_to(const pga3::Vector& p);
         /** @brief Move the center of the object to the point represented by the
          * 2D PGA bivector p.
          */
-        void move_to(const pga2::Bivector& p);
+        Transformable& move_to(const pga2::Bivector& p);
         /** @brief Move the center of the object to the point represented by the
          * 3D PGA trivector p.
          */
-        void move_to(const pga3::Trivector& p);
+        Transformable& move_to(const pga3::Trivector& p);
 
         /** @brief Shift the object by the 2D VGA vector p. */
-        void shift(const vga2::Vector& p);
+        Transformable& shift(const vga2::Vector& p);
         /** @brief Shift the object by the 3D VGA vector p. */
-        void shift(const vga3::Vector& p);
+        Transformable& shift(const vga3::Vector& p);
         /** @brief Shift the object by the vector represented by the 2D PGA
          * vector p interpreted as a 2D VGA vector.
          */
-        void shift(const pga2::Vector& p);
+        Transformable& shift(const pga2::Vector& p);
         /** @brief Shift the object by the vector represented by the 3D PGA
          * vector p interpreted as a 3D VGA vector.
          */
-        void shift(const pga3::Vector& p);
+        Transformable& shift(const pga3::Vector& p);
         /** @brief Shift the object by the 2D PGA ideal bivector p.
          *
          * Note that this function assumes that `p` is a point at infinity!
          * Shifting by points doesn't really make sense, but shifting by a point
          * at infinity does.
          */
-        void shift(const pga2::Bivector& p);
+        Transformable& shift(const pga2::Bivector& p);
         /** @brief Shift the object by the 3D PGA ideal trivector p.
          *
          * Note that this function assumes that `p` is a point at infinity!
          * Shifting by points doesn't really make sense, but shifting by a point
          * at infinity does.
          */
-        void shift(const pga3::Trivector& p);
+        Transformable& shift(const pga3::Trivector& p);
 
         /** @brief Rotate the object in the xy-plane about the origin */
-        void rotate(double angle);
+        Transformable& rotate(double angle);
         /** @brief Rotate the object in the xy-plane about a given point */
-        void rotate(const vga2::Vector& about_point, double angle);
+        Transformable& rotate(const vga2::Vector& about_point, double angle);
         /** @brief Rotate the object in the xy-plane about a 2D PGA vector
          * intepreted as a 2D VGA vector
          */
-        void rotate(const pga2::Vector& about_point, double angle);
+        Transformable& rotate(const pga2::Vector& about_point, double angle);
         /** @brief Rotate the object in a given plane about the origin */
-        void rotate(const vga3::Bivector& about_plane, double angle);
+        Transformable& rotate(const vga3::Bivector& about_plane, double angle);
         /** @brief Rotate the object in the xy-plane about a given point
          *
          * Note that no normalization will be done.  If you want to just pass in
          * a point with the magnitude you want for your rotation, go ahead and
          * do so.  This is why the angle parameter default to one.
          */
-        void rotate(const pga2::Bivector& about_point, double angle = 1);
+        Transformable& rotate(
+            const pga2::Bivector& about_point,
+            double angle = 1
+        );
         /** @brief Rotate the object about a given line
          *
          * Note that no normalization will be done.  If you want to just pass in
          * a line with the magnitude you want for your rotation, go ahead and do
          * so.  This is why the angle parameter default to one.
          */
-        void rotate(const pga3::Bivector& about_line, double angle = 1);
+        Transformable& rotate(
+            const pga3::Bivector& about_line,
+            double angle = 1
+        );
+
+        GANIM_ANIMATABLE_CHAIN_DECLS(Transformable)
 
     private:
         /** @brief Allows for subclasses to have special behavior when a rotor
@@ -153,5 +165,57 @@ class Transformable : public Animatable {
 };
 
 }
+
+/** @brief Defines the @ref ganim::Transformable "Transformable" chainable
+ * functions in a subclass to allow chaining in the subclass as well
+ *
+ * To use it, just call this macro in the public part of the class declaration,
+ * where the Type parameter is the name of the subclass.  Note that it will
+ * automatically define the @ref ganim::Animatable "Animatable" chainable
+ * functions as well, so you don't need to use both @ref
+ * GANIM_ANIMATABLE_CHAIN_DECLS and this macro.
+ */
+#define GANIM_TRANSFORMABLE_CHAIN_DECLS(Type) \
+    GANIM_ANIMATABLE_CHAIN_DECLS(Type) \
+    Type& reset() \
+        {Transformable::reset(); return *this;} \
+    Type& apply_rotor(const pga3::Even& rotor) \
+        {Transformable::apply_rotor(rotor); return *this;} \
+    Type& move_to(const vga2::Vector& p) \
+        {Transformable::move_to(p); return *this;} \
+    Type& move_to(const vga3::Vector& p) \
+        {Transformable::move_to(p); return *this;} \
+    Type& move_to(const pga2::Vector& p) \
+        {Transformable::move_to(p); return *this;} \
+    Type& move_to(const pga3::Vector& p) \
+        {Transformable::move_to(p); return *this;} \
+    Type& move_to(const pga2::Bivector& p) \
+        {Transformable::move_to(p); return *this;} \
+    Type& move_to(const pga3::Trivector& p) \
+        {Transformable::move_to(p); return *this;} \
+    Type& shift(const vga2::Vector& p) \
+        {Transformable::shift(p); return *this;} \
+    Type& shift(const vga3::Vector& p) \
+        {Transformable::shift(p); return *this;} \
+    Type& shift(const pga2::Vector& p) \
+        {Transformable::shift(p); return *this;} \
+    Type& shift(const pga3::Vector& p) \
+        {Transformable::shift(p); return *this;} \
+    Type& shift(const pga2::Bivector& p) \
+        {Transformable::shift(p); return *this;} \
+    Type& shift(const pga3::Trivector& p) \
+        {Transformable::shift(p); return *this;} \
+    Type& rotate(double angle) \
+        {Transformable::rotate(angle); return *this;} \
+    Type& rotate(const vga2::Vector& about_point, double angle) \
+        {Transformable::rotate(about_point, angle); return *this;} \
+    Type& rotate(const pga2::Vector& about_point, double angle) \
+        {Transformable::rotate(about_point, angle); return *this;} \
+    Type& rotate(const vga3::Bivector& about_plane, double angle) \
+        {Transformable::rotate(about_plane, angle); return *this;} \
+    Type& rotate(const pga2::Bivector& about_point, double angle = 1) \
+        {Transformable::rotate(about_point, angle); return *this;} \
+    Type& rotate(const pga3::Bivector& about_line, double angle = 1) \
+        {Transformable::rotate(about_line, angle); return *this;} \
 
 #endif

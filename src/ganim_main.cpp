@@ -24,7 +24,6 @@ int main()
     scene.add(obj);
     using namespace pga3;
     scene.wait(1);
-    obj.animate();
-    obj.rotate(e23 * τ/2 + e01);
+    obj.animate().rotate(e23 * τ/2 + e01);
     scene.wait(2);
 }

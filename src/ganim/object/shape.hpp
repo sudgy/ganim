@@ -54,6 +54,8 @@ namespace ganim {
             );
             virtual void draw() override;
 
+            GANIM_TRANSFORMABLE_CHAIN_DECLS(Shape)
+
         private:
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;
