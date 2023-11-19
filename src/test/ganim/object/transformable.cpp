@@ -139,3 +139,19 @@ TEST_CASE("Transformable shift negative", "[object]") {
     test.shift(2*e1);
     REQUIRE_THAT(test.get_rotor(), GAEquals(1 + e01));
 }
+
+TEST_CASE("Transformable non-commuting rotors", "[object]") {
+    auto test = TestTransformable();
+    test.set_fps(2);
+    test.shift(e1);
+    test.animate();
+    test.rotate(e12, τ/2);
+    auto& r = test.get_rotor();
+    REQUIRE_THAT(~r*e123*r, GAEquals((e1 + e0).dual(), 1e-5));
+    test.update();
+    REQUIRE_THAT(~r*e123*r, GAEquals((e2 + e0).dual(), 1e-5));
+    test.update();
+    REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
+    test.update();
+    REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
+}
