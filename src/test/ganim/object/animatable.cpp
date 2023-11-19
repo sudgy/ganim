@@ -138,3 +138,24 @@ TEST_CASE("Animatable animate", "[object]") {
     REQUIRE(test.last_animation_t == 1);
     REQUIRE(test.updated == 4);
 }
+
+TEST_CASE("Animatable different framerates", "[object]") {
+    auto test1 = TestAnimatable();
+    auto test2 = TestAnimatable();
+    test1.set_fps(3);
+    test2.set_fps(6);
+    test1.animate();
+    test2.animate();
+    test1.update();
+    test2.update();
+    test2.update();
+    REQUIRE(test1.last_animation_t == test2.last_animation_t);
+    test1.update();
+    test2.update();
+    test2.update();
+    REQUIRE(test1.last_animation_t == test2.last_animation_t);
+    test1.update();
+    test2.update();
+    test2.update();
+    REQUIRE(test1.last_animation_t == test2.last_animation_t);
+}
