@@ -16,6 +16,21 @@ Transformable& Transformable::reset()
     return *this;
 }
 
+Transformable& Transformable::apply_rotor(const vga2::Even& rotor)
+{
+    return apply_rotor(vga2_to_pga3(rotor));
+}
+
+Transformable& Transformable::apply_rotor(const vga3::Even& rotor)
+{
+    return apply_rotor(vga3_to_pga3(rotor));
+}
+
+Transformable& Transformable::apply_rotor(const pga2::Even& rotor)
+{
+    return apply_rotor(pga2_to_pga3(rotor));
+}
+
 Transformable& Transformable::apply_rotor(const Even& rotor)
 {
     if (starting_animation()) {

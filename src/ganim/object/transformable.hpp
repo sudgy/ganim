@@ -59,6 +59,30 @@ class Transformable : public Animatable {
          * This function will also pass the rotor parameter to @ref
          * on_apply_rotor.
          */
+        Transformable& apply_rotor(const vga2::Even& rotor);
+        /** @brief Compose this rotor with another one.
+         *
+         * This will multiply the input rotor on the right of the current rotor,
+         * so it will happen *after* the transformation that already exists.
+         * This function will also pass the rotor parameter to @ref
+         * on_apply_rotor.
+         */
+        Transformable& apply_rotor(const vga3::Even& rotor);
+        /** @brief Compose this rotor with another one.
+         *
+         * This will multiply the input rotor on the right of the current rotor,
+         * so it will happen *after* the transformation that already exists.
+         * This function will also pass the rotor parameter to @ref
+         * on_apply_rotor.
+         */
+        Transformable& apply_rotor(const pga2::Even& rotor);
+        /** @brief Compose this rotor with another one.
+         *
+         * This will multiply the input rotor on the right of the current rotor,
+         * so it will happen *after* the transformation that already exists.
+         * This function will also pass the rotor parameter to @ref
+         * on_apply_rotor.
+         */
         Transformable& apply_rotor(const pga3::Even& rotor);
 
         /** @brief Move the center of the object to the point represented by the
@@ -179,6 +203,12 @@ class Transformable : public Animatable {
     GANIM_ANIMATABLE_CHAIN_DECLS(Type) \
     Type& reset() \
         {Transformable::reset(); return *this;} \
+    Type& apply_rotor(const vga2::Even& rotor) \
+        {Transformable::apply_rotor(rotor); return *this;} \
+    Type& apply_rotor(const vga3::Even& rotor) \
+        {Transformable::apply_rotor(rotor); return *this;} \
+    Type& apply_rotor(const pga2::Even& rotor) \
+        {Transformable::apply_rotor(rotor); return *this;} \
     Type& apply_rotor(const pga3::Even& rotor) \
         {Transformable::apply_rotor(rotor); return *this;} \
     Type& move_to(const vga2::Vector& p) \

@@ -35,6 +35,17 @@ TEST_CASE("Transformable basics", "[object]") {
     REQUIRE_THAT(test.last_applied_rotor, GAEquals(-e13));
 }
 
+TEST_CASE("Transformable apply_rotor conversions", "[object]") {
+    auto test = TestTransformable();
+    const auto& r2 = test.last_applied_rotor;
+    test.apply_rotor(vga2::e12);
+    REQUIRE_THAT(r2, GAEquals(e12));
+    test.apply_rotor(vga3::e23);
+    REQUIRE_THAT(r2, GAEquals(e23));
+    test.apply_rotor(pga2::e01);
+    REQUIRE_THAT(r2, GAEquals(e01));
+}
+
 TEST_CASE("Transformable move_to", "[object]") {
     auto test = TestTransformable();
     const auto& r = test.get_rotor();
