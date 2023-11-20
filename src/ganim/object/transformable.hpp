@@ -179,10 +179,18 @@ class Transformable : public Animatable {
          * implementation is to just do nothing.
          */
         virtual void on_apply_rotor(const pga3::Even&) {}
-        virtual void on_animate() override;
-        virtual void on_animation_start() override;
-        virtual void update_animation(double t) override;
-        virtual void on_animation_end() override;
+        virtual void on_animate() override final;
+        virtual void on_animation_start() override final;
+        virtual void update_animation(double t) override final;
+        virtual void on_animation_end() override final;
+        /** @brief Called by @ref on_animate */
+        virtual void transformable_on_animate() {}
+        /** @brief Called by @ref on_animation_start */
+        virtual void transformable_on_animation_start() {}
+        /** @brief Called by @ref update_animation */
+        virtual void transformable_update_animation(double t) {(void)t;}
+        /** @brief Called by @ref on_animation_end */
+        virtual void transformable_on_animation_end() {}
         pga3::Even M_rotor = 1;
         pga3::Even M_new_rotor = 1;
         pga3::Bivector M_new_log;

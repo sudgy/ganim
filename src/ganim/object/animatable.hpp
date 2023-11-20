@@ -15,6 +15,9 @@ namespace ganim {
      * along for the ride because they are necessary for animations to work.  To
      * make your own animatable object, derive from this one and overload @ref
      * on_animation_start, @ref update_animation, and @ref on_animation_end.
+     * Note that the subclasses defined in this library make those overrides
+     * final and provide their own virtual functions to override because it is
+     * essential that their overrides are always called.
      *
      * All of the @ref animate functions return `*this` to allow for chaining.
      * If you want the chaining to work on subclasses, use the @ref
