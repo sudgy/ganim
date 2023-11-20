@@ -15,6 +15,7 @@ Object& Object::set_color_with_alpha(Color color)
     }
     else {
         M_color = color;
+        on_color_changed(color);
     }
     return *this;
 }

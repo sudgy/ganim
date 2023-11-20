@@ -22,6 +22,7 @@ namespace ganim {
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
+            virtual void on_color_changed(Color new_color) {(void)new_color;}
             virtual void transformable_on_animate() override final;
             virtual void transformable_on_animation_start() override final;
             virtual void transformable_update_animation(double t)override final;
