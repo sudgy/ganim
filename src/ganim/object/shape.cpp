@@ -34,6 +34,9 @@ void Shape::draw()
     auto& shader = shape_shader();
     glUseProgram(shader);
     shader.set_rotor_uniform("model", get_rotor());
+    glUniform4f(shader.get_uniform("object_color"),
+            get_color().r / 255.0, get_color().g / 255.0,
+            get_color().b / 255.0, get_color().a / 255.0);
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, M_index_size, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
