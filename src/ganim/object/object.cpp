@@ -2,20 +2,23 @@
 
 using namespace ganim;
 
-void Object::set_color(Color color)
+Object& Object::set_color(Color color)
 {
     M_color.r = color.r;
     M_color.g = color.g;
     M_color.b = color.b;
+    return *this;
 }
 
-void Object::set_color_with_alpha(Color color)
+Object& Object::set_color_with_alpha(Color color)
 {
     M_color = color;
+    return *this;
 }
 
-void Object::set_opacity(double opacity)
+Object& Object::set_opacity(double opacity)
 {
     opacity = std::clamp(opacity, 0.0, 1.0);
     M_color.a = static_cast<std::uint8_t>(opacity * 255.0);
+    return *this;
 }
