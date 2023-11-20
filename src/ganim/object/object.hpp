@@ -22,7 +22,22 @@ namespace ganim {
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
+            virtual void transformable_on_animate() override final;
+            virtual void transformable_on_animation_start() override final;
+            virtual void transformable_update_animation(double t)override final;
+            virtual void transformable_on_animation_end() override final;
+            /** @brief Called by @ref transformable_on_animate */
+            virtual void object_on_animate() {}
+            /** @brief Called by @ref transformable_on_animation_start */
+            virtual void object_on_animation_start() {}
+            /** @brief Called by @ref transformable_update_animation */
+            virtual void object_update_animation(double t) {(void)t;}
+            /** @brief Called by @ref transformable_on_animation_end */
+            virtual void object_on_animation_end() {}
+
             Color M_color = {255, 255, 255, 255};
+            Color M_starting_color;
+            Color M_ending_color;
     };
 }
 

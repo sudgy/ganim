@@ -4,6 +4,34 @@
 
 using namespace ganim;
 
+namespace {
+    class TestObject : public Object {
+        public:
+            bool on_animate = false;
+            bool on_animation_start = false;
+            double last_animation_t = -1;
+            bool on_animation_end = false;
+        private:
+
+            virtual void object_on_animate() override
+            {
+                on_animate = true;
+            }
+            virtual void object_on_animation_start() override
+            {
+                on_animation_start = true;
+            }
+            virtual void object_update_animation(double t) override
+            {
+                last_animation_t = t;
+            }
+            virtual void object_on_animation_end() override
+            {
+                on_animation_end = true;
+            }
+    };
+}
+
 TEST_CASE("Object color", "[object]") {
     auto test = Object();
     REQUIRE(test.get_color() == Color("FFFFFF"));
@@ -13,4 +41,49 @@ TEST_CASE("Object color", "[object]") {
     REQUIRE(test.get_color() == Color("BBBBBBBB"));
     test.set_opacity(0.5);
     REQUIRE(test.get_color() == Color("BBBBBB7F"));
+}
+
+TEST_CASE("Object animating color", "[object]") {
+    auto test = Object();
+    test.set_fps(4);
+    test.animate([](double t){return t;}).set_color("000000");
+    REQUIRE(test.get_color() == Color("FFFFFF"));
+    test.update();
+    REQUIRE(test.get_color() == Color("BFBFBF"));
+    test.update();
+    REQUIRE(test.get_color() == Color("7F7F7F"));
+    test.update();
+    REQUIRE(test.get_color() == Color("3F3F3F"));
+    test.update();
+    REQUIRE(test.get_color() == Color("000000"));
+    test.animate([](double t){return t;}).set_opacity(0.5);
+    REQUIRE(test.get_color() == Color("000000FF"));
+    test.update();
+    REQUIRE(test.get_color() == Color("000000DF"));
+    test.update();
+    REQUIRE(test.get_color() == Color("000000BF"));
+    test.update();
+    REQUIRE(test.get_color() == Color("0000009F"));
+    test.update();
+    REQUIRE(test.get_color() == Color("0000007F"));
+}
+
+TEST_CASE("Object sub animations", "[object]") {
+    auto test = TestObject();
+    test.set_fps(2);
+    test.animate([](double t){return t;});
+    REQUIRE(test.on_animate);
+    REQUIRE(!test.on_animation_start);
+    REQUIRE(test.last_animation_t == -1);
+    REQUIRE(!test.on_animation_end);
+    test.update();
+    REQUIRE(test.on_animate);
+    REQUIRE(test.on_animation_start);
+    REQUIRE(test.last_animation_t == 0.5);
+    REQUIRE(!test.on_animation_end);
+    test.update();
+    REQUIRE(test.on_animate);
+    REQUIRE(test.on_animation_start);
+    REQUIRE(test.last_animation_t == 1);
+    REQUIRE(test.on_animation_end);
 }
