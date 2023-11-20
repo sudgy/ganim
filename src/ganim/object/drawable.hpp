@@ -5,11 +5,11 @@
  * @brief Contains the @ref ganim::Drawable "Drawable" class
  */
 
-#include "transformable.hpp"
+#include "object.hpp"
 
 namespace ganim {
     /** @brief The base class for all drawable objects */
-    class Drawable : public Transformable {
+    class Drawable : public Object {
         public:
             /** @brief Draw this object onto the screen */
             virtual void draw()=0;
