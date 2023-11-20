@@ -14,10 +14,31 @@ namespace {
         public:
             using Transformable::Transformable;
             pga3::Even last_applied_rotor;
+            bool on_animate = false;
+            bool on_animation_start = false;
+            double last_animation_t = -1;
+            bool on_animation_end = false;
         private:
             virtual void on_apply_rotor(const pga3::Even& rotor) override
             {
                 last_applied_rotor = rotor;
+            }
+
+            virtual void transformable_on_animate() override
+            {
+                on_animate = true;
+            }
+            virtual void transformable_on_animation_start() override
+            {
+                on_animation_start = true;
+            }
+            virtual void transformable_update_animation(double t) override
+            {
+                last_animation_t = t;
+            }
+            virtual void transformable_on_animation_end() override
+            {
+                on_animation_end = true;
             }
     };
 }
@@ -163,4 +184,24 @@ TEST_CASE("Transformable non-commuting rotors", "[object]") {
     REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
     test.update();
     REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
+}
+
+TEST_CASE("Transformable sub animations", "[object]") {
+    auto test = TestTransformable();
+    test.set_fps(2);
+    test.animate([](double t){return t;});
+    REQUIRE(test.on_animate);
+    REQUIRE(!test.on_animation_start);
+    REQUIRE(test.last_animation_t == -1);
+    REQUIRE(!test.on_animation_end);
+    test.update();
+    REQUIRE(test.on_animate);
+    REQUIRE(test.on_animation_start);
+    REQUIRE(test.last_animation_t == 0.5);
+    REQUIRE(!test.on_animation_end);
+    test.update();
+    REQUIRE(test.on_animate);
+    REQUIRE(test.on_animation_start);
+    REQUIRE(test.last_animation_t == 1);
+    REQUIRE(test.on_animation_end);
 }

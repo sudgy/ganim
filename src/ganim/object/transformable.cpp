@@ -116,18 +116,24 @@ Transformable& Transformable::rotate(
 void Transformable::on_animate()
 {
     M_new_rotor = 1;
+    transformable_on_animate();
 }
 
 void Transformable::on_animation_start()
 {
     M_new_log = ga_log(M_new_rotor);
     M_new_rotor = M_rotor;
+    transformable_on_animation_start();
 }
 
 void Transformable::update_animation(double t)
 {
     auto new_rotor = M_new_rotor * ga_exp(M_new_log * t);
     apply_rotor(~M_rotor * new_rotor);
+    transformable_update_animation(t);
 }
 
-void Transformable::on_animation_end() {}
+void Transformable::on_animation_end()
+{
+    transformable_on_animation_end();
+}
