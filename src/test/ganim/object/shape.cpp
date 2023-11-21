@@ -326,6 +326,7 @@ TEST_CASE("Shape scaling", "[object]") {
     }
 }
 
+// This was a bug I ran into that ended up being about rotor normalization
 TEST_CASE("Shape move back and forth with rotation", "[object]") {
     using namespace pga3;
     auto scene = TestScene(4, 4, 4, 4, 30);
@@ -342,4 +343,26 @@ TEST_CASE("Shape move back and forth with rotation", "[object]") {
     shape.animate().shift(-e1);
     scene.wait(1);
     REQUIRE(scene.get_pixel(59, 1, 1) == Color("FFFFFF"));
+}
+
+// This was another bug I ran into that ended up being about rotor normalization
+TEST_CASE("Shape rotating too fast?", "[object]") {
+    using namespace pga3;
+    auto scene = TestScene(4, 4, 4, 4, 60);
+    auto shape = Shape(
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    using namespace pga3;
+    scene.add(shape);
+    shape.animate().rotate(e23, τ/2).shift(2*e1);
+    scene.wait(1);
+    shape.animate().shift(-2*e1);
+    scene.wait(1);
+    shape.rotate(e12 + 0.5*e13 + 0.2*e23, 0.05);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(scene.time_size() - 1, 1, 1) == Color("FFFFFF"));
 }

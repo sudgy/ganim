@@ -38,7 +38,13 @@ Transformable& Transformable::apply_rotor(const Even& rotor)
     }
     else {
         M_rotor *= rotor;
-        M_rotor = M_rotor.normalized();
+        // Normalize the rotor
+        auto norm2 = M_rotor * ~M_rotor;
+        auto a = norm2.blade_project<e>();
+        auto b = norm2.blade_project<e0123>();
+        auto x = 1 / std::sqrt(a);
+        auto y = -b*x*x*x/2;
+        M_rotor *= x + y*e0123;
         on_apply_rotor(rotor);
     }
     return *this;
