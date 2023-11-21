@@ -1,5 +1,7 @@
 #include "object.hpp"
 
+#include <iostream>
+
 #include "ganim/ga/conversions.hpp"
 
 using namespace ganim;
@@ -73,8 +75,14 @@ Object& Object::scale(const pga3::Trivector& about_point, double amount)
     new_center *= amount;
     new_center += e123;
     shift(new_center - center + e123);
-    M_scale *= amount;
-    on_scale(about_point, amount);
+    if (starting_animation()) {
+        M_scale_point = about_point;
+        M_ending_scale *= amount;
+    }
+    else {
+        M_scale *= amount;
+        on_scale(about_point, amount);
+    }
     return *this;
 }
 
@@ -87,6 +95,9 @@ void Object::transformable_on_animate()
 {
     M_starting_color = M_color;
     M_ending_color = M_color;
+    M_starting_scale = M_scale;
+    M_ending_scale = M_scale;
+    M_scale_point = e123;
     object_on_animate();
 }
 
@@ -107,6 +118,11 @@ void Object::transformable_update_animation(double t)
     new_color.b = interp(M_starting_color.b, M_ending_color.b);
     new_color.a = interp(M_starting_color.a, M_ending_color.a);
     set_color_with_alpha(new_color);
+    auto current_scale
+        = M_starting_scale + (M_ending_scale - M_starting_scale) * t;
+    auto for_on_scale = current_scale / M_scale;
+    M_scale = current_scale;
+    on_scale(M_scale_point, for_on_scale);
     object_update_animation(t);
 }
 

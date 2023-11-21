@@ -68,6 +68,9 @@ namespace ganim {
             Color M_starting_color;
             Color M_ending_color;
             double M_scale = 1;
+            double M_starting_scale = 1;
+            double M_ending_scale = 1;
+            pga3::Trivector M_scale_point;
     };
 }
 

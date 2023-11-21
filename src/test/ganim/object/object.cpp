@@ -169,3 +169,39 @@ TEST_CASE("Object scaling", "[object]") {
     REQUIRE_THAT(test.scaled_point, GAEquals((e2 + e0).dual()));
     REQUIRE(test.last_scale == 2);
 }
+
+TEST_CASE("Object animating scale", "[object]") {
+    using namespace pga3;
+    auto test = TestObject();
+    test.set_fps(4);
+    test.shift(e1);
+    auto get_p = [&](pga3::Trivector p){
+        p += -p.blade_project<e123>()*e123;
+        p *= test.get_scale();
+        p += e123;
+        return ~test.get_rotor()*p*test.get_rotor();
+    };
+    test.animate([](double t){return t;}).scale(e1 + e2, 2);
+    auto p = (-e1 + e0).dual();
+    REQUIRE_THAT(get_p(p), GAEquals(e123));
+    test.update();
+    REQUIRE_THAT(get_p(p), GAEquals((-0.25*e1 - 0.25*e2 + e0).dual()));
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
+    REQUIRE(test.last_scale == 1.25 / 1.0);
+    test.update();
+    REQUIRE_THAT(get_p(p), GAEquals((-0.5*e1 - 0.5*e2 + e0).dual()));
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
+    REQUIRE(test.last_scale == 1.5 / 1.25);
+    test.update();
+    REQUIRE_THAT(get_p(p), GAEquals((-0.75*e1 - 0.75*e2 + e0).dual()));
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
+    REQUIRE(test.last_scale == 1.75 / 1.5);
+    test.update();
+    REQUIRE_THAT(get_p(p), GAEquals((-e1 - e2 + e0).dual()));
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
+    REQUIRE(test.last_scale == 2.0 / 1.75);
+    test.update();
+    REQUIRE_THAT(get_p(p), GAEquals((-e1 - e2 + e0).dual()));
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
+    REQUIRE(test.last_scale == 2.0 / 1.75);
+}

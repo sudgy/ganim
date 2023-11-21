@@ -15,15 +15,16 @@ int main()
 
     auto scene = Scene("Test.mp4", 256, 144, 16, 9, 30);
     auto obj = Shape(
-        {{ 2,  2, 0, 1, 0, 0, 1},
-         { 2, -2, 0, 1, 0, 0, 1},
-         {-2, -2, 0, 1, 0, 0, 1},
-         {-2,  2, 0, 1, 0, 0, 1}},
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
         {0, 1, 2, 0, 2, 3}
     );
     scene.add(obj);
     using namespace pga3;
+    obj.shift(e1);
     scene.wait(1);
-    obj.animate().rotate(e23 * τ/2 + e01);
+    obj.animate().scale(e1 + e2, 2);
     scene.wait(2);
 }
