@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "ganim/ga/conversions.hpp"
+#include "ganim/rate_functions.hpp"
 
 using namespace ganim;
 using namespace pga3;
@@ -38,6 +39,24 @@ Object& Object::set_opacity(double opacity)
     opacity = std::clamp(opacity, 0.0, 1.0);
     color.a = static_cast<std::uint8_t>(opacity * 255.0);
     return set_color_with_alpha(color);
+}
+
+Object& Object::fade_in(double time)
+{
+    set_visible(true);
+    auto opacity = M_color.a / 255.0;
+    set_opacity(0);
+    animate(time, rf::linear);
+    set_opacity(opacity);
+    return *this;
+}
+
+Object& Object::fade_out(double time)
+{
+    M_real_opacity = M_color.a / 255.0;
+    animate(time, rf::linear);
+    set_opacity(0);
+    return *this;
 }
 
 Object& Object::scale(double amount)
@@ -135,5 +154,10 @@ void Object::transformable_update_animation(double t)
 
 void Object::transformable_on_animation_end()
 {
+    if (M_real_opacity != -1) {
+        set_opacity(M_real_opacity);
+        M_real_opacity = -1;
+        set_visible(false);
+    }
     object_on_animation_end();
 }

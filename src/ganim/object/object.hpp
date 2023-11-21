@@ -33,6 +33,18 @@ namespace ganim {
             Object& set_opacity(double opacity);
             /** @brief Get the color of this object, including alpha. */
             Color get_color() const {return M_color;}
+            /** @brief Fades the object in.
+             *
+             * It will call `animate` for you and make the object visible, so no
+             * need to do that.
+             */
+            Object& fade_in(double time = 1.0);
+            /** @brief Fades the object out.
+             *
+             * It will call `animate` for you, so no need to do that.  The
+             * object will be made not visible at the end.
+             */
+            Object& fade_out(double time = 1.0);
 
             /** @brief Scale the object about its center */
             Object& scale(double amount);
@@ -92,6 +104,7 @@ namespace ganim {
             double M_ending_scale = 1;
             pga3::Trivector M_scale_point;
             bool M_visible = false;
+            double M_real_opacity = -1;
     };
 }
 
@@ -114,6 +127,10 @@ namespace ganim {
         {Object::set_color_with_alpha(color); return *this;} \
     Type& set_opacity(double opacity) \
         {Object::set_opacity(opacity); return *this;} \
+    Type& fade_in(double time = 1.0) \
+        {Object::fade_in(time); return *this;} \
+    Type& fade_out(double time = 1.0) \
+        {Object::fade_out(time); return *this;} \
     Type& scale(double amount) \
         {Object::scale(amount); return *this;} \
     Type& scale(const vga2::Vector& about_point, double amount) \

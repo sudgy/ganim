@@ -222,3 +222,60 @@ TEST_CASE("Object visibile", "[object]") {
     REQUIRE(!test.is_visible());
     REQUIRE(!test.last_visible);
 }
+
+TEST_CASE("Object fading", "[object]") {
+    auto test = TestObject();
+    test.set_fps(4);
+    test.fade_in();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x0);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x3F);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x7F);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0xBF);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0xFF);
+    test.fade_out();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0xFF);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0xBF);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x7F);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x3F);
+    test.update();
+    REQUIRE(!test.is_visible());
+    REQUIRE(test.get_color().a == 0xFF);
+
+    test.set_opacity(0.5);
+    REQUIRE(!test.is_visible());
+    REQUIRE(test.get_color().a == 0x7F);
+    test.fade_in(0.5);
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x0);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x3F);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x7F);
+    test.fade_out(0.5);
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x7F);
+    test.update();
+    REQUIRE(test.is_visible());
+    REQUIRE(test.get_color().a == 0x3F);
+    test.update();
+    REQUIRE(!test.is_visible());
+    REQUIRE(test.get_color().a == 0x7F);
+}
