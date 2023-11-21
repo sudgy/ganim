@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "test_scene.hpp"
+#include "test/ganim/approx_color.hpp"
 #include "ganim/object/drawable.hpp"
 
 using namespace ganim;

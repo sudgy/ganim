@@ -2,6 +2,7 @@
 
 #include "ganim/object/shape.hpp"
 #include "test/ganim/scene/test_scene.hpp"
+#include "test/ganim/approx_color.hpp"
 
 using namespace ganim;
 
@@ -119,9 +120,9 @@ TEST_CASE("Shape color", "[object]") {
     scene.frame_advance();
     // I guess OpenGL starts interpolating on the edges instantly?  I hope this
     // isn't system-dependent
-    REQUIRE(scene.get_pixel(0, 0, 0) == Color("2AD400"));
-    REQUIRE(scene.get_pixel(0, 1, 0) == Color("807F00"));
-    REQUIRE(scene.get_pixel(0, 2, 0) == Color("D42A00"));
+    REQUIRE(scene.get_pixel(0, 0, 0) == ApproxColor("2AD400"));
+    REQUIRE(scene.get_pixel(0, 1, 0) == ApproxColor("807F00"));
+    REQUIRE(scene.get_pixel(0, 2, 0) == ApproxColor("D42A00"));
 }
 
 TEST_CASE("Shape depth test", "[object]") {
@@ -244,9 +245,9 @@ TEST_CASE("Shape opacity", "[object]") {
     );
     scene.add(solid, red_trans, invisible);
     scene.frame_advance();
-    REQUIRE(scene.get_pixel(0, 1, 1) == Color("800000"));
-    REQUIRE(scene.get_pixel(0, 2, 1) == Color("FF8080"));
-    REQUIRE(scene.get_pixel(0, 3, 1) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(0, 1, 1) == ApproxColor("800000"));
+    REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("FF8080"));
+    REQUIRE(scene.get_pixel(0, 3, 1) == ApproxColor("FFFFFF"));
 }
 
 TEST_CASE("Shape Object color", "[object]") {
@@ -279,7 +280,7 @@ TEST_CASE("Shape Object color", "[object]") {
     invisible.set_opacity(0);
     scene.add(solid, red_trans, invisible);
     scene.frame_advance();
-    REQUIRE(scene.get_pixel(0, 1, 1) == Color("7F0000"));
-    REQUIRE(scene.get_pixel(0, 2, 1) == Color("FF8080"));
-    REQUIRE(scene.get_pixel(0, 3, 1) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(0, 1, 1) == ApproxColor("7F0000"));
+    REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("FF8080"));
+    REQUIRE(scene.get_pixel(0, 3, 1) == ApproxColor("FFFFFF"));
 }
