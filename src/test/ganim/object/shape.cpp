@@ -4,6 +4,8 @@
 #include "test/ganim/scene/test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
 
+#include "ganim/math.hpp"
+
 using namespace ganim;
 
 TEST_CASE("Shape drawing", "[object]") {
@@ -322,4 +324,22 @@ TEST_CASE("Shape scaling", "[object]") {
             REQUIRE(scene.get_pixel(2, x, y) == color);
         }
     }
+}
+
+TEST_CASE("Shape move back and forth with rotation", "[object]") {
+    using namespace pga3;
+    auto scene = TestScene(4, 4, 4, 4, 30);
+    auto shape = Shape(
+        {{ 1,  1, 0},
+         { 1, -1, 0},
+         {-1, -1, 0},
+         {-1,  1, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.add(shape);
+    shape.animate().rotate(e23, τ/2);
+    scene.wait(1);
+    shape.animate().shift(-e1);
+    scene.wait(1);
+    REQUIRE(scene.get_pixel(59, 1, 1) == Color("FFFFFF"));
 }

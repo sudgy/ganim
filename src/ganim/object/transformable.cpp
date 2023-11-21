@@ -38,6 +38,7 @@ Transformable& Transformable::apply_rotor(const Even& rotor)
     }
     else {
         M_rotor *= rotor;
+        M_rotor = M_rotor.normalized();
         on_apply_rotor(rotor);
     }
     return *this;
