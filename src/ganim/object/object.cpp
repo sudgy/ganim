@@ -1,6 +1,9 @@
 #include "object.hpp"
 
+#include "ganim/ga/conversions.hpp"
+
 using namespace ganim;
+using namespace pga3;
 
 Object& Object::set_color(Color color)
 {
@@ -26,6 +29,58 @@ Object& Object::set_opacity(double opacity)
     opacity = std::clamp(opacity, 0.0, 1.0);
     color.a = static_cast<std::uint8_t>(opacity * 255.0);
     return set_color_with_alpha(color);
+}
+
+Object& Object::scale(double amount)
+{
+    return scale((~get_rotor()*e123*get_rotor()).grade_project<3>(), amount);
+}
+
+Object& Object::scale(const vga2::Vector& about_point, double amount)
+{
+    return scale(vga2_to_pga3(about_point), amount);
+}
+
+Object& Object::scale(const vga3::Vector& about_point, double amount)
+{
+    return scale(vga3_to_pga3(about_point), amount);
+}
+
+Object& Object::scale(const pga2::Vector& about_point, double amount)
+{
+    return scale(pga2_to_vga2_cheat(about_point), amount);
+}
+
+Object& Object::scale(const pga3::Vector& about_point, double amount)
+{
+    return scale(pga3_to_vga3_cheat(about_point), amount);
+}
+
+Object& Object::scale(const pga2::Bivector& about_point, double amount)
+{
+    return scale(pga2_to_pga3_flat(about_point), amount);
+}
+
+Object& Object::scale(const pga3::Trivector& about_point, double amount)
+{
+    auto new_about_point = about_point;
+    new_about_point /= new_about_point.blade_project<e123>();
+    new_about_point -= new_about_point.blade_project<e123>()*e123;
+    auto center = (~get_rotor()*e123*get_rotor()).grade_project<3>();
+    center -= new_about_point;
+    auto new_center = center;
+    new_center -= new_center.blade_project<e123>()*e123;
+    new_center *= amount;
+    new_center += e123;
+    shift(new_center - center + e123);
+    M_scale *= amount;
+    on_scale(about_point, amount);
+    return *this;
+}
+
+double Object::get_scale() const
+{
+    return M_scale;
 }
 
 void Object::transformable_on_animate()

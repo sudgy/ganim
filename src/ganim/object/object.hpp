@@ -34,9 +34,22 @@ namespace ganim {
             /** @brief Get the color of this object, including alpha. */
             Color get_color() const {return M_color;}
 
+            Object& scale(double amount);
+            Object& scale(const vga2::Vector& about_point, double amount);
+            Object& scale(const vga3::Vector& about_point, double amount);
+            Object& scale(const pga2::Vector& about_point, double amount);
+            Object& scale(const pga3::Vector& about_point, double amount);
+            Object& scale(const pga2::Bivector& about_point, double amount);
+            Object& scale(const pga3::Trivector& about_point, double amount);
+            double get_scale() const;
+
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
+            virtual void on_scale(
+                const pga3::Trivector& about_point,
+                double amount
+            ) {(void)about_point; (void)amount;}
             virtual void on_color_changed(Color new_color) {(void)new_color;}
             virtual void transformable_on_animate() override final;
             virtual void transformable_on_animation_start() override final;
@@ -54,6 +67,7 @@ namespace ganim {
             Color M_color = {255, 255, 255, 255};
             Color M_starting_color;
             Color M_ending_color;
+            double M_scale = 1;
     };
 }
 
@@ -73,6 +87,20 @@ namespace ganim {
     Type& set_color_with_alpha(Color color) \
         {Object::set_color_with_alpha(color); return *this;} \
     Type& set_opacity(double opacity) \
-        {Object::set_opacity(opacity); return *this;}
+        {Object::set_opacity(opacity); return *this;} \
+    Type& scale(double amount) \
+        {Object::scale(amount); return *this;} \
+    Type& scale(const vga2::Vector& about_point, double amount) \
+        {Object::scale(about_point, amount); return *this;} \
+    Type& scale(const vga3::Vector& about_point, double amount) \
+        {Object::scale(about_point, amount); return *this;} \
+    Type& scale(const pga2::Vector& about_point, double amount) \
+        {Object::scale(about_point, amount); return *this;} \
+    Type& scale(const pga3::Vector& about_point, double amount) \
+        {Object::scale(about_point, amount); return *this;} \
+    Type& scale(const pga2::Bivector& about_point, double amount) \
+        {Object::scale(about_point, amount); return *this;} \
+    Type& scale(const pga3::Trivector& about_point, double amount) \
+        {Object::scale(about_point, amount); return *this;}
 
 #endif

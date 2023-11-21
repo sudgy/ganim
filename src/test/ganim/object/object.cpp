@@ -2,6 +2,8 @@
 
 #include "ganim/object/object.hpp"
 
+#include "test/ganim/ga_equals.hpp"
+
 using namespace ganim;
 
 namespace {
@@ -12,6 +14,8 @@ namespace {
             double last_animation_t = -1;
             bool on_animation_end = false;
             Color last_change;
+            pga3::Trivector scaled_point;
+            double last_scale = -1;
         private:
             virtual void on_color_changed(Color new_color) override
             {
@@ -32,6 +36,14 @@ namespace {
             virtual void object_on_animation_end() override
             {
                 on_animation_end = true;
+            }
+            virtual void on_scale(
+                const pga3::Trivector& about_point,
+                double amount
+            ) override
+            {
+                scaled_point = about_point;
+                last_scale = amount;
             }
     };
 }
@@ -101,4 +113,59 @@ TEST_CASE("Object sub animations", "[object]") {
     REQUIRE(test.on_animation_start);
     REQUIRE(test.last_animation_t == 1);
     REQUIRE(test.on_animation_end);
+}
+
+TEST_CASE("Object scaling", "[object]") {
+    using namespace pga3;
+    auto test = TestObject();
+    auto get_p = [&](pga3::Trivector p){
+        p += -p.blade_project<e123>()*e123;
+        p *= test.get_scale();
+        p += e123;
+        return ~test.get_rotor()*p*test.get_rotor();
+    };
+    REQUIRE(test.get_scale() == 1);
+
+    test.scale(2);
+    REQUIRE_THAT(test.scaled_point, GAEquals(e123));
+    REQUIRE(test.last_scale == 2);
+    REQUIRE_THAT(get_p(e123), GAEquals(e123));
+    REQUIRE_THAT(get_p((e1 + e0).dual()), GAEquals((2*e1 + e0).dual()));
+    REQUIRE(test.get_scale() == 2);
+
+    test.last_scale = 1;
+    test.scale(vga2::e1, 2);
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e0).dual()));
+    REQUIRE(test.last_scale == 2);
+    REQUIRE_THAT(get_p(e123), GAEquals((-e1 + e0).dual()));
+    REQUIRE_THAT(get_p((e1 + e0).dual()), GAEquals((3*e1 + e0).dual()));
+    REQUIRE(test.get_scale() == 4);
+
+    test.last_scale = 1;
+    test.scale(2);
+    REQUIRE_THAT(test.scaled_point, GAEquals((-e1 + e0).dual()));
+    REQUIRE(test.last_scale == 2);
+    REQUIRE_THAT(get_p(e123), GAEquals((-e1 + e0).dual()));
+    REQUIRE_THAT(get_p((e1 + e0).dual()), GAEquals((7*e1 + e0).dual()));
+    REQUIRE(test.get_scale() == 8);
+
+    test.last_scale = 1;
+    test.scale(vga3::e3, 2);
+    REQUIRE_THAT(test.scaled_point, GAEquals((e3 + e0).dual()));
+    REQUIRE(test.last_scale == 2);
+    REQUIRE_THAT(get_p(e123), GAEquals((-2*e1 - e3 + e0).dual()));
+    REQUIRE_THAT(get_p((e1 + e0).dual()), GAEquals((14*e1 - e3 + e0).dual()));
+
+    test.scale(pga2::e1, 3);
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e0).dual()));
+    REQUIRE(test.last_scale == 3);
+    test.scale(pga3::e2, 2);
+    REQUIRE_THAT(test.scaled_point, GAEquals((e2 + e0).dual()));
+    REQUIRE(test.last_scale == 2);
+    test.scale((pga2::e1 + pga2::e0).dual(), 3);
+    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e0).dual()));
+    REQUIRE(test.last_scale == 3);
+    test.scale((pga3::e2 + pga3::e0).dual(), 2);
+    REQUIRE_THAT(test.scaled_point, GAEquals((e2 + e0).dual()));
+    REQUIRE(test.last_scale == 2);
 }
