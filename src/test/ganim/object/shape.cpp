@@ -284,3 +284,42 @@ TEST_CASE("Shape Object color", "[object]") {
     REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("FF8080"));
     REQUIRE(scene.get_pixel(0, 3, 1) == ApproxColor("FFFFFF"));
 }
+
+TEST_CASE("Shape scaling", "[object]") {
+    using namespace vga2;
+    auto scene = TestScene(10, 10, 10, 10, 1);
+    auto test = Shape(
+        {{ 1,  1, 0},
+         { 1, -1, 0},
+         {-1, -1, 0},
+         {-1,  1, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.add(test);
+    test.shift(e1);
+    scene.frame_advance();
+    test.scale(2);
+    scene.frame_advance();
+    test.scale(2*e1, 2);
+    scene.frame_advance();
+    for (int x = 0; x < 10; ++x) {
+        for (int y = 0; y < 10; ++y) {
+            INFO("x = " << x << ", y = " << y);
+            auto color = Color("000000");
+            if (x >= 5 and x <= 6 and y >= 4 and y <= 5) {
+                color = Color("FFFFFF");
+            }
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+            color = Color("000000");
+            if (x >= 4 and x <= 7 and y >= 3 and y <= 6) {
+                color = Color("FFFFFF");
+            }
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+            color = Color("000000");
+            if (x >= 1 and x <= 8 and y >= 1 and y <= 8) {
+                color = Color("FFFFFF");
+            }
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+        }
+    }
+}
