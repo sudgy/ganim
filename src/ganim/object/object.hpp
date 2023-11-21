@@ -54,10 +54,16 @@ namespace ganim {
             Object& scale(const pga3::Trivector& about_point, double amount);
             /** @brief Get the amount that this object is scaled */
             double get_scale() const;
+            /** @brief Set whether this object is visible */
+            Object& set_visible(bool visible);
+            /** @brief See whether this object is visible */
+            bool is_visible() const {return M_visible;}
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
+            /** @brief Called when @ref set_visible is called */
+            virtual void on_set_visible(bool visible) {(void)visible;}
             /** @brief Called when the object is scaled */
             virtual void on_scale(
                 const pga3::Trivector& about_point,
@@ -85,6 +91,7 @@ namespace ganim {
             double M_starting_scale = 1;
             double M_ending_scale = 1;
             pga3::Trivector M_scale_point;
+            bool M_visible = false;
     };
 }
 
@@ -99,6 +106,8 @@ namespace ganim {
  */
 #define GANIM_OBJECT_CHAIN_DECLS(Type) \
     GANIM_TRANSFORMABLE_CHAIN_DECLS(Type) \
+    Type& set_visible(bool visible) \
+        {Object::set_visible(visible); return *this;} \
     Type& set_color(Color color) \
         {Object::set_color(color); return *this;} \
     Type& set_color_with_alpha(Color color) \

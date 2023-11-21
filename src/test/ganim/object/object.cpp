@@ -16,7 +16,12 @@ namespace {
             Color last_change;
             pga3::Trivector scaled_point;
             double last_scale = -1;
+            bool last_visible = false;
         private:
+            virtual void on_set_visible(bool visible) override
+            {
+                last_visible = visible;
+            }
             virtual void on_color_changed(Color new_color) override
             {
                 last_change = new_color;
@@ -204,4 +209,16 @@ TEST_CASE("Object animating scale", "[object]") {
     REQUIRE_THAT(get_p(p), GAEquals((-e1 - e2 + e0).dual()));
     REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
     REQUIRE(test.last_scale == 2.0 / 1.75);
+}
+
+TEST_CASE("Object visibile", "[object]") {
+    auto test = TestObject();
+    REQUIRE(!test.is_visible());
+    REQUIRE(!test.last_visible);
+    test.set_visible(true);
+    REQUIRE(test.is_visible());
+    REQUIRE(test.last_visible);
+    test.set_visible(false);
+    REQUIRE(!test.is_visible());
+    REQUIRE(!test.last_visible);
 }

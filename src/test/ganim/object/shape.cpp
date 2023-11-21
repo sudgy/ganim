@@ -17,6 +17,7 @@ TEST_CASE("Shape drawing", "[object]") {
          {-2,  2, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 3, 3) == Color("FFFFFF"));
@@ -42,6 +43,7 @@ TEST_CASE("Shape perspective", "[object]") {
          {-2,  2,  2}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 1, 2) == Color("FFFFFF"));
@@ -74,6 +76,7 @@ TEST_CASE("Shape behind camera", "[object]") {
          {-2,  2, 30}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
@@ -91,6 +94,7 @@ TEST_CASE("Shape moving", "[object]") {
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     shape.shift(e1);
     scene.frame_advance();
@@ -118,6 +122,7 @@ TEST_CASE("Shape color", "[object]") {
          {-1,  1, 0, 0, 1, 0, 1}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     // I guess OpenGL starts interpolating on the edges instantly?  I hope this
@@ -144,6 +149,8 @@ TEST_CASE("Shape depth test", "[object]") {
          {-1,  1, 0, 0, 1, 0, 1}},
         {0, 1, 2, 0, 2, 3}
     );
+    red.set_visible(true);
+    green.set_visible(true);
     scene.add(red, green);
     scene.frame_advance();
     green.shift(e3);
@@ -165,6 +172,7 @@ TEST_CASE("Shape animation", "[object]") {
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
@@ -198,6 +206,7 @@ TEST_CASE("Shape camera animation", "[object]") {
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
@@ -245,6 +254,9 @@ TEST_CASE("Shape opacity", "[object]") {
          {-1,  1, 0, 1, 1, 1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    solid.set_visible(true);
+    red_trans.set_visible(true);
+    invisible.set_visible(true);
     scene.add(solid, red_trans, invisible);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 1, 1) == ApproxColor("800000"));
@@ -279,6 +291,9 @@ TEST_CASE("Shape Object color", "[object]") {
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    solid.set_visible(true);
+    red_trans.set_visible(true);
+    invisible.set_visible(true);
     invisible.set_opacity(0);
     scene.add(solid, red_trans, invisible);
     scene.frame_advance();
@@ -297,6 +312,7 @@ TEST_CASE("Shape scaling", "[object]") {
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    test.set_visible(true);
     scene.add(test);
     test.shift(e1);
     scene.frame_advance();
@@ -337,6 +353,7 @@ TEST_CASE("Shape move back and forth with rotation", "[object]") {
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.set_visible(true);
     scene.add(shape);
     shape.animate().rotate(e23, τ/2);
     scene.wait(1);
@@ -356,7 +373,7 @@ TEST_CASE("Shape rotating too fast?", "[object]") {
          {-2,  2, 0}},
         {0, 1, 2, 0, 2, 3}
     );
-    using namespace pga3;
+    shape.set_visible(true);
     scene.add(shape);
     shape.animate().rotate(e23, τ/2).shift(2*e1);
     scene.wait(1);

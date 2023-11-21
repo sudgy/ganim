@@ -60,6 +60,8 @@ TEST_CASE("Scene objects", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
     auto obj1 = TestObject();
     auto obj2 = TestObject();
+    obj1.set_visible(true);
+    obj2.set_visible(true);
     scene.add(obj1);
     REQUIRE(obj1.draw_count == 0);
     REQUIRE(obj2.draw_count == 0);
@@ -77,6 +79,7 @@ TEST_CASE("Scene objects", "[scene]") {
 TEST_CASE("Scene animatable updates", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
     auto obj = TestObject();
+    obj.set_visible(true);
     scene.add(static_cast<Animatable&>(obj));
     int updated = 0;
     obj.add_updater([&]{++updated;});
@@ -85,4 +88,18 @@ TEST_CASE("Scene animatable updates", "[scene]") {
     scene.frame_advance(2);
     REQUIRE(obj.draw_count == 2);
     REQUIRE(updated == 2);
+}
+
+TEST_CASE("Scene drawing visible objects", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto obj = TestObject();
+    scene.add(obj);
+    scene.frame_advance();
+    REQUIRE(obj.draw_count == 0);
+    obj.set_visible(true);
+    scene.frame_advance();
+    REQUIRE(obj.draw_count == 1);
+    obj.set_visible(false);
+    scene.frame_advance();
+    REQUIRE(obj.draw_count == 1);
 }

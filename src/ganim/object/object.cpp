@@ -7,6 +7,13 @@
 using namespace ganim;
 using namespace pga3;
 
+Object& Object::set_visible(bool visible)
+{
+    M_visible = visible;
+    on_set_visible(visible);
+    return *this;
+}
+
 Object& Object::set_color(Color color)
 {
     color.a = M_color.a;
