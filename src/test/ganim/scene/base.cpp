@@ -54,6 +54,8 @@ TEST_CASE("Scene waiting", "[scene]") {
     REQUIRE(scene.time_size() == 11);
     REQUIRE_THROWS(scene.frame_advance(-1));
     REQUIRE_THROWS(scene.wait(-0.1));
+    scene.wait();
+    REQUIRE(scene.time_size() == 15);
 }
 
 TEST_CASE("Scene objects", "[scene]") {

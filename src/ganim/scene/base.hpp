@@ -64,7 +64,7 @@ namespace ganim {
              * amount of time that this functions waits may not be exactly what
              * was passed into this function.
              */
-            void wait(double time);
+            void wait(double time = 1.0);
 
             /** @brief Get the width, in pixels, of this scene. */
             constexpr int pixel_width() const {return M_pixel_width;}
