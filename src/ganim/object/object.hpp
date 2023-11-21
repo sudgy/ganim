@@ -34,22 +34,36 @@ namespace ganim {
             /** @brief Get the color of this object, including alpha. */
             Color get_color() const {return M_color;}
 
+            /** @brief Scale the object about its center */
             Object& scale(double amount);
+            /** @brief Scale the object about a particular point */
             Object& scale(const vga2::Vector& about_point, double amount);
+            /** @brief Scale the object about a particular point */
             Object& scale(const vga3::Vector& about_point, double amount);
+            /** @brief Scale the object about a particular point, represented as
+             * a 2D PGA vector interpreted as a 2D VGA vector
+             */
             Object& scale(const pga2::Vector& about_point, double amount);
+            /** @brief Scale the object about a particular point, represented as
+             * a 3D PGA vector interpreted as a 3D VGA vector
+             */
             Object& scale(const pga3::Vector& about_point, double amount);
+            /** @brief Scale the object about a particular point */
             Object& scale(const pga2::Bivector& about_point, double amount);
+            /** @brief Scale the object about a particular point */
             Object& scale(const pga3::Trivector& about_point, double amount);
+            /** @brief Get the amount that this object is scaled */
             double get_scale() const;
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
+            /** @brief Called when the object is scaled */
             virtual void on_scale(
                 const pga3::Trivector& about_point,
                 double amount
             ) {(void)about_point; (void)amount;}
+            /** @brief Called when the object's color changes */
             virtual void on_color_changed(Color new_color) {(void)new_color;}
             virtual void transformable_on_animate() override final;
             virtual void transformable_on_animation_start() override final;
