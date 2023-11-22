@@ -117,6 +117,23 @@ double Object::get_scale() const
     return M_scale;
 }
 
+void Object::create(double duration)
+{
+    create(duration, rf::smoothererstep);
+}
+
+void Object::create(std::function<double(double)> rate_func)
+{
+    create(1.0, std::move(rate_func));
+}
+
+void Object::create(double duration, std::function<double(double)> rate_func)
+{
+    set_visible(true);
+    animate(duration, std::move(rate_func));
+    M_creating = true;
+}
+
 void Object::transformable_on_animate()
 {
     M_starting_color = M_color;
@@ -149,6 +166,9 @@ void Object::transformable_update_animation(double t)
     auto for_on_scale = current_scale / M_scale;
     M_scale = current_scale;
     on_scale(M_scale_point, for_on_scale);
+    if (M_creating) {
+        M_current_create = M_min_create + (M_max_create - M_min_create) * t;
+    }
     object_update_animation(t);
 }
 
@@ -159,5 +179,6 @@ void Object::transformable_on_animation_end()
         M_real_opacity = -1;
         set_visible(false);
     }
+    M_creating = false;
     object_on_animation_end();
 }

@@ -116,10 +116,10 @@ TEST_CASE("Shape moving", "[object]") {
 TEST_CASE("Shape color", "[object]") {
     auto scene = TestScene(3, 3, 2, 2, 1);
     auto shape = Shape(
-        {{ 1,  1, 0, 1, 0, 0, 1},
-         { 1, -1, 0, 1, 0, 0, 1},
-         {-1, -1, 0, 0, 1, 0, 1},
-         {-1,  1, 0, 0, 1, 0, 1}},
+        {{ 1,  1, 0, 0, 1, 0, 0, 1},
+         { 1, -1, 0, 0, 1, 0, 0, 1},
+         {-1, -1, 0, 0, 0, 1, 0, 1},
+         {-1,  1, 0, 0, 0, 1, 0, 1}},
         {0, 1, 2, 0, 2, 3}
     );
     shape.set_visible(true);
@@ -136,17 +136,17 @@ TEST_CASE("Shape depth test", "[object]") {
     using namespace vga3;
     auto scene = TestScene(1, 1, 1, 1, 1);
     auto red = Shape(
-        {{ 1,  1, 0, 1, 0, 0, 1},
-         { 1, -1, 0, 1, 0, 0, 1},
-         {-1, -1, 0, 1, 0, 0, 1},
-         {-1,  1, 0, 1, 0, 0, 1}},
+        {{ 1,  1, 0, 0, 1, 0, 0, 1},
+         { 1, -1, 0, 0, 1, 0, 0, 1},
+         {-1, -1, 0, 0, 1, 0, 0, 1},
+         {-1,  1, 0, 0, 1, 0, 0, 1}},
         {0, 1, 2, 0, 2, 3}
     );
     auto green = Shape(
-        {{ 1,  1, 0, 0, 1, 0, 1},
-         { 1, -1, 0, 0, 1, 0, 1},
-         {-1, -1, 0, 0, 1, 0, 1},
-         {-1,  1, 0, 0, 1, 0, 1}},
+        {{ 1,  1, 0, 0, 0, 1, 0, 1},
+         { 1, -1, 0, 0, 0, 1, 0, 1},
+         {-1, -1, 0, 0, 0, 1, 0, 1},
+         {-1,  1, 0, 0, 0, 1, 0, 1}},
         {0, 1, 2, 0, 2, 3}
     );
     red.set_visible(true);
@@ -233,25 +233,25 @@ TEST_CASE("Shape opacity", "[object]") {
     using namespace vga2;
     auto scene = TestScene(4, 4, 4, 4, 1);
     auto solid = Shape(
-        {{ 1,  1, 0, 1, 1, 1, 1},
-         { 1, -1, 0, 1, 1, 1, 1},
-         {-1, -1, 0, 1, 1, 1, 1},
-         {-1,  1, 0, 1, 1, 1, 1}},
+        {{ 1,  1, 0, 0, 1, 1, 1, 1},
+         { 1, -1, 0, 0, 1, 1, 1, 1},
+         {-1, -1, 0, 0, 1, 1, 1, 1},
+         {-1,  1, 0, 0, 1, 1, 1, 1}},
         {0, 1, 2, 0, 2, 3}
     );
     solid.shift(e1);
     auto red_trans = Shape(
-        {{ 1,  1, 0, 1, 0, 0, 0.5},
-         { 1, -1, 0, 1, 0, 0, 0.5},
-         {-1, -1, 0, 1, 0, 0, 0.5},
-         {-1,  1, 0, 1, 0, 0, 0.5}},
+        {{ 1,  1, 0, 0, 1, 0, 0, 0.5},
+         { 1, -1, 0, 0, 1, 0, 0, 0.5},
+         {-1, -1, 0, 0, 1, 0, 0, 0.5},
+         {-1,  1, 0, 0, 1, 0, 0, 0.5}},
         {0, 1, 2, 0, 2, 3}
     );
     auto invisible = Shape(
-        {{ 1,  1, 0, 1, 1, 1, 0},
-         { 1, -1, 0, 1, 1, 1, 0},
-         {-1, -1, 0, 1, 1, 1, 0},
-         {-1,  1, 0, 1, 1, 1, 0}},
+        {{ 1,  1, 0, 0, 1, 1, 1, 0},
+         { 1, -1, 0, 0, 1, 1, 1, 0},
+         {-1, -1, 0, 0, 1, 1, 1, 0},
+         {-1,  1, 0, 0, 1, 1, 1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
     solid.set_visible(true);
@@ -382,4 +382,27 @@ TEST_CASE("Shape rotating too fast?", "[object]") {
     shape.rotate(e12 + 0.5*e13 + 0.2*e23, 0.05);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(scene.time_size() - 1, 1, 1) == Color("FFFFFF"));
+}
+
+TEST_CASE("Shape creating", "[object]") {
+    auto scene = TestScene(16, 1, 4, 2, 4);
+    auto shape = Shape(
+        {{-1,  1, 0, 0},
+         {-1, -1, 0, 0},
+         { 0,  1, 0, 1},
+         { 0, -1, 0, 1},
+         { 2,  1, 0, 2},
+         { 2, -1, 0, 2}},
+        {0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5}
+    );
+    scene.add(shape);
+    shape.create([](double t) {return t;});
+    scene.wait();
+    REQUIRE(scene.get_pixel(0, 4, 0) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(0, 6, 0) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 6, 0) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(1, 8, 0) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 8, 0) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(2, 12, 0) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 12, 0) == Color("FFFFFF"));
 }

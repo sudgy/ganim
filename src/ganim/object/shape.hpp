@@ -36,6 +36,7 @@ namespace ganim {
                 float x = 0; ///< The x coordinate of the vertex
                 float y = 0; ///< The y coordinate of the vertex
                 float z = 0; ///< The z coordinate of the vertex
+                float t = 0; ///< When to draw this vertex when creating
                 float r = 1; ///< The red component of the vertex
                 float g = 1; ///< The green component of the vertex
                 float b = 1; ///< The blue component of the vertex

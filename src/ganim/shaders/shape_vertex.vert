@@ -1,7 +1,9 @@
 R"(
 #version 330 core
 layout (location = 0) in vec3 in_pos;
-layout (location = 1) in vec4 in_color;
+layout (location = 1) in float in_t;
+layout (location = 2) in vec4 in_color;
+out float vertex_t;
 out vec4 out_color;
 uniform vec2 camera_scale;
 uniform vec4 view[2];
@@ -48,6 +50,7 @@ void main()
     pos.y *= -camera_scale.y; // ffmpeg has the y axis swapped
     pos.z *= pos.z / 1024;
     gl_Position = pos;
+    vertex_t = in_t;
     out_color = in_color;
 }
 )"
