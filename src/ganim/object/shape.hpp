@@ -62,6 +62,8 @@ namespace ganim {
             gl::Buffer M_vertex_buffer;
             gl::Buffer M_element_buffer;
             int M_index_size = -1;
+            double M_min_draw_fraction = INFINITY;
+            double M_max_draw_fraction = -INFINITY;
     };
 }
 

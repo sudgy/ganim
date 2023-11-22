@@ -16,8 +16,8 @@ Shape::Shape(
 ) : M_index_size(indices.size())
 {
     auto ts = vertices | std::views::transform([](const auto& v) {return v.t;});
-    set_min_create(*std::ranges::min_element(ts));
-    set_max_create(*std::ranges::max_element(ts));
+    M_min_draw_fraction = *std::ranges::min_element(ts);
+    M_max_draw_fraction = *std::ranges::max_element(ts);
     glBindVertexArray(M_vertex_array);
     glBindBuffer(GL_ARRAY_BUFFER, M_vertex_buffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, M_element_buffer);
@@ -48,7 +48,9 @@ void Shape::draw()
             get_color().r / 255.0, get_color().g / 255.0,
             get_color().b / 255.0, get_color().a / 255.0);
     glUniform1f(shader.get_uniform("scale"), get_scale());
-    glUniform1f(shader.get_uniform("this_t"), get_current_create());
+    auto actual_draw_fraction = M_min_draw_fraction
+        + (M_max_draw_fraction - M_min_draw_fraction) * get_draw_fraction();
+    glUniform1f(shader.get_uniform("this_t"), actual_draw_fraction);
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, M_index_size, GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);

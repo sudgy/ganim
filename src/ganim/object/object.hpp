@@ -80,10 +80,7 @@ namespace ganim {
                 double duration,
                 std::function<double(double)> rate_func
             );
-            void set_min_create(double min) {M_min_create = min;}
-            void set_max_create(double max) {M_max_create = max;}
-            double get_current_create() const {return M_current_create;}
-            void set_current_create(double value) {M_current_create = value;}
+            double get_draw_fraction() const {return M_draw_fraction;}
 
             void interpolate(Object& start, Object& end, double t);
 
@@ -111,9 +108,7 @@ namespace ganim {
             double M_ending_scale = 1;
             pga3::Trivector M_scale_point;
             double M_real_opacity = -1;
-            double M_min_create = INFINITY;
-            double M_max_create = -INFINITY;
-            double M_current_create = INFINITY;
+            double M_draw_fraction = 1;
             bool M_creating = false;
             bool M_visible = false;
     };

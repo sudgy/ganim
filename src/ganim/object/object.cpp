@@ -180,7 +180,7 @@ void Object::transformable_update_animation(double t)
         = M_starting_scale + (M_ending_scale - M_starting_scale) * t;
     M_scale = current_scale;
     if (M_creating) {
-        M_current_create = M_min_create + (M_max_create - M_min_create) * t;
+        M_draw_fraction = t;
     }
     object_update_animation(t);
 }
