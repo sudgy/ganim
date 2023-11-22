@@ -147,6 +147,8 @@ void Object::interpolate(Object& start, Object& end, double t)
     auto current_scale
         = start.M_scale + (end.M_scale - start.M_scale) * t;
     scale(current_scale / M_scale);
+    set_draw_fraction(start.M_draw_fraction
+            + (end.M_draw_fraction - start.M_draw_fraction) * t);
 }
 
 void Object::transformable_on_animate()

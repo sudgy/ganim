@@ -295,18 +295,24 @@ TEST_CASE("Object interpolate", "[object]") {
     auto test3 = TestObject();
     test2.set_color_with_alpha("00000000");
     test2.scale(2);
+    test2.set_draw_fraction(0.25);
     test3.set_color_with_alpha("FFFFFFFF");
     test3.scale(6);
+    test3.set_draw_fraction(0.75);
     test1.interpolate(test2, test3, 0.25);
     REQUIRE(test1.get_color() == "3F3F3F3F");
     REQUIRE(test1.get_scale() == 3);
+    REQUIRE(test1.get_draw_fraction() == 0.375);
     test1.interpolate(test2, test3, 0.5);
     REQUIRE(test1.get_color() == "7F7F7F7F");
     REQUIRE(test1.get_scale() == 4);
+    REQUIRE(test1.get_draw_fraction() == 0.5);
     test1.interpolate(test2, test3, 0.75);
     REQUIRE(test1.get_color() == "BFBFBFBF");
     REQUIRE(test1.get_scale() == 5);
+    REQUIRE(test1.get_draw_fraction() == 0.625);
     test1.interpolate(test2, test3, 1);
     REQUIRE(test1.get_color() == "FFFFFFFF");
     REQUIRE(test1.get_scale() == 6);
+    REQUIRE(test1.get_draw_fraction() == 0.75);
 }

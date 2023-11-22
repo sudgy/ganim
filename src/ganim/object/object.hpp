@@ -80,6 +80,8 @@ namespace ganim {
                 double duration,
                 std::function<double(double)> rate_func
             );
+            virtual void set_draw_fraction(double value)
+                {M_draw_fraction = value;}
             double get_draw_fraction() const {return M_draw_fraction;}
 
             void interpolate(Object& start, Object& end, double t);
