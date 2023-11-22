@@ -1,0 +1,6 @@
+#include "ganim/object/animatable.hpp"
+#include "ganim/object/transformable.hpp"
+#include "ganim/object/object.hpp"
+#include "ganim/object/drawable.hpp"
+#include "ganim/object/shaders.hpp"
+#include "ganim/object/shape.hpp"

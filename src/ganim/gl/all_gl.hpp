@@ -1,0 +1,6 @@
+#include "ganim/gl/gl.hpp"
+#include "ganim/gl/buffer.hpp"
+#include "ganim/gl/framebuffer.hpp"
+#include "ganim/gl/shader.hpp"
+#include "ganim/gl/texture.hpp"
+#include "ganim/gl/vertex_array.hpp"
