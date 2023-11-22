@@ -85,6 +85,8 @@ namespace ganim {
             double get_current_create() const {return M_current_create;}
             void set_current_create(double value) {M_current_create = value;}
 
+            void interpolate(Object& start, Object& end, double t);
+
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:

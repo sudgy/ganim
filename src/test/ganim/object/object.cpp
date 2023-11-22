@@ -288,3 +288,25 @@ TEST_CASE("Object fading", "[object]") {
     REQUIRE(!test.is_visible());
     REQUIRE(test.get_color().a == 0x7F);
 }
+
+TEST_CASE("Object interpolate", "[object]") {
+    auto test1 = TestObject();
+    auto test2 = TestObject();
+    auto test3 = TestObject();
+    test2.set_color_with_alpha("00000000");
+    test2.scale(2);
+    test3.set_color_with_alpha("FFFFFFFF");
+    test3.scale(6);
+    test1.interpolate(test2, test3, 0.25);
+    REQUIRE(test1.get_color() == "3F3F3F3F");
+    REQUIRE(test1.get_scale() == 3);
+    test1.interpolate(test2, test3, 0.5);
+    REQUIRE(test1.get_color() == "7F7F7F7F");
+    REQUIRE(test1.get_scale() == 4);
+    test1.interpolate(test2, test3, 0.75);
+    REQUIRE(test1.get_color() == "BFBFBFBF");
+    REQUIRE(test1.get_scale() == 5);
+    test1.interpolate(test2, test3, 1);
+    REQUIRE(test1.get_color() == "FFFFFFFF");
+    REQUIRE(test1.get_scale() == 6);
+}
