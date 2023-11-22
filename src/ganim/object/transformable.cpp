@@ -45,7 +45,6 @@ Transformable& Transformable::apply_rotor(const Even& rotor)
         auto x = 1 / std::sqrt(a);
         auto y = -b*x*x*x/2;
         M_rotor *= x + y*e0123;
-        on_apply_rotor(rotor);
     }
     return *this;
 }

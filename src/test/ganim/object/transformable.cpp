@@ -18,12 +18,16 @@ namespace {
             bool on_animation_start = false;
             double last_animation_t = -1;
             bool on_animation_end = false;
-        private:
-            virtual void on_apply_rotor(const pga3::Even& rotor) override
+            using Transformable::apply_rotor;
+            virtual TestTransformable& apply_rotor(const pga3::Even& rotor)
+                override
             {
+                Transformable::apply_rotor(rotor);
                 last_applied_rotor = rotor;
+                return *this;
             }
 
+        private:
             virtual void transformable_on_animate() override
             {
                 on_animate = true;
@@ -147,7 +151,6 @@ TEST_CASE("Transformable animate", "[object]") {
     test.set_fps(4);
     test.animate([](double x){return x*x;}).rotate(e12, τ/2);
     REQUIRE_THAT(r, GAEquals(1));
-    REQUIRE_THAT(r2, GAEquals(0));
     test.update();
     REQUIRE_THAT(r, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));
     REQUIRE_THAT(r2, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));

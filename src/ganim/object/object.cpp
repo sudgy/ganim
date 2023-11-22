@@ -11,7 +11,6 @@ using namespace pga3;
 Object& Object::set_visible(bool visible)
 {
     M_visible = visible;
-    on_set_visible(visible);
     return *this;
 }
 
@@ -28,7 +27,6 @@ Object& Object::set_color_with_alpha(Color color)
     }
     else {
         M_color = color;
-        on_color_changed(color);
     }
     return *this;
 }
@@ -107,7 +105,6 @@ Object& Object::scale(const pga3::Trivector& about_point, double amount)
     }
     else {
         M_scale *= amount;
-        on_scale(about_point, amount);
     }
     return *this;
 }
@@ -163,9 +160,7 @@ void Object::transformable_update_animation(double t)
     set_color_with_alpha(new_color);
     auto current_scale
         = M_starting_scale + (M_ending_scale - M_starting_scale) * t;
-    auto for_on_scale = current_scale / M_scale;
     M_scale = current_scale;
-    on_scale(M_scale_point, for_on_scale);
     if (M_creating) {
         M_current_create = M_min_create + (M_max_create - M_min_create) * t;
     }

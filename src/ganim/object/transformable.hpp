@@ -19,10 +19,7 @@ namespace ganim {
  *
  * It's basically just a 3D PGA rotor with a bunch of utilities to make it
  * easier to apply operations to it.  Just call whatever functions you want on
- * it, then get the rotor with @ref Transformable::get_rotor.  Note that because
- * some transformable types want to do more when a rotor is applied, there is a
- * virtual function @ref Transformable::on_apply_rotor that you can overload if
- * you wish.
+ * it, then get the rotor with @ref Transformable::get_rotor.
  *
  * Note that unlike in manim, the center of an object is not considered to be
  * the center of the object's bounding box.  Instead, it's just whatever the
@@ -56,34 +53,26 @@ class Transformable : public Animatable {
          *
          * This will multiply the input rotor on the right of the current rotor,
          * so it will happen *after* the transformation that already exists.
-         * This function will also pass the rotor parameter to @ref
-         * on_apply_rotor.
          */
         Transformable& apply_rotor(const vga2::Even& rotor);
         /** @brief Compose this rotor with another one.
          *
          * This will multiply the input rotor on the right of the current rotor,
          * so it will happen *after* the transformation that already exists.
-         * This function will also pass the rotor parameter to @ref
-         * on_apply_rotor.
          */
         Transformable& apply_rotor(const vga3::Even& rotor);
         /** @brief Compose this rotor with another one.
          *
          * This will multiply the input rotor on the right of the current rotor,
          * so it will happen *after* the transformation that already exists.
-         * This function will also pass the rotor parameter to @ref
-         * on_apply_rotor.
          */
         Transformable& apply_rotor(const pga2::Even& rotor);
         /** @brief Compose this rotor with another one.
          *
          * This will multiply the input rotor on the right of the current rotor,
          * so it will happen *after* the transformation that already exists.
-         * This function will also pass the rotor parameter to @ref
-         * on_apply_rotor.
          */
-        Transformable& apply_rotor(const pga3::Even& rotor);
+        virtual Transformable& apply_rotor(const pga3::Even& rotor);
 
         /** @brief Move the center of the object to the point represented by the
          * 2D VGA vector p.
@@ -171,14 +160,6 @@ class Transformable : public Animatable {
         GANIM_ANIMATABLE_CHAIN_DECLS(Transformable)
 
     private:
-        /** @brief Allows for subclasses to have special behavior when a rotor
-         * is applied.
-         *
-         * This function will be called by @ref apply_rotor and, by proxy, any
-         * of the other functions that modifies the rotor.  The default
-         * implementation is to just do nothing.
-         */
-        virtual void on_apply_rotor(const pga3::Even&) {}
         virtual void on_animate() override final;
         virtual void on_animation_start() override final;
         virtual void update_animation(double t) override final;
