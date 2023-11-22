@@ -1,20 +1,14 @@
 #include <SFML/Window.hpp>
-#include "ganim/gl/gl.hpp"
-
-#include "ganim/scene/scene.hpp"
-#include "ganim/object/shape.hpp"
-#include "ganim/animation/creation.hpp"
-
-#include "ganim/math.hpp"
+#include "ganim.hpp"
 
 using namespace ganim;
 
-int main()
+void square_create()
 {
     auto settings = sf::ContextSettings(24, 0, 0, 3, 3);
     auto context = sf::Context(settings, 1, 1);
 
-    auto scene = Scene("Test.mp4", 2560, 1440, 16, 9, 60);
+    auto scene = Scene("square_create.mp4", 2560, 1440, 16, 9, 60);
     std::array shapes {
         Shape(
             {{ 0,  0, 0, 0, 1, 1, 0},
