@@ -157,6 +157,8 @@ class Transformable : public Animatable {
             double angle = 1
         );
 
+        void interpolate(Transformable& start, Transformable& end, double t);
+
         GANIM_ANIMATABLE_CHAIN_DECLS(Transformable)
 
     private:

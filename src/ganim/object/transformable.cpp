@@ -119,6 +119,18 @@ Transformable& Transformable::rotate(
     return apply_rotor(ga_exp(about_line * angle / 2));
 }
 
+void Transformable::interpolate(
+    Transformable& start,
+    Transformable& end,
+    double t
+)
+{
+    const auto& r1 = start.M_rotor;
+    const auto& r2 = end.M_rotor;
+    auto final_rotor = r1 * ga_exp(t*ga_log(~r1*r2));
+    apply_rotor(~M_rotor * final_rotor);
+}
+
 void Transformable::on_animate()
 {
     M_new_rotor = 1;

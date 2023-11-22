@@ -208,3 +208,20 @@ TEST_CASE("Transformable sub animations", "[object]") {
     REQUIRE(test.last_animation_t == 1);
     REQUIRE(test.on_animation_end);
 }
+
+TEST_CASE("Transformable interpolate", "[object]") {
+    using namespace pga3;
+    auto test1 = TestTransformable();
+    auto test2 = TestTransformable();
+    auto test3 = TestTransformable();
+    test2.shift(e1);
+    test3.shift(5*e1);
+    test1.interpolate(test2, test3, 0.25);
+    REQUIRE_THAT(test1.get_rotor(), GAEquals(1 + e01));
+    test1.interpolate(test2, test3, 0.5);
+    REQUIRE_THAT(test1.get_rotor(), GAEquals(1 + 1.5*e01));
+    test1.interpolate(test2, test3, 0.75);
+    REQUIRE_THAT(test1.get_rotor(), GAEquals(1 + 2*e01));
+    test1.interpolate(test2, test3, 1);
+    REQUIRE_THAT(test1.get_rotor(), GAEquals(1 + 2.5*e01));
+}
