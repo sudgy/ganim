@@ -20,9 +20,7 @@ namespace ganim {
      *
      * This class has all of the scene logic except for what to actually do with
      * the final result.  Look at the subclasses to see how to actually make a
-     * scene.  Note that before any version of this class is constructed, you
-     * MUST have a valid and active OpenGL context!  The constructor creates a
-     * framebuffer so it needs a context.
+     * scene.
      */
     class SceneBase {
         public:

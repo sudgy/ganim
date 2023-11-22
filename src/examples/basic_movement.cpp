@@ -5,9 +5,6 @@ using namespace ganim;
 
 void basic_movement()
 {
-    auto settings = sf::ContextSettings(24, 0, 0, 3, 3);
-    auto context = sf::Context(settings, 1, 1);
-
     auto scene = Scene("basic_movement.mp4", 2560, 1440, 16, 9, 60);
     std::array<Shape, 6> shapes {
         Shape(

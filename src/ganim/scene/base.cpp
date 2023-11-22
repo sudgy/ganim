@@ -2,9 +2,17 @@
 
 #include <stdexcept>
 #include <cmath>
+#include <SFML/Window.hpp>
 
 #include "ganim/gl/gl.hpp"
 #include "ganim/object/shaders.hpp"
+
+// I may need to do something else later, but for now this should work to get a
+// valid context
+namespace {
+    auto settings = sf::ContextSettings(24, 0, 0, 3, 3);
+    auto context = sf::Context(settings, 1, 1);
+}
 
 using namespace ganim;
 

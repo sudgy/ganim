@@ -5,9 +5,6 @@ using namespace ganim;
 
 void square_create()
 {
-    auto settings = sf::ContextSettings(24, 0, 0, 3, 3);
-    auto context = sf::Context(settings, 1, 1);
-
     auto scene = Scene("square_create.mp4", 2560, 1440, 16, 9, 60);
     std::array shapes {
         Shape(
