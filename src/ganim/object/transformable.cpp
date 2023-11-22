@@ -33,19 +33,14 @@ Transformable& Transformable::apply_rotor(const pga2::Even& rotor)
 
 Transformable& Transformable::apply_rotor(const Even& rotor)
 {
-    if (starting_animation()) {
-        M_new_rotor *= rotor;
-    }
-    else {
-        M_rotor *= rotor;
-        // Normalize the rotor
-        auto norm2 = M_rotor * ~M_rotor;
-        auto a = norm2.blade_project<e>();
-        auto b = norm2.blade_project<e0123>();
-        auto x = 1 / std::sqrt(a);
-        auto y = -b*x*x*x/2;
-        M_rotor *= x + y*e0123;
-    }
+    M_rotor *= rotor;
+    // Normalize the rotor
+    auto norm2 = M_rotor * ~M_rotor;
+    auto a = norm2.blade_project<e>();
+    auto b = norm2.blade_project<e0123>();
+    auto x = 1 / std::sqrt(a);
+    auto y = -b*x*x*x/2;
+    M_rotor *= x + y*e0123;
     return *this;
 }
 
@@ -120,8 +115,8 @@ Transformable& Transformable::rotate(
 }
 
 void Transformable::interpolate(
-    Transformable& start,
-    Transformable& end,
+    const Transformable& start,
+    const Transformable& end,
     double t
 )
 {
@@ -129,29 +124,4 @@ void Transformable::interpolate(
     const auto& r2 = end.M_rotor;
     auto final_rotor = r1 * ga_exp(t*ga_log(~r1*r2));
     apply_rotor(~M_rotor * final_rotor);
-}
-
-void Transformable::on_animate()
-{
-    M_new_rotor = 1;
-    transformable_on_animate();
-}
-
-void Transformable::on_animation_start()
-{
-    M_new_log = ga_log(M_new_rotor);
-    M_new_rotor = M_rotor;
-    transformable_on_animation_start();
-}
-
-void Transformable::update_animation(double t)
-{
-    auto new_rotor = M_new_rotor * ga_exp(M_new_log * t);
-    apply_rotor(~M_rotor * new_rotor);
-    transformable_update_animation(t);
-}
-
-void Transformable::on_animation_end()
-{
-    transformable_on_animation_end();
 }

@@ -2,6 +2,7 @@
 
 #include "ganim/object/object.hpp"
 
+#include "ganim/animation/animation.hpp"
 #include "test/ganim/ga_equals.hpp"
 
 using namespace ganim;
@@ -9,10 +10,6 @@ using namespace ganim;
 namespace {
     class TestObject : public Object {
         public:
-            bool on_animate = false;
-            bool on_animation_start = false;
-            double last_animation_t = -1;
-            bool on_animation_end = false;
             Color last_change;
             pga3::Trivector scaled_point;
             double last_scale = -1;
@@ -41,24 +38,8 @@ namespace {
                 last_scale = amount;
                 return *this;
             }
-
-        private:
-            virtual void object_on_animate() override
-            {
-                on_animate = true;
-            }
-            virtual void object_on_animation_start() override
-            {
-                on_animation_start = true;
-            }
-            virtual void object_update_animation(double t) override
-            {
-                last_animation_t = t;
-            }
-            virtual void object_on_animation_end() override
-            {
-                on_animation_end = true;
-            }
+            std::unique_ptr<TestObject> anim_copy() const
+                {return std::make_unique<TestObject>(*this);}
     };
 }
 
@@ -79,7 +60,8 @@ TEST_CASE("Object color", "[object]") {
 TEST_CASE("Object animating color", "[object]") {
     auto test = TestObject();
     test.set_fps(4);
-    test.animate([](double t){return t;}).set_color("000000");
+    animate(test, {.rate_function = [](double t){return t;}})
+        .set_color("000000");
     REQUIRE(test.get_color() == Color("FFFFFF"));
     test.update();
     REQUIRE(test.get_color() == Color("BFBFBF"));
@@ -93,7 +75,8 @@ TEST_CASE("Object animating color", "[object]") {
     test.update();
     REQUIRE(test.get_color() == Color("000000"));
     REQUIRE(test.last_change == Color("000000"));
-    test.animate([](double t){return t;}).set_opacity(0.5);
+    animate(test, {.rate_function = [](double t){return t;}})
+        .set_opacity(0.5);
     REQUIRE(test.get_color() == Color("000000FF"));
     test.update();
     REQUIRE(test.get_color() == Color("000000DF"));
@@ -107,26 +90,6 @@ TEST_CASE("Object animating color", "[object]") {
     test.update();
     REQUIRE(test.get_color() == Color("0000007F"));
     REQUIRE(test.last_change == Color("0000007F"));
-}
-
-TEST_CASE("Object sub animations", "[object]") {
-    auto test = TestObject();
-    test.set_fps(2);
-    test.animate([](double t){return t;});
-    REQUIRE(test.on_animate);
-    REQUIRE(!test.on_animation_start);
-    REQUIRE(test.last_animation_t == -1);
-    REQUIRE(!test.on_animation_end);
-    test.update();
-    REQUIRE(test.on_animate);
-    REQUIRE(test.on_animation_start);
-    REQUIRE(test.last_animation_t == 0.5);
-    REQUIRE(!test.on_animation_end);
-    test.update();
-    REQUIRE(test.on_animate);
-    REQUIRE(test.on_animation_start);
-    REQUIRE(test.last_animation_t == 1);
-    REQUIRE(test.on_animation_end);
 }
 
 TEST_CASE("Object scaling", "[object]") {
@@ -195,29 +158,25 @@ TEST_CASE("Object animating scale", "[object]") {
         p += e123;
         return ~test.get_rotor()*p*test.get_rotor();
     };
-    test.animate([](double t){return t;}).scale(e1 + e2, 2);
+    animate(test, {.rate_function = [](double t){return t;}})
+        .scale(e1 + e2, 2);
     auto p = (-e1 + e0).dual();
     REQUIRE_THAT(get_p(p), GAEquals(e123));
     test.update();
     REQUIRE_THAT(get_p(p), GAEquals((-0.25*e1 - 0.25*e2 + e0).dual()));
-    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
-    //REQUIRE(test.last_scale == 1.25 / 1.0);
+    REQUIRE(test.last_scale == 1.25 / 1.0);
     test.update();
     REQUIRE_THAT(get_p(p), GAEquals((-0.5*e1 - 0.5*e2 + e0).dual()));
-    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
-    //REQUIRE(test.last_scale == 1.5 / 1.25);
+    REQUIRE(test.last_scale == 1.5 / 1.25);
     test.update();
     REQUIRE_THAT(get_p(p), GAEquals((-0.75*e1 - 0.75*e2 + e0).dual()));
-    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
-    //REQUIRE(test.last_scale == 1.75 / 1.5);
+    REQUIRE(test.last_scale == 1.75 / 1.5);
     test.update();
     REQUIRE_THAT(get_p(p), GAEquals((-e1 - e2 + e0).dual()));
-    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
-    //REQUIRE(test.last_scale == 2.0 / 1.75);
+    REQUIRE(test.last_scale == 2.0 / 1.75);
     test.update();
     REQUIRE_THAT(get_p(p), GAEquals((-e1 - e2 + e0).dual()));
-    REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e2 + e0).dual()));
-    //REQUIRE(test.last_scale == 2.0 / 1.75);
+    REQUIRE(test.last_scale == 2.0 / 1.75);
 }
 
 TEST_CASE("Object visibile", "[object]") {
@@ -230,63 +189,6 @@ TEST_CASE("Object visibile", "[object]") {
     test.set_visible(false);
     REQUIRE(!test.is_visible());
     REQUIRE(!test.last_visible);
-}
-
-TEST_CASE("Object fading", "[object]") {
-    auto test = TestObject();
-    test.set_fps(4);
-    test.fade_in();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x0);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x3F);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x7F);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0xBF);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0xFF);
-    test.fade_out();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0xFF);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0xBF);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x7F);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x3F);
-    test.update();
-    REQUIRE(!test.is_visible());
-    REQUIRE(test.get_color().a == 0xFF);
-
-    test.set_opacity(0.5);
-    REQUIRE(!test.is_visible());
-    REQUIRE(test.get_color().a == 0x7F);
-    test.fade_in(0.5);
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x0);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x3F);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x7F);
-    test.fade_out(0.5);
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x7F);
-    test.update();
-    REQUIRE(test.is_visible());
-    REQUIRE(test.get_color().a == 0x3F);
-    test.update();
-    REQUIRE(!test.is_visible());
-    REQUIRE(test.get_color().a == 0x7F);
 }
 
 TEST_CASE("Object interpolate", "[object]") {

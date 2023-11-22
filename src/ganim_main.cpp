@@ -3,6 +3,7 @@
 
 #include "ganim/scene/scene.hpp"
 #include "ganim/object/shape.hpp"
+#include "ganim/animation/creation.hpp"
 
 #include "ganim/math.hpp"
 
@@ -73,7 +74,7 @@ int main()
     shapes[5].shift( 3*e1 - 1.5*e2);
     for (auto& shape : shapes) {
         scene.add(shape);
-        shape.create();
+        create(shape);
         scene.wait();
     }
     scene.wait();

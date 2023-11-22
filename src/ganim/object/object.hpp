@@ -33,18 +33,6 @@ namespace ganim {
             Object& set_opacity(double opacity);
             /** @brief Get the color of this object, including alpha. */
             Color get_color() const {return M_color;}
-            /** @brief Fades the object in.
-             *
-             * It will call `animate` for you and make the object visible, so no
-             * need to do that.
-             */
-            Object& fade_in(double time = 1.0);
-            /** @brief Fades the object out.
-             *
-             * It will call `animate` for you, so no need to do that.  The
-             * object will be made not visible at the end.
-             */
-            Object& fade_out(double time = 1.0);
 
             /** @brief Scale the object about its center */
             Object& scale(double amount);
@@ -74,44 +62,37 @@ namespace ganim {
             /** @brief See whether this object is visible */
             bool is_visible() const {return M_visible;}
 
-            void create(double duration = 1.0);
-            void create(std::function<double(double)> rate_func);
-            void create(
-                double duration,
-                std::function<double(double)> rate_func
-            );
+            /** @brief Set how much of the object to draw.
+             *
+             * This is used for things like the @ref ganim::create "create"
+             * animation.  Note that this doesn't actually affect anything other
+             * than the value returned by @ref get_draw_fraction!  It's up to
+             * subclasses to use this value to do something interesting.
+             */
             virtual void set_draw_fraction(double value)
                 {M_draw_fraction = value;}
+            /** @brief Get how much of the object to draw.
+             *
+             * This is used for things like the @ref ganim::create "create"
+             * animation.  Note that this doesn't actually affect anything other
+             * than the value returned by @ref get_draw_fraction!  It's up to
+             * subclasses to use this value to do something interesting.
+             */
             double get_draw_fraction() const {return M_draw_fraction;}
 
-            void interpolate(Object& start, Object& end, double t);
+            /** @brief Copy the object for the sake of transformations */
+            std::unique_ptr<Object> anim_copy() const
+                {return std::make_unique<Object>(*this);}
+            /** @brief Interpolate between two Objects */
+            void interpolate(const Object& start, const Object& end, double t);
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
-            virtual void transformable_on_animate() override final;
-            virtual void transformable_on_animation_start() override final;
-            virtual void transformable_update_animation(double t)override final;
-            virtual void transformable_on_animation_end() override final;
-            /** @brief Called by @ref transformable_on_animate */
-            virtual void object_on_animate() {}
-            /** @brief Called by @ref transformable_on_animation_start */
-            virtual void object_on_animation_start() {}
-            /** @brief Called by @ref transformable_update_animation */
-            virtual void object_update_animation(double t) {(void)t;}
-            /** @brief Called by @ref transformable_on_animation_end */
-            virtual void object_on_animation_end() {}
 
             Color M_color = {255, 255, 255, 255};
-            Color M_starting_color;
-            Color M_ending_color;
             double M_scale = 1;
-            double M_starting_scale = 1;
-            double M_ending_scale = 1;
-            pga3::Trivector M_scale_point;
-            double M_real_opacity = -1;
             double M_draw_fraction = 1;
-            bool M_creating = false;
             bool M_visible = false;
     };
 }
@@ -135,10 +116,6 @@ namespace ganim {
         {Object::set_color_with_alpha(color); return *this;} \
     Type& set_opacity(double opacity) \
         {Object::set_opacity(opacity); return *this;} \
-    Type& fade_in(double time = 1.0) \
-        {Object::fade_in(time); return *this;} \
-    Type& fade_out(double time = 1.0) \
-        {Object::fade_out(time); return *this;} \
     Type& scale(double amount) \
         {Object::scale(amount); return *this;} \
     Type& scale(const vga2::Vector& about_point, double amount) \

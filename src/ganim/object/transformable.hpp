@@ -5,6 +5,8 @@
  * @brief Contains the @ref ganim::Transformable "Transformable" class.
  */
 
+#include <memory>
+
 #include "ganim/ga/vga2.hpp"
 #include "ganim/ga/vga3.hpp"
 #include "ganim/ga/pga2.hpp"
@@ -23,8 +25,8 @@ namespace ganim {
  *
  * Note that unlike in manim, the center of an object is not considered to be
  * the center of the object's bounding box.  Instead, it's just whatever the
- * identity is brought to by the object's rotor.  This definition of "center"
- * is what is used in the documentation here.
+ * origin is brought to by the object's rotor.  This definition of "center" is
+ * what is used in the documentation here.
  *
  * Also, note that in ganim, rotors transform in the opposite way than most
  * people do!  Most people use RAR† to do their transformations, whereas here
@@ -157,26 +159,18 @@ class Transformable : public Animatable {
             double angle = 1
         );
 
-        void interpolate(Transformable& start, Transformable& end, double t);
-
-        GANIM_ANIMATABLE_CHAIN_DECLS(Transformable)
+        /** @brief Copy the object for the sake of transformations */
+        std::unique_ptr<Transformable> anim_copy() const
+            {return std::make_unique<Transformable>(*this);}
+        /** @brief Interpolate between two Transformables */
+        void interpolate(
+            const Transformable& start,
+            const Transformable& end,
+            double t
+        );
 
     private:
-        virtual void on_animate() override final;
-        virtual void on_animation_start() override final;
-        virtual void update_animation(double t) override final;
-        virtual void on_animation_end() override final;
-        /** @brief Called by @ref on_animate */
-        virtual void transformable_on_animate() {}
-        /** @brief Called by @ref on_animation_start */
-        virtual void transformable_on_animation_start() {}
-        /** @brief Called by @ref update_animation */
-        virtual void transformable_update_animation(double t) {(void)t;}
-        /** @brief Called by @ref on_animation_end */
-        virtual void transformable_on_animation_end() {}
         pga3::Even M_rotor = 1;
-        pga3::Even M_new_rotor = 1;
-        pga3::Bivector M_new_log;
 };
 
 }
@@ -185,13 +179,9 @@ class Transformable : public Animatable {
  * functions in a subclass to allow chaining in the subclass as well
  *
  * To use it, just call this macro in the public part of the class declaration,
- * where the Type parameter is the name of the subclass.  Note that it will
- * automatically define the @ref ganim::Animatable "Animatable" chainable
- * functions as well, so you don't need to use both @ref
- * GANIM_ANIMATABLE_CHAIN_DECLS and this macro.
+ * where the Type parameter is the name of the subclass.
  */
 #define GANIM_TRANSFORMABLE_CHAIN_DECLS(Type) \
-    GANIM_ANIMATABLE_CHAIN_DECLS(Type) \
     Type& reset() \
         {Transformable::reset(); return *this;} \
     Type& apply_rotor(const vga2::Even& rotor) \

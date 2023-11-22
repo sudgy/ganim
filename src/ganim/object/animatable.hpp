@@ -11,17 +11,11 @@
 namespace ganim {
     /** @brief Represents any kind of thing that can be animated/updated
      *
-     * It has two main roles: to do animations, and to do updates.  Updates come
-     * along for the ride because they are necessary for animations to work.  To
-     * make your own animatable object, derive from this one and overload @ref
-     * on_animation_start, @ref update_animation, and @ref on_animation_end.
-     * Note that the subclasses defined in this library make those overrides
-     * final and provide their own virtual functions to override because it is
-     * essential that their overrides are always called.
-     *
-     * All of the @ref animate functions return `*this` to allow for chaining.
-     * If you want the chaining to work on subclasses, use the @ref
-     * GANIM_ANIMATABLE_CHAIN_DECLS macro.
+     * This class doesn't actually implement any animations itself.  It only
+     * contains functions for updating/adding updaters.  To actually animate
+     * things, see @ref ganim::Animation "Animation".  Also, note that deriving
+     * from this class is not enough to be animatable.  You must also satisfy
+     * the @ref ganim::animatable "animatable" concept.
      */
     class Animatable {
         public:
@@ -30,56 +24,14 @@ namespace ganim {
             /** @brief Set the fps for calculating how many frames animations
              * will take
              *
-             * Note that calling @ref animate before this will throw an
-             * exception!
+             * Note that trying to animate before calling this will throw an
+             * exception!  This function is called when adding this object to a
+             * scene, so in practice this means that you must add an object to a
+             * scene before animating it.
              */
             void set_fps(int fps);
-            /** @brief Start an animation
-             *
-             * This will just call @ref animate(double,
-             * std::function<double(double)>) with a duration of 1 and the rate
-             * function set to smoothererstep.
-             *
-             * @return `*this`
-             */
-            Animatable& animate();
-            /** @brief Start an animation
-             *
-             * This will just call @ref animate(double,
-             * std::function<double(double)>) with the given duration and the
-             * rate function set to smoothererstep.
-             *
-             * @return `*this`
-             */
-            Animatable& animate(double duration);
-            /** @brief Start an animation
-             *
-             * This will just call @ref animate(double,
-             * std::function<double(double)>) with a duration of 1 and the given
-             * rate function.
-             *
-             * @return `*this`
-             */
-            Animatable& animate(std::function<double(double)> rate_func);
-            /** @brief Start an animation
-             *
-             * @param duration The duration, in seconds, of this animation.
-             * @param rate_func The rate function used to specify how fast the
-             * animation proceeds at different points.
-             *
-             * @return `*this`
-             */
-            Animatable& animate(
-                double duration,
-                std::function<double(double)> rate_func
-            );
-            /** @brief Returns true if the object is currently preparing for an
-             * animation
-             */
-            bool starting_animation() const;
-            /** @brief Returns true if the object is currently in an animation
-             */
-            bool in_animation() const;
+            /** @brief Get the fps that this object will use when animating */
+            int get_fps() const {return M_fps;}
 
             /** @brief Add an updater
              *
@@ -120,53 +72,17 @@ namespace ganim {
             void clear_updaters();
             /** @brief Update the object
              *
-             * This will call all the updaters, including ones created by
-             * animations, and remove any that return false.
+             * This will call all of the updaters and remove any that return
+             * false.
              */
             void update();
 
         private:
-            /** @brief Called when @ref animate is called */
-            virtual void on_animate()=0;
-            /** @brief Called right before the animation starts */
-            virtual void on_animation_start()=0;
-            /** @brief Called once each frame an animation is running
-             *
-             * @param t The progress through the animation.  Note that the rate
-             * function will have already been applied to this value, so no need
-             * to do that yourself.  Also, unless a strange rate function is
-             * being used, this value will never be zero!  The first time an
-             * animation runs is on the first frame after the animation is
-             * called, not the zeroth frame.  The state corresponding to t = 0
-             * is assumed to be the state before the animation even started
-             * running.
-             */
-            virtual void update_animation(double t)=0;
-            /** @brief Called when an animation is ending */
-            virtual void on_animation_end()=0;
             int add_updater_void(std::function<void()> updater);
             int add_updater_bool(std::function<bool()> updater);
             std::map<int, std::function<bool()>> M_updaters;
             int M_fps = -1;
-            int M_animation_progress = 0;
-            int M_animation_time = 0;
     };
 }
-
-/** @brief Defines the @ref ganim::Animatable "Animatable" chainable functions
- * in a subclass to allow chaining in the subclass as well
- *
- * To use it, just call this macro in the public part of the class declaration,
- * where the Type parameter is the name of the subclass.
- */
-#define GANIM_ANIMATABLE_CHAIN_DECLS(Type) \
-    Type& animate() \
-        {Animatable::animate(); return *this;} \
-    Type& animate(double duration) \
-        {Animatable::animate(duration); return *this;} \
-    Type& animate(std::function<double(double)> rate_func) \
-        {Animatable::animate(std::move(rate_func)); return *this;} \
-    Type& animate(double duration, std::function<double(double)> rate_func) \
-        {Animatable::animate(duration, std::move(rate_func)); return *this;} \
 
 #endif

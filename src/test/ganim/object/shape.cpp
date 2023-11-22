@@ -4,6 +4,7 @@
 #include "test/ganim/scene/test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
 
+#include "ganim/animation/animation.hpp"
 #include "ganim/math.hpp"
 
 using namespace ganim;
@@ -176,8 +177,9 @@ TEST_CASE("Shape animation", "[object]") {
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
-    shape.animate(2, [](double x){return x;}).shift(2*e1);
-    static_assert(std::is_same_v<decltype(shape.animate().shift(e1)), Shape&>);
+    animate(shape, {2, [](double x){return x;}}).shift(2*e1);
+    // Change this if Shape ever gets things to animate
+    static_assert(std::is_same_v<decltype(animate(shape).shift(e1)), Object&>);
     scene.frame_advance(3);
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -210,7 +212,7 @@ TEST_CASE("Shape camera animation", "[object]") {
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
-    scene.get_camera().animate(2, [](double x){return x;}).shift(-2*e1);
+    animate(scene.get_camera(), {2, [](double x){return x;}}).shift(-2*e1);
     scene.frame_advance(3);
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -355,9 +357,9 @@ TEST_CASE("Shape move back and forth with rotation", "[object]") {
     );
     shape.set_visible(true);
     scene.add(shape);
-    shape.animate().rotate(e23, τ/2);
+    animate(shape).rotate(e23, τ/2);
     scene.wait(1);
-    shape.animate().shift(-e1);
+    animate(shape).shift(-e1);
     scene.wait(1);
     REQUIRE(scene.get_pixel(59, 1, 1) == Color("FFFFFF"));
 }
@@ -375,34 +377,11 @@ TEST_CASE("Shape rotating too fast?", "[object]") {
     );
     shape.set_visible(true);
     scene.add(shape);
-    shape.animate().rotate(e23, τ/2).shift(2*e1);
+    animate(shape).rotate(e23, τ/2).shift(2*e1);
     scene.wait(1);
-    shape.animate().shift(-2*e1);
+    animate(shape).shift(-2*e1);
     scene.wait(1);
     shape.rotate(e12 + 0.5*e13 + 0.2*e23, 0.05);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(scene.time_size() - 1, 1, 1) == Color("FFFFFF"));
-}
-
-TEST_CASE("Shape creating", "[object]") {
-    auto scene = TestScene(16, 1, 4, 2, 4);
-    auto shape = Shape(
-        {{-1,  1, 0, 0},
-         {-1, -1, 0, 0},
-         { 0,  1, 0, 1},
-         { 0, -1, 0, 1},
-         { 2,  1, 0, 2},
-         { 2, -1, 0, 2}},
-        {0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5}
-    );
-    scene.add(shape);
-    shape.create([](double t) {return t;});
-    scene.wait();
-    REQUIRE(scene.get_pixel(0, 4, 0) == Color("FFFFFF"));
-    REQUIRE(scene.get_pixel(0, 6, 0) == Color("000000"));
-    REQUIRE(scene.get_pixel(1, 6, 0) == Color("FFFFFF"));
-    REQUIRE(scene.get_pixel(1, 8, 0) == Color("000000"));
-    REQUIRE(scene.get_pixel(2, 8, 0) == Color("FFFFFF"));
-    REQUIRE(scene.get_pixel(2, 12, 0) == Color("000000"));
-    REQUIRE(scene.get_pixel(3, 12, 0) == Color("FFFFFF"));
 }

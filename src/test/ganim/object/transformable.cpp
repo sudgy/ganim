@@ -3,6 +3,7 @@
 #include "test/ganim/ga_equals.hpp"
 
 #include "ganim/object/transformable.hpp"
+#include "ganim/animation/animation.hpp"
 
 #include "ganim/math.hpp"
 
@@ -14,10 +15,6 @@ namespace {
         public:
             using Transformable::Transformable;
             pga3::Even last_applied_rotor;
-            bool on_animate = false;
-            bool on_animation_start = false;
-            double last_animation_t = -1;
-            bool on_animation_end = false;
             using Transformable::apply_rotor;
             virtual TestTransformable& apply_rotor(const pga3::Even& rotor)
                 override
@@ -26,24 +23,8 @@ namespace {
                 last_applied_rotor = rotor;
                 return *this;
             }
-
-        private:
-            virtual void transformable_on_animate() override
-            {
-                on_animate = true;
-            }
-            virtual void transformable_on_animation_start() override
-            {
-                on_animation_start = true;
-            }
-            virtual void transformable_update_animation(double t) override
-            {
-                last_animation_t = t;
-            }
-            virtual void transformable_on_animation_end() override
-            {
-                on_animation_end = true;
-            }
+            std::unique_ptr<TestTransformable> anim_copy() const
+                {return std::make_unique<TestTransformable>(*this);}
     };
 }
 
@@ -149,7 +130,8 @@ TEST_CASE("Transformable animate", "[object]") {
     const auto& r = test.get_rotor();
     const auto& r2 = test.last_applied_rotor;
     test.set_fps(4);
-    test.animate([](double x){return x*x;}).rotate(e12, τ/2);
+    animate(test, {.rate_function = [](double x){return x*x;}})
+        .rotate(e12, τ/2);
     REQUIRE_THAT(r, GAEquals(1));
     test.update();
     REQUIRE_THAT(r, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));
@@ -178,7 +160,7 @@ TEST_CASE("Transformable non-commuting rotors", "[object]") {
     auto test = TestTransformable();
     test.set_fps(2);
     test.shift(e1);
-    test.animate().rotate(e12, τ/2);
+    animate(test).rotate(e12, τ/2);
     auto& r = test.get_rotor();
     REQUIRE_THAT(~r*e123*r, GAEquals((e1 + e0).dual(), 1e-5));
     test.update();
@@ -187,26 +169,6 @@ TEST_CASE("Transformable non-commuting rotors", "[object]") {
     REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
     test.update();
     REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
-}
-
-TEST_CASE("Transformable sub animations", "[object]") {
-    auto test = TestTransformable();
-    test.set_fps(2);
-    test.animate([](double t){return t;});
-    REQUIRE(test.on_animate);
-    REQUIRE(!test.on_animation_start);
-    REQUIRE(test.last_animation_t == -1);
-    REQUIRE(!test.on_animation_end);
-    test.update();
-    REQUIRE(test.on_animate);
-    REQUIRE(test.on_animation_start);
-    REQUIRE(test.last_animation_t == 0.5);
-    REQUIRE(!test.on_animation_end);
-    test.update();
-    REQUIRE(test.on_animate);
-    REQUIRE(test.on_animation_start);
-    REQUIRE(test.last_animation_t == 1);
-    REQUIRE(test.on_animation_end);
 }
 
 TEST_CASE("Transformable interpolate", "[object]") {
