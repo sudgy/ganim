@@ -7,7 +7,7 @@
 using namespace ganim;
 
 namespace {
-    class TestObject : public Drawable {
+    class TestDrawable : public Drawable {
         public:
             virtual void draw() override
             {
@@ -60,8 +60,8 @@ TEST_CASE("Scene waiting", "[scene]") {
 
 TEST_CASE("Scene objects", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto obj1 = TestObject();
-    auto obj2 = TestObject();
+    auto obj1 = TestDrawable();
+    auto obj2 = TestDrawable();
     obj1.set_visible(true);
     obj2.set_visible(true);
     scene.add(obj1);
@@ -80,7 +80,7 @@ TEST_CASE("Scene objects", "[scene]") {
 
 TEST_CASE("Scene animatable updates", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto obj = TestObject();
+    auto obj = TestDrawable();
     obj.set_visible(true);
     scene.add(static_cast<Animatable&>(obj));
     int updated = 0;
@@ -94,7 +94,7 @@ TEST_CASE("Scene animatable updates", "[scene]") {
 
 TEST_CASE("Scene drawing visible objects", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto obj = TestObject();
+    auto obj = TestDrawable();
     scene.add(obj);
     scene.frame_advance();
     REQUIRE(obj.draw_count == 0);
@@ -104,4 +104,28 @@ TEST_CASE("Scene drawing visible objects", "[scene]") {
     obj.set_visible(false);
     scene.frame_advance();
     REQUIRE(obj.draw_count == 1);
+}
+
+TEST_CASE("Scene adding ranges", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto objs = std::array{
+        TestDrawable(),
+        TestDrawable()
+    };
+    objs[0].set_visible(true);
+    objs[1].set_visible(true);
+    scene.add(objs);
+    int updated1 = 0;
+    int updated2 = 0;
+    objs[0].add_updater([&]{++updated1;});
+    objs[1].add_updater([&]{++updated2;});
+    REQUIRE(objs[0].draw_count == 0);
+    REQUIRE(updated1 == 0);
+    REQUIRE(objs[1].draw_count == 0);
+    REQUIRE(updated2 == 0);
+    scene.frame_advance(2);
+    REQUIRE(objs[0].draw_count == 2);
+    REQUIRE(updated1 == 2);
+    REQUIRE(objs[1].draw_count == 2);
+    REQUIRE(updated2 == 2);
 }
