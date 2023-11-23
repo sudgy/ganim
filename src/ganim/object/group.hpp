@@ -20,6 +20,9 @@ namespace ganim {
  * This class is kind of like a container.  You can iterate in a range-based for
  * loop (although you'll be iterating over pointers, not references), you can
  * query its size, and you can get object references with the index operator.
+ *
+ * It is up to you to ensure that you don't add the same object to a group
+ * multiple times, even transitively.  Things might get weird if you do.
  */
 class Group : public Object {
     public:

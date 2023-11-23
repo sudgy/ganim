@@ -5,7 +5,6 @@
 #include <SFML/Window.hpp>
 
 #include "ganim/gl/gl.hpp"
-#include "ganim/object/shaders.hpp"
 
 // I may need to do something else later, but for now this should work to get a
 // valid context
@@ -100,20 +99,20 @@ void SceneBase::wait(double time)
     frame_advance(amount);
 }
 
-void SceneBase::add(Animatable& object)
-{
-    if (auto p = dynamic_cast<Drawable*>(&object)) add(*p);
-    else add_animatable(object);
-}
-
-void SceneBase::add(Drawable& object)
-{
-    add_animatable(object);
-    M_drawables.emplace_back(&object);
-}
-
 void SceneBase::add_animatable(Animatable& object)
 {
     object.set_fps(M_fps);
     M_objects.emplace_back(&object);
+}
+
+void SceneBase::add_drawable(Drawable& object)
+{
+    M_drawables.emplace_back(&object);
+}
+
+void SceneBase::add_group(Group& object)
+{
+    for (auto* obj : object) {
+        add(*obj);
+    }
 }

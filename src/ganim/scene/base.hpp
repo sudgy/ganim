@@ -11,9 +11,11 @@
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/texture.hpp"
 
-#include "ganim/object/drawable.hpp"
-
 #include "camera.hpp"
+
+#include "ganim/object/shaders.hpp"
+#include "ganim/object/drawable.hpp"
+#include "ganim/object/group.hpp"
 
 namespace ganim {
     /** @brief The base class for scenes, which contains most of the scene logic
@@ -72,8 +74,44 @@ namespace ganim {
             constexpr void set_background_color(const Color& color)
                 {M_background_color = color;}
 
-            void add(Animatable& object);
-            void add(Drawable& object);
+            /** @brief Add an object to a scene
+             *
+             * Note that unlike in manim, this does not make the object visible!
+             * You must set it to be visible manually, or use an animation that
+             * does that for you.
+             */
+            template <typename T>
+            void add(T& object)
+            {
+                if constexpr (std::convertible_to<T&, Animatable&>) {
+                    add_animatable(object);
+                }
+                if constexpr (std::convertible_to<T&, Drawable&>) {
+                    add_drawable(object);
+                    return;
+                }
+                else if constexpr (std::is_polymorphic_v<T>) {
+                    if (auto* p = dynamic_cast<Drawable*>(&object)) {
+                        add_drawable(*p);
+                        return;
+                    }
+                }
+                if constexpr (std::convertible_to<T&, Group>) {
+                    add_group(object);
+                    return;
+                }
+                else if constexpr (std::is_polymorphic_v<T>) {
+                    if (auto* p = dynamic_cast<Group*>(&object)) {
+                        add_group(*p);
+                        return;
+                    }
+                }
+                if constexpr (std::ranges::input_range<T>) {
+                    for (auto& obj : object) {
+                        add(obj);
+                    }
+                }
+            }
             template <typename... Ts> requires(sizeof...(Ts) > 1)
             void add(Ts&... objects)
             {
@@ -91,6 +129,8 @@ namespace ganim {
             virtual void process_frame()=0;
 
             void add_animatable(Animatable& object);
+            void add_drawable(Drawable& object);
+            void add_group(Group& object);
 
             gl::Framebuffer M_framebuffer;
             gl::Texture M_framebuffer_texture;

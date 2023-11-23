@@ -1,8 +1,20 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "ganim/object/group.hpp"
+#include "test/ganim/scene/test_scene.hpp"
 
 using namespace ganim;
+
+namespace {
+    class TestDrawable : public Drawable {
+        public:
+            virtual void draw() override
+            {
+                ++draw_count;
+            }
+            int draw_count = 0;
+    };
+}
 
 TEST_CASE("Group adding", "[object]") {
     auto leaf12 = std::array{
@@ -40,4 +52,46 @@ TEST_CASE("Group adding", "[object]") {
         else REQUIRE(false);
         ++i;
     }
+}
+
+TEST_CASE("Group adding to scene", "[object]") {
+    auto obj1 = Object();
+    auto obj2 = Object();
+    auto draw = TestDrawable();
+    auto sub1 = Group();
+    auto sub2 = Group();
+    auto test = Group();
+    int obj1_updated = 0;
+    int obj2_updated = 0;
+    int draw_updated = 0;
+    int sub1_updated = 0;
+    int sub2_updated = 0;
+    int test_updated = 0;
+    obj1.add_updater([&]{++obj1_updated;});
+    obj2.add_updater([&]{++obj2_updated;});
+    draw.add_updater([&]{++draw_updated;});
+    sub1.add_updater([&]{++sub1_updated;});
+    sub2.add_updater([&]{++sub2_updated;});
+    test.add_updater([&]{++test_updated;});
+
+    sub1.add(obj1, draw);
+    test.add(sub1, sub2, obj2);
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    scene.add(test);
+    draw.set_visible(true);
+    REQUIRE(obj1_updated == 0);
+    REQUIRE(obj2_updated == 0);
+    REQUIRE(draw_updated == 0);
+    REQUIRE(sub1_updated == 0);
+    REQUIRE(sub2_updated == 0);
+    REQUIRE(test_updated == 0);
+    REQUIRE(draw.draw_count == 0);
+    scene.frame_advance();
+    REQUIRE(obj1_updated == 1);
+    REQUIRE(obj2_updated == 1);
+    REQUIRE(draw_updated == 1);
+    REQUIRE(sub1_updated == 1);
+    REQUIRE(sub2_updated == 1);
+    REQUIRE(test_updated == 1);
+    REQUIRE(draw.draw_count == 1);
 }
