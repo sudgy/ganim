@@ -502,10 +502,10 @@ TEST_CASE("Multivector assignment", "[ga]") {
     auto test2 = e + e1;
     auto test3 = e1;
     auto test4 = Multivector<double, metric, 1, 2>(0);
-    (void)test4;
     test1 = 0;
     test2 = 0;
     test3 = 0;
+    test4 = 0;
     REQUIRE_THAT(test1, GAEquals(0));
     REQUIRE_THAT(test2, GAEquals(0));
     REQUIRE_THAT(test3, GAEquals(0));

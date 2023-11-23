@@ -30,6 +30,7 @@
 #include <set>
 #include <algorithm>
 #include <concepts>
+#include <stdexcept>
 
 namespace ganim {
 
@@ -193,6 +194,14 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
     template <std::uint64_t... bases2>
     using MV = Multivector<Scalar, metric, bases2...>;
 
+    struct Zero {
+        consteval explicit(false) Zero(Scalar value)
+        {
+            if (value != 0) throw std::runtime_error(
+                    "This multivector has no scalar component");
+        }
+    };
+
     public:
         /** @brief Default constructor, zero-initializing all coefficients. */
         constexpr Multivector() : BB<bases>()... {}
@@ -233,17 +242,18 @@ class Multivector : public BasisBlade<Scalar, metric, bases>... {
         {
             BB<0>::coefficient = value;
         }
-        /** @brief A super hacky way to assign zero to a multivector, even if it
-         * has no scalar part
+        /** @brief Construct a multivector from the literal 0
          *
-         * Because 0 is a null pointer constant, this overload allows you to do
-         * things like assign zero to vectors without being able to assign other
-         * scalar values to it.  Because multivectors with a scalar component
-         * are already constructible from a scalar, this constructor will only
-         * be valid in overload resolution if this multivector has no scalar
-         * component.
+         * The type `Zero` is one that can only be constructed from 0.
          */
-        constexpr Multivector(std::nullptr_t) requires((bases != 0) and ...) {}
+        constexpr Multivector(Zero) requires(((bases != 0) and ...)
+                and sizeof...(bases) > 1) {}
+        /** @brief Assign a multivector to zero
+         *
+         * The type `Zero` is one that can only be constructed from 0.
+         */
+        Multivector& operator=(Zero) requires ((bases != 0) and ...)
+            {return *this = Multivector();}
 
         /** @brief Checks if all components are equal. */
         constexpr bool operator==(const Multivector& other) const=default;
