@@ -101,13 +101,17 @@ void SceneBase::wait(double time)
 
 void SceneBase::add_animatable(Animatable& object)
 {
-    object.set_fps(M_fps);
-    M_objects.emplace_back(&object);
+    if (std::ranges::find(M_objects, &object) == M_objects.end()) {
+        object.set_fps(M_fps);
+        M_objects.emplace_back(&object);
+    }
 }
 
 void SceneBase::add_drawable(Drawable& object)
 {
-    M_drawables.emplace_back(&object);
+    if (std::ranges::find(M_drawables, &object) == M_drawables.end()) {
+        M_drawables.emplace_back(&object);
+    }
 }
 
 void SceneBase::add_group(Group& object)

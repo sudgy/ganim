@@ -129,3 +129,18 @@ TEST_CASE("Scene adding ranges", "[scene]") {
     REQUIRE(objs[1].draw_count == 2);
     REQUIRE(updated2 == 2);
 }
+
+TEST_CASE("Scene adding multiple times", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto obj = TestDrawable();
+    obj.set_visible(true);
+    scene.add(obj);
+    scene.add(obj);
+    int updated = 0;
+    obj.add_updater([&]{++updated;});
+    REQUIRE(obj.draw_count == 0);
+    REQUIRE(updated == 0);
+    scene.frame_advance(2);
+    REQUIRE(obj.draw_count == 2);
+    REQUIRE(updated == 2);
+}
