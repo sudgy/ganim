@@ -188,6 +188,51 @@ pga3::Even vga2_to_pga3(const vga2::Even& in);
  */
 pga3::Bivector vga2_to_pga3_full(const vga2::Vector& in);
 
+/** @brief A lot of functions take in a point in space, and since there are
+ * several different representations of points in space, this concept checks if
+ * it's one of the ones that I consider a valid representation of a point.  They
+ * are:
+ *  - A 2D VGA vector
+ *  - A 3D VGA vector
+ *  - A 2D PGA bivector
+ *  - A 3D PGA trivector
+ *  - A 2D PGA vector, which you just interpret as a 2D VGA vector
+ *  - A 3D PGA vector, which you just interpret as a 3D VGA vector
+ *
+ *  If you want to write a function that takes in a point, just write one that
+ *  takes in a trivector, and another one with this concept that just uses @ref
+ *  ganim::pointlike_to_pga3 pointlike_to_pga3.
+ */
+template <typename T>
+concept pointlike = std::same_as<T, vga2::Vector> or
+                    std::same_as<T, vga3::Vector> or
+                    std::same_as<T, pga2::Vector> or
+                    std::same_as<T, pga3::Vector> or
+                    std::same_as<T, pga2::Bivector> or
+                    std::same_as<T, pga3::Trivector>;
+
+/** @brief Convert one of the pointlike types to a 3D PGA trivector.  */
+pga3::Trivector pointlike_to_pga3(const pointlike auto& p)
+{
+    using T = std::remove_cvref_t<decltype(p)>;
+    if constexpr (std::is_same_v<T, vga2::Vector>) {
+        return vga2_to_pga3(p);
+    }
+    else if constexpr (std::is_same_v<T, vga3::Vector>) {
+        return vga3_to_pga3(p);
+    }
+    else if constexpr (std::is_same_v<T, pga2::Vector>) {
+        return vga2_to_pga3(pga2_to_vga2_cheat(p));
+    }
+    else if constexpr (std::is_same_v<T, pga3::Vector>) {
+        return vga3_to_pga3(pga3_to_vga3_cheat(p));
+    }
+    else if constexpr (std::is_same_v<T, pga2::Bivector>) {
+        return pga2_to_pga3_flat(p);
+    }
+    else return p;
+}
+
 }
 
 #endif

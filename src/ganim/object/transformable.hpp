@@ -7,10 +7,7 @@
 
 #include <memory>
 
-#include "ganim/ga/vga2.hpp"
-#include "ganim/ga/vga3.hpp"
-#include "ganim/ga/pga2.hpp"
-#include "ganim/ga/pga3.hpp"
+#include "ganim/ga/conversions.hpp"
 
 #include "animatable.hpp"
 
@@ -76,55 +73,18 @@ class Transformable : public Animatable {
          */
         virtual Transformable& apply_rotor(const pga3::Even& rotor);
 
-        /** @brief Move the center of the object to the point represented by the
-         * 2D VGA vector p.
-         */
-        Transformable& move_to(const vga2::Vector& p);
-        /** @brief Move the center of the object to the point represented by the
-         * 3D VGA vector p.
-         */
-        Transformable& move_to(const vga3::Vector& p);
-        /** @brief Move the center of the object to the point represented by the
-         * 2D PGA vector p interpreted as a 2D VGA vector.
-         */
-        Transformable& move_to(const pga2::Vector& p);
-        /** @brief Move the center of the object to the point represented by the
-         * 3D PGA vector p interpreted as a 3D VGA vector.
-         */
-        Transformable& move_to(const pga3::Vector& p);
-        /** @brief Move the center of the object to the point represented by the
-         * 2D PGA bivector p.
-         */
-        Transformable& move_to(const pga2::Bivector& p);
+        /** @brief Move the center of the object to a point. */
+        Transformable& move_to(const pointlike auto& p)
+            {return move_to(pointlike_to_pga3(p));}
         /** @brief Move the center of the object to the point represented by the
          * 3D PGA trivector p.
          */
         Transformable& move_to(const pga3::Trivector& p);
 
-        /** @brief Shift the object by the 2D VGA vector p. */
-        Transformable& shift(const vga2::Vector& p);
-        /** @brief Shift the object by the 3D VGA vector p. */
-        Transformable& shift(const vga3::Vector& p);
-        /** @brief Shift the object by the vector represented by the 2D PGA
-         * vector p interpreted as a 2D VGA vector.
-         */
-        Transformable& shift(const pga2::Vector& p);
-        /** @brief Shift the object by the vector represented by the 3D PGA
-         * vector p interpreted as a 3D VGA vector.
-         */
-        Transformable& shift(const pga3::Vector& p);
-        /** @brief Shift the object by the 2D PGA ideal bivector p.
-         *
-         * Note that this function assumes that `p` is a point at infinity!
-         * Shifting by points doesn't really make sense, but shifting by a point
-         * at infinity does.
-         */
-        Transformable& shift(const pga2::Bivector& p);
-        /** @brief Shift the object by the 3D PGA ideal trivector p.
-         *
-         * Note that this function assumes that `p` is a point at infinity!
-         * Shifting by points doesn't really make sense, but shifting by a point
-         * at infinity does.
+        /** @brief Shift the object. */
+        Transformable& shift(const pointlike auto& p)
+            {return shift(pointlike_to_pga3(p));}
+        /** @brief Shift the object by the 3D PGA trivector p.
          */
         Transformable& shift(const pga3::Trivector& p);
 

@@ -37,19 +37,8 @@ namespace ganim {
             /** @brief Scale the object about its center */
             Object& scale(double amount);
             /** @brief Scale the object about a particular point */
-            Object& scale(const vga2::Vector& about_point, double amount);
-            /** @brief Scale the object about a particular point */
-            Object& scale(const vga3::Vector& about_point, double amount);
-            /** @brief Scale the object about a particular point, represented as
-             * a 2D PGA vector interpreted as a 2D VGA vector
-             */
-            Object& scale(const pga2::Vector& about_point, double amount);
-            /** @brief Scale the object about a particular point, represented as
-             * a 3D PGA vector interpreted as a 3D VGA vector
-             */
-            Object& scale(const pga3::Vector& about_point, double amount);
-            /** @brief Scale the object about a particular point */
-            Object& scale(const pga2::Bivector& about_point, double amount);
+            Object& scale(const pointlike auto& p, double amount)
+                {return scale(pointlike_to_pga3(p), amount);}
             /** @brief Scale the object about a particular point */
             virtual Object& scale(
                 const pga3::Trivector& about_point,

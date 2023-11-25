@@ -39,31 +39,6 @@ Object& Object::scale(double amount)
     return scale((~get_rotor()*e123*get_rotor()).grade_project<3>(), amount);
 }
 
-Object& Object::scale(const vga2::Vector& about_point, double amount)
-{
-    return scale(vga2_to_pga3(about_point), amount);
-}
-
-Object& Object::scale(const vga3::Vector& about_point, double amount)
-{
-    return scale(vga3_to_pga3(about_point), amount);
-}
-
-Object& Object::scale(const pga2::Vector& about_point, double amount)
-{
-    return scale(pga2_to_vga2_cheat(about_point), amount);
-}
-
-Object& Object::scale(const pga3::Vector& about_point, double amount)
-{
-    return scale(pga3_to_vga3_cheat(about_point), amount);
-}
-
-Object& Object::scale(const pga2::Bivector& about_point, double amount)
-{
-    return scale(pga2_to_pga3_flat(about_point), amount);
-}
-
 Object& Object::scale(const pga3::Trivector& about_point, double amount)
 {
     auto new_about_point = about_point;

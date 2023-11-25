@@ -44,17 +44,6 @@ Transformable& Transformable::apply_rotor(const Even& rotor)
     return *this;
 }
 
-Transformable& Transformable::move_to(const vga2::Vector& p)
-    {return move_to(vga2_to_pga3(p));}
-Transformable& Transformable::move_to(const vga3::Vector& p)
-    {return move_to(vga3_to_pga3(p));}
-Transformable& Transformable::move_to(const pga2::Vector& p)
-    {return move_to(pga2_to_vga2_cheat(p));}
-Transformable& Transformable::move_to(const pga3::Vector& p)
-    {return move_to(pga3_to_vga3_cheat(p));}
-Transformable& Transformable::move_to(const pga2::Bivector& p)
-    {return move_to(pga2_to_pga3_flat(p));}
-
 Transformable& Transformable::move_to(const Trivector& p)
 {
     auto current_center = (~M_rotor * e123 * M_rotor).grade_project<3>();
@@ -63,17 +52,6 @@ Transformable& Transformable::move_to(const Trivector& p)
     new_center /= new_center.blade_project<e123>();
     return apply_rotor(current_center * (current_center + new_center) / 2);
 }
-
-Transformable& Transformable::shift(const vga2::Vector& p)
-    {return shift(vga2_to_pga3(p));}
-Transformable& Transformable::shift(const vga3::Vector& p)
-    {return shift(vga3_to_pga3(p));}
-Transformable& Transformable::shift(const pga2::Vector& p)
-    {return shift(pga2_to_vga2_cheat(p));}
-Transformable& Transformable::shift(const pga3::Vector& p)
-    {return shift(pga3_to_vga3_cheat(p));}
-Transformable& Transformable::shift(const pga2::Bivector& p)
-    {return shift(pga2_to_pga3_flat(p));}
 
 Transformable& Transformable::shift(const Trivector& p)
 {

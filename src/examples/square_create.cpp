@@ -1,4 +1,3 @@
-#include <SFML/Window.hpp>
 #include "ganim.hpp"
 
 using namespace ganim;
