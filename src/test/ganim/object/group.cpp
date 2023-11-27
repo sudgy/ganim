@@ -175,3 +175,71 @@ TEST_CASE("Group visible", "[object]") {
     REQUIRE(!obj1.is_visible());
     REQUIRE(!obj2.is_visible());
 }
+
+TEST_CASE("Group draw fraction", "[object]") {
+    auto obj1 = Object();
+    auto obj2 = Object();
+    auto obj3 = Object();
+    auto obj4 = Object();
+    auto group1 = Group(obj1, obj2);
+    auto group2 = Group(obj3, obj4);
+    auto test = Group(group1, group2);
+    group1.set_draw_subobject_ratio(0);
+    //group2.set_draw_subobject_ratio(1); This should be true already
+    test.set_draw_subobject_ratio(0.5);
+    REQUIRE_THROWS(test.set_draw_subobject_ratio(-1));
+    REQUIRE_THROWS(test.set_draw_subobject_ratio(2));
+
+    test.set_draw_fraction(0.25);
+    REQUIRE(test.get_draw_fraction() == 0.25);
+    REQUIRE(group1.get_draw_fraction() == 0.375);
+    REQUIRE(group2.get_draw_fraction() == 0);
+    REQUIRE(obj1.get_draw_fraction() == 0.375);
+    REQUIRE(obj2.get_draw_fraction() == 0.375);
+    REQUIRE(obj3.get_draw_fraction() == 0);
+    REQUIRE(obj4.get_draw_fraction() == 0);
+
+    test.set_draw_fraction(0.5);
+    REQUIRE(test.get_draw_fraction() == 0.5);
+    REQUIRE(group1.get_draw_fraction() == 0.75);
+    REQUIRE(group2.get_draw_fraction() == 0.25);
+    REQUIRE(obj1.get_draw_fraction() == 0.75);
+    REQUIRE(obj2.get_draw_fraction() == 0.75);
+    REQUIRE(obj3.get_draw_fraction() == 0.5);
+    REQUIRE(obj4.get_draw_fraction() == 0);
+
+    test.set_draw_fraction(0.75);
+    REQUIRE(test.get_draw_fraction() == 0.75);
+    REQUIRE(group1.get_draw_fraction() == 1);
+    REQUIRE(group2.get_draw_fraction() == 0.625);
+    REQUIRE(obj1.get_draw_fraction() == 1);
+    REQUIRE(obj2.get_draw_fraction() == 1);
+    REQUIRE(obj3.get_draw_fraction() == 1);
+    REQUIRE(obj4.get_draw_fraction() == 0.25);
+
+    test.set_draw_fraction(0);
+    REQUIRE(test.get_draw_fraction() == 0);
+    REQUIRE(group1.get_draw_fraction() == 0);
+    REQUIRE(group2.get_draw_fraction() == 0);
+    REQUIRE(obj1.get_draw_fraction() == 0);
+    REQUIRE(obj2.get_draw_fraction() == 0);
+    REQUIRE(obj3.get_draw_fraction() == 0);
+    REQUIRE(obj4.get_draw_fraction() == 0);
+
+    test.set_draw_fraction(1);
+    REQUIRE(test.get_draw_fraction() == 1);
+    REQUIRE(group1.get_draw_fraction() == 1);
+    REQUIRE(group2.get_draw_fraction() == 1);
+    REQUIRE(obj1.get_draw_fraction() == 1);
+    REQUIRE(obj2.get_draw_fraction() == 1);
+    REQUIRE(obj3.get_draw_fraction() == 1);
+    REQUIRE(obj4.get_draw_fraction() == 1);
+
+    test = Group(obj1, obj2, obj3, obj4);
+    test.set_draw_subobject_ratio(0.5);
+    test.set_draw_fraction(0.5);
+    REQUIRE(obj1.get_draw_fraction() == 1);
+    REQUIRE(obj2.get_draw_fraction() == 0.75);
+    REQUIRE(obj3.get_draw_fraction() == 0.25);
+    REQUIRE(obj4.get_draw_fraction() == 0);
+}

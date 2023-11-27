@@ -68,6 +68,17 @@ class Group : public Object {
         virtual Group& scale(const pga3::Trivector& about_point, double amount)
             override;
         virtual Group& set_visible(bool visible) override;
+        virtual void set_draw_fraction(double value) override;
+        /** @brief Set how far into one subobject to draw before starting to
+         * draw the next one
+         *
+         * This controls how the draw fraction is propogated to subobjects.  Set
+         * it to one to make each subobject get drawn completely before drawing
+         * the next one, and set it to zero in make them all get drawn at the
+         * same time.  It must be between zero and one.  If it's not, an
+         * exception will be thrown.
+         */
+        void set_draw_subobject_ratio(double ratio);
 
         auto begin() {return M_subobjects.begin();}
         auto end() {return M_subobjects.end();}
@@ -81,6 +92,7 @@ class Group : public Object {
     private:
         std::vector<Object*> M_subobjects;
         bool M_propogate = true;
+        double M_ratio = 1;
 };
 
 }

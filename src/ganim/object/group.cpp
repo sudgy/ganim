@@ -66,3 +66,22 @@ Group& Group::set_visible(bool visible)
     }
     return *this;
 }
+
+void Group::set_draw_fraction(double value)
+{
+    Object::set_draw_fraction(value);
+    const auto s = size();
+    if (s == 0) return;
+    const auto total_t = 1 + M_ratio * (s - 1);
+    for (auto i = 0; i < s; ++i) {
+        auto this_value = value * total_t - i * M_ratio;
+        M_subobjects[i]->set_draw_fraction(std::clamp(this_value, 0.0, 1.0));
+    }
+}
+
+void Group::set_draw_subobject_ratio(double ratio)
+{
+    if (ratio < 0 or ratio > 1) throw std::invalid_argument(
+            "The draw subobject ratio must be between zero and 1.");
+    M_ratio = ratio;
+}
