@@ -150,3 +150,22 @@ TEST_CASE("Group color/opacity", "[object]") {
     REQUIRE(obj2.get_color() == "00FF003F");
     REQUIRE(test.get_color() == "00FF003F");
 }
+
+TEST_CASE("Group scaling", "[object]") {
+    using namespace pga3;
+    auto obj1 = Object();
+    auto obj2 = Object();
+    auto group = Group();
+    group.add(obj1);
+    auto test = Group();
+    test.add(group, obj2);
+    obj1.shift(e1);
+    obj2.shift(2*e2);
+    test.scale(-e1, 2);
+    REQUIRE(test.get_scale() == 2);
+    REQUIRE_THAT(test.get_center(), GAEquals((e1 + e0).dual()));
+    REQUIRE(obj1.get_scale() == 2);
+    REQUIRE_THAT(obj1.get_center(), GAEquals((3*e1 + e0).dual()));
+    REQUIRE(obj2.get_scale() == 2);
+    REQUIRE_THAT(obj2.get_center(), GAEquals((e1 + 4*e2 + e0).dual()));
+}

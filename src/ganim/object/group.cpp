@@ -10,8 +10,10 @@ void Group::add(Object& object)
 Group& Group::apply_rotor(const pga3::Even& rotor)
 {
     Transformable::apply_rotor(rotor);
-    for (auto obj : M_subobjects) {
-        obj->apply_rotor(rotor);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->apply_rotor(rotor);
+        }
     }
     return *this;
 }
@@ -41,6 +43,17 @@ Group& Group::set_opacity(double opacity)
     Object::set_opacity(opacity);
     for (auto obj : M_subobjects) {
         obj->set_opacity(opacity);
+    }
+    return *this;
+}
+
+Group& Group::scale(const pga3::Trivector& about_point, double amount)
+{
+    M_propogate = false;
+    Object::scale(about_point, amount);
+    M_propogate = true;
+    for (auto obj : M_subobjects) {
+        obj->scale(about_point, amount);
     }
     return *this;
 }

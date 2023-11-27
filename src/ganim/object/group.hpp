@@ -54,10 +54,14 @@ class Group : public Object {
             (add(objects), ...);
         }
 
+        using Object::apply_rotor;
         virtual Group& apply_rotor(const pga3::Even& rotor) override;
         virtual Group& set_color(Color color) override;
         virtual Group& set_color_with_alpha(Color color) override;
         virtual Group& set_opacity(double opacity) override;
+        using Object::scale;
+        virtual Group& scale(const pga3::Trivector& about_point, double amount)
+            override;
 
         auto begin() {return M_subobjects.begin();}
         auto end() {return M_subobjects.end();}
@@ -70,6 +74,7 @@ class Group : public Object {
 
     private:
         std::vector<Object*> M_subobjects;
+        bool M_propogate = true;
 };
 
 }
