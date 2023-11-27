@@ -62,9 +62,9 @@ TEST_CASE("Group adding to scene", "[object]") {
     auto obj1 = Object();
     auto obj2 = Object();
     auto draw = TestDrawable();
-    auto sub1 = Group();
+    auto sub1 = Group(obj1, draw);
     auto sub2 = Group();
-    auto test = Group();
+    auto test = Group(sub1, sub2, obj2);
     int obj1_updated = 0;
     int obj2_updated = 0;
     int draw_updated = 0;
@@ -78,8 +78,6 @@ TEST_CASE("Group adding to scene", "[object]") {
     sub2.add_updater([&]{++sub2_updated;});
     test.add_updater([&]{++test_updated;});
 
-    sub1.add(obj1, draw);
-    test.add(sub1, sub2, obj2);
     auto scene = TestScene(1, 1, 1, 1, 1);
     scene.add(test);
     draw.set_visible(true);
@@ -104,10 +102,8 @@ TEST_CASE("Group movement", "[object]") {
     using namespace pga3;
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = Group();
-    group.add(obj1);
-    auto test = Group();
-    test.add(group, obj2);
+    auto group = Group(obj1);
+    auto test = Group(group, obj2);
     obj1.shift(e1);
     obj2.shift(2*e2);
     test.shift(e1);
@@ -130,10 +126,8 @@ TEST_CASE("Group movement", "[object]") {
 TEST_CASE("Group color/opacity", "[object]") {
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = Group();
-    group.add(obj1);
-    auto test = Group();
-    test.add(group, obj2);
+    auto group = Group(obj1);
+    auto test = Group(group, obj2);
     obj1.set_color("00FF00");
     obj2.set_color_with_alpha("0000FF7F");
     test.set_color("FF0000");
@@ -155,10 +149,8 @@ TEST_CASE("Group scaling", "[object]") {
     using namespace pga3;
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = Group();
-    group.add(obj1);
-    auto test = Group();
-    test.add(group, obj2);
+    auto group = Group(obj1);
+    auto test = Group(group, obj2);
     obj1.shift(e1);
     obj2.shift(2*e2);
     test.scale(-e1, 2);
@@ -174,10 +166,8 @@ TEST_CASE("Group visible", "[object]") {
     using namespace pga3;
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = Group();
-    group.add(obj1);
-    auto test = Group();
-    test.add(group, obj2);
+    auto group = Group(obj1);
+    auto test = Group(group, obj2);
     test.set_visible(true);
     REQUIRE(obj1.is_visible());
     REQUIRE(obj2.is_visible());

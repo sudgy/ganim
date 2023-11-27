@@ -26,6 +26,11 @@ namespace ganim {
  */
 class Group : public Object {
     public:
+        template <typename... Ts>
+        explicit Group(Ts&... objects)
+        {
+            (add(objects), ...);
+        }
         /*** @brief Add an object to this group */
         void add(Object& object);
         /** @brief Adds a range of objects to this group
