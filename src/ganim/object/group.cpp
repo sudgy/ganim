@@ -57,3 +57,12 @@ Group& Group::scale(const pga3::Trivector& about_point, double amount)
     }
     return *this;
 }
+
+Group& Group::set_visible(bool visible)
+{
+    Object::set_visible(visible);
+    for (auto obj : M_subobjects) {
+        obj->set_visible(visible);
+    }
+    return *this;
+}

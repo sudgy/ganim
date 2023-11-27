@@ -62,6 +62,7 @@ class Group : public Object {
         using Object::scale;
         virtual Group& scale(const pga3::Trivector& about_point, double amount)
             override;
+        virtual Group& set_visible(bool visible) override;
 
         auto begin() {return M_subobjects.begin();}
         auto end() {return M_subobjects.end();}

@@ -169,3 +169,19 @@ TEST_CASE("Group scaling", "[object]") {
     REQUIRE(obj2.get_scale() == 2);
     REQUIRE_THAT(obj2.get_center(), GAEquals((e1 + 4*e2 + e0).dual()));
 }
+
+TEST_CASE("Group visible", "[object]") {
+    using namespace pga3;
+    auto obj1 = Object();
+    auto obj2 = Object();
+    auto group = Group();
+    group.add(obj1);
+    auto test = Group();
+    test.add(group, obj2);
+    test.set_visible(true);
+    REQUIRE(obj1.is_visible());
+    REQUIRE(obj2.is_visible());
+    test.set_visible(false);
+    REQUIRE(!obj1.is_visible());
+    REQUIRE(!obj2.is_visible());
+}
