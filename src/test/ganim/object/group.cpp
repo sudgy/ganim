@@ -1,7 +1,11 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ganim/object/group.hpp"
+#include "test/ganim/ga_equals.hpp"
 #include "test/ganim/scene/test_scene.hpp"
+
+#include "ganim/object/group.hpp"
+
+#include "ganim/math.hpp"
 
 using namespace ganim;
 
@@ -94,4 +98,31 @@ TEST_CASE("Group adding to scene", "[object]") {
     REQUIRE(sub2_updated == 1);
     REQUIRE(test_updated == 1);
     REQUIRE(draw.draw_count == 1);
+}
+
+TEST_CASE("Group movement", "[object]") {
+    using namespace pga3;
+    auto obj1 = Object();
+    auto obj2 = Object();
+    auto group = Group();
+    group.add(obj1);
+    auto test = Group();
+    test.add(group, obj2);
+    obj1.shift(e1);
+    obj2.shift(2*e2);
+    test.shift(e1);
+    REQUIRE_THAT(obj1.get_center(), GAEquals((2*e1 + e0).dual()));
+    REQUIRE_THAT(obj2.get_center(), GAEquals((e1 + 2*e2 + e0).dual()));
+    REQUIRE_THAT(group.get_center(), GAEquals((e1 + e0).dual()));
+    REQUIRE_THAT(test.get_center(), GAEquals((e1 + e0).dual()));
+    test.rotate(e12, τ/4);
+    REQUIRE_THAT(obj1.get_center(), GAEquals((2*e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(obj2.get_center(), GAEquals((e2 - 2*e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(group.get_center(), GAEquals((e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(test.get_center(), GAEquals((e2 + e0).dual(), 1e-5));
+    test.move_to(e123);
+    REQUIRE_THAT(obj1.get_center(), GAEquals((e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(obj2.get_center(), GAEquals((-2*e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(group.get_center(), GAEquals(e0.dual(), 1e-5));
+    REQUIRE_THAT(test.get_center(), GAEquals(e0.dual(), 1e-5));
 }

@@ -54,6 +54,8 @@ class Group : public Object {
             (add(objects), ...);
         }
 
+        virtual Group& apply_rotor(const pga3::Even& rotor) override;
+
         auto begin() {return M_subobjects.begin();}
         auto end() {return M_subobjects.end();}
         auto begin() const {return M_subobjects.begin();}
