@@ -41,6 +41,17 @@ TEST_CASE("Transformable basics", "[object]") {
     REQUIRE_THAT(test.last_applied_rotor, GAEquals(-e13));
 }
 
+TEST_CASE("Transformable center", "[object]") {
+    auto test = TestTransformable();
+    REQUIRE_THAT(test.get_center(), GAEquals(e123));
+    test.apply_rotor(e12);
+    REQUIRE_THAT(test.get_center(), GAEquals(e123));
+    test.apply_rotor(1 + e01);
+    REQUIRE_THAT(test.get_center(), GAEquals((2*e1 + e0).dual()));
+    test.apply_rotor(e12);
+    REQUIRE_THAT(test.get_center(), GAEquals((-2*e1 + e0).dual()));
+}
+
 TEST_CASE("Transformable apply_rotor conversions", "[object]") {
     auto test = TestTransformable();
     const auto& r2 = test.last_applied_rotor;
@@ -161,14 +172,13 @@ TEST_CASE("Transformable non-commuting rotors", "[object]") {
     test.set_fps(2);
     test.shift(e1);
     animate(test).rotate(e12, τ/2);
-    auto& r = test.get_rotor();
-    REQUIRE_THAT(~r*e123*r, GAEquals((e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(test.get_center(), GAEquals((e1 + e0).dual(), 1e-5));
     test.update();
-    REQUIRE_THAT(~r*e123*r, GAEquals((e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(test.get_center(), GAEquals((e2 + e0).dual(), 1e-5));
     test.update();
-    REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(test.get_center(), GAEquals((-e1 + e0).dual(), 1e-5));
     test.update();
-    REQUIRE_THAT(~r*e123*r, GAEquals((-e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(test.get_center(), GAEquals((-e1 + e0).dual(), 1e-5));
 }
 
 TEST_CASE("Transformable interpolate", "[object]") {

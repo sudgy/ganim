@@ -47,6 +47,8 @@ class Transformable : public Animatable {
         Transformable& reset();
         /** @brief Get the rotor that transforms this object */
         constexpr const pga3::Even& get_rotor() const {return M_rotor;}
+        /** @brief Get the center of this object, defined as `~R*e123*R` */
+        pga3::Trivector get_center() const;
 
         /** @brief Compose this rotor with another one.
          *

@@ -16,6 +16,11 @@ Transformable& Transformable::reset()
     return *this;
 }
 
+Trivector Transformable::get_center() const
+{
+    return (~M_rotor * e123 * M_rotor).grade_project<3>();
+}
+
 Transformable& Transformable::apply_rotor(const vga2::Even& rotor)
 {
     return apply_rotor(vga2_to_pga3(rotor));
