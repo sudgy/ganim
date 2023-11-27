@@ -154,29 +154,9 @@ class Transformable : public Animatable {
         {Transformable::apply_rotor(rotor); return *this;} \
     Type& apply_rotor(const pga3::Even& rotor) \
         {Transformable::apply_rotor(rotor); return *this;} \
-    Type& move_to(const vga2::Vector& p) \
+    Type& move_to(const pointlike auto& p) \
         {Transformable::move_to(p); return *this;} \
-    Type& move_to(const vga3::Vector& p) \
-        {Transformable::move_to(p); return *this;} \
-    Type& move_to(const pga2::Vector& p) \
-        {Transformable::move_to(p); return *this;} \
-    Type& move_to(const pga3::Vector& p) \
-        {Transformable::move_to(p); return *this;} \
-    Type& move_to(const pga2::Bivector& p) \
-        {Transformable::move_to(p); return *this;} \
-    Type& move_to(const pga3::Trivector& p) \
-        {Transformable::move_to(p); return *this;} \
-    Type& shift(const vga2::Vector& p) \
-        {Transformable::shift(p); return *this;} \
-    Type& shift(const vga3::Vector& p) \
-        {Transformable::shift(p); return *this;} \
-    Type& shift(const pga2::Vector& p) \
-        {Transformable::shift(p); return *this;} \
-    Type& shift(const pga3::Vector& p) \
-        {Transformable::shift(p); return *this;} \
-    Type& shift(const pga2::Bivector& p) \
-        {Transformable::shift(p); return *this;} \
-    Type& shift(const pga3::Trivector& p) \
+    Type& shift(const pointlike auto& p) \
         {Transformable::shift(p); return *this;} \
     Type& rotate(double angle) \
         {Transformable::rotate(angle); return *this;} \

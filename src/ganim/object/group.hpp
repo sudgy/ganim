@@ -59,12 +59,40 @@ class Group : public Object {
             (add(objects), ...);
         }
 
-        using Object::apply_rotor;
+        // I can't use the macro here because I'm overloading some of the
+        // functions
+        Group& reset()
+            {Transformable::reset(); return *this;}
+        Group& apply_rotor(const vga2::Even& rotor)
+            {Transformable::apply_rotor(rotor); return *this;}
+        Group& apply_rotor(const vga3::Even& rotor)
+            {Transformable::apply_rotor(rotor); return *this;}
+        Group& apply_rotor(const pga2::Even& rotor)
+            {Transformable::apply_rotor(rotor); return *this;}
+        Group& move_to(const pointlike auto& p)
+            {Transformable::move_to(p); return *this;}
+        Group& shift(const pointlike auto& p)
+            {Transformable::shift(p); return *this;}
+        Group& rotate(double angle)
+            {Transformable::rotate(angle); return *this;}
+        Group& rotate(const vga2::Vector& about_point, double angle)
+            {Transformable::rotate(about_point, angle); return *this;}
+        Group& rotate(const pga2::Vector& about_point, double angle)
+            {Transformable::rotate(about_point, angle); return *this;}
+        Group& rotate(const vga3::Bivector& about_plane, double angle)
+            {Transformable::rotate(about_plane, angle); return *this;}
+        Group& rotate(const pga2::Bivector& about_point, double angle = 1)
+            {Transformable::rotate(about_point, angle); return *this;}
+        Group& rotate(const pga3::Bivector& about_line, double angle = 1)
+            {Transformable::rotate(about_line, angle); return *this;}
+        Group& scale(double amount)
+            {Object::scale(amount); return *this;}
+        Group& scale(const pointlike auto& about_point, double amount)
+            {Object::scale(about_point, amount); return *this;}
         virtual Group& apply_rotor(const pga3::Even& rotor) override;
         virtual Group& set_color(Color color) override;
         virtual Group& set_color_with_alpha(Color color) override;
         virtual Group& set_opacity(double opacity) override;
-        using Object::scale;
         virtual Group& scale(const pga3::Trivector& about_point, double amount)
             override;
         virtual Group& set_visible(bool visible) override;

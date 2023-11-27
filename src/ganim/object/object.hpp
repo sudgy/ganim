@@ -107,17 +107,7 @@ namespace ganim {
         {Object::set_opacity(opacity); return *this;} \
     Type& scale(double amount) \
         {Object::scale(amount); return *this;} \
-    Type& scale(const vga2::Vector& about_point, double amount) \
+    Type& scale(const pointlike auto& about_point, double amount) \
         {Object::scale(about_point, amount); return *this;} \
-    Type& scale(const vga3::Vector& about_point, double amount) \
-        {Object::scale(about_point, amount); return *this;} \
-    Type& scale(const pga2::Vector& about_point, double amount) \
-        {Object::scale(about_point, amount); return *this;} \
-    Type& scale(const pga3::Vector& about_point, double amount) \
-        {Object::scale(about_point, amount); return *this;} \
-    Type& scale(const pga2::Bivector& about_point, double amount) \
-        {Object::scale(about_point, amount); return *this;} \
-    Type& scale(const pga3::Trivector& about_point, double amount) \
-        {Object::scale(about_point, amount); return *this;}
 
 #endif
