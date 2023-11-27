@@ -111,6 +111,8 @@ class Animation {
         /** @brief Updates the animation.  Do not call this yourself. */
         bool operator()()
         {
+            M_starting_object->update();
+            M_ending_object->update();
             ++M_animation_progress;
             auto t = static_cast<double>(M_animation_progress)
                 / M_animation_time;

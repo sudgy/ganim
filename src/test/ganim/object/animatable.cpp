@@ -4,19 +4,8 @@
 
 using namespace ganim;
 
-namespace {
-    class TestAnimatable : public Animatable {
-        public:
-            bool animated = false;
-            bool animation_start = false;
-            bool animation_end = false;
-            double last_animation_t = -1;
-            int updated = 0;
-    };
-}
-
 TEST_CASE("Animatable updaters", "[object]") {
-    auto test = TestAnimatable();
+    auto test = Animatable();
     auto updater1_count = 0;
     auto updater2_count = 0;
     auto stop_updater2 = false;
