@@ -19,7 +19,7 @@ namespace ganim {
     class Object : public Transformable {
         public:
             /** @brief Set the color of this object, ignoring alpha. */
-            Object& set_color(Color color);
+            virtual Object& set_color(Color color);
             /** @brief Set the color of this object, including alpha. */
             virtual Object& set_color_with_alpha(Color color);
             /** @brief Set the opacity of this object
@@ -30,7 +30,7 @@ namespace ganim {
              * @param opacity The opacity to change to, from 0 to 1.  0 is fully
              * transparent, while 1 is fully opaque.
              */
-            Object& set_opacity(double opacity);
+            virtual Object& set_opacity(double opacity);
             /** @brief Get the color of this object, including alpha. */
             Color get_color() const {return M_color;}
 

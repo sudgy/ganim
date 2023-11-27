@@ -126,3 +126,27 @@ TEST_CASE("Group movement", "[object]") {
     REQUIRE_THAT(group.get_center(), GAEquals(e0.dual(), 1e-5));
     REQUIRE_THAT(test.get_center(), GAEquals(e0.dual(), 1e-5));
 }
+
+TEST_CASE("Group color/opacity", "[object]") {
+    auto obj1 = Object();
+    auto obj2 = Object();
+    auto group = Group();
+    group.add(obj1);
+    auto test = Group();
+    test.add(group, obj2);
+    obj1.set_color("00FF00");
+    obj2.set_color_with_alpha("0000FF7F");
+    test.set_color("FF0000");
+    REQUIRE(obj1.get_color() == "FF0000");
+    REQUIRE(obj2.get_color() == "FF00007F");
+    REQUIRE(test.get_color() == "FF0000");
+    test.set_color_with_alpha("00FF007F");
+    REQUIRE(obj1.get_color() == "00FF007F");
+    REQUIRE(obj2.get_color() == "00FF007F");
+    REQUIRE(test.get_color() == "00FF007F");
+    obj1.set_color_with_alpha("00FF00");
+    test.set_opacity(0.25);
+    REQUIRE(obj1.get_color() == "00FF003F");
+    REQUIRE(obj2.get_color() == "00FF003F");
+    REQUIRE(test.get_color() == "00FF003F");
+}

@@ -55,6 +55,9 @@ class Group : public Object {
         }
 
         virtual Group& apply_rotor(const pga3::Even& rotor) override;
+        virtual Group& set_color(Color color) override;
+        virtual Group& set_color_with_alpha(Color color) override;
+        virtual Group& set_opacity(double opacity) override;
 
         auto begin() {return M_subobjects.begin();}
         auto end() {return M_subobjects.end();}
