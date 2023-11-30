@@ -50,20 +50,35 @@ namespace ganim {
              * valid index into `vertices`.  If not, the behavior is undefined.
              */
             Shape(
-                const std::vector<Vertex>& vertices,
-                const std::vector<unsigned> indices
+                std::vector<Vertex> vertices,
+                std::vector<unsigned> indices
             );
             virtual void draw() override;
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 
         private:
+            /** @brief Sends the vertex data to OpenGL.  It's virtual to allow
+             * subclasses to change how this happens.  When the function is
+             * called, this shape's vertex array will be bound, and this shape's
+             * vertex buffer will be bound to `GL_ARRAY_BUFFER`.
+             */
+            virtual void buffer_data();
+            /** @brief Sends the index data to OpenGL.  It's virtual to allow
+             * subclasses to change how this happens.  When the function is
+             * called, this shape's vertex array will be bound, and this shape's
+             * element buffer will be bound to `GL_ELEMENT_ARRAY_BUFFER`.
+             */
+            virtual void buffer_elements();
+
+            std::vector<Vertex> M_vertices;
+            std::vector<unsigned> M_indices;
+            double M_min_draw_fraction = INFINITY;
+            double M_max_draw_fraction = -INFINITY;
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;
             gl::Buffer M_element_buffer;
-            int M_index_size = -1;
-            double M_min_draw_fraction = INFINITY;
-            double M_max_draw_fraction = -INFINITY;
+            bool M_valid = false;
     };
 }
 
