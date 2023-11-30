@@ -385,3 +385,30 @@ TEST_CASE("Shape rotating too fast?", "[object]") {
     scene.frame_advance();
     REQUIRE(scene.get_pixel(scene.time_size() - 1, 1, 1) == Color("FFFFFF"));
 }
+
+TEST_CASE("Shape set_vertices", "[object]") {
+    auto scene = TestScene(2, 1, 4, 2, 1);
+    auto shape = Shape();
+    shape.set_visible(true);
+    shape.set_vertices(
+        {{ 0,  1, 0},
+         { 0, -1, 0},
+         {-2, -1, 0},
+         {-2,  1, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.add(shape);
+    scene.frame_advance();
+    shape.set_vertices(
+        {{2,  1, 0},
+         {2, -1, 0},
+         {0, -1, 0},
+         {0,  1, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 0, 0) == "FFFFFF");
+    REQUIRE(scene.get_pixel(0, 1, 0) == "000000");
+    REQUIRE(scene.get_pixel(1, 0, 0) == "000000");
+    REQUIRE(scene.get_pixel(1, 1, 0) == "FFFFFF");
+}

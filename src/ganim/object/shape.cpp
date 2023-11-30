@@ -13,13 +13,23 @@ using namespace ganim;
 Shape::Shape(
     std::vector<Vertex> vertices,
     std::vector<unsigned> indices
-) : M_vertices(std::move(vertices)),
-    M_indices(std::move(indices))
+)
 {
+    set_vertices(std::move(vertices), std::move(indices));
+}
+
+void Shape::set_vertices(
+    std::vector<Vertex> vertices,
+    std::vector<unsigned> indices
+)
+{
+    M_vertices = std::move(vertices);
+    M_indices = std::move(indices);
     auto ts = M_vertices
         | std::views::transform([](const auto& v) {return v.t;});
     M_min_draw_fraction = *std::ranges::min_element(ts);
     M_max_draw_fraction = *std::ranges::max_element(ts);
+    M_valid = false;
 }
 
 void Shape::draw()

@@ -53,6 +53,14 @@ namespace ganim {
                 std::vector<Vertex> vertices,
                 std::vector<unsigned> indices
             );
+            Shape()=default;
+            /** @brief Reset the vertices of this shape.  The parameters are
+             * identical to the parameters of the constructor.
+             */
+            void set_vertices(
+                std::vector<Vertex> vertices,
+                std::vector<unsigned> indices
+            );
             virtual void draw() override;
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
@@ -63,13 +71,13 @@ namespace ganim {
              * called, this shape's vertex array will be bound, and this shape's
              * vertex buffer will be bound to `GL_ARRAY_BUFFER`.
              */
-            virtual void buffer_data();
+            virtual void buffer_vertices();
             /** @brief Sends the index data to OpenGL.  It's virtual to allow
              * subclasses to change how this happens.  When the function is
              * called, this shape's vertex array will be bound, and this shape's
              * element buffer will be bound to `GL_ELEMENT_ARRAY_BUFFER`.
              */
-            virtual void buffer_elements();
+            virtual void buffer_indices();
 
             std::vector<Vertex> M_vertices;
             std::vector<unsigned> M_indices;
