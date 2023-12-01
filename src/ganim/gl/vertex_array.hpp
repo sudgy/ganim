@@ -17,6 +17,7 @@ namespace ganim::gl {
         public:
             VertexArray();
             ~VertexArray();
+            VertexArray(unsigned id) {M_id = id;}
             VertexArray(VertexArray&&) noexcept;
             VertexArray(const VertexArray&)=delete;
             VertexArray& operator=(VertexArray&&) noexcept;

@@ -17,6 +17,7 @@ namespace ganim::gl {
         public:
             Framebuffer();
             ~Framebuffer();
+            Framebuffer(unsigned id) {M_id = id;}
             Framebuffer(Framebuffer&&) noexcept;
             Framebuffer(const Framebuffer&)=delete;
             Framebuffer& operator=(Framebuffer&&) noexcept;

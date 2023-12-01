@@ -17,6 +17,7 @@ namespace ganim::gl {
         public:
             Buffer();
             ~Buffer();
+            Buffer(unsigned id) {M_id = id;}
             Buffer(Buffer&&) noexcept;
             Buffer(const Buffer&)=delete;
             Buffer& operator=(Buffer&&) noexcept;

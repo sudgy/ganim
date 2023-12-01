@@ -17,6 +17,7 @@ namespace ganim::gl {
         public:
             Texture();
             ~Texture();
+            Texture(unsigned id) {M_id = id;}
             Texture(Texture&&) noexcept;
             Texture(const Texture&)=delete;
             Texture& operator=(Texture&&) noexcept;
