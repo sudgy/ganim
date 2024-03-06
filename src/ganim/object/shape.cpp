@@ -37,9 +37,9 @@ void Shape::draw()
     if (!M_valid) {
         glBindVertexArray(M_vertex_array);
         glBindBuffer(GL_ARRAY_BUFFER, M_vertex_buffer);
-        buffer_data();
+        buffer_vertices();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, M_element_buffer);
-        buffer_elements();
+        buffer_indices();
         glBindVertexArray(0);
         M_valid = true;
     }
@@ -58,7 +58,7 @@ void Shape::draw()
     glBindVertexArray(0);
 }
 
-void Shape::buffer_data()
+void Shape::buffer_vertices()
 {
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*M_vertices.size(),
                  &M_vertices[0], GL_STATIC_DRAW);
@@ -73,7 +73,7 @@ void Shape::buffer_data()
     glEnableVertexAttribArray(2);
 }
 
-void Shape::buffer_elements()
+void Shape::buffer_indices()
 {
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned)*M_indices.size(),
                  M_indices.data(), GL_STATIC_DRAW);

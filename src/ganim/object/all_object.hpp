@@ -4,3 +4,5 @@
 #include "ganim/object/drawable.hpp"
 #include "ganim/object/shaders.hpp"
 #include "ganim/object/shape.hpp"
+#include "ganim/object/group.hpp"
+#include "ganim/object/value.hpp"
