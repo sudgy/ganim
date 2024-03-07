@@ -13,6 +13,8 @@
 namespace ganim {
     /** @brief Get the shader used for @ref Shape "Shape"s. */
     gl::Shader& shape_shader();
+    /** @brief Get the shader used for @ref TextureShape "TextureShape"s. */
+    gl::Shader& texture_shape_shader();
 }
 
 #endif

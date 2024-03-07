@@ -19,7 +19,7 @@ namespace ganim {
      * This is a low-level object that can represent practically any shape of
      * any form.  You pass in a ton of vertices representing triangles that make
      * up the shape, and the object represents that shape.  Note that this class
-     * can't have any texture.  I'll make a separate class for that later.
+     * can't have any texture.  Use @ref TextureShape for that.
      *
      * Note that while you can directly create instances of this class, you are
      * not intended to do so.  Instead, you should use a subclass either
@@ -61,7 +61,10 @@ namespace ganim {
                 std::vector<Vertex> vertices,
                 std::vector<unsigned> indices
             );
+            const std::vector<Vertex>& get_vertices() const {return M_vertices;}
+            const std::vector<unsigned>& get_indices() const {return M_indices;}
             virtual void draw() override;
+            void make_invalid() {M_valid = false;}
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 
@@ -78,6 +81,13 @@ namespace ganim {
              * element buffer will be bound to `GL_ELEMENT_ARRAY_BUFFER`.
              */
             virtual void buffer_indices();
+            /** @brief Get the shader used for drawing this shape.  It defaults
+             * to @ref shape_shader, although subclasses can override it.
+             * @ref draw will set all the uniforms that shape_shader has
+             * regardless of what shader actually gets returned by this, so make
+             * sure you return a compatible shader.
+             */
+            virtual gl::Shader& get_shader();
 
             std::vector<Vertex> M_vertices;
             std::vector<unsigned> M_indices;
