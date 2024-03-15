@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "ganim/unicode.hpp"
+
 namespace ganim {
     /** @brief A struct representing all of the data needed to draw a particular
      * character.
@@ -48,58 +50,6 @@ namespace ganim {
                               ///< the character, in ganim units
         double x_advance = 0; ///< @brief The x coordinate offset where the next
                               ///< character should be, in ganim units
-    };
-    /** @brief Represents a single unicode codepoint
-     *
-     * FreeType functions expect unicode codepoints as the inputs to their
-     * functions (by default).  This struct is a simple utility to allow for
-     * several different kinds of inputs to be used.  You can construct it
-     * implicitly from an int (where it's interpreted as a Unicode codepoint), a
-     * string (where it's intepreted as a UTF-8 codepoint), or a char (where
-     * it's interpreted as an ASCII character).  It also includes functions to
-     * explicitly convert from UTF-8 and UTF-16.  The final codepoint can be
-     * extracted from the codepoint member.
-     *
-     * To be honest, you shouldn't have to deal with this type yourself because
-     * you can implicitly convert several representations to it and then it's
-     * only ever used internally.
-     */
-    struct UnicodeCodepoint {
-        /** @brief Construct the codepoint from an integer representing the
-         * codepoint.
-         */
-        UnicodeCodepoint(int codepoint);
-        /** @brief Construct the codepoint from a UTF-8 string.
-         *
-         * The string will be interpreted as a single UTF-8 codepoint.  Any
-         * characters after the first UTF-8 codepoint are ignored.  If the
-         * string doesn't start with a valid UTF-8 codepoint, the behavior is
-         * undefined.
-         */
-        UnicodeCodepoint(std::string_view utf8);
-        /** @brief Construct the codepoint from an ASCII character.
-         *
-         * If the input character is not an ASCII character, the behavior is
-         * undefined.
-         */
-        UnicodeCodepoint(char ascii);
-        /** @brief Construct the codepoint from a UTF-8 string.
-         *
-         * The string will be interpreted as a single UTF-8 codepoint.  Any
-         * characters after the first UTF-8 codepoint are ignored.  If the
-         * string doesn't start with a valid UTF-8 codepoint, the behavior is
-         * undefined.
-         */
-        static UnicodeCodepoint from_utf8(std::string_view utf8);
-        /** @brief Construct the codepoint from a UTF-16 string.
-         *
-         * The string will be interpreted as a single UTF-16 codepoint.  Any
-         * characters after the first UTF-16 codepoint are ignored.  If the
-         * string doesn't start with a valid UTF-16 codepoint, the behavior is
-         * undefined.
-         */
-        static UnicodeCodepoint from_utf16(std::string_view utf16);
-        int codepoint;
     };
     /** @brief A type to keep track of fonts.
      *
