@@ -2,12 +2,14 @@
 
 void basic_movement();
 void square_create();
+void basic_text();
 
 int main()
 {
     std::cout << "Please specify which example you want to see:\n"
               << "1: basic_movement\n"
-              << "2: square_create\n";
+              << "2: square_create\n"
+              << "3: basic_text\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -16,6 +18,9 @@ int main()
             break;
         case 2:
             square_create();
+            break;
+        case 3:
+            basic_text();
             break;
         default:
             std::cout << "Invalid input\n";

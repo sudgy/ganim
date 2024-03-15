@@ -6,3 +6,5 @@
 #include "ganim/object/shape.hpp"
 #include "ganim/object/group.hpp"
 #include "ganim/object/value.hpp"
+#include "ganim/object/character.hpp"
+#include "ganim/object/text.hpp"

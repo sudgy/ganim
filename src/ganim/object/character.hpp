@@ -36,18 +36,18 @@ namespace ganim {
      * 5. Use this new origin to draw the next character.
      */
     struct Character {
-        float texture_x; ///< The x coordinate in the texture
-        float texture_y; ///< The y coordinate in the texture
-        float texture_width; ///< The width in the texture
-        float texture_height; ///< The height in the texture
-        double width; ///< The width of the character, in ganim units
-        double height; ///< The height of the character, in ganim units
-        double bearing_x; ///< @brief The x coordinate of the left side of the
-                          ///< character, in ganim units
-        double bearing_y; ///< @brief The y coordinate of the top side of the
-                          ///< character, in ganim units
-        double x_advance; ///< @brief The x coordinate offset where the next
-                          ///< character should be, in ganim units
+        float texture_x = 0; ///< The x coordinate in the texture
+        float texture_y = 0; ///< The y coordinate in the texture
+        float texture_width = 0; ///< The width in the texture
+        float texture_height = 0; ///< The height in the texture
+        double width = 0; ///< The width of the character, in ganim units
+        double height = 0; ///< The height of the character, in ganim units
+        double bearing_x = 0; ///< @brief The x coordinate of the left side of
+                              ///< the character, in ganim units
+        double bearing_y = 0; ///< @brief The y coordinate of the top side of
+                              ///< the character, in ganim units
+        double x_advance = 0; ///< @brief The x coordinate offset where the next
+                              ///< character should be, in ganim units
     };
     /** @brief Represents a single unicode codepoint
      *
@@ -120,7 +120,7 @@ namespace ganim {
      * @throws std::runtime_error if the font file cannot be opened for any
      * reason.
      */
-    Font& get_font(std::string_view filename);
+    Font& get_font(const std::string& filename);
 
     /** @brief Get a character.
      *
@@ -131,7 +131,7 @@ namespace ganim {
      * @return A @ref Character with the information needed to draw the
      * character passed in.
      */
-    Character get_character(Font& font, UnicodeCodepoint character);
+    Character& get_character(Font& font, UnicodeCodepoint character);
     /** @brief Get the kerning offset for two characters, in ganim units.
      *
      * @param font A font previously returned by @ref get_font.
