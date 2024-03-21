@@ -1,7 +1,5 @@
 #include "text.hpp"
 
-#include <iostream>
-
 #include "character.hpp"
 
 using namespace ganim;
@@ -18,7 +16,6 @@ Text::Text(std::string_view string)
     for (auto letter : string) {
         auto& c = get_character(font, letter);
         auto kerning = get_kerning(font, letter, last_letter);
-        std::cout << kerning << "\n";
         pos += kerning;
         last_letter = letter;
         vertices.push_back({
@@ -54,6 +51,10 @@ Text::Text(std::string_view string)
         indices.push_back(4*i + 3);
         pos += c.x_advance;
         ++i;
+    }
+    const auto x_shift = pos / 2;
+    for (auto& v : vertices) {
+        v.x -= x_shift;
     }
     set_vertices(std::move(vertices), std::move(indices));
     set_texture_vertices(std::move(tvertices));

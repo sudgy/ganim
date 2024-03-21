@@ -20,7 +20,7 @@ namespace {
     int G_tt_x = 0;
     int G_tt_y = 0;
     int G_tt_h = 0;
-    constexpr auto GC_ganim_unit = 120.0; // TODO: Don't hardcode this!
+    constexpr auto GC_pixel_size = 128.0;
 }
 
 struct ganim::Font {
@@ -58,7 +58,7 @@ struct ganim::Font {
                       << "\n";
         }
         // TODO: Make this configurable
-        error = FT_Set_Pixel_Sizes(M_face, 0, 64);
+        error = FT_Set_Pixel_Sizes(M_face, 0, GC_pixel_size);
         if (error) {
             std::cerr << "Unable to set font size " << filename << "\n";
         }
@@ -138,11 +138,11 @@ Character& ganim::get_character(Font& font, UnicodeCodepoint character)
     result.texture_y = static_cast<double>(G_tt_y) / GC_default_text_texture_size;
     result.texture_width = static_cast<double>(width + 2) / GC_default_text_texture_size;
     result.texture_height = static_cast<double>(height + 2) / GC_default_text_texture_size;
-    result.width = (bitmap.width + 2) / GC_ganim_unit;
-    result.height = (bitmap.rows + 2) / GC_ganim_unit;
-    result.bearing_x = (face->glyph->bitmap_left - 1) / GC_ganim_unit;
-    result.bearing_y = (face->glyph->bitmap_top + 1) / GC_ganim_unit;
-    result.x_advance = (face->glyph->advance.x + 2) / 64 / GC_ganim_unit;
+    result.width = (bitmap.width + 2) / GC_pixel_size;
+    result.height = (bitmap.rows + 2) / GC_pixel_size;
+    result.bearing_x = (face->glyph->bitmap_left - 1) / GC_pixel_size;
+    result.bearing_y = (face->glyph->bitmap_top + 1) / GC_pixel_size;
+    result.x_advance = (face->glyph->advance.x + 2) / 64 / GC_pixel_size;
 
     G_tt_x += width + 2;
     G_tt_y += height + 2;
@@ -163,7 +163,7 @@ double ganim::get_kerning(
         std::cerr << "Error in find kerning between characters "
                   << left.codepoint << " and " << right.codepoint << "\n";
     }
-    return static_cast<double>(kerning.x) / 64 / GC_ganim_unit;
+    return static_cast<double>(kerning.x) / 64 / GC_pixel_size;
 }
 
 unsigned ganim::get_text_texture()
