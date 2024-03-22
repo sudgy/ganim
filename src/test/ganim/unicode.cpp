@@ -22,26 +22,18 @@ TEST_CASE("utf8_to_codepoints", "[ganim]") {
     auto bad_four_byte_cont3 = "\xF0\x90\x85\x50";
 
     auto gen = utf8_to_codepoints(good_string);
-    REQUIRE(gen);
     REQUIRE(gen() == 'a');
-    REQUIRE(gen);
     REQUIRE(gen() == 0x86U);
-    REQUIRE(gen);
     REQUIRE(gen() == 0x5D0U);
-    REQUIRE(gen);
     REQUIRE(gen() == 0x304BU);
-    REQUIRE(gen);
     REQUIRE(gen() == 0x10142U);
-    REQUIRE(!gen);
+    REQUIRE(!gen());
 
     auto run = [](auto s) {utf8_to_codepoints(s)();};
     REQUIRE_THROWS_AS(run(bad_byte), std::invalid_argument);
     auto gen2 = utf8_to_codepoints(late_bad_byte);
-    REQUIRE(gen2);
     REQUIRE(gen2() == 'a');
-    REQUIRE(gen2);
     REQUIRE(gen2() == 'b');
-    REQUIRE(gen2);
     REQUIRE(gen2() == 0x86U);
     REQUIRE_THROWS_AS(gen2(), std::invalid_argument);
 
@@ -67,24 +59,17 @@ TEST_CASE("utf16_to_codepoints", "[ganim]") {
     auto swapped = u"\xDD42\xD800";
 
     auto gen = utf16_to_codepoints(good_string);
-    REQUIRE(gen);
     REQUIRE(gen() == 'a');
-    REQUIRE(gen);
     REQUIRE(gen() == 0x86U);
-    REQUIRE(gen);
     REQUIRE(gen() == 0x5D0U);
-    REQUIRE(gen);
     REQUIRE(gen() == 0x304BU);
-    REQUIRE(gen);
     REQUIRE(gen() == 0x10142U);
-    REQUIRE(!gen);
+    REQUIRE(!gen());
 
     auto run = [](auto s) {utf16_to_codepoints(s)();};
     REQUIRE_THROWS_AS(run(too_small), std::invalid_argument);
     auto gen2 = utf16_to_codepoints(late_too_small);
-    REQUIRE(gen2);
     REQUIRE(gen2() == 'a');
-    REQUIRE(gen2);
     REQUIRE(gen2() == 0x86U);
     REQUIRE_THROWS_AS(gen2(), std::invalid_argument);
     REQUIRE_THROWS_AS(run(malformed), std::invalid_argument);

@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <string>
 
-#include "generator.hpp"
+#include "coroutine.hpp"
 
 namespace ganim {
     Generator<std::uint32_t> utf8_to_codepoints(std::string_view input);

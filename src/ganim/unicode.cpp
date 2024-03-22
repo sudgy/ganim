@@ -101,18 +101,16 @@ UnicodeCodepoint::UnicodeCodepoint(unsigned codepoint) : codepoint(codepoint) {}
 
 UnicodeCodepoint::UnicodeCodepoint(std::string_view utf8)
 {
-    auto generator = utf8_to_codepoints(utf8);
-    if (!generator) throw std::invalid_argument(
+    if (utf8.empty()) throw std::invalid_argument(
             "An empty string was passed to UnicodeCodepoint's constructor.");
-    codepoint = generator();
+    codepoint = *utf8_to_codepoints(utf8)();
 }
 
 UnicodeCodepoint::UnicodeCodepoint(std::u16string_view utf16)
 {
-    auto generator = utf16_to_codepoints(utf16);
-    if (!generator) throw std::invalid_argument(
+    if (utf16.empty()) throw std::invalid_argument(
             "An empty string was passed to UnicodeCodepoint's constructor.");
-    codepoint = generator();
+    codepoint = *utf16_to_codepoints(utf16)();
 }
 
 UnicodeCodepoint::UnicodeCodepoint(char ascii) : codepoint(ascii) {}
