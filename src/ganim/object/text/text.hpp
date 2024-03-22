@@ -5,7 +5,7 @@
  * @brief Contains the @ref ganim::Text class
  */
 
-#include "texture_shape.hpp"
+#include "../texture_shape.hpp"
 
 namespace ganim {
     class Text : public TextureShape<Shape> {
