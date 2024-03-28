@@ -120,7 +120,7 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
                 auto n = std::string();
                 n.resize(a + l);
                 dvi.read(n.data(), a + l);
-                fonts[k] = DVIFont(n, mag, system);
+                fonts[k] = DVIFont(n, mag, d / (1 << 16), system);
                 break;
             }
             case 247: // Preamble
@@ -133,7 +133,6 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
                 auto num = read_4();
                 auto den = read_4();
                 global_mag = read_4();
-                std::cout << global_mag << ' ' << num << ' ' << den << '\n';
                 consumer.set_magnification(global_mag * num / (1000.0 * den));
                 auto k = read_1();
                 dvi.seekg(k, std::ios_base::cur);

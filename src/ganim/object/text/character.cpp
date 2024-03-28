@@ -7,6 +7,7 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_ADVANCES_H
 #include "ganim/gl/gl.hpp"
 
 #include "ganim/gl/texture.hpp"
@@ -142,12 +143,20 @@ Character& ganim::get_character(Font& font, UnicodeCodepoint character)
     result.height = (bitmap.rows + 2) / GC_pixel_size;
     result.bearing_x = (face->glyph->bitmap_left - 1) / GC_pixel_size;
     result.bearing_y = (face->glyph->bitmap_top + 1) / GC_pixel_size;
-    result.x_advance = (face->glyph->advance.x + 2) / 64 / GC_pixel_size;
+    result.x_advance = face->glyph->advance.x / 64.0 / GC_pixel_size;
+    auto advance = FT_Fixed();
+    FT_Get_Advance(face, glyph_index, FT_LOAD_NO_SCALE, &advance);
+    result.x_advance_em = static_cast<double>(advance) / face->units_per_EM;
 
     G_tt_x += width + 2;
     G_tt_y += height + 2;
     G_tt_h = std::max(G_tt_h, height + 2);
     return result;
+}
+
+double ganim::get_font_pem(Font& font)
+{
+    return font.M_face->size->metrics.x_ppem / GC_pixel_size;
 }
 
 double ganim::get_kerning(

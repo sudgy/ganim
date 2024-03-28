@@ -9,6 +9,7 @@ namespace ganim {
 struct DVIFont {
     std::string name;
     double mag = 0;
+    double size = 0;
     bool system = true;
 };
 

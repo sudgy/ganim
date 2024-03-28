@@ -50,6 +50,8 @@ namespace ganim {
                               ///< the character, in ganim units
         double x_advance = 0; ///< @brief The x coordinate offset where the next
                               ///< character should be, in ganim units
+        double x_advance_em = 0; ///< @brief Same as x_advance, but in em rather
+                                 ///< than ganim units
     };
     /** @brief A type to keep track of fonts.
      *
@@ -82,6 +84,9 @@ namespace ganim {
      * character passed in.
      */
     Character& get_character(Font& font, UnicodeCodepoint character);
+    // TODO: Figure out exactly what this is doing so that you can write
+    // documentation
+    double get_font_pem(Font& font);
     /** @brief Get the kerning offset for two characters, in ganim units.
      *
      * @param font A font previously returned by @ref get_font.

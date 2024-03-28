@@ -45,6 +45,7 @@ namespace {
                 REQUIRE(c == 'H');
                 REQUIRE(font->name == "cmr10");
                 REQUIRE(font->mag == 1.0);
+                REQUIRE(font->size == 10.0);
                 REQUIRE(font->system);
                 co_yield 0;
                 REQUIRE(c == 'e');
