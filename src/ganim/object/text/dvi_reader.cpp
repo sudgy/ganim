@@ -64,6 +64,104 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
             continue;
         }
         switch (opcode) {
+            case 128: // set1
+            {
+                auto c = read_1();
+                stack.back().h += consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
+            case 129: // set2
+            {
+                auto c = read_2();
+                stack.back().h += consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
+            case 130: // set3
+            {
+                auto c = read_3();
+                stack.back().h += consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
+            case 131: // set4
+            {
+                auto c = read_4();
+                stack.back().h += consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
+            case 132: // set_rule
+            {
+                auto a = read_4();
+                auto b = read_4();
+                if (a > 0 and b > 0) {
+                    consumer.draw_rect(stack.back().h, stack.back().v, a, b);
+                }
+                stack.back().h += b;
+                break;
+            }
+            case 133: // put1
+            {
+                auto c = read_1();
+                consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
+            case 134: // put2
+            {
+                auto c = read_2();
+                consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
+            case 135: // put3
+            {
+                auto c = read_3();
+                consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
+            case 136: // put4
+            {
+                auto c = read_4();
+                consumer.write_character(
+                    fonts[f],
+                    c,
+                    stack.back().h,
+                    stack.back().v
+                );
+                break;
+            }
             case 137: // put_rule
             {
                 auto a = read_4();
@@ -73,6 +171,8 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
                 }
                 break;
             }
+            case 138: // nop
+                break;
             case 139: // bop
             {
                 stack.clear();
@@ -90,6 +190,9 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
             case 142: // pop
                 stack.pop_back();
                 break;
+            case 143: // right1
+                stack.back().h += read_1();
+                break;
             case 144: // right2
                 stack.back().h += read_2();
                 break;
@@ -102,9 +205,46 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
             case 147: // w0
                 stack.back().h += stack.back().w;
                 break;
+            case 148: // w1
+                stack.back().w = read_1();
+                stack.back().h += stack.back().w;
+                break;
+            case 149: // w2
+                stack.back().w = read_2();
+                stack.back().h += stack.back().w;
+                break;
             case 150: // w3
                 stack.back().w = read_3();
                 stack.back().h += stack.back().w;
+                break;
+            case 151: // w4
+                stack.back().w = read_4();
+                stack.back().h += stack.back().w;
+                break;
+            case 152: // x0
+                stack.back().h += stack.back().x;
+                break;
+            case 153: // x1
+                stack.back().x = read_1();
+                stack.back().h += stack.back().x;
+                break;
+            case 154: // x2
+                stack.back().x = read_2();
+                stack.back().h += stack.back().x;
+                break;
+            case 155: // x3
+                stack.back().x = read_3();
+                stack.back().h += stack.back().x;
+                break;
+            case 156: // x4
+                stack.back().x = read_4();
+                stack.back().h += stack.back().x;
+                break;
+            case 157: // down1
+                stack.back().v += read_1();
+                break;
+            case 158: // down2
+                stack.back().v += read_2();
                 break;
             case 159: // down3
                 stack.back().v += read_3();
@@ -115,25 +255,75 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
             case 161: // y0
                 stack.back().v += stack.back().y;
                 break;
+            case 162: // y1
+                stack.back().y = read_1();
+                stack.back().v += stack.back().y;
+                break;
+            case 163: // y2
+                stack.back().y = read_2();
+                stack.back().v += stack.back().y;
+                break;
+            case 164: // y3
+                stack.back().y = read_3();
+                stack.back().v += stack.back().y;
+                break;
             case 165: // y4
                 stack.back().y = read_4();
                 stack.back().v += stack.back().y;
                 break;
+            case 166: // z0
+                stack.back().v += stack.back().z;
+                break;
+            case 167: // z1
+                stack.back().z = read_1();
+                stack.back().v += stack.back().z;
+                break;
+            case 168: // z2
+                stack.back().z = read_2();
+                stack.back().v += stack.back().z;
+                break;
+            case 169: // z3
+                stack.back().z = read_3();
+                stack.back().v += stack.back().z;
+                break;
+            case 170: // z4
+                stack.back().z = read_4();
+                stack.back().v += stack.back().z;
+                break;
+            case 235: // fnt1
+                f = read_1();
+                break;
+            case 236: // fnt2
+                f = read_2();
+                break;
+            case 237: // fnt3
+                f = read_3();
+                break;
+            case 238: // fnt4
+                f = read_4();
+                break;
             case 239: // special1
-            {
-                auto k = read_1();
-                dvi.seekg(k, std::ios_base::cur); // nop for now
+                dvi.seekg(read_1(), std::ios_base::cur); // nop for now
                 break;
-            }
+            case 240: // special2
+                dvi.seekg(read_2(), std::ios_base::cur); // nop for now
+                break;
+            case 241: // special3
+                dvi.seekg(read_3(), std::ios_base::cur); // nop for now
+                break;
             case 242: // special4
-            {
-                auto k = read_4();
-                dvi.seekg(k, std::ios_base::cur); // nop for now
+                dvi.seekg(read_4(), std::ios_base::cur); // nop for now
                 break;
-            }
             case 243: // fnt_def1
+            case 244: // fnt_def2
+            case 245: // fnt_def3
+            case 246: // fnt_def4
             {
-                auto k = read_1();
+                auto k = std::uint32_t();
+                if (opcode == 243) k = read_1();
+                else if (opcode == 244) k = read_2();
+                else if (opcode == 245) k = read_3();
+                else k = read_4();
                 if (fonts.find(k) != fonts.end()) break;
                 read_4(); // Ignore checksum, not sure how to validate it
                 auto s = read_4();
