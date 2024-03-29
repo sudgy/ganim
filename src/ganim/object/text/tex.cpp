@@ -15,36 +15,66 @@ Tex::Tex(std::string_view dvi_filename)
     double x_max = -INFINITY;
     double y_min = INFINITY;
     double y_max = -INFINITY;
-    for (auto [c, x, y] : M_vertices) {
+    for (auto [c, x, y, s] : M_vertices) {
         x_min = std::min(x_min, x + c->bearing_x);
         x_max = std::max(x_max, x + c->bearing_x + c->width);
         y_min = std::min(y_min, y + c->bearing_y - c->height);
         y_max = std::max(y_max, y + c->bearing_y);
         vertices.push_back({
-            static_cast<float>(x + c->bearing_x),
-            static_cast<float>(y + c->bearing_y),
-            0
+            static_cast<float>(x + c->bearing_x * s),
+            static_cast<float>(y + c->bearing_y * s)
         });
         tvertices.push_back({c->texture_x, c->texture_y});
         vertices.push_back({
-            static_cast<float>(x + c->bearing_x + c->width),
-            static_cast<float>(y + c->bearing_y),
-            0
+            static_cast<float>(x + (c->bearing_x + c->width) * s),
+            static_cast<float>(y + c->bearing_y * s)
         });
         tvertices.push_back({c->texture_x + c->texture_width, c->texture_y});
         vertices.push_back({
-            static_cast<float>(x + c->bearing_x),
-            static_cast<float>(y + c->bearing_y - c->height),
-            0
+            static_cast<float>(x + c->bearing_x * s),
+            static_cast<float>(y + (c->bearing_y - c->height) * s)
         });
         tvertices.push_back({c->texture_x, c->texture_y + c->texture_height});
         vertices.push_back({
-            static_cast<float>(x + c->bearing_x + c->width),
-            static_cast<float>(y + c->bearing_y - c->height),
-            0
+            static_cast<float>(x + (c->bearing_x + c->width) * s),
+            static_cast<float>(y + (c->bearing_y - c->height) * s)
         });
         tvertices.push_back({c->texture_x + c->texture_width,
                 c->texture_y + c->texture_height});
+        indices.push_back(4*i + 0);
+        indices.push_back(4*i + 1);
+        indices.push_back(4*i + 2);
+        indices.push_back(4*i + 2);
+        indices.push_back(4*i + 1);
+        indices.push_back(4*i + 3);
+        ++i;
+    }
+    for (auto [x, y, width, height] : M_rules) {
+        const auto td = 1.0f / GC_default_text_texture_size / 2;
+        x_min = std::min(x_min, x);
+        x_max = std::max(x_max, x + width);
+        y_min = std::min(y_min, y);
+        y_max = std::max(y_max, y + height);
+        vertices.push_back({
+            static_cast<float>(x),
+            static_cast<float>(y)
+        });
+        tvertices.push_back({0, 0});
+        vertices.push_back({
+            static_cast<float>(x + width),
+            static_cast<float>(y)
+        });
+        tvertices.push_back({td, 0});
+        vertices.push_back({
+            static_cast<float>(x),
+            static_cast<float>(y + height)
+        });
+        tvertices.push_back({0, td});
+        vertices.push_back({
+            static_cast<float>(x + width),
+            static_cast<float>(y + height)
+        });
+        tvertices.push_back({td, td});
         indices.push_back(4*i + 0);
         indices.push_back(4*i + 1);
         indices.push_back(4*i + 2);
@@ -79,9 +109,21 @@ int Tex::write_character(
     }
     auto& font2 = get_font(filename);
     auto& character = get_character(font2, c);
-    auto scale = M_magnification * 1e-5 / 2.54 * 72 / font.size
+    auto scale = M_magnification * 1e-5 / 2.54 * 72 / 10
         * get_font_pem(font2);
-    M_vertices.emplace_back(&character, h * scale, v * scale);
+    M_vertices.emplace_back(&character, h * scale, -v * scale, font.size / 10.0);
     return character.x_advance_em * font.size / 72 * 2.54 * 1e5
         / M_magnification;
+}
+
+void Tex::draw_rect(
+    int h,
+    int v,
+    int a,
+    int b
+)
+{
+    // TODO: Figure out how to get the pem value in here
+    auto scale = M_magnification * 1e-5 / 2.54 * 72 / 10;
+    M_rules.emplace_back(h * scale, -v * scale, b * scale, a * scale);
 }

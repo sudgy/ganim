@@ -21,6 +21,12 @@ class Tex : public TextureShape<Shape>, public DVIConsumer {
             int h,
             int v
         ) override;
+        virtual void draw_rect(
+            int h,
+            int v,
+            int a,
+            int b
+        ) override;
         virtual void set_magnification(double mag) override
             {M_magnification = mag;}
 
@@ -30,8 +36,16 @@ class Tex : public TextureShape<Shape>, public DVIConsumer {
             Character* character = nullptr;
             double x = 0.0;
             double y = 0.0;
+            double scale = 1.0;
+        };
+        struct rule {
+            double x;
+            double y;
+            double width;
+            double height;
         };
         std::vector<tex_vertex> M_vertices;
+        std::vector<rule> M_rules;
 };
 
 }

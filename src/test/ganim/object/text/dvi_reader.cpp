@@ -18,6 +18,7 @@ namespace {
             {
                 return *M_coroutine(&font, c, h, v);
             }
+            virtual void draw_rect(int, int, int, int) override {}
             virtual void set_magnification(double mag) override
             {
                 REQUIRE(mag == 25400000.0 / 473628672.0);

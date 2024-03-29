@@ -64,6 +64,15 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
             continue;
         }
         switch (opcode) {
+            case 137: // put_rule
+            {
+                auto a = read_4();
+                auto b = read_4();
+                if (a > 0 and b > 0) {
+                    consumer.draw_rect(stack.back().h, stack.back().v, a, b);
+                }
+                break;
+            }
             case 139: // bop
             {
                 stack.clear();
@@ -87,6 +96,16 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
             case 145: // right3
                 stack.back().h += read_3();
                 break;
+            case 146: // right4
+                stack.back().h += read_4();
+                break;
+            case 147: // w0
+                stack.back().h += stack.back().w;
+                break;
+            case 150: // w3
+                stack.back().w = read_3();
+                stack.back().h += stack.back().w;
+                break;
             case 159: // down3
                 stack.back().v += read_3();
                 break;
@@ -103,6 +122,12 @@ void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
             case 239: // special1
             {
                 auto k = read_1();
+                dvi.seekg(k, std::ios_base::cur); // nop for now
+                break;
+            }
+            case 242: // special4
+            {
+                auto k = read_4();
                 dvi.seekg(k, std::ios_base::cur); // nop for now
                 break;
             }

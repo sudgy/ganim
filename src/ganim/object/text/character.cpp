@@ -18,9 +18,9 @@ namespace {
     std::unordered_map<std::string, Font> G_fonts;
     FT_Library G_freetype;
     gl::Texture G_text_texture = 0;
-    int G_tt_x = 0;
+    int G_tt_x = 2; // A single white pixel is placed on the corner for rules
     int G_tt_y = 0;
-    int G_tt_h = 0;
+    int G_tt_h = 2;
     constexpr auto GC_pixel_size = 128.0;
 }
 
@@ -40,6 +40,10 @@ struct ganim::Font {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            const std::uint8_t rules[] = {0xFF, 0xFF, 0xFF, 0xFF};
+            glTexSubImage2D(GL_TEXTURE_2D, 0,
+                    0, 0, 1, 1,
+                    GL_RGBA, GL_UNSIGNED_BYTE, rules);
             auto error = FT_Init_FreeType(&G_freetype);
             if (error) {
                 std::cerr << "Error initializing FreeType\n";
@@ -62,6 +66,11 @@ struct ganim::Font {
         error = FT_Set_Pixel_Sizes(M_face, 0, GC_pixel_size);
         if (error) {
             std::cerr << "Unable to set font size " << filename << "\n";
+        }
+
+        if (M_face->num_charmaps == 2 and
+                M_face->charmaps[1]->encoding == 1094992451) {
+            FT_Select_Charmap(M_face, FT_Encoding(1094992451));
         }
     }
     Font(const Font&)=delete;
@@ -149,7 +158,6 @@ Character& ganim::get_character(Font& font, UnicodeCodepoint character)
     result.x_advance_em = static_cast<double>(advance) / face->units_per_EM;
 
     G_tt_x += width + 2;
-    G_tt_y += height + 2;
     G_tt_h = std::max(G_tt_h, height + 2);
     return result;
 }

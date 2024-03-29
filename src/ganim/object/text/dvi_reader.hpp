@@ -22,6 +22,12 @@ class DVIConsumer {
             int h,
             int v
         )=0;
+        virtual void draw_rect(
+            int h,
+            int v,
+            int a,
+            int b
+        )=0;
         virtual void set_magnification(double mag)=0;
 };
 
