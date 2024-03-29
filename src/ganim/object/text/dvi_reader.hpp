@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdint>
+#include <filesystem>
 
 namespace ganim {
 
@@ -31,7 +32,7 @@ class DVIConsumer {
         virtual void set_magnification(double mag)=0;
 };
 
-void read_dvi(std::string_view filename, DVIConsumer& consumer);
+void read_dvi(std::filesystem::path filename, DVIConsumer& consumer);
 
 }
 

@@ -1,10 +1,55 @@
 #include "tex.hpp"
 
+#include <fstream>
+
 #include "character.hpp"
 
 using namespace ganim;
 
-Tex::Tex(std::string_view dvi_filename)
+namespace {
+    std::filesystem::path create_dvi(
+        const std::vector<std::string>& tex_strings
+    )
+    {
+        std::filesystem::create_directories("ganim_files/tex/");
+        auto tex_file = std::ofstream("ganim_files/tex/ganim.tex");
+        tex_file <<
+R"(
+\documentclass[preview]{standalone}
+
+\usepackage{amsmath}
+
+\begin{document}
+\begin{align*}
+)";
+        for (auto& s : tex_strings) tex_file << s;
+        tex_file <<
+R"(
+\end{align*}
+\end{document}
+)";
+        tex_file.close();
+        if (std::system("latex "
+                "--output-directory=ganim_files/tex/ "
+                "-halt-on-error "
+                "ganim_files/tex/ganim.tex "
+// Please tell me there's a better way to do this
+#ifdef _WIN32
+                ">nul 2>nul"
+#else
+                ">/dev/null 2>/dev/null"
+#endif
+        )) {
+            throw std::runtime_error("LaTeX failed to compile");
+        }
+        return "ganim_files/tex/ganim.dvi";
+    }
+}
+
+Tex::Tex(const std::vector<std::string>& tex_strings)
+: Tex(create_dvi(tex_strings)) {}
+
+Tex::Tex(std::filesystem::path dvi_filename)
 {
     read_dvi(dvi_filename, *this);
     auto vertices = std::vector<Vertex>();

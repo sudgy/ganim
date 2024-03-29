@@ -4,17 +4,19 @@
 #include "ganim/object/texture_shape.hpp"
 #include "dvi_reader.hpp"
 
-// DVIUnit to meter: a * mag * 1e-7
-// ganim unit to meter: a * pixel_size / ppem * font_size / 72 * 2.54 / 100
-// DVI -> ganim: a * mag * 1e-7 * 100 / 2.54 * 72 / font_size * ppem / pixel_size
-
 namespace ganim {
 
 class Character;
 
 class Tex : public TextureShape<Shape>, public DVIConsumer {
     public:
-        Tex(std::string_view dvi_filename);
+        explicit Tex(std::filesystem::path dvi_filename);
+        template <typename... Ts>
+        explicit Tex(Ts&&... tex_strings)
+        : Tex(static_cast<const std::vector<std::string>&>(
+                    std::vector<std::string>{tex_strings...})) {}
+        Tex(const std::vector<std::string>& tex_strings);
+
         virtual int write_character(
             const DVIFont& font,
             std::uint32_t c,

@@ -1,16 +1,15 @@
 #include "dvi_reader.hpp"
 
 #include <fstream>
-#include <filesystem>
 #include <vector>
 #include <stack>
 #include <format>
 #include <unordered_map>
 #include <iostream>
 
-void ganim::read_dvi(std::string_view filename, DVIConsumer& consumer)
+void ganim::read_dvi(std::filesystem::path filename, DVIConsumer& consumer)
 {
-    auto dvi = std::ifstream(std::filesystem::path(filename), std::ios::binary);
+    auto dvi = std::ifstream(filename, std::ios::binary);
     auto f = 0;
     struct positioning {
         std::int32_t h = 0;
