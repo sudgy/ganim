@@ -14,15 +14,64 @@ namespace {
         std::filesystem::create_directories("ganim_files/tex/");
         auto tex_file = std::ofstream("ganim_files/tex/ganim.tex");
         tex_file <<
-R"(
-\documentclass[preview]{standalone}
+R"(\documentclass[preview]{standalone}
 
 \usepackage{amsmath}
 
+\newcommand{\ganimsectiona}[1]{\special{ganims#1}}
+\newcommand{\ganimsectionb}[2]{{\special{ganims#1}{}#2{}}}
+
 \begin{document}
+\special{ganimt)";
+        tex_file << tex_strings.size();
+        tex_file <<
+R"(}
 \begin{align*}
 )";
-        for (auto& s : tex_strings) tex_file << s;
+        auto i = -1;
+        for (std::string_view s : tex_strings) {
+            ++i;
+            auto start = s.find_first_not_of(' ');
+            if (start == s.npos) {
+                tex_file << s;
+            }
+            else if (start != 0) {
+                tex_file << s.substr(0, start);
+                s.remove_prefix(start);
+            }
+            if (s.size() == 0) continue;
+            auto end = s.find_last_not_of(' ');
+            auto end_spaces = std::string_view();
+            if (end != s.size() - 1) {
+                end_spaces = s.substr(end + 1);
+                s.remove_suffix(s.size() - 1 - end);
+            }
+            auto section_char = 'b';
+            if (s[0] == '\1') {
+                section_char = 'a';
+                s.remove_prefix(1);
+            }
+            if (s[0] != '_' and s[0] != '^') {
+                tex_file << "\\ganimsection" << section_char << "{" << i << "}";
+            }
+            auto pos = std::size_t();
+            while (true) {
+                pos = std::min(s.find('_'), s.find('^'));
+                if (pos == s.npos) {
+                    tex_file << s;
+                    break;
+                }
+                else {
+                    tex_file << s.substr(0, pos + 1);
+                    s.remove_prefix(pos + 1);
+                    if (s.size() != 0) {
+                        tex_file << "\\ganimsection" << section_char << "{"
+                                 << i << "}";
+                    }
+                }
+            }
+            tex_file << end_spaces;
+        }
         tex_file <<
 R"(
 \end{align*}
