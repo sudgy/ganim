@@ -302,17 +302,41 @@ void ganim::read_dvi(std::filesystem::path filename, DVIConsumer& consumer)
                 f = read_4();
                 break;
             case 239: // special1
-                dvi.seekg(read_1(), std::ios_base::cur); // nop for now
+            {
+                auto k = read_1();
+                auto str = std::string();
+                str.resize(k);
+                dvi.read(str.data(), k);
+                consumer.process_special(str);
                 break;
+            }
             case 240: // special2
-                dvi.seekg(read_2(), std::ios_base::cur); // nop for now
+            {
+                auto k = read_2();
+                auto str = std::string();
+                str.resize(k);
+                dvi.read(str.data(), k);
+                consumer.process_special(str);
                 break;
+            }
             case 241: // special3
-                dvi.seekg(read_3(), std::ios_base::cur); // nop for now
+            {
+                auto k = read_3();
+                auto str = std::string();
+                str.resize(k);
+                dvi.read(str.data(), k);
+                consumer.process_special(str);
                 break;
+            }
             case 242: // special4
-                dvi.seekg(read_4(), std::ios_base::cur); // nop for now
+            {
+                auto k = read_4();
+                auto str = std::string();
+                str.resize(k);
+                dvi.read(str.data(), k);
+                consumer.process_special(str);
                 break;
+            }
             case 243: // fnt_def1
             case 244: // fnt_def2
             case 245: // fnt_def3

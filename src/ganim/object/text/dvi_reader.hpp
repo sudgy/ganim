@@ -30,6 +30,7 @@ class DVIConsumer {
             int b
         )=0;
         virtual void set_magnification(double mag)=0;
+        virtual void process_special(std::string_view special)=0;
 };
 
 void read_dvi(std::filesystem::path filename, DVIConsumer& consumer);

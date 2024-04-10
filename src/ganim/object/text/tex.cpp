@@ -1,6 +1,7 @@
 #include "tex.hpp"
 
 #include <fstream>
+#include <charconv>
 
 #include "character.hpp"
 
@@ -96,96 +97,103 @@ R"(
 }
 
 Tex::Tex(const std::vector<std::string>& tex_strings)
-: Tex(create_dvi(tex_strings)) {}
+: Tex(create_dvi(tex_strings))
+{
+    auto i = 0;
+    for (auto& s : tex_strings) {
+        M_pieces_by_string[s].push_back(i++);
+    }
+}
 
 Tex::Tex(std::filesystem::path dvi_filename)
 {
     read_dvi(dvi_filename, *this);
-    auto vertices = std::vector<Vertex>();
-    auto indices = std::vector<unsigned>();
-    auto tvertices = std::vector<TextureVertex>();
-    auto i = 0;
     double x_min = INFINITY;
     double x_max = -INFINITY;
     double y_min = INFINITY;
     double y_max = -INFINITY;
-    for (auto [c, x, y, s] : M_vertices) {
-        x_min = std::min(x_min, x + c->bearing_x);
-        x_max = std::max(x_max, x + c->bearing_x + c->width);
-        y_min = std::min(y_min, y + c->bearing_y - c->height);
-        y_max = std::max(y_max, y + c->bearing_y);
-        vertices.push_back({
-            static_cast<float>(x + c->bearing_x * s),
-            static_cast<float>(y + c->bearing_y * s)
-        });
-        tvertices.push_back({c->texture_x, c->texture_y});
-        vertices.push_back({
-            static_cast<float>(x + (c->bearing_x + c->width) * s),
-            static_cast<float>(y + c->bearing_y * s)
-        });
-        tvertices.push_back({c->texture_x + c->texture_width, c->texture_y});
-        vertices.push_back({
-            static_cast<float>(x + c->bearing_x * s),
-            static_cast<float>(y + (c->bearing_y - c->height) * s)
-        });
-        tvertices.push_back({c->texture_x, c->texture_y + c->texture_height});
-        vertices.push_back({
-            static_cast<float>(x + (c->bearing_x + c->width) * s),
-            static_cast<float>(y + (c->bearing_y - c->height) * s)
-        });
-        tvertices.push_back({c->texture_x + c->texture_width,
-                c->texture_y + c->texture_height});
-        indices.push_back(4*i + 0);
-        indices.push_back(4*i + 1);
-        indices.push_back(4*i + 2);
-        indices.push_back(4*i + 2);
-        indices.push_back(4*i + 1);
-        indices.push_back(4*i + 3);
-        ++i;
+    for (int j = 0; j < ssize(M_vertices); ++j) {
+        auto vertices = std::vector<Shape::Vertex>();
+        auto indices = std::vector<unsigned>();
+        auto tvertices = std::vector<TextureVertex>();
+        auto i = 0;
+        for (auto [c, x, y, s] : M_vertices[j]) {
+            x_min = std::min(x_min, x + c->bearing_x);
+            x_max = std::max(x_max, x + c->bearing_x + c->width);
+            y_min = std::min(y_min, y + c->bearing_y - c->height);
+            y_max = std::max(y_max, y + c->bearing_y);
+            vertices.push_back({
+                static_cast<float>(x + c->bearing_x * s),
+                static_cast<float>(y + c->bearing_y * s)
+            });
+            tvertices.push_back({c->texture_x, c->texture_y});
+            vertices.push_back({
+                static_cast<float>(x + (c->bearing_x + c->width) * s),
+                static_cast<float>(y + c->bearing_y * s)
+            });
+            tvertices.push_back({c->texture_x + c->texture_width, c->texture_y});
+            vertices.push_back({
+                static_cast<float>(x + c->bearing_x * s),
+                static_cast<float>(y + (c->bearing_y - c->height) * s)
+            });
+            tvertices.push_back({c->texture_x, c->texture_y + c->texture_height});
+            vertices.push_back({
+                static_cast<float>(x + (c->bearing_x + c->width) * s),
+                static_cast<float>(y + (c->bearing_y - c->height) * s)
+            });
+            tvertices.push_back({c->texture_x + c->texture_width,
+                    c->texture_y + c->texture_height});
+            indices.push_back(4*i + 0);
+            indices.push_back(4*i + 1);
+            indices.push_back(4*i + 2);
+            indices.push_back(4*i + 2);
+            indices.push_back(4*i + 1);
+            indices.push_back(4*i + 3);
+            ++i;
+        }
+        for (auto [x, y, width, height] : M_rules[j]) {
+            const auto td = 1.0f / GC_default_text_texture_size / 2;
+            x_min = std::min(x_min, x);
+            x_max = std::max(x_max, x + width);
+            y_min = std::min(y_min, y);
+            y_max = std::max(y_max, y + height);
+            vertices.push_back({
+                static_cast<float>(x),
+                static_cast<float>(y)
+            });
+            tvertices.push_back({0, 0});
+            vertices.push_back({
+                static_cast<float>(x + width),
+                static_cast<float>(y)
+            });
+            tvertices.push_back({td, 0});
+            vertices.push_back({
+                static_cast<float>(x),
+                static_cast<float>(y + height)
+            });
+            tvertices.push_back({0, td});
+            vertices.push_back({
+                static_cast<float>(x + width),
+                static_cast<float>(y + height)
+            });
+            tvertices.push_back({td, td});
+            indices.push_back(4*i + 0);
+            indices.push_back(4*i + 1);
+            indices.push_back(4*i + 2);
+            indices.push_back(4*i + 2);
+            indices.push_back(4*i + 1);
+            indices.push_back(4*i + 3);
+            ++i;
+        }
+        auto& new_shape
+            = M_shapes.emplace_back(std::move(vertices), std::move(indices));
+        new_shape.set_texture_vertices(std::move(tvertices));
+        new_shape.set_texture(get_text_texture());
     }
-    for (auto [x, y, width, height] : M_rules) {
-        const auto td = 1.0f / GC_default_text_texture_size / 2;
-        x_min = std::min(x_min, x);
-        x_max = std::max(x_max, x + width);
-        y_min = std::min(y_min, y);
-        y_max = std::max(y_max, y + height);
-        vertices.push_back({
-            static_cast<float>(x),
-            static_cast<float>(y)
-        });
-        tvertices.push_back({0, 0});
-        vertices.push_back({
-            static_cast<float>(x + width),
-            static_cast<float>(y)
-        });
-        tvertices.push_back({td, 0});
-        vertices.push_back({
-            static_cast<float>(x),
-            static_cast<float>(y + height)
-        });
-        tvertices.push_back({0, td});
-        vertices.push_back({
-            static_cast<float>(x + width),
-            static_cast<float>(y + height)
-        });
-        tvertices.push_back({td, td});
-        indices.push_back(4*i + 0);
-        indices.push_back(4*i + 1);
-        indices.push_back(4*i + 2);
-        indices.push_back(4*i + 2);
-        indices.push_back(4*i + 1);
-        indices.push_back(4*i + 3);
-        ++i;
-    }
+    add(M_shapes);
     const auto x_shift = (x_min + x_max) / 2;
     const auto y_shift = (y_min + y_max) / 2;
-    for (auto& v : vertices) {
-        v.x -= x_shift;
-        v.y -= y_shift;
-    }
-    set_vertices(std::move(vertices), std::move(indices));
-    set_texture_vertices(std::move(tvertices));
-    set_texture(get_text_texture());
+    shift(-vga2::Vector(x_shift, y_shift));
 }
 
 int Tex::write_character(
@@ -205,7 +213,9 @@ int Tex::write_character(
     auto& character = get_character(font2, c);
     auto scale = M_magnification * 1e-5 / 2.54 * 72 / 10
         * get_font_pem(font2);
-    M_vertices.emplace_back(&character, h * scale, -v * scale, font.size / 10.0);
+    M_vertices[M_current_section].emplace_back(
+        &character, h * scale, -v * scale, font.size / 10.0
+    );
     return character.x_advance_em * font.size / 72 * 2.54 * 1e5
         / M_magnification;
 }
@@ -219,5 +229,45 @@ void Tex::draw_rect(
 {
     // TODO: Figure out how to get the pem value in here
     auto scale = M_magnification * 1e-5 / 2.54 * 72 / 10;
-    M_rules.emplace_back(h * scale, -v * scale, b * scale, a * scale);
+    M_rules[M_current_section].emplace_back(
+        h * scale, -v * scale, b * scale, a * scale
+    );
+}
+
+void Tex::process_special(std::string_view special)
+{
+    if (special.starts_with("ganim")) {
+        special.remove_prefix(sizeof("ganim") - 1);
+        if (special[0] == 's') {
+            special.remove_prefix(1);
+            std::from_chars(
+                special.data(),
+                special.data() + special.size(),
+                M_current_section
+            );
+        }
+        else if (special[0] == 't') {
+            special.remove_prefix(1);
+            auto size = 0;
+            std::from_chars(
+                special.data(),
+                special.data() + special.size(),
+                size
+            );
+            M_vertices.resize(size);
+            M_rules.resize(size);
+        }
+    }
+}
+
+void Tex::set_colors(const std::unordered_map<std::string, Color>& colors)
+{
+    for (auto& [string, color] : colors) {
+        auto it = M_pieces_by_string.find(string);
+        if (it != M_pieces_by_string.end()) {
+            for (auto i : it->second) {
+                M_shapes[i].set_color(color);
+            }
+        }
+    }
 }

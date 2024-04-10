@@ -2,13 +2,14 @@
 #define GANIM_OBJECT_TEXT_TEX_HPP
 
 #include "ganim/object/texture_shape.hpp"
+#include "ganim/object/group.hpp"
 #include "dvi_reader.hpp"
 
 namespace ganim {
 
 class Character;
 
-class Tex : public TextureShape<Shape>, public DVIConsumer {
+class Tex : public Group, public DVIConsumer {
     public:
         explicit Tex(std::filesystem::path dvi_filename);
         template <typename... Ts>
@@ -31,6 +32,8 @@ class Tex : public TextureShape<Shape>, public DVIConsumer {
         ) override;
         virtual void set_magnification(double mag) override
             {M_magnification = mag;}
+        virtual void process_special(std::string_view special) override;
+        void set_colors(const std::unordered_map<std::string, Color>& colors);
 
     private:
         double M_magnification = 0.0;
@@ -46,8 +49,12 @@ class Tex : public TextureShape<Shape>, public DVIConsumer {
             double width;
             double height;
         };
-        std::vector<tex_vertex> M_vertices;
-        std::vector<rule> M_rules;
+        std::vector<std::vector<tex_vertex>> M_vertices;
+        std::vector<std::vector<rule>> M_rules;
+        int M_current_section = 0;
+
+        std::vector<TextureShape<Shape>> M_shapes;
+        std::unordered_map<std::string, std::vector<int>> M_pieces_by_string;
 };
 
 }

@@ -23,6 +23,7 @@ namespace {
             {
                 REQUIRE(mag == 25400000.0 / 473628672.0);
             }
+            virtual void process_special(std::string_view) override {}
         private:
             using generator_type = ArgsGenerator<
                 int,
