@@ -78,6 +78,10 @@ namespace ganim {
                 texture_shape_helper::set_texture(M_texture);
                 T::draw();
             }
+            virtual gl::Shader* get_shader() override
+            {
+                return &texture_shape_helper::get_shader();
+            }
 
             GANIM_OBJECT_CHAIN_DECLS(TextureShape);
 
@@ -88,10 +92,6 @@ namespace ganim {
                     *this,
                     M_texture_vertices
                 );
-            }
-            virtual gl::Shader& get_shader() override
-            {
-                return texture_shape_helper::get_shader();
             }
 
             std::vector<TextureVertex> M_texture_vertices;

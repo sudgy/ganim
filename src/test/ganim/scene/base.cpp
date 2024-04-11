@@ -3,6 +3,7 @@
 #include "test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
 #include "ganim/object/drawable.hpp"
+#include "ganim/object/shaders.hpp"
 
 using namespace ganim;
 
@@ -12,6 +13,10 @@ namespace {
             virtual void draw() override
             {
                 ++draw_count;
+            }
+            virtual gl::Shader* get_shader() override
+            {
+                return nullptr;
             }
             int draw_count = 0;
     };

@@ -11,10 +11,20 @@
 #include "ganim/gl/shader.hpp"
 
 namespace ganim {
-    /** @brief Get the shader used for @ref Shape "Shape"s. */
-    gl::Shader& shape_shader();
-    /** @brief Get the shader used for @ref TextureShape "TextureShape"s. */
-    gl::Shader& texture_shape_shader();
+    struct ShaderParts {
+        std::vector<const char*> vertex_inputs;
+        std::vector<const char*> vertex_outputs;
+        const char* vertex_uniforms = nullptr;
+        const char* vertex_functions = nullptr;
+        const char* vertex_main = nullptr;
+        const char* fragment_uniforms = nullptr;
+        const char* fragment_functions = nullptr;
+        const char* fragment_main = nullptr;
+    };
+    ShaderParts& basic_shader_parts();
+    ShaderParts& texture_shader_parts();
+    ShaderParts& create_shader_parts();
+    gl::Shader& get_shader(const std::vector<ShaderParts*>& parts);
 }
 
 #endif

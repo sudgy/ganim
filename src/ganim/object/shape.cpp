@@ -43,7 +43,7 @@ void Shape::draw()
         glBindVertexArray(0);
         M_valid = true;
     }
-    auto& shader = get_shader();
+    auto& shader = *get_shader();
     glUseProgram(shader);
     shader.set_rotor_uniform("model", get_rotor());
     glUniform4f(shader.get_uniform("object_color"),
@@ -79,7 +79,7 @@ void Shape::buffer_indices()
                  M_indices.data(), GL_STATIC_DRAW);
 }
 
-gl::Shader& Shape::get_shader()
+gl::Shader* Shape::get_shader()
 {
-    return shape_shader();
+    return &ganim::get_shader({&basic_shader_parts(), &create_shader_parts()});
 }

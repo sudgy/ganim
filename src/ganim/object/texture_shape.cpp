@@ -8,7 +8,11 @@ using namespace ganim;
 
 gl::Shader& texture_shape_helper::get_shader()
 {
-    auto& result = texture_shape_shader();
+    auto& result = ganim::get_shader({
+        &basic_shader_parts(),
+        &texture_shader_parts(),
+        &create_shader_parts()
+    });
     glUseProgram(result);
     glUniform1i(result.get_uniform("in_texture"), 0);
     return result;

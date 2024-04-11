@@ -16,6 +16,10 @@ namespace {
             {
                 ++draw_count;
             }
+            virtual gl::Shader* get_shader() override
+            {
+                return nullptr;
+            }
             int draw_count = 0;
     };
 }

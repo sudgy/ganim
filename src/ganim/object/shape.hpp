@@ -65,6 +65,7 @@ namespace ganim {
             const std::vector<unsigned>& get_indices() const {return M_indices;}
             virtual void draw() override;
             void make_invalid() {M_valid = false;}
+            virtual gl::Shader* get_shader() override;
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 
@@ -81,13 +82,6 @@ namespace ganim {
              * element buffer will be bound to `GL_ELEMENT_ARRAY_BUFFER`.
              */
             virtual void buffer_indices();
-            /** @brief Get the shader used for drawing this shape.  It defaults
-             * to @ref shape_shader, although subclasses can override it.
-             * @ref draw will set all the uniforms that shape_shader has
-             * regardless of what shader actually gets returned by this, so make
-             * sure you return a compatible shader.
-             */
-            virtual gl::Shader& get_shader();
 
             std::vector<Vertex> M_vertices;
             std::vector<unsigned> M_indices;
