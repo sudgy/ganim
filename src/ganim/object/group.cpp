@@ -79,6 +79,14 @@ void Group::set_draw_fraction(double value)
     }
 }
 
+void Group::set_creating(bool creating)
+{
+    Object::set_creating(creating);
+    for (auto obj : M_subobjects) {
+        obj->set_creating(creating);
+    }
+}
+
 void Group::set_draw_subobject_ratio(double ratio)
 {
     if (ratio < 0 or ratio > 1) throw std::invalid_argument(

@@ -75,6 +75,17 @@ namespace ganim {
             /** @brief Interpolate between two Objects */
             void interpolate(const Object& start, const Object& end, double t);
 
+            /** @brief Set whether or not this object is being created.
+             *
+             * Used internally by things like the create animation.
+             */
+            virtual void set_creating(bool creating) {M_creating = creating;}
+            /** @brief Determine whether or not this object is being created.
+             *
+             * Used internally by things like the create animation.
+             */
+            bool is_creating() const {return M_creating;}
+
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
@@ -83,6 +94,7 @@ namespace ganim {
             double M_scale = 1;
             double M_draw_fraction = 1;
             bool M_visible = false;
+            bool M_creating = false;
     };
 }
 

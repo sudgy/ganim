@@ -6,6 +6,8 @@
 #include "ganim/object/group.hpp"
 
 #include "ganim/math.hpp"
+#include "ganim/object/shape.hpp"
+#include "ganim/animation/creation.hpp"
 
 using namespace ganim;
 
@@ -246,4 +248,78 @@ TEST_CASE("Group draw fraction", "[object]") {
     REQUIRE(obj2.get_draw_fraction() == 0.75);
     REQUIRE(obj3.get_draw_fraction() == 0.25);
     REQUIRE(obj4.get_draw_fraction() == 0);
+}
+
+TEST_CASE("Group drawing", "[object]") {
+    auto scene = TestScene(10, 10, 10, 10, 4);
+    auto shape1 = Shape(
+        {{ 2,  2, 0, 1},
+         { 2, -2, 0, 1},
+         {-2, -2, 0, 0},
+         {-2,  2, 0, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto shape2 = Shape(
+        {{4,  2, 0, 1, 1, 0, 0},
+         {4, -2, 0, 1, 1, 0, 0},
+         {0, -2, 0, 0, 1, 0, 0},
+         {0,  2, 0, 0, 1, 0, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto group = Group(shape1, shape2);
+    group.set_draw_subobject_ratio(1);
+    scene.add(group);
+    create(group, {.rate_function = [](double t) {return t;}});
+    scene.wait(1);
+    REQUIRE(scene.get_pixel(0, 3, 3) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(0, 3, 6) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(0, 6, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 6, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 2, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 3, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 2, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 3, 7) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 7, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 6, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 7, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 6, 7) == Color("000000"));
+
+    REQUIRE(scene.get_pixel(1, 3, 3) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(1, 3, 6) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(1, 6, 3) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(1, 6, 6) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(1, 2, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 3, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 2, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 3, 7) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 7, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 6, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 7, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 6, 7) == Color("000000"));
+
+    REQUIRE(scene.get_pixel(2, 3, 3) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(2, 3, 6) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(2, 6, 3) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(2, 6, 6) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(2, 2, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 3, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 2, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 3, 7) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 7, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 6, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 7, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 6, 7) == Color("000000"));
+
+    REQUIRE(scene.get_pixel(3, 3, 3) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(3, 3, 6) == Color("FFFFFF"));
+    REQUIRE(scene.get_pixel(3, 6, 3) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(3, 6, 6) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(3, 2, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 3, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 2, 6) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 3, 7) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 7, 3) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(3, 6, 2) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 7, 6) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(3, 6, 7) == Color("000000"));
 }

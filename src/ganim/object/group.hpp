@@ -97,6 +97,7 @@ class Group : public Object {
             override;
         virtual Group& set_visible(bool visible) override;
         virtual void set_draw_fraction(double value) override;
+        virtual void set_creating(bool creating) override;
         /** @brief Set how far into one subobject to draw before starting to
          * draw the next one
          *

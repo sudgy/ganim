@@ -19,7 +19,7 @@ namespace ganim {
     };
     /// @internal
     namespace texture_shape_helper {
-        gl::Shader& get_shader();
+        gl::Shader& get_shader(bool is_creating);
         void set_texture(unsigned texture);
         void buffer_vertices(
             const Shape& self,
@@ -80,7 +80,7 @@ namespace ganim {
             }
             virtual gl::Shader* get_shader() override
             {
-                return &texture_shape_helper::get_shader();
+                return &texture_shape_helper::get_shader(this->is_creating());
             }
 
             GANIM_OBJECT_CHAIN_DECLS(TextureShape);

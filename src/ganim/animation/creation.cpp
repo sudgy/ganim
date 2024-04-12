@@ -11,6 +11,10 @@ void create(Object& object, AnimationArgs args)
     anim.get_ending_object().set_draw_fraction(1);
     object.add_updater(std::move(anim));
     object.set_visible(true);
+    object.set_creating(true);
+    anim.at_end([&object]{
+        object.set_creating(false);
+    });
 }
 
 }

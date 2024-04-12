@@ -52,7 +52,9 @@ void Shape::draw()
     glUniform1f(shader.get_uniform("scale"), get_scale());
     auto actual_draw_fraction = M_min_draw_fraction
         + (M_max_draw_fraction - M_min_draw_fraction) * get_draw_fraction();
-    glUniform1f(shader.get_uniform("this_t"), actual_draw_fraction);
+    if (is_creating()) {
+        glUniform1f(shader.get_uniform("this_t"), actual_draw_fraction);
+    }
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, M_indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
@@ -81,5 +83,15 @@ void Shape::buffer_indices()
 
 gl::Shader* Shape::get_shader()
 {
-    return &ganim::get_shader({&basic_shader_parts(), &create_shader_parts()});
+    if (is_creating()) {
+        return &ganim::get_shader({
+            &basic_shader_parts(),
+            &create_shader_parts()
+        });
+    }
+    else {
+        return &ganim::get_shader({
+            &basic_shader_parts()
+        });
+    }
 }

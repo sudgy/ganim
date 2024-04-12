@@ -6,13 +6,23 @@
 
 using namespace ganim;
 
-gl::Shader& texture_shape_helper::get_shader()
+gl::Shader& texture_shape_helper::get_shader(bool is_creating)
 {
-    auto& result = ganim::get_shader({
-        &basic_shader_parts(),
-        &texture_shader_parts(),
-        &create_shader_parts()
-    });
+    auto& result = [&]() -> gl::Shader& {
+        if (is_creating) {
+            return ganim::get_shader({
+                &basic_shader_parts(),
+                &texture_shader_parts(),
+                &create_shader_parts()
+            });
+        }
+        else {
+            return ganim::get_shader({
+                &basic_shader_parts(),
+                &texture_shader_parts()
+            });
+        }
+    }();
     glUseProgram(result);
     glUniform1i(result.get_uniform("in_texture"), 0);
     return result;
