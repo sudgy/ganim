@@ -412,3 +412,15 @@ TEST_CASE("Shape set_vertices", "[object]") {
     REQUIRE(scene.get_pixel(1, 0, 0) == "000000");
     REQUIRE(scene.get_pixel(1, 1, 0) == "FFFFFF");
 }
+
+TEST_CASE("Empty shapes", "[object]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto shape = Shape();
+    auto shape2 = Shape();
+    shape2.set_vertices({}, {});
+    shape.set_visible(true);
+    shape2.set_visible(true);
+    scene.add(shape, shape2);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
+}

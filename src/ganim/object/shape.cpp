@@ -8,6 +8,8 @@
 
 #include "ganim/rate_functions.hpp"
 
+#include <iostream>
+
 using namespace ganim;
 
 Shape::Shape(
@@ -25,10 +27,12 @@ void Shape::set_vertices(
 {
     M_vertices = std::move(vertices);
     M_indices = std::move(indices);
-    auto ts = M_vertices
-        | std::views::transform([](const auto& v) {return v.t;});
-    M_min_draw_fraction = *std::ranges::min_element(ts);
-    M_max_draw_fraction = *std::ranges::max_element(ts);
+    if (!M_vertices.empty()) {
+        auto ts = M_vertices
+            | std::views::transform([](const auto& v) {return v.t;});
+        M_min_draw_fraction = *std::ranges::min_element(ts);
+        M_max_draw_fraction = *std::ranges::max_element(ts);
+    }
     M_valid = false;
 }
 
@@ -43,6 +47,7 @@ void Shape::draw()
         glBindVertexArray(0);
         M_valid = true;
     }
+    if (M_vertices.empty()) return;
     auto& shader = *get_shader();
     glUseProgram(shader);
     shader.set_rotor_uniform("model", get_rotor());
@@ -63,7 +68,8 @@ void Shape::draw()
 void Shape::buffer_vertices()
 {
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*M_vertices.size(),
-                 &M_vertices[0], GL_STATIC_DRAW);
+                 M_vertices.empty() ? nullptr : M_vertices.data(),
+                 GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
