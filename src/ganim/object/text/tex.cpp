@@ -19,8 +19,45 @@ R"(\documentclass[preview]{standalone}
 
 \usepackage{amsmath}
 
-\newcommand{\ganimsectiona}[1]{\special{ganims#1}}
-\newcommand{\ganimsectionb}[2]{{\special{ganims#1}{}#2{}}}
+\ExplSyntaxOn
+
+\newcommand{\sectiona}[1]{\special{ganims#1}}
+\newcommand{\sectionb}[2]{{\special{ganims#1}#2}}
+
+% Mathcodes are hex numbers of the form 0xXYZZ, where X is the class.  This
+% extracts the X value from a character.
+\newcommand{\getmathclass}[1]{
+    \int_eval:n{ ( \char_value_mathcode:n{`#1} - 2048) / 4096 }}
+
+\newcommand\ganimsection[2]{
+
+% If the next token is a group, we should always treat it like a group.
+\if_int_compare:w \tl_count:n{#2} > 1
+    \sectionb{#1}{#2}
+\else
+    % If the next token is a command, we shouldn't eat it.
+    \tl_if_head_eq_catcode:nNTF {#2} \relax
+    {
+        % Without \expandafter, a command might see the \fi below as an
+        % argument.
+        \sectiona{#1}\expandafter#2
+    }
+    {
+        % If the next token is a binary infix (2) or relation (3), we shouldn't
+        % eat it.
+        \if_int_compare:w \getmathclass{#2} = 2
+            \sectiona{#1}\expandafter#2
+        \else \if_int_compare:w \getmathclass{#2} = 3
+            \sectiona{#1}\expandafter#2
+        % Hopefully at this point the next token just a character, use it.
+        \else
+            \sectionb{#1}#2
+        \fi \fi
+    }
+\fi
+}
+
+\ExplSyntaxOff
 
 \begin{document}
 \special{ganimt)";
@@ -47,13 +84,8 @@ R"(}
                 end_spaces = s.substr(end + 1);
                 s.remove_suffix(s.size() - 1 - end);
             }
-            auto section_char = 'b';
-            if (s[0] == '\1') {
-                section_char = 'a';
-                s.remove_prefix(1);
-            }
             if (s[0] != '_' and s[0] != '^') {
-                tex_file << "\\ganimsection" << section_char << "{" << i << "}";
+                tex_file << "\\ganimsection" << "{" << i << "}";
             }
             auto pos = std::size_t();
             while (true) {
@@ -66,8 +98,7 @@ R"(}
                     tex_file << s.substr(0, pos + 1);
                     s.remove_prefix(pos + 1);
                     if (s.size() != 0) {
-                        tex_file << "\\ganimsection" << section_char << "{"
-                                 << i << "}";
+                        tex_file << "\\ganimsection" << "{" << i << "}";
                     }
                 }
             }
