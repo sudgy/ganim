@@ -323,3 +323,22 @@ TEST_CASE("Group drawing", "[object]") {
     REQUIRE(scene.get_pixel(3, 7, 6) == Color("FF0000"));
     REQUIRE(scene.get_pixel(3, 6, 7) == Color("000000"));
 }
+
+TEST_CASE("Group animating color", "[object]") {
+    auto scene = TestScene(2, 2, 2, 2, 1);
+    auto shape = Shape(
+        {{ 1,  1, 0, 1},
+         { 1, -1, 0, 1},
+         {-1, -1, 0, 0},
+         {-1,  1, 0, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape.set_color("#FF0000");
+    auto group = Group(shape);
+    group.set_draw_subobject_ratio(1);
+    scene.add(group);
+    group.set_visible(true);
+    animate(group);
+    scene.wait(1);
+    REQUIRE(scene.get_pixel(0, 0, 0) == Color("FF0000"));
+}

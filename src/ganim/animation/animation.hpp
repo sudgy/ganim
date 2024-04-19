@@ -44,6 +44,10 @@ namespace ganim {
  *    in `A`.  This can be useful when you define a new object type that
  *    contains no new data, but it has new functions that manipulate the data in
  *    `A`.
+ *
+ * Note that a major exception to the second case is groups.  Groups copy and
+ * interpolate significantly differently, and if you do an animation on a group
+ * but using a base class' functions, the results will be incorrect.
  */
 template <typename T>
 concept animatable = std::derived_from<T, Animatable> and

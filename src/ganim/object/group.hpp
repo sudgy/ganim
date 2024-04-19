@@ -59,6 +59,27 @@ class Group : public Object {
             (add(objects), ...);
         }
 
+        /** @brief Returns this. */
+        virtual Group* as_group() override final {return this;}
+        virtual const Group* as_group() const override final {return this;}
+        /** @brief Copy a group for the sake of animations.
+         *
+         * This copies a group, including all of its subobjects.
+         */
+        std::unique_ptr<Group> anim_copy() const;
+        /** @brief Interpolate two groups.
+         *
+         * Interpolating groups is more confusing than normal since most of the
+         * state of the group *shouldn't* be interpolated, and instead each
+         * subobject needs to be interpolated.
+         *
+         * @throws std::invalid_argument If the size of *this, start, and end
+         * are not the same, or if the position of subgroups in *this, start,
+         * and end are not at the same indices.  If an exception is thrown, no
+         * interpolation will have happened at all.
+         */
+        void interpolate(const Group& start, const Group& end, double t);
+
         // I can't use the macro here because I'm overloading some of the
         // functions
         Group& reset()
@@ -117,6 +138,7 @@ class Group : public Object {
         auto cend() const {return M_subobjects.end();}
         int size() const {return static_cast<int>(M_subobjects.size());}
         Object& operator[](int index) {return *M_subobjects[index];}
+        const Object& operator[](int index) const {return *M_subobjects[index];}
 
     private:
         std::vector<Object*> M_subobjects;
