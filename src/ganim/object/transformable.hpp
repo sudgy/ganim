@@ -125,7 +125,7 @@ class Transformable : public Animatable {
         std::unique_ptr<Transformable> anim_copy() const
             {return std::make_unique<Transformable>(*this);}
         /** @brief Interpolate between two Transformables */
-        void interpolate(
+        virtual void interpolate(
             const Transformable& start,
             const Transformable& end,
             double t

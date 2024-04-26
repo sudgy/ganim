@@ -72,8 +72,13 @@ namespace ganim {
             /** @brief Copy the object for the sake of transformations */
             std::unique_ptr<Object> anim_copy() const
                 {return std::make_unique<Object>(*this);}
+            using Transformable::interpolate;
             /** @brief Interpolate between two Objects */
-            void interpolate(const Object& start, const Object& end, double t);
+            virtual void interpolate(
+                const Object& start,
+                const Object& end,
+                double t
+            );
 
             /** @brief Set whether or not this object is being created.
              *

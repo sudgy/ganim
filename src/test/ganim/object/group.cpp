@@ -338,7 +338,7 @@ TEST_CASE("Group animating color", "[object]") {
     group.set_draw_subobject_ratio(1);
     scene.add(group);
     group.set_visible(true);
-    animate(group);
+    animate(static_cast<Object&>(group));
     scene.wait(1);
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("FF0000"));
 }

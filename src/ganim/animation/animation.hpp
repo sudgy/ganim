@@ -12,6 +12,7 @@
 #include <iostream>
 
 #include "ganim/object/animatable.hpp"
+#include "ganim/object/group.hpp"
 
 #include "ganim/rate_functions.hpp"
 
@@ -102,8 +103,22 @@ class Animation {
         :   M_rate_function(std::move(args.rate_function)),
             M_object(object)
         {
-            M_starting_object = object.anim_copy();
-            M_ending_object = object.anim_copy();
+            if constexpr (std::convertible_to<
+                    std::unique_ptr<Group>, std::shared_ptr<copy_type>>)
+            {
+                if (auto group = object.as_group()) {
+                    M_starting_object = group->anim_copy();
+                    M_ending_object = group->anim_copy();
+                }
+                else {
+                    M_starting_object = object.anim_copy();
+                    M_ending_object = object.anim_copy();
+                }
+            }
+            else {
+                M_starting_object = object.anim_copy();
+                M_ending_object = object.anim_copy();
+            }
             auto fps = object.get_fps();
             if (fps == -1) {
                 throw std::logic_error("An animation was run without setting "

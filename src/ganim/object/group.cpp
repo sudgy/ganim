@@ -87,9 +87,6 @@ void Group::interpolate(const Group& start, const Group& end, double t)
             }
         }
     }
-    M_propogate = false;
-    Object::interpolate(start, end, t);
-    M_propogate = true;
     for (auto i = 0; i < size(); ++i) {
         auto& obj = (*this)[i];
         if (auto group = obj.as_group()) {
@@ -99,6 +96,39 @@ void Group::interpolate(const Group& start, const Group& end, double t)
             obj.interpolate(start[i], end[i], t);
         }
     }
+    M_propogate = false;
+    Object::interpolate(start, end, t);
+    M_propogate = true;
+}
+
+void Group::interpolate(
+    const Transformable& start,
+    const Transformable& end,
+    double t
+)
+{
+    auto start_group = start.as_group();
+    auto end_group = end.as_group();
+    if (!start_group) throw std::invalid_argument(
+        "Interpolating a group between two non-groups is not supported.");
+    if (!end_group) throw std::invalid_argument(
+        "Interpolating a group between two non-groups is not supported.");
+    interpolate(*start_group, *end_group, t);
+}
+
+void Group::interpolate(
+    const Object& start,
+    const Object& end,
+    double t
+)
+{
+    auto start_group = start.as_group();
+    auto end_group = end.as_group();
+    if (!start_group) throw std::invalid_argument(
+        "Interpolating a group between two non-groups is not supported.");
+    if (!end_group) throw std::invalid_argument(
+        "Interpolating a group between two non-groups is not supported.");
+    interpolate(*start_group, *end_group, t);
 }
 
 Group& Group::apply_rotor(const pga3::Even& rotor)
@@ -175,14 +205,12 @@ Group& Group::set_visible(bool visible)
 void Group::set_draw_fraction(double value)
 {
     Object::set_draw_fraction(value);
-    if (M_propogate) {
-        const auto s = size();
-        if (s == 0) return;
-        const auto total_t = 1 + M_ratio * (s - 1);
-        for (auto i = 0; i < s; ++i) {
-            auto this_value = value * total_t - i * M_ratio;
-            M_subobjects[i]->set_draw_fraction(std::clamp(this_value, 0.0, 1.0));
-        }
+    const auto s = size();
+    if (s == 0) return;
+    const auto total_t = 1 + M_ratio * (s - 1);
+    for (auto i = 0; i < s; ++i) {
+        auto this_value = value * total_t - i * M_ratio;
+        M_subobjects[i]->set_draw_fraction(std::clamp(this_value, 0.0, 1.0));
     }
 }
 

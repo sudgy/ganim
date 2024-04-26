@@ -78,7 +78,31 @@ class Group : public Object {
          * and end are not at the same indices.  If an exception is thrown, no
          * interpolation will have happened at all.
          */
-        void interpolate(const Group& start, const Group& end, double t);
+        virtual void interpolate(
+            const Group& start,
+            const Group& end,
+            double t
+        );
+        /** @brief Interpolate between two groups.
+         *
+         * If the inputs aren't actually groups, it will throw
+         * std::invalid_argument.
+         */
+        virtual void interpolate(
+            const Transformable& start,
+            const Transformable& end,
+            double t
+        ) override;
+        /** @brief Interpolate between two groups.
+         *
+         * If the inputs aren't actually groups, it will throw
+         * std::invalid_argument.
+         */
+        virtual void interpolate(
+            const Object& start,
+            const Object& end,
+            double t
+        ) override;
 
         // I can't use the macro here because I'm overloading some of the
         // functions
