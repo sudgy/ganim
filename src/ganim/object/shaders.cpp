@@ -43,6 +43,18 @@ namespace {
         nullptr,
         #include "ganim/shaders/create_shader_fragment_main.glsl"
     );
+    auto noise_create_shader_parts_ = ShaderParts(
+        {},
+        {},
+        nullptr,
+        nullptr,
+        nullptr,
+        #include "ganim/shaders/noise_create_shader_fragment_uniforms.glsl"
+        ,
+        #include "ganim/shaders/noise_create_shader_fragment_functions.glsl"
+        ,
+        #include "ganim/shaders/noise_create_shader_fragment_main.glsl"
+    );
 
     struct vector_hash {
         std::size_t operator()(const std::vector<ShaderParts*>& parts) const
@@ -63,6 +75,7 @@ namespace ganim {
 ShaderParts& basic_shader_parts() {return basic_shader_parts_;}
 ShaderParts& texture_shader_parts() {return texture_shader_parts_;}
 ShaderParts& create_shader_parts() {return create_shader_parts_;}
+ShaderParts& noise_create_shader_parts() {return noise_create_shader_parts_;}
 
 gl::Shader& get_shader(const std::vector<ShaderParts*>& parts)
 {

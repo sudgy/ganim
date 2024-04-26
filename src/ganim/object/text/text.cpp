@@ -21,25 +21,25 @@ Text::Text(std::string_view string)
         vertices.push_back({
             static_cast<float>(pos + c.bearing_x),
             static_cast<float>(c.bearing_y),
-            0
+            0, 0
         });
         tvertices.push_back({c.texture_x, c.texture_y});
         vertices.push_back({
             static_cast<float>(pos + c.bearing_x + c.width),
             static_cast<float>(c.bearing_y),
-            0
+            0, 1
         });
         tvertices.push_back({c.texture_x + c.texture_width, c.texture_y});
         vertices.push_back({
             static_cast<float>(pos + c.bearing_x),
             static_cast<float>(c.bearing_y - c.height),
-            0
+            0, 2
         });
         tvertices.push_back({c.texture_x, c.texture_y + c.texture_height});
         vertices.push_back({
             static_cast<float>(pos + c.bearing_x + c.width),
             static_cast<float>(c.bearing_y - c.height),
-            0
+            0, 3
         });
         tvertices.push_back({c.texture_x + c.texture_width,
                 c.texture_y + c.texture_height});

@@ -155,22 +155,26 @@ Tex::Tex(std::filesystem::path dvi_filename)
             y_max = std::max(y_max, y + c->bearing_y);
             vertices.push_back({
                 static_cast<float>(x + c->bearing_x * s),
-                static_cast<float>(y + c->bearing_y * s)
+                static_cast<float>(y + c->bearing_y * s),
+                0, 0
             });
             tvertices.push_back({c->texture_x, c->texture_y});
             vertices.push_back({
                 static_cast<float>(x + (c->bearing_x + c->width) * s),
-                static_cast<float>(y + c->bearing_y * s)
+                static_cast<float>(y + c->bearing_y * s),
+                0, 1
             });
             tvertices.push_back({c->texture_x + c->texture_width, c->texture_y});
             vertices.push_back({
                 static_cast<float>(x + c->bearing_x * s),
-                static_cast<float>(y + (c->bearing_y - c->height) * s)
+                static_cast<float>(y + (c->bearing_y - c->height) * s),
+                0, 2
             });
             tvertices.push_back({c->texture_x, c->texture_y + c->texture_height});
             vertices.push_back({
                 static_cast<float>(x + (c->bearing_x + c->width) * s),
-                static_cast<float>(y + (c->bearing_y - c->height) * s)
+                static_cast<float>(y + (c->bearing_y - c->height) * s),
+                0, 3
             });
             tvertices.push_back({c->texture_x + c->texture_width,
                     c->texture_y + c->texture_height});
@@ -190,22 +194,26 @@ Tex::Tex(std::filesystem::path dvi_filename)
             y_max = std::max(y_max, y + height);
             vertices.push_back({
                 static_cast<float>(x),
-                static_cast<float>(y)
+                static_cast<float>(y),
+                0, 0
             });
             tvertices.push_back({0, 0});
             vertices.push_back({
                 static_cast<float>(x + width),
-                static_cast<float>(y)
+                static_cast<float>(y),
+                0, 1
             });
             tvertices.push_back({td, 0});
             vertices.push_back({
                 static_cast<float>(x),
-                static_cast<float>(y + height)
+                static_cast<float>(y + height),
+                0, 0
             });
             tvertices.push_back({0, td});
             vertices.push_back({
                 static_cast<float>(x + width),
-                static_cast<float>(y + height)
+                static_cast<float>(y + height),
+                0, 1
             });
             tvertices.push_back({td, td});
             indices.push_back(4*i + 0);

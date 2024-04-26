@@ -55,10 +55,19 @@ void Shape::draw()
             get_color().r / 255.0, get_color().g / 255.0,
             get_color().b / 255.0, get_color().a / 255.0);
     glUniform1f(shader.get_uniform("scale"), get_scale());
-    auto actual_draw_fraction = M_min_draw_fraction
-        + (M_max_draw_fraction - M_min_draw_fraction) * get_draw_fraction();
     if (is_creating()) {
+        auto actual_draw_fraction = M_min_draw_fraction
+            + (M_max_draw_fraction - M_min_draw_fraction) * get_draw_fraction();
         glUniform1f(shader.get_uniform("this_t"), actual_draw_fraction);
+    }
+    else if (auto noise = noise_creating()) {
+        auto actual_noise = noise * (M_max_draw_fraction - M_min_draw_fraction);
+        auto actual_min = M_min_draw_fraction - actual_noise;
+        auto actual_max = M_max_draw_fraction + actual_noise;
+        auto actual_draw_fraction = actual_min
+            + (actual_max - actual_min) * get_draw_fraction();
+        glUniform1f(shader.get_uniform("this_t"), actual_draw_fraction);
+        glUniform1f(shader.get_uniform("noise_scale"), actual_noise);
     }
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, M_indices.size(), GL_UNSIGNED_INT, nullptr);
@@ -93,6 +102,12 @@ gl::Shader* Shape::get_shader()
         return &ganim::get_shader({
             &basic_shader_parts(),
             &create_shader_parts()
+        });
+    }
+    else if (noise_creating()) {
+        return &ganim::get_shader({
+            &basic_shader_parts(),
+            &noise_create_shader_parts()
         });
     }
     else {

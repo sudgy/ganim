@@ -16,6 +16,7 @@ void basic_text()
         {"}{", "#0000FF"}
     });
     scene.add(text);
-    text.set_visible(true);
-    scene.wait(1);
+    text.set_draw_subobject_ratio(0.1);
+    noise_create(text, 0.5, {.duration = 2});
+    scene.wait(3);
 }

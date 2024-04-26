@@ -196,6 +196,16 @@ void Group::set_creating(bool creating)
     }
 }
 
+void Group::set_noise_creating(double noise_creating)
+{
+    Object::set_noise_creating(noise_creating);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->set_noise_creating(noise_creating);
+        }
+    }
+}
+
 void Group::set_draw_subobject_ratio(double ratio)
 {
     if (ratio < 0 or ratio > 1) throw std::invalid_argument(

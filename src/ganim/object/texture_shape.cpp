@@ -6,7 +6,10 @@
 
 using namespace ganim;
 
-gl::Shader& texture_shape_helper::get_shader(bool is_creating)
+gl::Shader& texture_shape_helper::get_shader(
+    bool is_creating,
+    double noise_creating
+)
 {
     auto& result = [&]() -> gl::Shader& {
         if (is_creating) {
@@ -14,6 +17,13 @@ gl::Shader& texture_shape_helper::get_shader(bool is_creating)
                 &basic_shader_parts(),
                 &texture_shader_parts(),
                 &create_shader_parts()
+            });
+        }
+        if (noise_creating) {
+            return ganim::get_shader({
+                &basic_shader_parts(),
+                &texture_shader_parts(),
+                &noise_create_shader_parts()
             });
         }
         else {

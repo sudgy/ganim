@@ -80,11 +80,25 @@ namespace ganim {
              * Used internally by things like the create animation.
              */
             virtual void set_creating(bool creating) {M_creating = creating;}
+            /** @brief Set whether or not this object is being noise created,
+             * and the amount that the noise should affect the creation.
+             *
+             * Used internally by things like the noise create animation.
+             */
+            virtual void set_noise_creating(double noise_creating)
+                {M_noise_creating = noise_creating;}
             /** @brief Determine whether or not this object is being created.
              *
              * Used internally by things like the create animation.
              */
             bool is_creating() const {return M_creating;}
+            /** @brief Determine whether or not this object is being noise
+             * created, and the amount that the noise should affect the
+             * creation.
+             *
+             * Used internally by things like the noise create animation.
+             */
+            double noise_creating() const {return M_noise_creating;}
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
@@ -95,6 +109,7 @@ namespace ganim {
             double M_draw_fraction = 1;
             bool M_visible = false;
             bool M_creating = false;
+            double M_noise_creating = 0.0;
     };
 }
 
