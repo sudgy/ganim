@@ -33,7 +33,7 @@ struct ganim::Font {
         if (S_count == 0) {
             G_text_texture = gl::Texture();
             glBindTexture(GL_TEXTURE_2D, G_text_texture);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
                 GC_default_text_texture_size, GC_default_text_texture_size,
                 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
