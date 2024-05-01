@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <cmath>
+#include <iostream>
 #include <SFML/Window.hpp>
 
 #include "ganim/gl/gl.hpp"
@@ -9,8 +10,30 @@
 // I may need to do something else later, but for now this should work to get a
 // valid context
 namespace {
-    auto settings = sf::ContextSettings(24, 0, 0, 3, 3);
+    auto settings = sf::ContextSettings(24, 0, 0, 4, 3, sf::ContextSettings::Debug);
     auto context = sf::Context(settings, 1, 1);
+    void debug_callback(
+        GLenum source,
+        GLenum type,
+        GLuint id,
+        GLenum severity,
+        GLsizei length,
+        const GLchar* message,
+        const void*
+    )
+    {
+        if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) return;
+        std::cerr << "OpenGL Error:\n"
+            << "Source: " << source << "\n"
+            << "Type: " << type << "\n"
+            << "ID: " << id << "\n"
+            << "Severity: " << severity << "\n"
+            << "Message: " << std::string_view(message, length) << "\n";
+    }
+    auto stupid = []{
+        glDebugMessageCallback(debug_callback, nullptr);
+        return 1;
+    }();
 }
 
 using namespace ganim;
