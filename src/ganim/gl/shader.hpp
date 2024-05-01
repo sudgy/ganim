@@ -46,6 +46,9 @@ namespace ganim::gl {
              * Note that at least currently, geometry shaders are not possible.
              */
             Shader(const Source& vertex, const Source& fragment);
+            /** @brief Create a compute shader
+             */
+            Shader(const Source& compute);
             ~Shader();
             Shader(Shader&&) noexcept;
             Shader(const Shader&)=delete;
