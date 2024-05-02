@@ -2,7 +2,7 @@
 
 #include <stdexcept>
 #include <cmath>
-#include <iostream>
+#include <format>
 #include <SFML/Window.hpp>
 
 #include "ganim/gl/gl.hpp"
@@ -23,12 +23,14 @@ namespace {
     )
     {
         if (severity == GL_DEBUG_SEVERITY_NOTIFICATION) return;
-        std::cerr << "OpenGL Error:\n"
-            << "Source: " << source << "\n"
-            << "Type: " << type << "\n"
-            << "ID: " << id << "\n"
-            << "Severity: " << severity << "\n"
-            << "Message: " << std::string_view(message, length) << "\n";
+        throw std::runtime_error(std::format(
+            "OpenGL Error:\n"
+            "Source: {}\n"
+            "Type: {}\n"
+            "ID: {}\n"
+            "Severity: {}\n"
+            "Message: {}\n",
+            source, type, id, severity, std::string_view(message, length)));
     }
     auto stupid = []{
         glDebugMessageCallback(debug_callback, nullptr);
