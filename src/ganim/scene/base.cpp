@@ -91,18 +91,9 @@ void SceneBase::frame_advance()
         1
     );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    auto processed_shaders = std::set<gl::Shader*>();
     for (auto object : M_drawables) {
         if (object->is_visible()) {
-            auto shader = object->get_shader();
-            if (shader and !processed_shaders.contains(shader)) {
-                glUseProgram(*shader);
-                glUniform2f(shader->get_uniform("camera_scale"),
-                            M_camera.get_x_scale(), M_camera.get_y_scale());
-                shader->set_rotor_uniform("view", ~M_camera.get_rotor());
-                processed_shaders.insert(shader);
-            }
-            object->draw();
+            object->draw(M_camera);
         }
     }
     process_frame();

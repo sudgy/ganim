@@ -14,13 +14,9 @@ using namespace ganim;
 namespace {
     class TestDrawable : public DrawableObject {
         public:
-            virtual void draw() override
+            virtual void draw(const Camera&) override
             {
                 ++draw_count;
-            }
-            virtual gl::Shader* get_shader() override
-            {
-                return nullptr;
             }
             int draw_count = 0;
     };

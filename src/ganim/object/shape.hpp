@@ -63,9 +63,9 @@ namespace ganim {
             );
             const std::vector<Vertex>& get_vertices() const {return M_vertices;}
             const std::vector<unsigned>& get_indices() const {return M_indices;}
-            virtual void draw() override;
+            virtual void draw(const Camera& camera) override;
             void make_invalid() {M_valid = false;}
-            virtual gl::Shader* get_shader() override;
+            virtual gl::Shader* get_shader();
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 

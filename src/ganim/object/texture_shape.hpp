@@ -73,10 +73,10 @@ namespace ganim {
             {
                 M_texture = texture;
             }
-            virtual void draw() override
+            virtual void draw(const Camera& camera) override
             {
                 texture_shape_helper::set_texture(M_texture);
-                T::draw();
+                T::draw(camera);
             }
             virtual gl::Shader* get_shader() override
             {

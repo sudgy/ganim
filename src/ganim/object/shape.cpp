@@ -36,7 +36,7 @@ void Shape::set_vertices(
     M_valid = false;
 }
 
-void Shape::draw()
+void Shape::draw(const Camera& camera)
 {
     if (!M_valid) {
         glBindVertexArray(M_vertex_array);
@@ -50,6 +50,9 @@ void Shape::draw()
     if (M_vertices.empty()) return;
     auto& shader = *get_shader();
     glUseProgram(shader);
+    glUniform2f(shader.get_uniform("camera_scale"),
+                camera.get_x_scale(), camera.get_y_scale());
+    shader.set_rotor_uniform("view", ~camera.get_rotor());
     shader.set_rotor_uniform("model", get_rotor());
     glUniform4f(shader.get_uniform("object_color"),
             get_color().r / 255.0, get_color().g / 255.0,
