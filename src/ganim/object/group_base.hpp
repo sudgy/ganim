@@ -2,7 +2,7 @@
 #define GANIM_OBJECT_GROUP_HPP
 
 /** @file
- * @brief Contains the @ref ganim::Group "Group" class
+ * @brief Contains the @ref ganim::GroupBase "GroupBase" class
  */
 
 #include "object.hpp"
@@ -24,10 +24,10 @@ namespace ganim {
  * It is up to you to ensure that you don't add the same object to a group
  * multiple times, even transitively.  Things might get weird if you do.
  */
-class Group : public Object {
+class GroupBase : public Object {
     public:
         template <typename... Ts>
-        explicit Group(Ts&... objects)
+        explicit GroupBase(Ts&... objects)
         {
             (add(objects), ...);
         }
@@ -39,10 +39,10 @@ class Group : public Object {
          * want to add all the subobjects of the subgroup to this group, so
          * groups are explicitly disallowed from this function.
          *
-         * @tparam R A range type that is not a Group of some kind
+         * @tparam R A range type that is not a GroupBase of some kind
          */
         template <std::ranges::input_range R>
-            requires(!std::convertible_to<R&, Group&>)
+            requires(!std::convertible_to<R&, GroupBase&>)
         void add(R& range)
         {
             for (auto& object : range) {
@@ -60,13 +60,13 @@ class Group : public Object {
         }
 
         /** @brief Returns this. */
-        virtual Group* as_group() override final {return this;}
-        virtual const Group* as_group() const override final {return this;}
+        virtual GroupBase* as_group() override final {return this;}
+        virtual const GroupBase* as_group() const override final {return this;}
         /** @brief Copy a group for the sake of animations.
          *
          * This copies a group, including all of its subobjects.
          */
-        std::unique_ptr<Group> anim_copy() const;
+        std::unique_ptr<GroupBase> anim_copy() const;
         /** @brief Interpolate two groups.
          *
          * Interpolating groups is more confusing than normal since most of the
@@ -79,8 +79,8 @@ class Group : public Object {
          * interpolation will have happened at all.
          */
         virtual void interpolate(
-            const Group& start,
-            const Group& end,
+            const GroupBase& start,
+            const GroupBase& end,
             double t
         );
         /** @brief Interpolate between two groups.
@@ -106,41 +106,41 @@ class Group : public Object {
 
         // I can't use the macro here because I'm overloading some of the
         // functions
-        Group& reset()
+        GroupBase& reset()
             {Transformable::reset(); return *this;}
-        Group& apply_rotor(const vga2::Even& rotor)
+        GroupBase& apply_rotor(const vga2::Even& rotor)
             {Transformable::apply_rotor(rotor); return *this;}
-        Group& apply_rotor(const vga3::Even& rotor)
+        GroupBase& apply_rotor(const vga3::Even& rotor)
             {Transformable::apply_rotor(rotor); return *this;}
-        Group& apply_rotor(const pga2::Even& rotor)
+        GroupBase& apply_rotor(const pga2::Even& rotor)
             {Transformable::apply_rotor(rotor); return *this;}
-        Group& move_to(const pointlike auto& p)
+        GroupBase& move_to(const pointlike auto& p)
             {Transformable::move_to(p); return *this;}
-        Group& shift(const pointlike auto& p)
+        GroupBase& shift(const pointlike auto& p)
             {Transformable::shift(p); return *this;}
-        Group& rotate(double angle)
+        GroupBase& rotate(double angle)
             {Transformable::rotate(angle); return *this;}
-        Group& rotate(const vga2::Vector& about_point, double angle)
+        GroupBase& rotate(const vga2::Vector& about_point, double angle)
             {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const pga2::Vector& about_point, double angle)
+        GroupBase& rotate(const pga2::Vector& about_point, double angle)
             {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const vga3::Bivector& about_plane, double angle)
+        GroupBase& rotate(const vga3::Bivector& about_plane, double angle)
             {Transformable::rotate(about_plane, angle); return *this;}
-        Group& rotate(const pga2::Bivector& about_point, double angle = 1)
+        GroupBase& rotate(const pga2::Bivector& about_point, double angle = 1)
             {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const pga3::Bivector& about_line, double angle = 1)
+        GroupBase& rotate(const pga3::Bivector& about_line, double angle = 1)
             {Transformable::rotate(about_line, angle); return *this;}
-        Group& scale(double amount)
+        GroupBase& scale(double amount)
             {Object::scale(amount); return *this;}
-        Group& scale(const pointlike auto& about_point, double amount)
+        GroupBase& scale(const pointlike auto& about_point, double amount)
             {Object::scale(about_point, amount); return *this;}
-        virtual Group& apply_rotor(const pga3::Even& rotor) override;
-        virtual Group& set_color(Color color) override;
-        virtual Group& set_color_with_alpha(Color color) override;
-        virtual Group& set_opacity(double opacity) override;
-        virtual Group& scale(const pga3::Trivector& about_point, double amount)
+        virtual GroupBase& apply_rotor(const pga3::Even& rotor) override;
+        virtual GroupBase& set_color(Color color) override;
+        virtual GroupBase& set_color_with_alpha(Color color) override;
+        virtual GroupBase& set_opacity(double opacity) override;
+        virtual GroupBase& scale(const pga3::Trivector& about_point, double amount)
             override;
-        virtual Group& set_visible(bool visible) override;
+        virtual GroupBase& set_visible(bool visible) override;
         virtual void set_draw_fraction(double value) override;
         virtual void set_creating(bool creating) override;
         virtual void set_noise_creating(double noise_creating) override;

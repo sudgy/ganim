@@ -2,14 +2,14 @@
 #define GANIM_OBJECT_TEXT_TEX_HPP
 
 #include "ganim/object/texture_shape.hpp"
-#include "ganim/object/group.hpp"
+#include "ganim/object/group_base.hpp"
 #include "dvi_reader.hpp"
 
 namespace ganim {
 
 class Character;
 
-class Tex : public Group, public DVIConsumer {
+class Tex : public GroupBase, public DVIConsumer {
     public:
         explicit Tex(std::filesystem::path dvi_filename);
         template <typename... Ts>

@@ -9,7 +9,7 @@
 #include <map>
 
 namespace ganim {
-    class Group;
+    class GroupBase;
     /** @brief Represents any kind of thing that can be animated/updated
      *
      * This class doesn't actually implement any animations itself.  It only
@@ -77,13 +77,13 @@ namespace ganim {
              * false.
              */
             void update();
-            /** @brief Returns this as a @ref Group, if possible.
+            /** @brief Returns this as a @ref GroupBase, if possible.
              *
              * Groups often need to be handled specially, and this function
              * should be faster than a dynamic cast.
              */
-            virtual Group* as_group() {return nullptr;}
-            virtual const Group* as_group() const {return nullptr;}
+            virtual GroupBase* as_group() {return nullptr;}
+            virtual const GroupBase* as_group() const {return nullptr;}
 
         private:
             int add_updater_void(std::function<void()> updater);

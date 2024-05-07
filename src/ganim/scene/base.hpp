@@ -15,7 +15,7 @@
 
 #include "ganim/object/shaders.hpp"
 #include "ganim/object/drawable.hpp"
-#include "ganim/object/group.hpp"
+#include "ganim/object/group_base.hpp"
 
 namespace ganim {
     /** @brief The base class for scenes, which contains most of the scene logic
@@ -96,12 +96,12 @@ namespace ganim {
                         return;
                     }
                 }
-                if constexpr (std::convertible_to<T&, Group>) {
+                if constexpr (std::convertible_to<T&, GroupBase>) {
                     add_group(object);
                     return;
                 }
                 else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Group*>(&object)) {
+                    if (auto* p = dynamic_cast<GroupBase*>(&object)) {
                         add_group(*p);
                         return;
                     }
@@ -130,7 +130,7 @@ namespace ganim {
 
             void add_animatable(Animatable& object);
             void add_drawable(Drawable& object);
-            void add_group(Group& object);
+            void add_group(GroupBase& object);
 
             gl::Framebuffer M_framebuffer;
             gl::Texture M_framebuffer_texture;

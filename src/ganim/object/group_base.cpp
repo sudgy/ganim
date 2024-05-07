@@ -1,18 +1,18 @@
-#include "group.hpp"
+#include "group_base.hpp"
 
 #include <format>
 
 using namespace ganim;
 
-void Group::add(Object& object)
+void GroupBase::add(Object& object)
 {
     M_subobjects.push_back(&object);
 }
 
-std::unique_ptr<Group> Group::anim_copy() const
+std::unique_ptr<GroupBase> GroupBase::anim_copy() const
 {
-    struct OwningGroup : public Group {
-        OwningGroup(const Group& other) : Group(other) {}
+    struct OwningGroup : public GroupBase {
+        OwningGroup(const GroupBase& other) : GroupBase(other) {}
         std::vector<std::unique_ptr<Object>> M_owned_subobjects;
     };
     auto result = std::make_unique<OwningGroup>(*this);
@@ -29,7 +29,7 @@ std::unique_ptr<Group> Group::anim_copy() const
     return result;
 }
 
-void Group::interpolate(const Group& start, const Group& end, double t)
+void GroupBase::interpolate(const GroupBase& start, const GroupBase& end, double t)
 {
     if (size() != start.size()) {
         throw std::invalid_argument(std::format(
@@ -101,7 +101,7 @@ void Group::interpolate(const Group& start, const Group& end, double t)
     M_propogate = true;
 }
 
-void Group::interpolate(
+void GroupBase::interpolate(
     const Transformable& start,
     const Transformable& end,
     double t
@@ -116,7 +116,7 @@ void Group::interpolate(
     interpolate(*start_group, *end_group, t);
 }
 
-void Group::interpolate(
+void GroupBase::interpolate(
     const Object& start,
     const Object& end,
     double t
@@ -131,7 +131,7 @@ void Group::interpolate(
     interpolate(*start_group, *end_group, t);
 }
 
-Group& Group::apply_rotor(const pga3::Even& rotor)
+GroupBase& GroupBase::apply_rotor(const pga3::Even& rotor)
 {
     Transformable::apply_rotor(rotor);
     if (M_propogate) {
@@ -142,7 +142,7 @@ Group& Group::apply_rotor(const pga3::Even& rotor)
     return *this;
 }
 
-Group& Group::set_color(Color color)
+GroupBase& GroupBase::set_color(Color color)
 {
     auto new_color = color;
     new_color.a = get_color().a;
@@ -155,7 +155,7 @@ Group& Group::set_color(Color color)
     return *this;
 }
 
-Group& Group::set_color_with_alpha(Color color)
+GroupBase& GroupBase::set_color_with_alpha(Color color)
 {
     Object::set_color_with_alpha(color);
     if (M_propogate) {
@@ -166,7 +166,7 @@ Group& Group::set_color_with_alpha(Color color)
     return *this;
 }
 
-Group& Group::set_opacity(double opacity)
+GroupBase& GroupBase::set_opacity(double opacity)
 {
     Object::set_opacity(opacity);
     if (M_propogate) {
@@ -177,7 +177,7 @@ Group& Group::set_opacity(double opacity)
     return *this;
 }
 
-Group& Group::scale(const pga3::Trivector& about_point, double amount)
+GroupBase& GroupBase::scale(const pga3::Trivector& about_point, double amount)
 {
     if (M_propogate) {
         M_propogate = false;
@@ -191,7 +191,7 @@ Group& Group::scale(const pga3::Trivector& about_point, double amount)
     return *this;
 }
 
-Group& Group::set_visible(bool visible)
+GroupBase& GroupBase::set_visible(bool visible)
 {
     Object::set_visible(visible);
     if (M_propogate) {
@@ -202,7 +202,7 @@ Group& Group::set_visible(bool visible)
     return *this;
 }
 
-void Group::set_draw_fraction(double value)
+void GroupBase::set_draw_fraction(double value)
 {
     Object::set_draw_fraction(value);
     const auto s = size();
@@ -214,7 +214,7 @@ void Group::set_draw_fraction(double value)
     }
 }
 
-void Group::set_creating(bool creating)
+void GroupBase::set_creating(bool creating)
 {
     Object::set_creating(creating);
     if (M_propogate) {
@@ -224,7 +224,7 @@ void Group::set_creating(bool creating)
     }
 }
 
-void Group::set_noise_creating(double noise_creating)
+void GroupBase::set_noise_creating(double noise_creating)
 {
     Object::set_noise_creating(noise_creating);
     if (M_propogate) {
@@ -234,7 +234,7 @@ void Group::set_noise_creating(double noise_creating)
     }
 }
 
-void Group::set_draw_subobject_ratio(double ratio)
+void GroupBase::set_draw_subobject_ratio(double ratio)
 {
     if (ratio < 0 or ratio > 1) throw std::invalid_argument(
             "The draw subobject ratio must be between zero and 1.");

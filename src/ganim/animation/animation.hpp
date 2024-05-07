@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "ganim/object/animatable.hpp"
-#include "ganim/object/group.hpp"
+#include "ganim/object/group_base.hpp"
 
 #include "ganim/rate_functions.hpp"
 
@@ -104,7 +104,7 @@ class Animation {
             M_object(object)
         {
             if constexpr (std::convertible_to<
-                    std::unique_ptr<Group>, std::shared_ptr<copy_type>>)
+                    std::unique_ptr<GroupBase>, std::shared_ptr<copy_type>>)
             {
                 if (auto group = object.as_group()) {
                     M_starting_object = group->anim_copy();

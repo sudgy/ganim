@@ -143,7 +143,7 @@ void SceneBase::add_drawable(Drawable& object)
     }
 }
 
-void SceneBase::add_group(Group& object)
+void SceneBase::add_group(GroupBase& object)
 {
     for (auto* obj : object) {
         add(*obj);
