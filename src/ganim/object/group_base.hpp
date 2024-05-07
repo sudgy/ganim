@@ -32,7 +32,7 @@ class GroupBase : public Object {
 
     public:
         /*** @brief Add an object to this group */
-        void add(Object& object);
+        virtual void add(Object& object);
         /** @brief Adds a range of objects to this group
          *
          * Even though groups are ranges, when adding groups to groups, we don't
