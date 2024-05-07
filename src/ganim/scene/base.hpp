@@ -15,7 +15,7 @@
 
 #include "ganim/object/shaders.hpp"
 #include "ganim/object/drawable.hpp"
-#include "ganim/object/group_base.hpp"
+#include "ganim/object/cluster.hpp"
 
 namespace ganim {
     /** @brief The base class for scenes, which contains most of the scene logic
@@ -96,12 +96,12 @@ namespace ganim {
                         return;
                     }
                 }
-                if constexpr (std::convertible_to<T&, GroupBase>) {
+                if constexpr (std::convertible_to<T&, Cluster>) {
                     add_group(object);
                     return;
                 }
                 else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<GroupBase*>(&object)) {
+                    if (auto* p = dynamic_cast<Cluster*>(&object)) {
                         add_group(*p);
                         return;
                     }

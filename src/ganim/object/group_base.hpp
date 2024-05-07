@@ -1,5 +1,5 @@
-#ifndef GANIM_OBJECT_GROUP_HPP
-#define GANIM_OBJECT_GROUP_HPP
+#ifndef GANIM_OBJECT_GROUP_BASE_HPP
+#define GANIM_OBJECT_GROUP_BASE_HPP
 
 /** @file
  * @brief Contains the @ref ganim::GroupBase "GroupBase" class
@@ -25,12 +25,12 @@ namespace ganim {
  * multiple times, even transitively.  Things might get weird if you do.
  */
 class GroupBase : public Object {
+    private:
+        friend class Cluster;
+        friend class Group;
+        GroupBase()=default;
+
     public:
-        template <typename... Ts>
-        explicit GroupBase(Ts&... objects)
-        {
-            (add(objects), ...);
-        }
         /*** @brief Add an object to this group */
         void add(Object& object);
         /** @brief Adds a range of objects to this group

@@ -3,7 +3,7 @@
 #include "test/ganim/ga_equals.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 
-#include "ganim/object/group_base.hpp"
+#include "ganim/object/cluster.hpp"
 
 #include "ganim/math.hpp"
 #include "ganim/object/shape.hpp"
@@ -26,7 +26,7 @@ namespace {
     };
 }
 
-TEST_CASE("GroupBase adding", "[object]") {
+TEST_CASE("Cluster adding", "[object]") {
     auto leaf12 = std::array{
         Object(),
         Object()
@@ -35,8 +35,8 @@ TEST_CASE("GroupBase adding", "[object]") {
     auto& leaf2 = leaf12[1];
     auto leaf3 = Object();
     auto leaf4 = Object();
-    auto group1 = GroupBase();
-    auto group2 = GroupBase();
+    auto group1 = Cluster();
+    auto group2 = Cluster();
     group1.add(leaf12);
     group2.add(group1, leaf3);
     group2.add(leaf4);
@@ -64,13 +64,13 @@ TEST_CASE("GroupBase adding", "[object]") {
     }
 }
 
-TEST_CASE("GroupBase adding to scene", "[object]") {
+TEST_CASE("Cluster adding to scene", "[object]") {
     auto obj1 = Object();
     auto obj2 = Object();
     auto draw = TestDrawable();
-    auto sub1 = GroupBase(obj1, draw);
-    auto sub2 = GroupBase();
-    auto test = GroupBase(sub1, sub2, obj2);
+    auto sub1 = Cluster(obj1, draw);
+    auto sub2 = Cluster();
+    auto test = Cluster(sub1, sub2, obj2);
     int obj1_updated = 0;
     int obj2_updated = 0;
     int draw_updated = 0;
@@ -104,12 +104,12 @@ TEST_CASE("GroupBase adding to scene", "[object]") {
     REQUIRE(draw.draw_count == 1);
 }
 
-TEST_CASE("GroupBase movement", "[object]") {
+TEST_CASE("Cluster movement", "[object]") {
     using namespace pga3;
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = GroupBase(obj1);
-    auto test = GroupBase(group, obj2);
+    auto group = Cluster(obj1);
+    auto test = Cluster(group, obj2);
     obj1.shift(e1);
     obj2.shift(2*e2);
     test.shift(e1);
@@ -129,11 +129,11 @@ TEST_CASE("GroupBase movement", "[object]") {
     REQUIRE_THAT(test.get_center(), GAEquals(e0.dual(), 1e-5));
 }
 
-TEST_CASE("GroupBase color/opacity", "[object]") {
+TEST_CASE("Cluster color/opacity", "[object]") {
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = GroupBase(obj1);
-    auto test = GroupBase(group, obj2);
+    auto group = Cluster(obj1);
+    auto test = Cluster(group, obj2);
     obj1.set_color("00FF00");
     obj2.set_color_with_alpha("0000FF7F");
     test.set_color("FF0000");
@@ -151,12 +151,12 @@ TEST_CASE("GroupBase color/opacity", "[object]") {
     REQUIRE(test.get_color() == "00FF003F");
 }
 
-TEST_CASE("GroupBase scaling", "[object]") {
+TEST_CASE("Cluster scaling", "[object]") {
     using namespace pga3;
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = GroupBase(obj1);
-    auto test = GroupBase(group, obj2);
+    auto group = Cluster(obj1);
+    auto test = Cluster(group, obj2);
     obj1.shift(e1);
     obj2.shift(2*e2);
     test.scale(-e1, 2);
@@ -168,12 +168,12 @@ TEST_CASE("GroupBase scaling", "[object]") {
     REQUIRE_THAT(obj2.get_center(), GAEquals((e1 + 4*e2 + e0).dual()));
 }
 
-TEST_CASE("GroupBase visible", "[object]") {
+TEST_CASE("Cluster visible", "[object]") {
     using namespace pga3;
     auto obj1 = Object();
     auto obj2 = Object();
-    auto group = GroupBase(obj1);
-    auto test = GroupBase(group, obj2);
+    auto group = Cluster(obj1);
+    auto test = Cluster(group, obj2);
     test.set_visible(true);
     REQUIRE(obj1.is_visible());
     REQUIRE(obj2.is_visible());
@@ -182,14 +182,14 @@ TEST_CASE("GroupBase visible", "[object]") {
     REQUIRE(!obj2.is_visible());
 }
 
-TEST_CASE("GroupBase draw fraction", "[object]") {
+TEST_CASE("Cluster draw fraction", "[object]") {
     auto obj1 = Object();
     auto obj2 = Object();
     auto obj3 = Object();
     auto obj4 = Object();
-    auto group1 = GroupBase(obj1, obj2);
-    auto group2 = GroupBase(obj3, obj4);
-    auto test = GroupBase(group1, group2);
+    auto group1 = Cluster(obj1, obj2);
+    auto group2 = Cluster(obj3, obj4);
+    auto test = Cluster(group1, group2);
     group1.set_draw_subobject_ratio(0);
     //group2.set_draw_subobject_ratio(1); This should be true already
     test.set_draw_subobject_ratio(0.5);
@@ -241,7 +241,7 @@ TEST_CASE("GroupBase draw fraction", "[object]") {
     REQUIRE(obj3.get_draw_fraction() == 1);
     REQUIRE(obj4.get_draw_fraction() == 1);
 
-    test = GroupBase(obj1, obj2, obj3, obj4);
+    test = Cluster(obj1, obj2, obj3, obj4);
     test.set_draw_subobject_ratio(0.5);
     test.set_draw_fraction(0.5);
     REQUIRE(obj1.get_draw_fraction() == 1);
@@ -250,7 +250,7 @@ TEST_CASE("GroupBase draw fraction", "[object]") {
     REQUIRE(obj4.get_draw_fraction() == 0);
 }
 
-TEST_CASE("GroupBase drawing", "[object]") {
+TEST_CASE("Cluster drawing", "[object]") {
     auto scene = TestScene(10, 10, 10, 10, 4);
     auto shape1 = Shape(
         {{ 2,  2, 0, 1},
@@ -266,7 +266,7 @@ TEST_CASE("GroupBase drawing", "[object]") {
          {0,  2, 0, 0, 1, 0, 0}},
         {0, 1, 2, 0, 2, 3}
     );
-    auto group = GroupBase(shape1, shape2);
+    auto group = Cluster(shape1, shape2);
     group.set_draw_subobject_ratio(1);
     scene.add(group);
     create(group, {.rate_function = [](double t) {return t;}});
@@ -324,7 +324,7 @@ TEST_CASE("GroupBase drawing", "[object]") {
     REQUIRE(scene.get_pixel(3, 6, 7) == Color("000000"));
 }
 
-TEST_CASE("GroupBase animating color", "[object]") {
+TEST_CASE("Cluster animating color", "[object]") {
     auto scene = TestScene(2, 2, 2, 2, 1);
     auto shape = Shape(
         {{ 1,  1, 0, 1},
@@ -334,7 +334,7 @@ TEST_CASE("GroupBase animating color", "[object]") {
         {0, 1, 2, 0, 2, 3}
     );
     shape.set_color("#FF0000");
-    auto group = GroupBase(shape);
+    auto group = Cluster(shape);
     group.set_draw_subobject_ratio(1);
     scene.add(group);
     group.set_visible(true);
