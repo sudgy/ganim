@@ -49,7 +49,7 @@ namespace ganim {
             /** @brief Set whether this object is visible */
             virtual Object& set_visible(bool visible);
             /** @brief See whether this object is visible */
-            bool is_visible() const {return M_visible;}
+            virtual bool is_visible() const {return M_visible;}
 
             /** @brief Set how much of the object to draw.
              *

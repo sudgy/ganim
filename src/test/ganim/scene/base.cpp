@@ -2,13 +2,13 @@
 
 #include "test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
-#include "ganim/object/drawable.hpp"
+#include "ganim/object/drawable_object.hpp"
 #include "ganim/object/shaders.hpp"
 
 using namespace ganim;
 
 namespace {
-    class TestDrawable : public Drawable {
+    class TestDrawable : public DrawableObject {
         public:
             virtual void draw() override
             {
