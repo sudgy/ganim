@@ -16,7 +16,7 @@ namespace ganim {
      * power of two.  If they are not, an `std::invalid_argument` will be
      * thrown.
      *
-     * @param tex The texture.  Its format must be GL_R8UI.
+     * @param input The texture.  Its format must be GL_R8UI.
      * @param size The width and height of the texture, in pixels.
      *
      * @return The distance transform.  Its format will be GL_R32F.

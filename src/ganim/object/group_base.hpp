@@ -9,20 +9,38 @@
 
 namespace ganim {
 
-/** @brief An object that contains other objects
+/** @brief The base class for objects that contains other objects
  *
- * Note that unlike in manim, this class is purely organizational!  All it will
- * do is things like shifting all of its subobjects when you shift the group.
- * You can still mess with the individual objects all you want, even if they're
- * in a group.  In fact, groups don't even own the objects that are in a group.
- * You need to own them somewhere else (such as in a subclass).
+ * There are two kinds of groups: @ref Group, and @ref Cluster.  The main
+ * difference between these is that Group is actually considered to "hold" (but
+ * not own) all of its subobjects, whereas Cluster is just an organizational
+ * wrapper.  In practice the main difference between the two is that Group is a
+ * @ref Drawable while Cluster is not.  Groups will draw all their subobjects
+ * themselves, while Clusters will not.
+ *
+ * You should be able to get away with using Cluster most of the time.  The
+ * biggest use case for using Group is when drawing multiple overlapping objects
+ * with outlines, when you don't want the outlines to cover up other subojects
+ * (such as text).
+ *
+ * Note that this class does not own its subobjects!  You need to make sure to
+ * own them elsewhere (such as in a subclass).  This means that you can put the
+ * same object in multiple Clusters and nothing will go wrong.  However, puting
+ * the same object in multiple Groups can go wrong because they'll get drawn
+ * multiple times.  You can put an object in one Group and multiple Clusters if
+ * you want though.
  *
  * This class is kind of like a container.  You can iterate in a range-based for
  * loop (although you'll be iterating over pointers, not references), you can
  * query its size, and you can get object references with the index operator.
  *
- * It is up to you to ensure that you don't add the same object to a group
- * multiple times, even transitively.  Things might get weird if you do.
+ * It is up to you to ensure that you don't add the same object to the same
+ * group of any kind multiple times, even transitively.  Things might get weird
+ * if you do.
+ *
+ * You are not allowed to derive from this class.  Group and Cluster are the
+ * only subclasses of this class, so if you want to derive from this class,
+ * instead derive from one of those.
  */
 class GroupBase : public Object {
     private:
