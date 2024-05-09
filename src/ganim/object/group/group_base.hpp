@@ -5,7 +5,7 @@
  * @brief Contains the @ref ganim::GroupBase "GroupBase" class
  */
 
-#include "object.hpp"
+#include "../bases/object.hpp"
 
 namespace ganim {
 

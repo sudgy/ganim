@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ganim/object/animatable.hpp"
+#include "ganim/object/bases/animatable.hpp"
 
 using namespace ganim;
 

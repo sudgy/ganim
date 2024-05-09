@@ -5,7 +5,7 @@
  * @brief Contains the @ref ganim::Camera "Camera" class
  */
 
-#include "ganim/object/transformable.hpp"
+#include "ganim/object/bases/transformable.hpp"
 
 namespace ganim {
 

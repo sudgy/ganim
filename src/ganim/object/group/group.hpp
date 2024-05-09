@@ -6,7 +6,7 @@
  */
 
 #include "group_base.hpp"
-#include "drawable.hpp"
+#include "../bases/drawable.hpp"
 
 namespace ganim {
 

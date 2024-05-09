@@ -1,6 +1,6 @@
 #include "fading.hpp"
 
-#include "ganim/object/object.hpp"
+#include "ganim/object/bases/object.hpp"
 
 namespace ganim {
 

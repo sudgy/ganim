@@ -1,8 +1,8 @@
 #ifndef GANIM_DRAWABLE_OBJECT_HPP
 #define GANIM_DRAWABLE_OBJECT_HPP
 
-#include "ganim/object/object.hpp"
-#include "ganim/object/drawable.hpp"
+#include "object.hpp"
+#include "drawable.hpp"
 
 namespace ganim {
     class DrawableObject : public Object, public Drawable {

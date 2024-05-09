@@ -2,7 +2,7 @@
 
 #include "test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
-#include "ganim/object/drawable_object.hpp"
+#include "ganim/object/bases/drawable_object.hpp"
 #include "ganim/object/shaders.hpp"
 
 using namespace ganim;

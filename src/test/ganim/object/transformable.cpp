@@ -2,7 +2,7 @@
 
 #include "test/ganim/ga_equals.hpp"
 
-#include "ganim/object/transformable.hpp"
+#include "ganim/object/bases/transformable.hpp"
 #include "ganim/animation/animation.hpp"
 
 #include "ganim/math.hpp"

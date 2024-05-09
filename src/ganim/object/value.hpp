@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "animatable.hpp"
+#include "bases/animatable.hpp"
 
 namespace ganim {
 

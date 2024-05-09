@@ -1,7 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "ganim/animation/fading.hpp"
-#include "ganim/object/object.hpp"
+#include "ganim/object/bases/object.hpp"
 
 using namespace ganim;
 

@@ -14,8 +14,8 @@
 #include "camera.hpp"
 
 #include "ganim/object/shaders.hpp"
-#include "ganim/object/drawable.hpp"
-#include "ganim/object/cluster.hpp"
+#include "ganim/object/bases/drawable.hpp"
+#include "ganim/object/group/cluster.hpp"
 
 namespace ganim {
     /** @brief The base class for scenes, which contains most of the scene logic

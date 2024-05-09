@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "drawable_object.hpp"
+#include "bases/drawable_object.hpp"
 
 #include "ganim/gl/buffer.hpp"
 #include "ganim/gl/vertex_array.hpp"

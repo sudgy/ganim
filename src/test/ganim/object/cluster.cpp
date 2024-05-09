@@ -3,7 +3,7 @@
 #include "test/ganim/ga_equals.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 
-#include "ganim/object/cluster.hpp"
+#include "ganim/object/group/cluster.hpp"
 
 #include "ganim/math.hpp"
 #include "ganim/object/shape.hpp"

@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ganim/object/object.hpp"
+#include "ganim/object/bases/object.hpp"
 
 #include "ganim/animation/animation.hpp"
 #include "test/ganim/ga_equals.hpp"

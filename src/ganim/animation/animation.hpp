@@ -11,8 +11,8 @@
 #include <concepts>
 #include <iostream>
 
-#include "ganim/object/animatable.hpp"
-#include "ganim/object/group_base.hpp"
+#include "ganim/object/bases/animatable.hpp"
+#include "ganim/object/group/group_base.hpp"
 
 #include "ganim/rate_functions.hpp"
 
