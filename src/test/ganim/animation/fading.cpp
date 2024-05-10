@@ -5,8 +5,14 @@
 
 using namespace ganim;
 
+namespace {
+    class TestObject : public Object {
+        virtual Box get_true_bounding_box() const override {return Box();}
+    };
+}
+
 TEST_CASE("Fading", "[animation]") {
-    auto test = Object();
+    auto test = TestObject();
     test.set_fps(4);
     fade_in(test);
     REQUIRE(test.is_visible());

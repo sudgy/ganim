@@ -1,6 +1,8 @@
 #include "group_base.hpp"
 
 #include <format>
+#include <ranges>
+#include <numeric>
 
 using namespace ganim;
 
@@ -232,6 +234,32 @@ void GroupBase::set_noise_creating(double noise_creating)
             obj->set_noise_creating(noise_creating);
         }
     }
+}
+
+Box GroupBase::get_true_bounding_box() const
+{
+    if (size() == 0) return Box();
+    auto boxes = M_subobjects
+        | std::views::transform(&Object::get_true_bounding_box);
+    return std::reduce(
+        boxes.begin()+1,
+        boxes.end(),
+        *boxes.begin(),
+        merge_boxes
+    );
+}
+
+Box GroupBase::get_logical_bounding_box() const
+{
+    if (size() == 0) return Box();
+    auto boxes = M_subobjects
+        | std::views::transform(&Object::get_logical_bounding_box);
+    return std::reduce(
+        boxes.begin()+1,
+        boxes.end(),
+        *boxes.begin(),
+        merge_boxes
+    );
 }
 
 void GroupBase::set_draw_subobject_ratio(double ratio)

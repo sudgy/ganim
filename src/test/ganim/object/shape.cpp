@@ -3,6 +3,7 @@
 #include "ganim/object/shape.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
+#include "test/ganim/ga_equals.hpp"
 
 #include "ganim/animation/animation.hpp"
 #include "ganim/math.hpp"
@@ -423,4 +424,31 @@ TEST_CASE("Empty shapes", "[object]") {
     scene.add(shape, shape2);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
+}
+
+TEST_CASE("Shape bounding box", "[object]") {
+    using namespace vga3;
+    auto shape1 = Shape();
+    auto shape2 = Shape(
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto shape3 = Shape(
+        {{ 1,  1, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         { 0,  0, 0},
+         {-2,  2, 0}},
+        {0, 1, 3, 1, 2, 3, 3, 4, 0}
+    );
+    REQUIRE_NOTHROW(shape1.get_true_bounding_box());
+    auto box2 = shape2.get_true_bounding_box();
+    auto box3 = shape3.get_true_bounding_box();
+    REQUIRE_THAT(box2.p1, GAEquals(-2*e1 - 2*e2));
+    REQUIRE_THAT(box2.p2, GAEquals( 2*e1 + 2*e2));
+    REQUIRE_THAT(box3.p1, GAEquals(-2*e1 - 2*e2));
+    REQUIRE_THAT(box3.p2, GAEquals( 2*e1 + 2*e2));
 }

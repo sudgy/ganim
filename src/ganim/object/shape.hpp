@@ -66,6 +66,7 @@ namespace ganim {
             virtual void draw(const Camera& camera) override;
             void make_invalid() {M_valid = false;}
             virtual gl::Shader* get_shader();
+            virtual Box get_true_bounding_box() const override;
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 

@@ -60,6 +60,28 @@ double Object::get_scale() const
     return M_scale;
 }
 
+std::unique_ptr<Object> Object::anim_copy() const
+{
+    class FakeObject : public Object {
+        public:
+            FakeObject(const Object& obj, Box true_box, Box logical_box)
+                : Object(obj),
+                  M_true_box(true_box),
+                  M_logical_box(logical_box) {}
+            Box M_true_box;
+            Box M_logical_box;
+            virtual Box get_true_bounding_box() const override
+                {return M_true_box;}
+            virtual Box get_logical_bounding_box() const override
+                {return M_logical_box;}
+    };
+    return std::make_unique<FakeObject>(
+        *this,
+        get_true_bounding_box(),
+        get_logical_bounding_box()
+    );
+}
+
 void Object::interpolate(const Object& start, const Object& end, double t)
 {
     Transformable::interpolate(start, end, t);

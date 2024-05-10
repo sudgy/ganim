@@ -15,6 +15,7 @@ namespace {
                 ++draw_count;
             }
             int draw_count = 0;
+            virtual Box get_true_bounding_box() const override {return Box();}
     };
 }
 

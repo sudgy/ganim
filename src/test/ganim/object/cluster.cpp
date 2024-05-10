@@ -19,18 +19,29 @@ namespace {
                 ++draw_count;
             }
             int draw_count = 0;
+            virtual Box get_true_bounding_box() const override {return Box();}
+            Box bounding_box;
+    };
+    class TestObject : public Object {
+        public:
+            virtual Box get_true_bounding_box() const override
+                {return true_bounding_box;}
+            Box true_bounding_box;
+            virtual Box get_logical_bounding_box() const override
+                {return logical_bounding_box;}
+            Box logical_bounding_box;
     };
 }
 
 TEST_CASE("Cluster adding", "[object]") {
     auto leaf12 = std::array{
-        Object(),
-        Object()
+        TestObject(),
+        TestObject()
     };
     auto& leaf1 = leaf12[0];
     auto& leaf2 = leaf12[1];
-    auto leaf3 = Object();
-    auto leaf4 = Object();
+    auto leaf3 = TestObject();
+    auto leaf4 = TestObject();
     auto group1 = Cluster();
     auto group2 = Cluster();
     group1.add(leaf12);
@@ -61,8 +72,8 @@ TEST_CASE("Cluster adding", "[object]") {
 }
 
 TEST_CASE("Cluster adding to scene", "[object]") {
-    auto obj1 = Object();
-    auto obj2 = Object();
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
     auto draw = TestDrawable();
     auto sub1 = Cluster(obj1, draw);
     auto sub2 = Cluster();
@@ -102,8 +113,8 @@ TEST_CASE("Cluster adding to scene", "[object]") {
 
 TEST_CASE("Cluster movement", "[object]") {
     using namespace pga3;
-    auto obj1 = Object();
-    auto obj2 = Object();
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
     auto group = Cluster(obj1);
     auto test = Cluster(group, obj2);
     obj1.shift(e1);
@@ -126,8 +137,8 @@ TEST_CASE("Cluster movement", "[object]") {
 }
 
 TEST_CASE("Cluster color/opacity", "[object]") {
-    auto obj1 = Object();
-    auto obj2 = Object();
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
     auto group = Cluster(obj1);
     auto test = Cluster(group, obj2);
     obj1.set_color("00FF00");
@@ -149,8 +160,8 @@ TEST_CASE("Cluster color/opacity", "[object]") {
 
 TEST_CASE("Cluster scaling", "[object]") {
     using namespace pga3;
-    auto obj1 = Object();
-    auto obj2 = Object();
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
     auto group = Cluster(obj1);
     auto test = Cluster(group, obj2);
     obj1.shift(e1);
@@ -166,8 +177,8 @@ TEST_CASE("Cluster scaling", "[object]") {
 
 TEST_CASE("Cluster visible", "[object]") {
     using namespace pga3;
-    auto obj1 = Object();
-    auto obj2 = Object();
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
     auto group = Cluster(obj1);
     auto test = Cluster(group, obj2);
     test.set_visible(true);
@@ -179,10 +190,10 @@ TEST_CASE("Cluster visible", "[object]") {
 }
 
 TEST_CASE("Cluster draw fraction", "[object]") {
-    auto obj1 = Object();
-    auto obj2 = Object();
-    auto obj3 = Object();
-    auto obj4 = Object();
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    auto obj3 = TestObject();
+    auto obj4 = TestObject();
     auto group1 = Cluster(obj1, obj2);
     auto group2 = Cluster(obj3, obj4);
     auto test = Cluster(group1, group2);
@@ -337,4 +348,44 @@ TEST_CASE("Cluster animating color", "[object]") {
     animate(static_cast<Object&>(group));
     scene.wait(1);
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("FF0000"));
+}
+
+TEST_CASE("Cluster bounding box", "[object]") {
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    auto obj3 = TestObject();
+    obj1.true_bounding_box = Box({0,  0, 0}, {1, 1, 0});
+    obj2.true_bounding_box = Box({1,  1, 0}, {2, 2, 0});
+    obj3.true_bounding_box = Box({2, -1, 0}, {3, 0, 0});
+    obj1.logical_bounding_box = Box({0,  0, 0}, {0.5, 0.5, 0});
+    obj2.logical_bounding_box = Box({1,  1, 0}, {1.5, 1.5, 0});
+    obj3.logical_bounding_box = Box({2, -1, 0}, {2.5, 0, 0});
+
+    auto group1 = Cluster();
+    auto group2 = Cluster(obj1);
+    auto group3 = Cluster(obj1, obj2);
+    auto group4 = Cluster(obj1, obj2, obj3);
+
+    REQUIRE_NOTHROW(group1.get_true_bounding_box());
+    REQUIRE_NOTHROW(group1.get_logical_bounding_box());
+    auto res1 = group2.get_true_bounding_box();
+    auto res2 = group2.get_logical_bounding_box();
+    auto res3 = group3.get_true_bounding_box();
+    auto res4 = group3.get_logical_bounding_box();
+    auto res5 = group4.get_true_bounding_box();
+    auto res6 = group4.get_logical_bounding_box();
+
+    using namespace vga3;
+    REQUIRE_THAT(res1.p1, GAEquals(0));
+    REQUIRE_THAT(res1.p2, GAEquals(e1 + e2));
+    REQUIRE_THAT(res2.p1, GAEquals(0));
+    REQUIRE_THAT(res2.p2, GAEquals(0.5*e1 + 0.5*e2));
+    REQUIRE_THAT(res3.p1, GAEquals(0));
+    REQUIRE_THAT(res3.p2, GAEquals(2*e1 + 2*e2));
+    REQUIRE_THAT(res4.p1, GAEquals(0));
+    REQUIRE_THAT(res4.p2, GAEquals(1.5*e1 + 1.5*e2));
+    REQUIRE_THAT(res5.p1, GAEquals(-e2));
+    REQUIRE_THAT(res5.p2, GAEquals(3*e1 + 2*e2));
+    REQUIRE_THAT(res6.p1, GAEquals(-e2));
+    REQUIRE_THAT(res6.p2, GAEquals(2.5*e1 + 1.5*e2));
 }

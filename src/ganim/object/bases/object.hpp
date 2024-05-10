@@ -8,6 +8,7 @@
 #include "transformable.hpp"
 
 #include "ganim/color.hpp"
+#include "ganim/util/box.hpp"
 
 namespace ganim {
     /** @brief The base class for objects that have some kind of extent
@@ -70,8 +71,7 @@ namespace ganim {
             double get_draw_fraction() const {return M_draw_fraction;}
 
             /** @brief Copy the object for the sake of transformations */
-            std::unique_ptr<Object> anim_copy() const
-                {return std::make_unique<Object>(*this);}
+            std::unique_ptr<Object> anim_copy() const;
             using Transformable::interpolate;
             /** @brief Interpolate between two Objects */
             virtual void interpolate(
@@ -104,6 +104,21 @@ namespace ganim {
              * Used internally by things like the noise create animation.
              */
             double noise_creating() const {return M_noise_creating;}
+            /** @brief Get the true bounding box of this object
+             *
+             * This bounding box must be big enough that the entirety of the
+             * object is inside it.
+             */
+            virtual Box get_true_bounding_box() const=0;
+            /** @brief Get the logical bounding box of this object
+             *
+             * Sometimes, the thing that "feels" like the bounding box of an
+             * object isn't the actual bounding box.  If your object is like
+             * this, override this function to return this "logical" bounding
+             * box.  It defaults to just returning @ref get_true_bounding_box.
+             */
+            virtual Box get_logical_bounding_box() const
+                {return get_true_bounding_box();}
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 

@@ -40,6 +40,7 @@ namespace {
             }
             std::unique_ptr<TestObject> anim_copy() const
                 {return std::make_unique<TestObject>(*this);}
+            virtual Box get_true_bounding_box() const override {return Box();}
     };
 }
 
