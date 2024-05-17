@@ -93,6 +93,7 @@ void SceneBase::frame_advance()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     for (auto object : M_drawables) {
         if (object->is_visible()) {
+            object->draw_outline(M_camera);
             object->draw(M_camera);
         }
     }

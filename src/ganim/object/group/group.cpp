@@ -21,3 +21,17 @@ bool Group::is_visible() const
 {
     return Object::is_visible();
 }
+
+void Group::draw_outline(const Camera& camera)
+{
+    for (auto drawable : M_drawables) {
+        drawable->draw_outline(camera);
+    }
+}
+
+void Group::set_outline(const Color& color, double thickness)
+{
+    for (auto drawable : M_drawables) {
+        drawable->set_outline(color, thickness);
+    }
+}

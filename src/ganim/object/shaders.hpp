@@ -23,6 +23,7 @@ namespace ganim {
     };
     ShaderParts& basic_shader_parts();
     ShaderParts& texture_shader_parts();
+    ShaderParts& outline_shader_parts();
     ShaderParts& create_shader_parts();
     ShaderParts& noise_create_shader_parts();
     gl::Shader& get_shader(const std::vector<ShaderParts*>& parts);

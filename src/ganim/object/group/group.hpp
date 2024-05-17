@@ -26,9 +26,12 @@ class Group : public GroupBase, public Drawable {
         }
 
         virtual void add(Object& object) override;
+        using GroupBase::add;
 
         virtual void draw(const Camera& camera) override;
         virtual bool is_visible() const override;
+        virtual void draw_outline(const Camera& camera) override;
+        virtual void set_outline(const Color& color, double thickness) override;
 
     private:
         std::vector<Drawable*> M_drawables;

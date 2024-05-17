@@ -59,10 +59,18 @@ class Camera : public Transformable {
          * See the description of the class for more details.
          */
         double get_y_scale() const {return M_y_scale;}
+        /** @brief Get the starting width passed to the constructor
+         */
+        double get_starting_width() const {return M_starting_width;}
+        /** @brief Get the starting width passed to the constructor
+         */
+        double get_starting_height() const {return M_starting_height;}
 
     private:
         double M_x_scale = -1;
         double M_y_scale = -1;
+        double M_starting_width = -1;
+        double M_starting_height = -1;
 };
 
 }
