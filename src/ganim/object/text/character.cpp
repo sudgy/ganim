@@ -129,10 +129,10 @@ Character& ganim::get_character(Font& font, UnicodeCodepoint character)
     auto height = int(bitmap.rows);
     auto rgba_buffer = std::make_unique<unsigned char[]>(width * height * 4);
     for (int i = 0; i < width * height; ++i) {
-        rgba_buffer[i*4 + 0] = bitmap.buffer[i];
-        rgba_buffer[i*4 + 1] = bitmap.buffer[i];
-        rgba_buffer[i*4 + 2] = bitmap.buffer[i];
-        rgba_buffer[i*4 + 3] = 255;
+        rgba_buffer[i*4 + 0] = 255;
+        rgba_buffer[i*4 + 1] = 255;
+        rgba_buffer[i*4 + 2] = 255;
+        rgba_buffer[i*4 + 3] = bitmap.buffer[i];
     }
     if (G_tt_x + width + 2 > GC_default_text_texture_size) {
         G_tt_x = 0;
