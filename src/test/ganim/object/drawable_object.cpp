@@ -4,6 +4,8 @@
 #include "test/ganim/scene/test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
 
+#include "ganim/animation/creation.hpp"
+
 using namespace ganim;
 
 TEST_CASE("Outlines", "[object]") {
@@ -57,4 +59,28 @@ TEST_CASE("Outlines", "[object]") {
             REQUIRE(int(color.b) == 0);
         }
     }
+}
+
+TEST_CASE("Outline creating", "[object]") {
+    auto scene = TestScene(16, 16, 4, 4, 4);
+    auto shape = Shape(
+        {{-1,  1, 0, 0},
+         {-1, -1, 0, 0},
+         { 0,  1, 0, 1},
+         { 0, -1, 0, 1},
+         { 2,  1, 0, 2},
+         { 2, -1, 0, 2}},
+        {0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5}
+    );
+    scene.add(shape);
+    shape.set_outline(Color("#FF0000"), 0.375);
+    create(shape, {.rate_function = [](double t) {return t;}});
+    scene.wait();
+    REQUIRE(scene.get_pixel(0, 4, 3) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(0, 7, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 6, 3) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(1, 9, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(2, 8, 3) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(2, 13, 3) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 11, 3) == Color("FF0000"));
 }

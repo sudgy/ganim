@@ -35,3 +35,10 @@ void Group::set_outline(const Color& color, double thickness)
         drawable->set_outline(color, thickness);
     }
 }
+
+void Group::invalidate_outline()
+{
+    for (auto drawable : M_drawables) {
+        drawable->invalidate_outline();
+    }
+}

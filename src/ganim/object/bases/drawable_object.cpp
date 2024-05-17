@@ -64,7 +64,9 @@ void main()
 void DrawableObject::draw_outline(const Camera& camera)
 {
     if (M_outline_thickness == 0.0) return;
-    if (!M_outline_texture) create_outline(camera);
+    if (!M_outline_texture or M_always_invalidate_outline) {
+        create_outline(camera);
+    }
 
     // Draw the outline
     auto current_viewport = std::array<int, 4>{0};
@@ -99,6 +101,17 @@ void DrawableObject::set_outline(const Color& color, double thickness)
         M_outline_thickness = thickness;
         M_outline_texture = 0;
     }
+}
+
+void DrawableObject::invalidate_outline()
+{
+    M_outline_texture = 0;
+}
+
+void DrawableObject::set_draw_fraction(double value)
+{
+    Object::set_draw_fraction(value);
+    invalidate_outline();
 }
 
 void DrawableObject::create_outline(const Camera& camera)
@@ -205,7 +218,7 @@ void DrawableObject::create_outline(const Camera& camera)
         GL_ARRAY_BUFFER,
         sizeof(Vertex)*4,
         vertices.data(),
-        GL_STATIC_DRAW
+        GL_DYNAMIC_DRAW
     );
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex),
                           reinterpret_cast<void*>(0));

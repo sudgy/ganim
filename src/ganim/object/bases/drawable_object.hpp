@@ -18,6 +18,8 @@ class DrawableObject : public Object, public Drawable {
         }
         virtual void draw_outline(const Camera& camera) override;
         virtual void set_outline(const Color& color, double thickness) override;
+        virtual void invalidate_outline() override;
+        virtual void set_draw_fraction(double value) override;
 
     private:
         void create_outline(const Camera& camera);
@@ -29,6 +31,7 @@ class DrawableObject : public Object, public Drawable {
         gl::VertexArray M_outline_vertex_array = 0;
         gl::Buffer M_outline_vertex_buffer = 0;
         gl::Buffer M_outline_element_buffer = 0;
+        bool M_always_invalidate_outline = 0;
 };
 
 }

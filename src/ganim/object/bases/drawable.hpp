@@ -42,6 +42,7 @@ namespace ganim {
              * @param thickness The width, in ganim units, of the outline.
              */
             virtual void set_outline(const Color& color, double thickness)=0;
+            virtual void invalidate_outline()=0;
     };
 }
 
