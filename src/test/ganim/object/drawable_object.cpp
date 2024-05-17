@@ -15,10 +15,10 @@ TEST_CASE("Outlines", "[object]") {
          { 1, 0, 0, 0, 1, 1, 1, 1},
          { 1, 1, 0, 0, 1, 1, 1, 1},
          { 0, 1, 0, 0, 1, 1, 1, 1},
-         {-1, 0, 0, 0, 1, 1, 1, 0.5},
-         { 0, 0, 0, 0, 1, 1, 1, 0.5},
-         { 0, 1, 0, 0, 1, 1, 1, 0.5},
-         {-1, 1, 0, 0, 1, 1, 1, 0.5},
+         {-1, 0, 0, 0, 1, 1, 1, 0.01},
+         { 0, 0, 0, 0, 1, 1, 1, 0.01},
+         { 0, 1, 0, 0, 1, 1, 1, 0.01},
+         {-1, 1, 0, 0, 1, 1, 1, 0.01},
          // This coordinate is unused when drawing, but it makes the bounding
          // box have an even height, making this test easier to design
          {-1, 2}},
@@ -45,8 +45,8 @@ TEST_CASE("Outlines", "[object]") {
             REQUIRE(int(color.r) == int(red[x + y*8]));
             if (y == 3) {
                 if (x == 3) {
-                    REQUIRE(int(color.g) == 128);
-                    REQUIRE(int(color.b) == 128);
+                    REQUIRE(int(color.g) == 3);
+                    REQUIRE(int(color.b) == 3);
                     continue;
                 }
                 else if (x == 4) {

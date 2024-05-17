@@ -45,10 +45,11 @@ namespace {
     );
     auto noise_create_shader_parts_ = ShaderParts(
         {},
-        {},
+        {"vec2 noise_coord;\n"},
         nullptr,
         nullptr,
-        nullptr,
+        #include "ganim/shaders/noise_create_shader_vertex_main.glsl"
+        ,
         #include "ganim/shaders/noise_create_shader_fragment_uniforms.glsl"
         ,
         #include "ganim/shaders/noise_create_shader_fragment_functions.glsl"

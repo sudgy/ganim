@@ -178,7 +178,7 @@ void DrawableObject::create_outline(const Camera& camera)
     M_outline_texture = distance_transform(
         alpha_threshold(
             framebuffer_texture,
-            0.99,
+            0.1,
             texture_size,
             texture_size
         ),
