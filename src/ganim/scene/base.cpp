@@ -141,3 +141,26 @@ void SceneBase::add_group(GroupBase& object)
         add(*obj);
     }
 }
+
+void SceneBase::remove_animatable(Animatable& object)
+{
+    auto it = std::ranges::find(M_objects, &object);
+    if (it != M_objects.end()) {
+        M_objects.erase(it);
+    }
+}
+
+void SceneBase::remove_drawable(Drawable& object)
+{
+    auto it = std::ranges::find(M_drawables, &object);
+    if (it != M_drawables.end()) {
+        M_drawables.erase(it);
+    }
+}
+
+void SceneBase::remove_group(GroupBase& object)
+{
+    for (auto* obj : object) {
+        remove(*obj);
+    }
+}

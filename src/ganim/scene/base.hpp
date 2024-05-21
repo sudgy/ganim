@@ -117,6 +117,52 @@ namespace ganim {
             {
                 (add(objects), ...);
             }
+            /** @brief Remove an object from a scene
+             *
+             * This will make the object not be updated or drawn anymore, and
+             * the object will be non-animatable.  Note that animations that
+             * "remove" objects from a scene don't actually call this function!
+             * They just set the objects visibility to false, to allow you to
+             * use a creating animation on it again later.  However, you need to
+             * call this function if an object's lifetime is about to end.
+             */
+            template <typename T>
+            void remove(T& object)
+            {
+                if constexpr (std::convertible_to<T&, Animatable&>) {
+                    remove_animatable(object);
+                }
+                if constexpr (std::convertible_to<T&, Drawable&>) {
+                    remove_drawable(object);
+                    return;
+                }
+                else if constexpr (std::is_polymorphic_v<T>) {
+                    if (auto* p = dynamic_cast<Drawable*>(&object)) {
+                        remove_drawable(*p);
+                        return;
+                    }
+                }
+                if constexpr (std::convertible_to<T&, Cluster>) {
+                    remove_group(object);
+                    return;
+                }
+                else if constexpr (std::is_polymorphic_v<T>) {
+                    if (auto* p = dynamic_cast<Cluster*>(&object)) {
+                        remove(*p);
+                        return;
+                    }
+                }
+                if constexpr (std::ranges::input_range<T>) {
+                    for (auto& obj : object) {
+                        remove(obj);
+                    }
+                }
+            }
+            template <typename... Ts> requires(sizeof...(Ts) > 1)
+            void remove(Ts&... objects)
+            {
+                (remove(objects), ...);
+            }
 
             Camera& get_camera() {return M_camera;}
 
@@ -131,6 +177,9 @@ namespace ganim {
             void add_animatable(Animatable& object);
             void add_drawable(Drawable& object);
             void add_group(GroupBase& object);
+            void remove_animatable(Animatable& object);
+            void remove_drawable(Drawable& object);
+            void remove_group(GroupBase& object);
 
             gl::Framebuffer M_framebuffer;
             gl::Texture M_framebuffer_texture;
