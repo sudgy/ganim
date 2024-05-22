@@ -51,3 +51,40 @@ TEST_CASE("Updatable updaters", "[object]") {
     test.update();
     REQUIRE(updater1_count == 8);
 }
+
+TEST_CASE("Updatable persistent updaters", "[object]") {
+    auto test = Updatable();
+    auto updater1_count = 0;
+    auto updater2_count = 0;
+    auto stop_updater2 = false;
+    auto updater1 = [&]{
+        ++updater1_count;
+    };
+    auto updater2 = [&]{
+        ++updater2_count;
+        return !stop_updater2;
+    };
+    test.add_updater(updater1);
+    test.add_updater(updater2, true);
+    test.update();
+    REQUIRE(updater1_count == 1);
+    REQUIRE(updater2_count == 1);
+    test.clear_updaters();
+    test.update();
+    REQUIRE(updater1_count == 1);
+    REQUIRE(updater2_count == 2);
+    stop_updater2 = true;
+    test.update();
+    REQUIRE(updater2_count == 3);
+    test.update();
+    REQUIRE(updater2_count == 3);
+    auto h = test.add_updater(updater1, true);
+    test.update();
+    REQUIRE(updater1_count == 2);
+    test.clear_updaters();
+    test.update();
+    REQUIRE(updater1_count == 3);
+    test.remove_updater(h);
+    test.update();
+    REQUIRE(updater1_count == 3);
+}

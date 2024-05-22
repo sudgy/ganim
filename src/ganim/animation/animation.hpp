@@ -190,7 +190,7 @@ auto& animate(animatable auto& object, AnimationArgs args = AnimationArgs())
 {
     auto anim = Animation(object, args);
     auto& result = anim.get_ending_object();
-    object.add_updater(std::move(anim));
+    object.add_updater(std::move(anim), true);
     return result;
 }
 

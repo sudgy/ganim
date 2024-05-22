@@ -18,6 +18,12 @@ namespace ganim {
 
             /** @brief Add an updater
              *
+             * By default, any updater added can be removed by a call to @ref
+             * clear_updaters.  If you don't want this to be allowed, set the
+             * `persistent` paramater to true.  A persistent updater can only be
+             * removed by it returning false or an explicit call to @ref
+             * remove_updater.
+             *
              * @param updater A function to be called every frame.  It accepts
              * two kinds of input functions: A function that returns void, and a
              * function that returns something convertible to a boolean.  In the
@@ -26,18 +32,27 @@ namespace ganim {
              * update, but if the updater returns false the updater will be
              * removed.
              *
+             * @param persistent Whether the updater should be persistent, that
+             * is, if it should not be removed by a call to @ref clear_updaters.
+             *
              * @return A handle to the updater that can be passed to @ref
              * remove_updater.
              */
             template <typename F>
-            int add_updater(F&& updater)
+            int add_updater(F&& updater, bool persistent = false)
             {
                 if constexpr (std::is_convertible_v<
                         decltype(updater()), bool>) {
-                    return add_updater_bool(std::forward<F>(updater));
+                    return add_updater_bool(
+                        std::forward<F>(updater),
+                        persistent
+                    );
                 }
                 else {
-                    return add_updater_void(std::forward<F>(updater));
+                    return add_updater_void(
+                        std::forward<F>(updater),
+                        persistent
+                    );
                 }
             }
             /** @brief Remove an updater
@@ -46,11 +61,10 @@ namespace ganim {
              * returned by @ref add_updater.
              */
             void remove_updater(int updater_handle);
-            /** @brief Remove all updaters
+            /** @brief Remove all non-persistent updaters
              *
-             * Note that because animations use updaters as well, and stopping
-             * an animation in the middle of it can break things, this will
-             * throw an exception if an animation is currently running.
+             * An updater is persistent if the persistent parameter was set when
+             * @ref add_updater was called.
              */
             void clear_updaters();
             /** @brief Update the object
@@ -61,9 +75,9 @@ namespace ganim {
             void update();
 
         private:
-            int add_updater_void(std::function<void()> updater);
-            int add_updater_bool(std::function<bool()> updater);
-            std::map<int, std::function<bool()>> M_updaters;
+            int add_updater_void(std::function<void()>updater, bool persistent);
+            int add_updater_bool(std::function<bool()>updater, bool persistent);
+            std::map<int, std::pair<std::function<bool()>, bool>> M_updaters;
     };
 }
 

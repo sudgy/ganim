@@ -11,7 +11,7 @@ void fade_in(Object& object, AnimationArgs args)
     anim.get_starting_object().set_opacity(0);
     object.set_visible(true);
     object.set_opacity(0);
-    object.add_updater(std::move(anim));
+    object.add_updater(std::move(anim), true);
 }
 
 void fade_out(Object& object, AnimationArgs args)
@@ -24,7 +24,7 @@ void fade_out(Object& object, AnimationArgs args)
         object.set_opacity(orig_opacity);
         object.set_visible(false);
     });
-    object.add_updater(std::move(anim));
+    object.add_updater(std::move(anim), true);
 }
 
 }
