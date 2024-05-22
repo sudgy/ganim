@@ -1,11 +1,11 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ganim/object/bases/animatable.hpp"
+#include "ganim/object/bases/updatable.hpp"
 
 using namespace ganim;
 
-TEST_CASE("Animatable updaters", "[object]") {
-    auto test = Animatable();
+TEST_CASE("Updatable updaters", "[object]") {
+    auto test = Updatable();
     auto updater1_count = 0;
     auto updater2_count = 0;
     auto stop_updater2 = false;
