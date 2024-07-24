@@ -79,20 +79,21 @@ Scalar basis_blade_product_sign(const std::array<std::int8_t, N>& metric)
     static_assert(N <= GC_max_dimension,
             "The metric you are trying to use has too high of a dimension.");
     auto sign = false;
-    auto parity = false;
-    for (std::uint8_t i = 0; i < N; ++i) {
-        if (blade1 & (1UL << i)) parity = !parity;
-    }
-    for (std::uint8_t i = 0; i < N; ++i) {
-        const auto first = static_cast<bool>(blade1 & (1UL << i));
-        const auto second = static_cast<bool>(blade2 & (1UL << i));
-        if (first) parity = !parity;
-        if (second) sign ^= parity;
-        if (first and second) {
+    auto mask = std::uint64_t(0);
+    auto blade1_copy = blade1;
+    auto blade2_copy = blade2;
+    while (blade1_copy) {
+        auto power1 = std::bit_floor(blade1_copy);
+        blade2_copy &= power1 * 2 - 1;
+        if (power1 == std::bit_floor(blade2_copy)) {
+            const auto i = std::countr_zero(power1);
             if (metric[i] == -1) sign = !sign;
             else if (metric[i] == 0) return 0;
         }
+        blade1_copy ^= power1;
+        mask ^= (power1 - 1);
     }
+    sign ^= std::popcount(mask & blade2) % 2;
     if (sign) return -1;
     else return 1;
 }
@@ -106,14 +107,14 @@ Scalar basis_blade_product_sign(const std::array<std::int8_t, N>& metric)
 template <std::size_t N>
 consteval int dual_sign(std::uint64_t b)
 {
-    auto sign = false;
-    auto parity = false;
-    for (std::uint8_t i = 0; i < N; ++i) {
-        const auto bit = static_cast<bool>(b & (1UL << i));
-        if (bit) sign ^= parity;
-        else parity = !parity;
+    auto mask = std::uint64_t(0);
+    auto b2 = ~b;
+    while (b) {
+        auto power = std::bit_floor(b);
+        b ^= power;
+        mask ^= (power - 1);
     }
-    return sign ? -1 : 1;
+    return std::popcount(mask & b2) % 2 ? -1 : 1;
 }
 
 /** @brief Represents a scalar multiple of a single basis blade
