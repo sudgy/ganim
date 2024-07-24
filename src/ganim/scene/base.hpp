@@ -24,7 +24,7 @@ namespace ganim {
      * the final result.  Look at the subclasses to see how to actually make a
      * scene.
      */
-    class SceneBase {
+    class SceneBase : public Updatable {
         public:
             /** @brief Constructor.
              *

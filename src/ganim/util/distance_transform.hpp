@@ -23,7 +23,8 @@ namespace ganim {
      */
     gl::Texture distance_transform(
         const gl::Texture& input,
-        int size
+        int size,
+        double scale = 1.0
     );
 }
 

@@ -71,11 +71,16 @@ layout(local_size_x = 8, local_size_y = 8, local_size_z = 1) in;
 
 uniform layout(rgba32f, binding = 0) readonly image2D input_img;
 uniform layout(r32f, binding = 1) writeonly image2D output_img;
+uniform float scale;
 
 void main()
 {
     ivec2 pos = ivec2(gl_GlobalInvocationID.xy);
-    imageStore(output_img, pos, vec4(imageLoad(input_img, pos).a, 0, 0, 0));
+    imageStore(
+        output_img,
+        pos,
+        vec4(imageLoad(input_img, pos).a * scale, 0, 0, 0)
+    );
 }
 )";
     gl::Shader make_start()
@@ -115,7 +120,8 @@ void main()
 
 gl::Texture ganim::distance_transform(
     const gl::Texture& input,
-    int size
+    int size,
+    double scale
 )
 {
     if (size <= 0) throw std::invalid_argument(std::format(
@@ -162,6 +168,7 @@ gl::Texture ganim::distance_transform(
     glBindTexture(GL_TEXTURE_2D, 0);
     glBindImageTexture(0, tex1, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
     glBindImageTexture(1, result, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_R32F);
+    glUniform1f(end.get_uniform("scale"), scale);
     glDispatchCompute(size / 8, size / 8, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 

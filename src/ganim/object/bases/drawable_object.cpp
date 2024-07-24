@@ -68,7 +68,6 @@ void DrawableObject::draw_outline(const Camera& camera)
         create_outline(camera);
     }
 
-    // Draw the outline
     auto current_viewport = std::array<int, 4>{0};
     glGetIntegerv(GL_VIEWPORT, current_viewport.data());
     const auto camera_width = camera.get_starting_width();
@@ -131,6 +130,7 @@ void DrawableObject::create_outline(const Camera& camera)
     {
         if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
             apply_rotor(rotor);
+            this->scale(scale);
             throw std::runtime_error("An outline was attempted to be drawn on "
                     "an object that seems to have 3D extent.");
         }

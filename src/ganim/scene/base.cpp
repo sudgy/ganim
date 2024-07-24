@@ -79,6 +79,7 @@ SceneBase::SceneBase(
 
 void SceneBase::frame_advance()
 {
+    update();
     for (auto object : M_objects) {
         object->update();
     }
