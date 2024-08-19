@@ -16,7 +16,11 @@ void basic_text()
         {"\\sqrt{", "#FFFF00"},
         {"}{", "#0000FF"}
     });
-    scene.add(text);
+    auto hello = Text("Hello, world!");
+    hello.shift(3*vga2::e2);
+    hello.set_visible(true);
+    hello.set_outline(Color("#000000"), 0.04);
+    scene.add(hello, text);
     text.set_draw_subobject_ratio(0.1);
     text.set_outline(Color("#000000"), 0.04);
     noise_create(text, 0.25, {.duration = 2});

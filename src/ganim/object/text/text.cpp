@@ -16,41 +16,43 @@ Text::Text(std::string_view string)
     for (auto letter : string) {
         auto& c = get_character(font, letter);
         auto kerning = get_kerning(font, letter, last_letter);
-        pos += kerning;
         last_letter = letter;
-        vertices.push_back({
-            static_cast<float>(pos + c.bearing_x),
-            static_cast<float>(c.bearing_y),
-            0, 0
-        });
-        tvertices.push_back({c.texture_x, c.texture_y});
-        vertices.push_back({
-            static_cast<float>(pos + c.bearing_x + c.width),
-            static_cast<float>(c.bearing_y),
-            0, 1
-        });
-        tvertices.push_back({c.texture_x + c.texture_width, c.texture_y});
-        vertices.push_back({
-            static_cast<float>(pos + c.bearing_x),
-            static_cast<float>(c.bearing_y - c.height),
-            0, 2
-        });
-        tvertices.push_back({c.texture_x, c.texture_y + c.texture_height});
-        vertices.push_back({
-            static_cast<float>(pos + c.bearing_x + c.width),
-            static_cast<float>(c.bearing_y - c.height),
-            0, 3
-        });
-        tvertices.push_back({c.texture_x + c.texture_width,
-                c.texture_y + c.texture_height});
-        indices.push_back(4*i + 0);
-        indices.push_back(4*i + 1);
-        indices.push_back(4*i + 2);
-        indices.push_back(4*i + 2);
-        indices.push_back(4*i + 1);
-        indices.push_back(4*i + 3);
+        if (letter != ' ') {
+            pos += kerning;
+            vertices.push_back({
+                static_cast<float>(pos + c.bearing_x),
+                static_cast<float>(c.bearing_y),
+                0, static_cast<float>(0 + i*4)
+            });
+            tvertices.push_back({c.texture_x, c.texture_y});
+            vertices.push_back({
+                static_cast<float>(pos + c.bearing_x + c.width),
+                static_cast<float>(c.bearing_y),
+                0, static_cast<float>(1 + i*4)
+            });
+            tvertices.push_back({c.texture_x + c.texture_width, c.texture_y});
+            vertices.push_back({
+                static_cast<float>(pos + c.bearing_x),
+                static_cast<float>(c.bearing_y - c.height),
+                0, static_cast<float>(2 + i*4)
+            });
+            tvertices.push_back({c.texture_x, c.texture_y + c.texture_height});
+            vertices.push_back({
+                static_cast<float>(pos + c.bearing_x + c.width),
+                static_cast<float>(c.bearing_y - c.height),
+                0, static_cast<float>(3 + i*4)
+            });
+            tvertices.push_back({c.texture_x + c.texture_width,
+                    c.texture_y + c.texture_height});
+            indices.push_back(4*i + 0);
+            indices.push_back(4*i + 1);
+            indices.push_back(4*i + 2);
+            indices.push_back(4*i + 2);
+            indices.push_back(4*i + 1);
+            indices.push_back(4*i + 3);
+            ++i;
+        }
         pos += c.x_advance;
-        ++i;
     }
     const auto x_shift = pos / 2;
     for (auto& v : vertices) {

@@ -156,25 +156,25 @@ Tex::Tex(std::filesystem::path dvi_filename)
             vertices.push_back({
                 static_cast<float>(x + c->bearing_x * s),
                 static_cast<float>(y + c->bearing_y * s),
-                0, 0
+                0, static_cast<float>(0 + i*4)
             });
             tvertices.push_back({c->texture_x, c->texture_y});
             vertices.push_back({
                 static_cast<float>(x + (c->bearing_x + c->width) * s),
                 static_cast<float>(y + c->bearing_y * s),
-                0, 1
+                0, static_cast<float>(1 + i*4)
             });
             tvertices.push_back({c->texture_x + c->texture_width, c->texture_y});
             vertices.push_back({
                 static_cast<float>(x + c->bearing_x * s),
                 static_cast<float>(y + (c->bearing_y - c->height) * s),
-                0, 2
+                0, static_cast<float>(2 + i*4)
             });
             tvertices.push_back({c->texture_x, c->texture_y + c->texture_height});
             vertices.push_back({
                 static_cast<float>(x + (c->bearing_x + c->width) * s),
                 static_cast<float>(y + (c->bearing_y - c->height) * s),
-                0, 3
+                0, static_cast<float>(3 + i*4)
             });
             tvertices.push_back({c->texture_x + c->texture_width,
                     c->texture_y + c->texture_height});
