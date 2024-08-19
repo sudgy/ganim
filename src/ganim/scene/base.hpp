@@ -88,6 +88,8 @@ namespace ganim {
             constexpr void set_background_color(const Color& color)
                 {M_background_color = color;}
 
+
+            void set_background_image(const std::string& filename);
             /** @brief Add an object to a scene
              *
              * Note that unlike in manim, this does not make the object visible!
@@ -204,8 +206,11 @@ namespace ganim {
             int M_frame_count = 0;
             Color M_background_color;
             Camera M_camera;
+            Camera M_static_camera;
             std::vector<Animatable*> M_objects;
             std::vector<Drawable*> M_drawables;
+            std::unique_ptr<Drawable> M_background_object;
+            gl::Texture M_background_texture = 0;
     };
 }
 

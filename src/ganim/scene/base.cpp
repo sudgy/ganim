@@ -6,6 +6,9 @@
 #include <SFML/Window.hpp>
 
 #include "ganim/gl/gl.hpp"
+#include "ganim/util/stb_image.h"
+
+#include "ganim/object/texture_shape.hpp"
 
 // I may need to do something else later, but for now this should work to get a
 // valid context
@@ -50,7 +53,8 @@ SceneBase::SceneBase(
 :   M_pixel_width(pixel_width),
     M_pixel_height(pixel_height),
     M_fps(fps),
-    M_camera(20, coord_width, coord_height)
+    M_camera(20, coord_width, coord_height),
+    M_static_camera(20, coord_width, coord_height)
 {
     add(M_camera);
     glEnable(GL_DEPTH_TEST);
@@ -92,6 +96,7 @@ void SceneBase::frame_advance()
         1
     );
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    if (M_background_object) M_background_object->draw(M_static_camera);
     for (auto object : M_drawables) {
         if (object->is_visible()) {
             object->draw_outline(M_camera);
@@ -175,4 +180,34 @@ void SceneBase::remove_group(GroupBase& object)
     for (auto* obj : object) {
         remove(*obj);
     }
+}
+
+void SceneBase::set_background_image(const std::string& filename)
+{
+    // TODO: When you make image objects use those instead
+    int width, height, channels;
+    auto image = stbi_load(filename.c_str(), &width, &height, &channels, 4);
+    if (image == nullptr) {
+        throw std::runtime_error("Error loading background image " + filename);
+    }
+    M_background_texture = gl::Texture(image, width, height);
+    stbi_image_free(image);
+    auto w = static_cast<float>(M_camera.get_starting_width()/2);
+    auto h = static_cast<float>(M_camera.get_starting_height()/2);
+    auto background_object = std::make_unique<TextureShape<Shape>>(
+        std::vector<Shape::Vertex>{{ w,  h, 0},
+         { w, -h, 0},
+         {-w, -h, 0},
+         {-w,  h, 0}},
+         std::vector<unsigned>{0, 1, 2, 0, 2, 3}
+    );
+    background_object->set_texture_vertices(
+        {{ 0,  0},
+         { 0, -1},
+         {-1, -1},
+         {-1,  0}}
+    );
+    background_object->set_texture(M_background_texture);
+    background_object->set_visible(true);
+    M_background_object = std::move(background_object);
 }

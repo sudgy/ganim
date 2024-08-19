@@ -13,6 +13,7 @@ namespace ganim {
     /** @brief The base class for all drawable objects */
     class Drawable {
         public:
+            virtual ~Drawable()=default;
             /** @brief Draw this object onto the screen
              *
              * @param camera The camera being used to draw onto the screen.  You
