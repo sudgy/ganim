@@ -146,3 +146,15 @@ TEST_CASE("Scene adding multiple times", "[scene]") {
     REQUIRE(obj.draw_count == 2);
     REQUIRE(updated == 2);
 }
+
+TEST_CASE("Scene time", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 8);
+    REQUIRE(scene.get_frame_count() == 0);
+    REQUIRE(scene.get_time() == 0);
+    scene.wait(1);
+    REQUIRE(scene.get_frame_count() == 8);
+    REQUIRE(scene.get_time() == 1);
+    scene.wait(0.5);
+    REQUIRE(scene.get_frame_count() == 12);
+    REQUIRE(scene.get_time() == 1.5);
+}

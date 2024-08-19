@@ -65,6 +65,20 @@ namespace ganim {
              * was passed into this function.
              */
             void wait(double time = 1.0);
+            /** @brief Get the number of frames that have elapsed since the
+             * start of the scene.
+             *
+             * @return The number of frames that have elapsed since the start of
+             * the scene
+             */
+            int get_frame_count() const;
+            /** @brief Get the time that has elapsed since the start of the
+             * scene.
+             *
+             * @return The time, in seconds, that has elapsed since the start of
+             * the scene.
+             */
+            double get_time() const;
 
             /** @brief Get the width, in pixels, of this scene. */
             constexpr int pixel_width() const {return M_pixel_width;}
@@ -187,6 +201,7 @@ namespace ganim {
             int M_pixel_width = 0;
             int M_pixel_height = 0;
             int M_fps;
+            int M_frame_count = 0;
             Color M_background_color;
             Camera M_camera;
             std::vector<Animatable*> M_objects;

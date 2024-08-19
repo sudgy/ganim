@@ -99,6 +99,7 @@ void SceneBase::frame_advance()
         }
     }
     process_frame();
+    ++M_frame_count;
 }
 
 void SceneBase::frame_advance(int amount)
@@ -119,6 +120,16 @@ void SceneBase::wait(double time)
     }
     auto amount = static_cast<int>(std::round(time * M_fps));
     frame_advance(amount);
+}
+
+int SceneBase::get_frame_count() const
+{
+    return M_frame_count;
+}
+
+double SceneBase::get_time() const
+{
+    return double(M_frame_count) / M_fps;
 }
 
 void SceneBase::add_animatable(Animatable& object)
