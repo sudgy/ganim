@@ -103,7 +103,7 @@ void SceneBase::frame_advance()
             object->draw(M_camera);
         }
     }
-    process_frame();
+    if (M_animating) process_frame();
     ++M_frame_count;
 }
 
@@ -135,6 +135,16 @@ int SceneBase::get_frame_count() const
 double SceneBase::get_time() const
 {
     return double(M_frame_count) / M_fps;
+}
+
+void SceneBase::stop_animating()
+{
+    M_animating = false;
+}
+
+void SceneBase::start_animating()
+{
+    M_animating = true;
 }
 
 void SceneBase::add_animatable(Animatable& object)

@@ -158,3 +158,15 @@ TEST_CASE("Scene time", "[scene]") {
     REQUIRE(scene.get_frame_count() == 12);
     REQUIRE(scene.get_time() == 1.5);
 }
+
+TEST_CASE("Scene skipping", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    scene.frame_advance();
+    REQUIRE(scene.time_size() == 1);
+    scene.stop_animating();
+    scene.frame_advance();
+    REQUIRE(scene.time_size() == 1);
+    scene.start_animating();
+    scene.frame_advance();
+    REQUIRE(scene.time_size() == 2);
+}

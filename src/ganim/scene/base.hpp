@@ -79,6 +79,18 @@ namespace ganim {
              * the scene.
              */
             double get_time() const;
+            /** @brief Stop animating the scene
+             *
+             * This is used to save on time when you only want to see certain
+             * parts of a scene.  All objects will still be updated and the
+             * scene will run like normal, but the scene won't be rendered.
+             */
+            void stop_animating();
+            /** @brief Start animating the scene
+             *
+             * This is used to reverse a call to @ref stop_animating
+             */
+            void start_animating();
 
             /** @brief Get the width, in pixels, of this scene. */
             constexpr int pixel_width() const {return M_pixel_width;}
@@ -211,6 +223,7 @@ namespace ganim {
             std::vector<Drawable*> M_drawables;
             std::unique_ptr<Drawable> M_background_object;
             gl::Texture M_background_texture = 0;
+            bool M_animating = true;
     };
 }
 
