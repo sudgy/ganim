@@ -25,9 +25,7 @@ class MaybeOwningRef {
         {
             other.M_owning = false;
         }
-        constexpr MaybeOwningRef(const MaybeOwningRef& other)
-        :   M_object(other.M_object),
-            M_owning(false) {}
+        constexpr MaybeOwningRef(const MaybeOwningRef& other)=delete;
         constexpr MaybeOwningRef& operator=(MaybeOwningRef&& other)
         {
             if (this != &other) {
@@ -38,13 +36,7 @@ class MaybeOwningRef {
             }
             return *this;
         }
-        constexpr MaybeOwningRef& operator=(const MaybeOwningRef& other)
-        {
-            if (M_owning) delete M_object;
-            M_object = other.M_object;
-            M_owning = false;
-            return *this;
-        }
+        constexpr MaybeOwningRef& operator=(const MaybeOwningRef& other)=delete;
 
         constexpr bool is_owning() const {return M_owning;}
         constexpr T& operator*() const {return *M_object;}
