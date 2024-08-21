@@ -9,12 +9,20 @@
 #include <map>
 
 namespace ganim {
-    /** @brief Represents any kind of thing that can be updated
+    /** @brief Represents any kind of thing that can be updated.
+     *
+     * Note that copying this class will not copy the updaters!  This is
+     * intentional.  Updaters often modify the class itself, and upon copying
+     * the updaters will not do what you expect them to.
      */
     class Updatable {
         public:
             Updatable()=default;
             virtual ~Updatable()=default;
+            Updatable(Updatable&&)=default;
+            Updatable(const Updatable&) {}
+            Updatable& operator=(Updatable&&)=default;
+            Updatable& operator=(const Updatable&) {return *this;}
 
             /** @brief Add an updater
              *
@@ -75,9 +83,9 @@ namespace ganim {
             void update();
 
         private:
-            int add_updater_void(std::function<void()>updater, bool persistent);
-            int add_updater_bool(std::function<bool()>updater, bool persistent);
-            std::map<int, std::pair<std::function<bool()>, bool>> M_updaters;
+            int add_updater_void(std::move_only_function<void()>updater, bool persistent);
+            int add_updater_bool(std::move_only_function<bool()>updater, bool persistent);
+            std::map<int, std::pair<std::move_only_function<bool()>, bool>> M_updaters;
     };
 }
 

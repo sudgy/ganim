@@ -35,8 +35,8 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     add_link_options(-O2 -flto)
 endif()
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED 20)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED 23)
 
 find_package(Catch2 3 REQUIRED)
 find_package(PkgConfig REQUIRED)

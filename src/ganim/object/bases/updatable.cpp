@@ -2,15 +2,15 @@
 
 using namespace ganim;
 
-int Updatable::add_updater_void(std::function<void()> updater, bool persistent)
+int Updatable::add_updater_void(std::move_only_function<void()> updater, bool persistent)
 {
-    return add_updater_bool([f = std::move(updater)] {
+    return add_updater_bool([f = std::move(updater)] mutable {
         f();
         return true;
     }, persistent);
 }
 
-int Updatable::add_updater_bool(std::function<bool()> updater, bool persistent)
+int Updatable::add_updater_bool(std::move_only_function<bool()> updater, bool persistent)
 {
     auto handle = 0;
     if (!M_updaters.empty()) {

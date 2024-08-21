@@ -112,19 +112,3 @@ TEST_CASE("Animatable different framerates", "[object]") {
     test2.update();
     REQUIRE(test1.last_t == test2.last_t);
 }
-
-TEST_CASE("Animatable updating while animating", "[object]") {
-    auto test = TestAnimatable();
-    auto updated = 0;
-    auto scene = TestScene(1, 1, 1, 1, 1);
-    test.set_fps(2);
-    test.add_updater([&]{++updated;});
-    animate(scene, test);
-    REQUIRE(updated == 0);
-    test.update();
-    REQUIRE(updated == 3);
-    test.update();
-    REQUIRE(updated == 6);
-    test.update();
-    REQUIRE(updated == 7);
-}
