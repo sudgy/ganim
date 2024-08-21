@@ -29,6 +29,12 @@ class Group : public CompoundObject {
         virtual void draw_outline(const Camera& camera) override;
         virtual void set_outline(const Color& color, double thickness) override;
         virtual void invalidate_outline() override;
+        virtual Color get_outline_color() const override;
+        virtual double get_outline_thickness() const override;
+
+    private:
+        Color M_outline_color = Color("#000000");
+        double M_outline_thickness = 0;
 };
 
 }

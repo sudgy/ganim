@@ -46,6 +46,8 @@ namespace {
             virtual void draw_outline(const Camera&) override {}
             virtual void set_outline(const Color&, double) override {}
             virtual void invalidate_outline() override {}
+            virtual Color get_outline_color() const override {return Color();}
+            virtual double get_outline_thickness() const override {return 0.0;}
     };
 }
 

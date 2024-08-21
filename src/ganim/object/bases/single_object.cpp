@@ -108,6 +108,16 @@ void SingleObject::invalidate_outline()
     M_outline_texture = 0;
 }
 
+Color SingleObject::get_outline_color() const
+{
+    return M_outline_color;
+}
+
+double SingleObject::get_outline_thickness() const
+{
+    return M_outline_thickness;
+}
+
 void SingleObject::set_draw_fraction(double value)
 {
     Object::set_draw_fraction(value);

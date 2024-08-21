@@ -48,6 +48,8 @@ namespace ganim {
              */
             virtual void set_outline(const Color& color, double thickness)=0;
             virtual void invalidate_outline()=0;
+            virtual Color get_outline_color() const=0;
+            virtual double get_outline_thickness() const=0;
 
             /** @brief Set the color of this object, ignoring alpha. */
             virtual Object& set_color(Color color);
