@@ -4,10 +4,12 @@
 
 #include "ganim/animation/animation.hpp"
 #include "test/ganim/ga_equals.hpp"
+#include "test/ganim/scene/test_scene.hpp"
 
 using namespace ganim;
 
 TEST_CASE("Value tracker double", "[object]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
     auto val = Value();
     REQUIRE(val.get_value() == 0);
     REQUIRE(val() == 0);
@@ -26,7 +28,7 @@ TEST_CASE("Value tracker double", "[object]") {
     REQUIRE(val == 2.5);
 
     val.set_fps(4);
-    animate(val, {.rate_function = [](double t){return t;}}) = 3.5;
+    animate(scene, val, {.rate_function = [](double t){return t;}}) = 3.5;
     REQUIRE(val.get_value() == 2.5);
     REQUIRE(val() == 2.5);
     REQUIRE(val == 2.5);
@@ -55,6 +57,7 @@ TEST_CASE("Value tracker double", "[object]") {
 TEST_CASE("Value tracker vector", "[object]") {
     using namespace vga2;
     auto val = Value<Vector>();
+    auto scene = TestScene(1, 1, 1, 1, 1);
     REQUIRE(val.get_value() == 0);
     REQUIRE(val() == 0);
     REQUIRE(val == 0);
@@ -69,7 +72,7 @@ TEST_CASE("Value tracker vector", "[object]") {
     REQUIRE_THAT(val(), GAEquals(e1 + e2));
 
     val.set_fps(4);
-    animate(val, {.rate_function = [](double t){return t;}}) = 2*e1 + e2;
+    animate(scene, val, {.rate_function = [](double t){return t;}}) = 2*e1 + e2;
     REQUIRE_THAT(val.get_value(), GAEquals(e1 + e2));
     REQUIRE_THAT(val(), GAEquals(e1 + e2));
     val.update();

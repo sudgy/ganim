@@ -276,7 +276,7 @@ TEST_CASE("Cluster drawing", "[object]") {
     auto group = Cluster(shape1, shape2);
     group.set_draw_subobject_ratio(1);
     scene.add(group);
-    create(group, {.rate_function = [](double t) {return t;}});
+    create(scene, group, {.rate_function = [](double t) {return t;}});
     scene.wait(1);
     REQUIRE(scene.get_pixel(0, 3, 3) == Color("FFFFFF"));
     REQUIRE(scene.get_pixel(0, 3, 6) == Color("FFFFFF"));
@@ -345,7 +345,7 @@ TEST_CASE("Cluster animating color", "[object]") {
     group.set_draw_subobject_ratio(1);
     scene.add(group);
     group.set_visible(true);
-    animate(static_cast<Object&>(group));
+    animate(scene, static_cast<Object&>(group));
     scene.wait(1);
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("FF0000"));
 }

@@ -3,6 +3,8 @@
 #include "ganim/animation/fading.hpp"
 #include "ganim/object/bases/object.hpp"
 
+#include "test/ganim/scene/test_scene.hpp"
+
 using namespace ganim;
 
 namespace {
@@ -13,8 +15,9 @@ namespace {
 
 TEST_CASE("Fading", "[animation]") {
     auto test = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 1);
     test.set_fps(4);
-    fade_in(test);
+    fade_in(scene, test);
     REQUIRE(test.is_visible());
     REQUIRE(test.get_color().a == 0x0);
     test.update();
@@ -29,7 +32,7 @@ TEST_CASE("Fading", "[animation]") {
     test.update();
     REQUIRE(test.is_visible());
     REQUIRE(test.get_color().a == 0xFF);
-    fade_out(test);
+    fade_out(scene, test);
     REQUIRE(test.is_visible());
     REQUIRE(test.get_color().a == 0xFF);
     test.update();
@@ -48,7 +51,7 @@ TEST_CASE("Fading", "[animation]") {
     test.set_opacity(0.5);
     REQUIRE(!test.is_visible());
     REQUIRE(test.get_color().a == 0x7F);
-    fade_in(test, {.duration = 0.5});
+    fade_in(scene, test, {.duration = 0.5});
     REQUIRE(test.is_visible());
     REQUIRE(test.get_color().a == 0x0);
     test.update();
@@ -57,7 +60,7 @@ TEST_CASE("Fading", "[animation]") {
     test.update();
     REQUIRE(test.is_visible());
     REQUIRE(test.get_color().a == 0x7F);
-    fade_out(test, {.duration = 0.5});
+    fade_out(scene, test, {.duration = 0.5});
     REQUIRE(test.is_visible());
     REQUIRE(test.get_color().a == 0x7F);
     test.update();

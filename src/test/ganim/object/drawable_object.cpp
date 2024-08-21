@@ -74,7 +74,7 @@ TEST_CASE("Outline creating", "[object]") {
     );
     scene.add(shape);
     shape.set_outline(Color("#FF0000"), 0.375);
-    create(shape, {.rate_function = [](double t) {return t;}});
+    create(scene, shape, {.rate_function = [](double t) {return t;}});
     scene.wait();
     REQUIRE(scene.get_pixel(0, 4, 3) == Color("FF0000"));
     REQUIRE(scene.get_pixel(0, 7, 3) == Color("000000"));

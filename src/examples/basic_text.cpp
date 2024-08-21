@@ -23,6 +23,6 @@ void basic_text()
     scene.add(hello, text);
     text.set_draw_subobject_ratio(0.1);
     text.set_outline(Color("#000000"), 0.04);
-    noise_create(text, 0.25, {.duration = 2});
+    noise_create(scene, text, 0.25, {.duration = 2});
     scene.wait(3);
 }

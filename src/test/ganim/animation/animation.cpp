@@ -2,6 +2,8 @@
 
 #include "ganim/animation/animation.hpp"
 
+#include "test/ganim/scene/test_scene.hpp"
+
 using namespace ganim;
 
 namespace {
@@ -43,9 +45,10 @@ static_assert(std::is_same_v<
 
 TEST_CASE("Animation basics", "[object]") {
     auto test = TestAnimatable();
-    REQUIRE_THROWS(animate(test));
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    REQUIRE_THROWS(animate(scene, test));
     test.set_fps(2);
-    auto anim = Animation(test, {2, [](double t){return t*t;}});
+    auto anim = Animation(scene, test, {2, [](double t){return t*t;}});
     auto& start = anim.get_starting_object();
     auto& end = anim.get_ending_object();
     bool ended = false;
@@ -91,10 +94,11 @@ TEST_CASE("Animation basics", "[object]") {
 TEST_CASE("Animatable different framerates", "[object]") {
     auto test1 = TestAnimatable();
     auto test2 = TestAnimatable();
+    auto scene = TestScene(1, 1, 1, 1, 1);
     test1.set_fps(3);
     test2.set_fps(6);
-    animate(test1);
-    animate(test2);
+    animate(scene, test1);
+    animate(scene, test2);
     test1.update();
     test2.update();
     test2.update();
@@ -112,9 +116,10 @@ TEST_CASE("Animatable different framerates", "[object]") {
 TEST_CASE("Animatable updating while animating", "[object]") {
     auto test = TestAnimatable();
     auto updated = 0;
+    auto scene = TestScene(1, 1, 1, 1, 1);
     test.set_fps(2);
     test.add_updater([&]{++updated;});
-    animate(test);
+    animate(scene, test);
     REQUIRE(updated == 0);
     test.update();
     REQUIRE(updated == 3);

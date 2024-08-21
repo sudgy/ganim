@@ -178,9 +178,12 @@ TEST_CASE("Shape animation", "[object]") {
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
-    animate(shape, {2, [](double x){return x;}}).shift(2*e1);
+    animate(scene, shape, {2, [](double x){return x;}}).shift(2*e1);
     // Change this if Shape ever gets things to animate
-    static_assert(std::is_same_v<decltype(animate(shape).shift(e1)), Object&>);
+    static_assert(std::is_same_v<
+        decltype(animate(scene, shape).shift(e1)),
+        Object&
+    >);
     scene.frame_advance(3);
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -213,7 +216,11 @@ TEST_CASE("Shape camera animation", "[object]") {
     scene.add(shape);
     shape.shift(-e1);
     scene.frame_advance();
-    animate(scene.get_camera(), {2, [](double x){return x;}}).shift(-2*e1);
+    animate(
+        scene,
+        scene.get_camera(),
+        {2, [](double x){return x;}}
+    ).shift(-2*e1);
     scene.frame_advance(3);
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -358,9 +365,9 @@ TEST_CASE("Shape move back and forth with rotation", "[object]") {
     );
     shape.set_visible(true);
     scene.add(shape);
-    animate(shape).rotate(e23, τ/2);
+    animate(scene, shape).rotate(e23, τ/2);
     scene.wait(1);
-    animate(shape).shift(-e1);
+    animate(scene, shape).shift(-e1);
     scene.wait(1);
     REQUIRE(scene.get_pixel(59, 1, 1) == Color("FFFFFF"));
 }
@@ -378,9 +385,9 @@ TEST_CASE("Shape rotating too fast?", "[object]") {
     );
     shape.set_visible(true);
     scene.add(shape);
-    animate(shape).rotate(e23, τ/2).shift(2*e1);
+    animate(scene, shape).rotate(e23, τ/2).shift(2*e1);
     scene.wait(1);
-    animate(shape).shift(-2*e1);
+    animate(scene, shape).shift(-2*e1);
     scene.wait(1);
     shape.rotate(e12 + 0.5*e13 + 0.2*e23, 0.05);
     scene.frame_advance();

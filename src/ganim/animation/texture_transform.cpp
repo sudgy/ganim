@@ -477,7 +477,7 @@ void ganim::texture_transform(
     temp_object->set_visible(true);
     scene.add(*temp_object);
 
-    auto anim = Animation(*temp_object, args);
+    auto anim = Animation(scene, *temp_object, args);
     auto& from_part = anim.get_starting_object();
     auto& to_part = anim.get_ending_object();
     from_part.M_tracked_object = &from;

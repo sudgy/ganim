@@ -51,11 +51,11 @@ void basic_movement()
     };
     using namespace pga3;
     scene.add(shapes[0]);
-    fade_in(shapes[0]);
+    fade_in(scene, shapes[0]);
     scene.wait(2);
-    animate(shapes[0]).rotate(e23, τ/2).shift(2*e1);
+    animate(scene, shapes[0]).rotate(e23, τ/2).shift(2*e1);
     scene.wait(2);
-    animate(shapes[0]).shift(-2*e1);
+    animate(scene, shapes[0]).shift(-2*e1);
     scene.wait(2);
     shapes[2].shift(2*e1);
     shapes[3].shift(-2*e1);
@@ -63,13 +63,13 @@ void basic_movement()
     shapes[5].shift(-2*e2);
     for (int i = 1; i < 6; ++i) {
         scene.add(shapes[i]);
-        fade_in(shapes[i]);
+        fade_in(scene, shapes[i]);
     }
     scene.wait(2);
-    animate(shapes[2]).shift(-2*e1);
-    animate(shapes[3]).shift(2*e1);
-    animate(shapes[4]).shift(-2*e2);
-    animate(shapes[5]).shift(2*e2);
+    animate(scene, shapes[2]).shift(-2*e1);
+    animate(scene, shapes[3]).shift(2*e1);
+    animate(scene, shapes[4]).shift(-2*e2);
+    animate(scene, shapes[5]).shift(2*e2);
     scene.wait(1);
     for (int i = 0; i < 6; ++i) {
         shapes[i].add_updater([&, i]{

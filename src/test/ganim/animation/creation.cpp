@@ -18,7 +18,7 @@ TEST_CASE("Shape creating", "[animation]") {
         {0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5}
     );
     scene.add(shape);
-    create(shape, {.rate_function = [](double t) {return t;}});
+    create(scene, shape, {.rate_function = [](double t) {return t;}});
     scene.wait();
     REQUIRE(scene.get_pixel(0, 4, 0) == Color("FFFFFF"));
     REQUIRE(scene.get_pixel(0, 6, 0) == Color("000000"));

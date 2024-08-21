@@ -15,8 +15,11 @@
 #include "ganim/object/group/group_base.hpp"
 
 #include "ganim/rate_functions.hpp"
+#include "ganim/maybe_owning_ref.hpp"
 
 namespace ganim {
+
+class SceneBase;
 
 /** @brief A concept specifying what types of objects can be animated
  *
@@ -99,10 +102,15 @@ class Animation {
          * @param object The object to be animated
          * @param args The parameters for this animation
          */
-        explicit Animation(T& object, AnimationArgs args = AnimationArgs())
+        explicit Animation(
+            SceneBase& scene,
+            T& object,
+            AnimationArgs args = AnimationArgs()
+        )
         :   M_rate_function(std::move(args.rate_function)),
             M_object(object)
         {
+            (void)scene; // For now
             if constexpr (std::convertible_to<
                     std::unique_ptr<GroupBase>, std::shared_ptr<copy_type>>)
             {
@@ -186,9 +194,13 @@ class Animation {
  * For example, you can run `animate(object).shift(2*e1)` to animate shifting
  * two units to the right.
  */
-auto& animate(animatable auto& object, AnimationArgs args = AnimationArgs())
+auto& animate(
+    SceneBase& scene,
+    animatable auto& object,
+    AnimationArgs args = AnimationArgs()
+)
 {
-    auto anim = Animation(object, args);
+    auto anim = Animation(scene, object, args);
     auto& result = anim.get_ending_object();
     object.add_updater(std::move(anim), true);
     return result;

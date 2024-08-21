@@ -5,9 +5,9 @@
 
 namespace ganim {
 
-void create(Object& object, AnimationArgs args)
+void create(SceneBase& scene, Object& object, AnimationArgs args)
 {
-    auto anim = Animation(object, args);
+    auto anim = Animation(scene, object, args);
     anim.get_starting_object().set_draw_fraction(0);
     anim.get_ending_object().set_draw_fraction(1);
     anim.at_end([&object]{
@@ -18,9 +18,14 @@ void create(Object& object, AnimationArgs args)
     object.set_creating(true);
 }
 
-void noise_create(Object& object, double noise_scale, AnimationArgs args)
+void noise_create(
+    SceneBase& scene,
+    Object& object,
+    double noise_scale,
+    AnimationArgs args
+)
 {
-    auto anim = Animation(object, args);
+    auto anim = Animation(scene, object, args);
     anim.get_starting_object().set_draw_fraction(0);
     anim.get_ending_object().set_draw_fraction(1);
     anim.at_end([&object]{

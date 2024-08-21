@@ -4,6 +4,7 @@
 
 #include "ganim/animation/animation.hpp"
 #include "test/ganim/ga_equals.hpp"
+#include "test/ganim/scene/test_scene.hpp"
 
 using namespace ganim;
 
@@ -60,8 +61,9 @@ TEST_CASE("Object color", "[object]") {
 
 TEST_CASE("Object animating color", "[object]") {
     auto test = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 1);
     test.set_fps(4);
-    animate(test, {.rate_function = [](double t){return t;}})
+    animate(scene, test, {.rate_function = [](double t){return t;}})
         .set_color("000000");
     REQUIRE(test.get_color() == Color("FFFFFF"));
     test.update();
@@ -76,7 +78,7 @@ TEST_CASE("Object animating color", "[object]") {
     test.update();
     REQUIRE(test.get_color() == Color("000000"));
     REQUIRE(test.last_change == Color("000000"));
-    animate(test, {.rate_function = [](double t){return t;}})
+    animate(scene, test, {.rate_function = [](double t){return t;}})
         .set_opacity(0.5);
     REQUIRE(test.get_color() == Color("000000FF"));
     test.update();
@@ -151,6 +153,7 @@ TEST_CASE("Object scaling", "[object]") {
 TEST_CASE("Object animating scale", "[object]") {
     using namespace pga3;
     auto test = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 1);
     test.set_fps(4);
     test.shift(e1);
     auto get_p = [&](pga3::Trivector p){
@@ -159,7 +162,7 @@ TEST_CASE("Object animating scale", "[object]") {
         p += e123;
         return ~test.get_rotor()*p*test.get_rotor();
     };
-    animate(test, {.rate_function = [](double t){return t;}})
+    animate(scene, test, {.rate_function = [](double t){return t;}})
         .scale(e1 + e2, 2);
     auto p = (-e1 + e0).dual();
     REQUIRE_THAT(get_p(p), GAEquals(e123));

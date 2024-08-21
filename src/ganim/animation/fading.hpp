@@ -15,13 +15,21 @@ class Object;
  *
  * This will automatically make the object visible.
  */
-void fade_in(Object& object, AnimationArgs args = AnimationArgs());
+void fade_in(
+    SceneBase& scene,
+    Object& object,
+    AnimationArgs args = AnimationArgs()
+);
 /** @brief An animation to fade out an object.
  *
  * This automatically makes the object not visible at the end, and it will set
  * its opacity back to its original value before it started fading out.
  */
-void fade_out(Object& object, AnimationArgs args = AnimationArgs());
+void fade_out(
+    SceneBase& scene,
+    Object& object,
+    AnimationArgs args = AnimationArgs()
+);
 
 }
 

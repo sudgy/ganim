@@ -64,7 +64,7 @@ void square_create()
     shapes[5].shift( 3*e1 - 1.5*e2);
     for (auto& shape : shapes) {
         scene.add(shape);
-        create(shape);
+        create(scene, shape);
         scene.wait();
     }
     scene.wait();

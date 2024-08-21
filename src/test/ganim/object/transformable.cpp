@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "test/ganim/ga_equals.hpp"
+#include "test/ganim/scene/test_scene.hpp"
 
 #include "ganim/object/bases/transformable.hpp"
 #include "ganim/animation/animation.hpp"
@@ -141,7 +142,8 @@ TEST_CASE("Transformable animate", "[object]") {
     const auto& r = test.get_rotor();
     const auto& r2 = test.last_applied_rotor;
     test.set_fps(4);
-    animate(test, {.rate_function = [](double x){return x*x;}})
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    animate(scene, test, {.rate_function = [](double x){return x*x;}})
         .rotate(e12, τ/2);
     REQUIRE_THAT(r, GAEquals(1));
     test.update();
@@ -171,7 +173,8 @@ TEST_CASE("Transformable non-commuting rotors", "[object]") {
     auto test = TestTransformable();
     test.set_fps(2);
     test.shift(e1);
-    animate(test).rotate(e12, τ/2);
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    animate(scene, test).rotate(e12, τ/2);
     REQUIRE_THAT(test.get_center(), GAEquals((e1 + e0).dual(), 1e-5));
     test.update();
     REQUIRE_THAT(test.get_center(), GAEquals((e2 + e0).dual(), 1e-5));

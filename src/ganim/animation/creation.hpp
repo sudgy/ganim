@@ -16,7 +16,11 @@ class Object;
  * "Creating" an object is setting its draw fraction continuously from zero to
  * one.  This will automatically make the object visible.
  */
-void create(Object& object, AnimationArgs args = AnimationArgs());
+void create(
+    SceneBase& scene,
+    Object& object,
+    AnimationArgs args = AnimationArgs()
+);
 
 /** @brief An animation to "create" objects, but with a bit of randomness thrown
  * in.
@@ -35,6 +39,7 @@ void create(Object& object, AnimationArgs args = AnimationArgs());
  * @param args The @ref AnimationArgs affecting this animation.
  */
 void noise_create(
+    SceneBase& scene,
     Object& object,
     double noise_scale,
     AnimationArgs args = AnimationArgs()
