@@ -466,26 +466,25 @@ void main()
 
 void ganim::texture_transform(
     SceneBase& scene,
-    DrawableObject& from,
-    DrawableObject& to,
+    MaybeOwningRef<DrawableObject> from,
+    MaybeOwningRef<DrawableObject> to,
     AnimationArgs args
 )
 {
-    from.set_visible(false);
-    // TODO: Make this use unique_ptr after getting move_only_function
-    auto temp_object = std::make_shared<TransformingPart>();
+    from->set_visible(false);
+    auto temp_object = std::unique_ptr<TransformingPart>();
     temp_object->set_visible(true);
     scene.add(*temp_object);
 
-    auto anim = Animation(scene, *temp_object, args);
+    auto anim = Animation(scene, MaybeOwningRef(*temp_object), args);
     auto& from_part = anim.get_starting_object();
     auto& to_part = anim.get_ending_object();
-    from_part.M_tracked_object = &from;
-    to_part.M_tracked_object = &to;
+    from_part.M_tracked_object = &*from;
+    to_part.M_tracked_object = &*to;
     temp_object->M_from = &from_part;
     temp_object->M_to = &to_part;
 
-    anim.at_end([&object = *temp_object, &to, &scene]{
+    anim.at_end([&object = *temp_object, &to = *to, &scene]{
         object.M_finished = true;
         object.set_visible(false);
         to.set_visible(true);

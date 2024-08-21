@@ -18,7 +18,7 @@ class Object;
  */
 void create(
     SceneBase& scene,
-    Object& object,
+    MaybeOwningRef<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 
@@ -29,6 +29,7 @@ void create(
  * one, but with the draw fraction varying from pixel to pixel with a noise
  * function.  This will automatically make the object visible.
  *
+ * @param scene The scene the animation is taking place in.
  * @param object The object being animated.
  * @param noise_scale How much the noise will affect the draw fraction.  Draw
  * fractions go from 0 to 1, and the noise scale will widen this range (but
@@ -40,7 +41,7 @@ void create(
  */
 void noise_create(
     SceneBase& scene,
-    Object& object,
+    MaybeOwningRef<Object> object,
     double noise_scale,
     AnimationArgs args = AnimationArgs()
 );

@@ -17,7 +17,7 @@ class Object;
  */
 void fade_in(
     SceneBase& scene,
-    Object& object,
+    MaybeOwningRef<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 /** @brief An animation to fade out an object.
@@ -27,7 +27,7 @@ void fade_in(
  */
 void fade_out(
     SceneBase& scene,
-    Object& object,
+    MaybeOwningRef<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 

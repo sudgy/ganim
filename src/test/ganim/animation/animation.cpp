@@ -9,6 +9,10 @@ using namespace ganim;
 namespace {
     class TestAnimatable : public Animatable {
         public:
+            ~TestAnimatable()
+            {
+                if (on_delete) *on_delete = 1;
+            }
             std::unique_ptr<TestAnimatable> anim_copy() const
                 {return std::make_unique<TestAnimatable>(*this);}
             void interpolate(
@@ -21,11 +25,14 @@ namespace {
                 last_end = &end;
                 last_t = t;
                 ++updated;
+                end.self = this;
             }
             const TestAnimatable* last_start = nullptr;
             const TestAnimatable* last_end = nullptr;
             double last_t = -1;
             int updated = 0;
+            mutable TestAnimatable* self = nullptr;
+            int* on_delete = nullptr;
     };
     class TestAnimatable2 : public TestAnimatable {};
     class TestAnimatable3 : public TestAnimatable {
@@ -43,12 +50,16 @@ static_assert(std::is_same_v<
                 .get_starting_object()),
         TestAnimatable3&>);
 
-TEST_CASE("Animation basics", "[object]") {
+TEST_CASE("Animation basics", "[animation]") {
     auto test = TestAnimatable();
     auto scene = TestScene(1, 1, 1, 1, 1);
     REQUIRE_THROWS(animate(scene, test));
     test.set_fps(2);
-    auto anim = Animation(scene, test, {2, [](double t){return t*t;}});
+    auto anim = Animation(
+        scene,
+        MaybeOwningRef(test),
+        {2, [](double t){return t*t;}}
+    );
     auto& start = anim.get_starting_object();
     auto& end = anim.get_ending_object();
     bool ended = false;
@@ -91,7 +102,34 @@ TEST_CASE("Animation basics", "[object]") {
     REQUIRE(ended);
 }
 
-TEST_CASE("Animatable different framerates", "[object]") {
+TEST_CASE("Animation with rvalues", "[animation]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto& test = animate(
+        scene,
+        TestAnimatable(),
+        {.duration = 4, .rate_function = [](double x){return x;}}
+    );
+    scene.frame_advance();
+    REQUIRE(test.self);
+    auto& test2 = *test.self;
+    int on_delete = 0;
+    test2.on_delete = &on_delete;
+    REQUIRE(test2.updated == 1);
+    scene.frame_advance();
+    REQUIRE(test2.updated == 2);
+    REQUIRE(on_delete == 0);
+    scene.frame_advance();
+    REQUIRE(test2.updated == 3);
+    REQUIRE(on_delete == 0);
+    scene.frame_advance();
+    REQUIRE(test2.updated == 4);
+    // It isn't really specified if the object is deleted instantly or if it
+    // waits a frame so we don't check on_delete here
+    scene.frame_advance();
+    REQUIRE(on_delete == 1);
+}
+
+TEST_CASE("Animatable different framerates", "[animation]") {
     auto test1 = TestAnimatable();
     auto test2 = TestAnimatable();
     auto scene = TestScene(1, 1, 1, 1, 1);

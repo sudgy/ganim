@@ -87,6 +87,9 @@ void SceneBase::frame_advance()
     for (auto object : M_objects) {
         object->update();
     }
+    for (auto& object : M_ghost_animating_objects) {
+        object->update();
+    }
     glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
     glViewport(0, 0, M_pixel_width, M_pixel_height);
     glClearColor(
@@ -189,6 +192,22 @@ void SceneBase::remove_group(GroupBase& object)
 {
     for (auto* obj : object) {
         remove(*obj);
+    }
+}
+
+void SceneBase::add_for_animation(MaybeOwningRef<Animatable> object)
+{
+    object->set_fps(M_fps);
+    M_ghost_animating_objects.push_back(std::move(object));
+}
+
+void SceneBase::remove_for_animation(Animatable& object)
+{
+    auto it = std::ranges::find_if(M_ghost_animating_objects, [&](auto& o){
+        return &*o == &object;
+    });
+    if (it != M_ghost_animating_objects.end()) {
+        M_ghost_animating_objects.erase(it);
     }
 }
 

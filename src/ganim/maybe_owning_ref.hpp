@@ -44,6 +44,14 @@ class MaybeOwningRef {
         constexpr MaybeOwningRef(T&& object)
             : M_object(new T(std::move(object))),
               M_owning(true) {}
+        template <typename U> requires(std::convertible_to<U&, T&>)
+        constexpr MaybeOwningRef(U& object)
+            : M_object(&object),
+              M_owning(false) {}
+        template <typename U> requires(std::convertible_to<U&, T&>)
+        constexpr MaybeOwningRef(U&& object)
+            : M_object(new U(std::move(object))),
+              M_owning(true) {}
 
         constexpr ~MaybeOwningRef()
         {

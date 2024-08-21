@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "ganim/color.hpp"
+#include "ganim/maybe_owning_ref.hpp"
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/texture.hpp"
 
@@ -192,6 +193,9 @@ namespace ganim {
                 (remove(objects), ...);
             }
 
+            void add_for_animation(MaybeOwningRef<Animatable> object);
+            void remove_for_animation(Animatable& object);
+
             Camera& get_camera() {return M_camera;}
 
         private:
@@ -221,6 +225,7 @@ namespace ganim {
             Camera M_static_camera;
             std::vector<Animatable*> M_objects;
             std::vector<Drawable*> M_drawables;
+            std::vector<MaybeOwningRef<Animatable>> M_ghost_animating_objects;
             std::unique_ptr<Drawable> M_background_object;
             gl::Texture M_background_texture = 0;
             bool M_animating = true;

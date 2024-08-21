@@ -13,6 +13,7 @@
 
 #include "ganim/object/bases/animatable.hpp"
 #include "ganim/object/group/group_base.hpp"
+#include "ganim/scene/base.hpp"
 
 #include "ganim/rate_functions.hpp"
 #include "ganim/maybe_owning_ref.hpp"
@@ -99,35 +100,40 @@ class Animation {
     public:
         /** @brief constructor
          *
+         * @param scene The scene the animation is taking place in.
          * @param object The object to be animated
          * @param args The parameters for this animation
          */
         explicit Animation(
             SceneBase& scene,
-            T& object,
+            MaybeOwningRef<T> object,
             AnimationArgs args = AnimationArgs()
         )
         :   M_rate_function(std::move(args.rate_function)),
-            M_object(object)
+            M_object(*object),
+            M_scene(scene),
+            M_owning(object.is_owning())
         {
-            (void)scene; // For now
+            if (M_owning) {
+                scene.add_for_animation(std::move(object));
+            }
             if constexpr (std::convertible_to<
-                    std::unique_ptr<GroupBase>, std::shared_ptr<copy_type>>)
+                    std::unique_ptr<GroupBase>, std::unique_ptr<copy_type>>)
             {
-                if (auto group = object.as_group()) {
+                if (auto group = object->as_group()) {
                     M_starting_object = group->anim_copy();
                     M_ending_object = group->anim_copy();
                 }
                 else {
-                    M_starting_object = object.anim_copy();
-                    M_ending_object = object.anim_copy();
+                    M_starting_object = object->anim_copy();
+                    M_ending_object = object->anim_copy();
                 }
             }
             else {
-                M_starting_object = object.anim_copy();
-                M_ending_object = object.anim_copy();
+                M_starting_object = object->anim_copy();
+                M_ending_object = object->anim_copy();
             }
-            auto fps = object.get_fps();
+            auto fps = object->get_fps();
             if (fps == -1) {
                 throw std::logic_error("An animation was run without setting "
                     "the fps.  Did you forget to add something to the scene?");
@@ -150,6 +156,9 @@ class Animation {
             );
             if (M_animation_progress == M_animation_time) {
                 M_animation_time = 0;
+                M_scene.add_updater([&object = M_object, &scene = M_scene]{
+                    scene.remove_for_animation(object);
+                });
                 if (M_at_end) M_at_end();
                 return false;
             }
@@ -174,15 +183,15 @@ class Animation {
         }
 
     private:
-        std::function<double(double)> M_rate_function;
-        std::function<void()> M_at_end;
+        std::move_only_function<double(double)> M_rate_function;
+        std::move_only_function<void()> M_at_end;
         T& M_object;
-        // TODO: When switching the library to C++23, use move_only_function so
-        // that these can be unique_ptrs
-        std::shared_ptr<copy_type> M_starting_object;
-        std::shared_ptr<copy_type> M_ending_object;
+        SceneBase& M_scene;
+        std::unique_ptr<copy_type> M_starting_object;
+        std::unique_ptr<copy_type> M_ending_object;
         int M_animation_progress = 0;
         int M_animation_time = 0;
+        bool M_owning = false;
 };
 
 /** @brief A generic animation for changing an object from its initial state to
@@ -196,14 +205,30 @@ class Animation {
  */
 auto& animate(
     SceneBase& scene,
+    MaybeOwningRef<animatable auto> object,
+    AnimationArgs args = AnimationArgs()
+)
+{
+    auto anim = Animation(scene, std::move(object), args);
+    auto& result = anim.get_ending_object();
+    object->add_updater(std::move(anim), true);
+    return result;
+}
+auto& animate(
+    SceneBase& scene,
     animatable auto& object,
     AnimationArgs args = AnimationArgs()
 )
 {
-    auto anim = Animation(scene, object, args);
-    auto& result = anim.get_ending_object();
-    object.add_updater(std::move(anim), true);
-    return result;
+    return animate(scene, MaybeOwningRef(object), std::move(args));
+}
+auto& animate(
+    SceneBase& scene,
+    animatable auto&& object,
+    AnimationArgs args = AnimationArgs()
+)
+{
+    return animate(scene, MaybeOwningRef(std::move(object)), std::move(args));
 }
 
 }
