@@ -1,7 +1,6 @@
 #include "creation.hpp"
 
 #include "ganim/object/bases/object.hpp"
-#include "ganim/object/bases/drawable_object.hpp"
 
 namespace ganim {
 

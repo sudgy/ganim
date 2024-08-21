@@ -1,7 +1,8 @@
-#include "drawable_object.hpp"
+#include "single_object.hpp"
 
 #include "ganim/gl/gl.hpp"
 #include "ganim/gl/framebuffer.hpp"
+#include "ganim/gl/shader.hpp"
 
 #include "ganim/util/alpha_threshold.hpp"
 #include "ganim/util/distance_transform.hpp"
@@ -61,7 +62,7 @@ void main()
     }
 }
 
-void DrawableObject::draw_outline(const Camera& camera)
+void SingleObject::draw_outline(const Camera& camera)
 {
     if (M_outline_thickness == 0.0) return;
     if (!M_outline_texture or M_always_invalidate_outline) {
@@ -93,7 +94,7 @@ void DrawableObject::draw_outline(const Camera& camera)
     glBindVertexArray(0);
 }
 
-void DrawableObject::set_outline(const Color& color, double thickness)
+void SingleObject::set_outline(const Color& color, double thickness)
 {
     M_outline_color = color;
     if (thickness != M_outline_thickness) {
@@ -102,18 +103,18 @@ void DrawableObject::set_outline(const Color& color, double thickness)
     }
 }
 
-void DrawableObject::invalidate_outline()
+void SingleObject::invalidate_outline()
 {
     M_outline_texture = 0;
 }
 
-void DrawableObject::set_draw_fraction(double value)
+void SingleObject::set_draw_fraction(double value)
 {
     Object::set_draw_fraction(value);
     invalidate_outline();
 }
 
-void DrawableObject::create_outline(const Camera& camera)
+void SingleObject::create_outline(const Camera& camera)
 {
     auto rotor = get_rotor();
     auto scale = get_scale();

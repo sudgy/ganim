@@ -8,8 +8,8 @@ namespace ganim {
     class DrawableObject;
     void texture_transform(
         SceneBase& scene,
-        MaybeOwningRef<DrawableObject> from,
-        MaybeOwningRef<DrawableObject> to,
+        MaybeOwningRef<Object> from,
+        MaybeOwningRef<Object> to,
         AnimationArgs args = AnimationArgs()
     );
 }

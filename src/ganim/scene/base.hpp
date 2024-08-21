@@ -15,7 +15,6 @@
 #include "camera.hpp"
 
 #include "ganim/object/shaders.hpp"
-#include "ganim/object/bases/drawable.hpp"
 #include "ganim/object/group/cluster.hpp"
 
 namespace ganim {
@@ -115,16 +114,6 @@ namespace ganim {
                 if constexpr (std::convertible_to<T&, Animatable&>) {
                     add_animatable(object);
                 }
-                if constexpr (std::convertible_to<T&, Drawable&>) {
-                    add_drawable(object);
-                    return;
-                }
-                else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Drawable*>(&object)) {
-                        add_drawable(*p);
-                        return;
-                    }
-                }
                 if constexpr (std::convertible_to<T&, Cluster>) {
                     add_group(object);
                     return;
@@ -132,6 +121,16 @@ namespace ganim {
                 else if constexpr (std::is_polymorphic_v<T>) {
                     if (auto* p = dynamic_cast<Cluster*>(&object)) {
                         add_group(*p);
+                        return;
+                    }
+                }
+                if constexpr (std::convertible_to<T&, Object&>) {
+                    add_drawable(object);
+                    return;
+                }
+                else if constexpr (std::is_polymorphic_v<T>) {
+                    if (auto* p = dynamic_cast<Object*>(&object)) {
+                        add_drawable(*p);
                         return;
                     }
                 }
@@ -161,16 +160,6 @@ namespace ganim {
                 if constexpr (std::convertible_to<T&, Animatable&>) {
                     remove_animatable(object);
                 }
-                if constexpr (std::convertible_to<T&, Drawable&>) {
-                    remove_drawable(object);
-                    return;
-                }
-                else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Drawable*>(&object)) {
-                        remove_drawable(*p);
-                        return;
-                    }
-                }
                 if constexpr (std::convertible_to<T&, Cluster>) {
                     remove_group(object);
                     return;
@@ -178,6 +167,16 @@ namespace ganim {
                 else if constexpr (std::is_polymorphic_v<T>) {
                     if (auto* p = dynamic_cast<Cluster*>(&object)) {
                         remove(*p);
+                        return;
+                    }
+                }
+                if constexpr (std::convertible_to<T&, Object&>) {
+                    remove_drawable(object);
+                    return;
+                }
+                else if constexpr (std::is_polymorphic_v<T>) {
+                    if (auto* p = dynamic_cast<Object*>(&object)) {
+                        remove_drawable(*p);
                         return;
                     }
                 }
@@ -207,11 +206,11 @@ namespace ganim {
             virtual void process_frame()=0;
 
             void add_animatable(Animatable& object);
-            void add_drawable(Drawable& object);
-            void add_group(GroupBase& object);
+            void add_drawable(Object& object);
+            void add_group(CompoundObject& object);
             void remove_animatable(Animatable& object);
-            void remove_drawable(Drawable& object);
-            void remove_group(GroupBase& object);
+            void remove_drawable(Object& object);
+            void remove_group(CompoundObject& object);
 
             gl::Framebuffer M_framebuffer;
             gl::Texture M_framebuffer_texture;
@@ -224,9 +223,9 @@ namespace ganim {
             Camera M_camera;
             Camera M_static_camera;
             std::vector<Animatable*> M_objects;
-            std::vector<Drawable*> M_drawables;
+            std::vector<Object*> M_drawables;
             std::vector<MaybeOwningRef<Animatable>> M_ghost_animating_objects;
-            std::unique_ptr<Drawable> M_background_object;
+            std::unique_ptr<Object> M_background_object;
             gl::Texture M_background_texture = 0;
             bool M_animating = true;
     };

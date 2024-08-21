@@ -1,7 +1,6 @@
 #include "ganim/object/bases/animatable.hpp"
 #include "ganim/object/bases/transformable.hpp"
 #include "ganim/object/bases/object.hpp"
-#include "ganim/object/bases/drawable.hpp"
 #include "ganim/object/shaders.hpp"
 #include "ganim/object/shape.hpp"
 #include "ganim/object/group/group.hpp"

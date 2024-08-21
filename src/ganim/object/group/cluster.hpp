@@ -5,7 +5,7 @@
  * @brief Contains the @ref ganim::Cluster "Cluster" class
  */
 
-#include "group_base.hpp"
+#include "compound_object.hpp"
 
 namespace ganim {
 
@@ -15,13 +15,19 @@ namespace ganim {
  * just used to cluster several objects together to make manipulating several
  * objects at once easier.
  */
-class Cluster : public GroupBase {
+class Cluster : public CompoundObject {
     public:
         template <typename... Ts>
         explicit Cluster(Ts&... objects)
         {
             (add(objects), ...);
         }
+
+        virtual void draw(const Camera& camera) override;
+        virtual bool is_visible() const override;
+        virtual void draw_outline(const Camera& camera) override;
+        virtual void set_outline(const Color& color, double thickness) override;
+        virtual void invalidate_outline() override;
 };
 
 }

@@ -1,8 +1,8 @@
-#ifndef GANIM_OBJECT_GROUP_BASE_HPP
-#define GANIM_OBJECT_GROUP_BASE_HPP
+#ifndef GANIM_OBJECT_COMPOUND_OBJECT_HPP
+#define GANIM_OBJECT_COMPOUND_OBJECT_HPP
 
 /** @file
- * @brief Contains the @ref ganim::GroupBase "GroupBase" class
+ * @brief Contains the @ref ganim::CompoundObject "CompoundObject" class
  */
 
 #include "../bases/object.hpp"
@@ -15,9 +15,7 @@ class Group;
  * There are two kinds of groups: @ref Group, and @ref Cluster.  The main
  * difference between these is that Group is actually considered to "hold" (but
  * not own) all of its subobjects, whereas Cluster is just an organizational
- * wrapper.  In practice the main difference between the two is that Group is a
- * @ref Drawable while Cluster is not.  Groups will draw all their subobjects
- * themselves, while Clusters will not.
+ * wrapper.
  *
  * You should be able to get away with using Cluster most of the time.  The
  * biggest use case for using Group is when drawing multiple overlapping objects
@@ -26,7 +24,7 @@ class Group;
  *
  * Note that this class does not own its subobjects!  You need to make sure to
  * own them elsewhere (such as in a subclass).  This means that you can put the
- * same object in multiple Clusters and nothing will go wrong.  However, puting
+ * same object in multiple Clusters and nothing will go wrong.  However, putting
  * the same object in multiple Groups can go wrong because they'll get drawn
  * multiple times.  You can put an object in one Group and multiple Clusters if
  * you want though.
@@ -43,11 +41,11 @@ class Group;
  * only subclasses of this class, so if you want to derive from this class,
  * instead derive from one of those.
  */
-class GroupBase : public Object {
+class CompoundObject : public Object {
     private:
         friend class Cluster;
         friend class Group;
-        GroupBase()=default;
+        CompoundObject()=default;
 
     public:
         /*** @brief Add an object to this group */
@@ -58,10 +56,10 @@ class GroupBase : public Object {
          * want to add all the subobjects of the subgroup to this group, so
          * groups are explicitly disallowed from this function.
          *
-         * @tparam R A range type that is not a GroupBase of some kind
+         * @tparam R A range type that is not a CompoundObject of some kind
          */
         template <std::ranges::input_range R>
-            requires(!std::convertible_to<R&, GroupBase&>)
+            requires(!std::convertible_to<R&, CompoundObject&>)
         void add(R& range)
         {
             for (auto& object : range) {
@@ -79,13 +77,13 @@ class GroupBase : public Object {
         }
 
         /** @brief Returns this. */
-        virtual GroupBase* as_group() override final {return this;}
-        virtual const GroupBase* as_group() const override final {return this;}
+        virtual CompoundObject* as_group() override final {return this;}
+        virtual const CompoundObject* as_group() const override final {return this;}
         /** @brief Copy a group for the sake of animations.
          *
          * This copies a group, including all of its subobjects.
          */
-        std::unique_ptr<GroupBase> anim_copy() const;
+        std::unique_ptr<CompoundObject> anim_copy() const;
         /** @brief Interpolate two groups.
          *
          * Interpolating groups is more confusing than normal since most of the
@@ -98,8 +96,8 @@ class GroupBase : public Object {
          * interpolation will have happened at all.
          */
         virtual void interpolate(
-            const GroupBase& start,
-            const GroupBase& end,
+            const CompoundObject& start,
+            const CompoundObject& end,
             double t
         );
         /** @brief Interpolate between two groups.
@@ -125,41 +123,41 @@ class GroupBase : public Object {
 
         // I can't use the macro here because I'm overloading some of the
         // functions
-        GroupBase& reset()
+        CompoundObject& reset()
             {Transformable::reset(); return *this;}
-        GroupBase& apply_rotor(const vga2::Even& rotor)
+        CompoundObject& apply_rotor(const vga2::Even& rotor)
             {Transformable::apply_rotor(rotor); return *this;}
-        GroupBase& apply_rotor(const vga3::Even& rotor)
+        CompoundObject& apply_rotor(const vga3::Even& rotor)
             {Transformable::apply_rotor(rotor); return *this;}
-        GroupBase& apply_rotor(const pga2::Even& rotor)
+        CompoundObject& apply_rotor(const pga2::Even& rotor)
             {Transformable::apply_rotor(rotor); return *this;}
-        GroupBase& move_to(const pointlike auto& p)
+        CompoundObject& move_to(const pointlike auto& p)
             {Transformable::move_to(p); return *this;}
-        GroupBase& shift(const pointlike auto& p)
+        CompoundObject& shift(const pointlike auto& p)
             {Transformable::shift(p); return *this;}
-        GroupBase& rotate(double angle)
+        CompoundObject& rotate(double angle)
             {Transformable::rotate(angle); return *this;}
-        GroupBase& rotate(const vga2::Vector& about_point, double angle)
+        CompoundObject& rotate(const vga2::Vector& about_point, double angle)
             {Transformable::rotate(about_point, angle); return *this;}
-        GroupBase& rotate(const pga2::Vector& about_point, double angle)
+        CompoundObject& rotate(const pga2::Vector& about_point, double angle)
             {Transformable::rotate(about_point, angle); return *this;}
-        GroupBase& rotate(const vga3::Bivector& about_plane, double angle)
+        CompoundObject& rotate(const vga3::Bivector& about_plane, double angle)
             {Transformable::rotate(about_plane, angle); return *this;}
-        GroupBase& rotate(const pga2::Bivector& about_point, double angle = 1)
+        CompoundObject& rotate(const pga2::Bivector& about_point, double angle = 1)
             {Transformable::rotate(about_point, angle); return *this;}
-        GroupBase& rotate(const pga3::Bivector& about_line, double angle = 1)
+        CompoundObject& rotate(const pga3::Bivector& about_line, double angle = 1)
             {Transformable::rotate(about_line, angle); return *this;}
-        GroupBase& scale(double amount)
+        CompoundObject& scale(double amount)
             {Object::scale(amount); return *this;}
-        GroupBase& scale(const pointlike auto& about_point, double amount)
+        CompoundObject& scale(const pointlike auto& about_point, double amount)
             {Object::scale(about_point, amount); return *this;}
-        virtual GroupBase& apply_rotor(const pga3::Even& rotor) override;
-        virtual GroupBase& set_color(Color color) override;
-        virtual GroupBase& set_color_with_alpha(Color color) override;
-        virtual GroupBase& set_opacity(double opacity) override;
-        virtual GroupBase& scale(const pga3::Trivector& about_point, double amount)
+        virtual CompoundObject& apply_rotor(const pga3::Even& rotor) override;
+        virtual CompoundObject& set_color(Color color) override;
+        virtual CompoundObject& set_color_with_alpha(Color color) override;
+        virtual CompoundObject& set_opacity(double opacity) override;
+        virtual CompoundObject& scale(const pga3::Trivector& about_point, double amount)
             override;
-        virtual GroupBase& set_visible(bool visible) override;
+        virtual CompoundObject& set_visible(bool visible) override;
         virtual void set_draw_fraction(double value) override;
         virtual void set_creating(bool creating) override;
         virtual void set_noise_creating(double noise_creating) override;

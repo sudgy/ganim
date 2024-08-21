@@ -3,8 +3,8 @@
 #include <ranges>
 
 #include "ganim/scene/base.hpp"
-#include "ganim/object/bases/drawable_object.hpp"
 #include "ganim/animation/animation.hpp"
+#include "ganim/object/bases/single_object.hpp"
 #include "ganim/gl/gl.hpp"
 
 #include "ganim/util/alpha_threshold.hpp"
@@ -94,7 +94,7 @@ void main()
         return result;
     }
     struct StaticPart : public Animatable {
-        DrawableObject* M_tracked_object = nullptr;
+        Object* M_tracked_object = nullptr;
         gl::Texture M_object_texture = 0;
         gl::Texture M_distance_transform = 0;
         Box M_bounding_box;
@@ -208,7 +208,7 @@ void main()
             M_tracked_object->apply_rotor(rotor);
         }
     };
-    struct TransformingPart : public DrawableObject {
+    struct TransformingPart : public SingleObject {
         TransformingPart()
         {
             glBindVertexArray(M_vertex_array);
@@ -228,7 +228,7 @@ void main()
         {
             return std::make_unique<StaticPart>();
         }
-        using DrawableObject::interpolate;
+        using SingleObject::interpolate;
         void interpolate(
             const StaticPart&,
             const StaticPart&,
@@ -466,8 +466,8 @@ void main()
 
 void ganim::texture_transform(
     SceneBase& scene,
-    MaybeOwningRef<DrawableObject> from,
-    MaybeOwningRef<DrawableObject> to,
+    MaybeOwningRef<Object> from,
+    MaybeOwningRef<Object> to,
     AnimationArgs args
 )
 {

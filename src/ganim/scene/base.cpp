@@ -158,14 +158,14 @@ void SceneBase::add_animatable(Animatable& object)
     }
 }
 
-void SceneBase::add_drawable(Drawable& object)
+void SceneBase::add_drawable(Object& object)
 {
     if (std::ranges::find(M_drawables, &object) == M_drawables.end()) {
         M_drawables.emplace_back(&object);
     }
 }
 
-void SceneBase::add_group(GroupBase& object)
+void SceneBase::add_group(CompoundObject& object)
 {
     for (auto* obj : object) {
         add(*obj);
@@ -180,7 +180,7 @@ void SceneBase::remove_animatable(Animatable& object)
     }
 }
 
-void SceneBase::remove_drawable(Drawable& object)
+void SceneBase::remove_drawable(Object& object)
 {
     auto it = std::ranges::find(M_drawables, &object);
     if (it != M_drawables.end()) {
@@ -188,7 +188,7 @@ void SceneBase::remove_drawable(Drawable& object)
     }
 }
 
-void SceneBase::remove_group(GroupBase& object)
+void SceneBase::remove_group(CompoundObject& object)
 {
     for (auto* obj : object) {
         remove(*obj);

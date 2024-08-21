@@ -5,8 +5,7 @@
  * @brief Contains the @ref ganim::Group "Group" class
  */
 
-#include "group_base.hpp"
-#include "../bases/drawable.hpp"
+#include "compound_object.hpp"
 
 namespace ganim {
 
@@ -17,7 +16,7 @@ namespace ganim {
  * subobjects.  Unless you want this special drawing behavior you probably want
  * to use @ref Cluster instead.
  */
-class Group : public GroupBase, public Drawable {
+class Group : public CompoundObject {
     public:
         template <typename... Ts>
         explicit Group(Ts&... objects)
@@ -25,17 +24,11 @@ class Group : public GroupBase, public Drawable {
             (add(objects), ...);
         }
 
-        virtual void add(Object& object) override;
-        using GroupBase::add;
-
         virtual void draw(const Camera& camera) override;
         virtual bool is_visible() const override;
         virtual void draw_outline(const Camera& camera) override;
         virtual void set_outline(const Color& color, double thickness) override;
         virtual void invalidate_outline() override;
-
-    private:
-        std::vector<Drawable*> M_drawables;
 };
 
 }

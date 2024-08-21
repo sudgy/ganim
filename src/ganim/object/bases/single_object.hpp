@@ -1,8 +1,7 @@
-#ifndef GANIM_DRAWABLE_OBJECT_HPP
-#define GANIM_DRAWABLE_OBJECT_HPP
+#ifndef GANIM_SINGLE_OBJECT_HPP
+#define GANIM_SINGLE_OBJECT_HPP
 
 #include "object.hpp"
-#include "drawable.hpp"
 
 #include "ganim/gl/texture.hpp"
 #include "ganim/gl/vertex_array.hpp"
@@ -10,7 +9,7 @@
 
 namespace ganim {
 
-class DrawableObject : public Object, public Drawable {
+class SingleObject : public Object {
     public:
         virtual bool is_visible() const override
         {

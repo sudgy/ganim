@@ -9,6 +9,7 @@
 
 #include "ganim/color.hpp"
 #include "ganim/util/box.hpp"
+#include "ganim/scene/camera.hpp"
 
 namespace ganim {
     /** @brief The base class for objects that have some kind of extent
@@ -19,6 +20,35 @@ namespace ganim {
      */
     class Object : public Transformable {
         public:
+            /** @brief Draw this object onto the screen
+             *
+             * @param camera The camera being used to draw onto the screen.  You
+             * should use this to get the x and y scale values and the camera's
+             * position/orientation.
+             */
+            virtual void draw(const Camera& camera)=0;
+            /** @brief Draw the outline of this object onto the screen
+             *
+             * Drawing the object and the outline are separated so that you can
+             * draw several outlines of the objects in a group before drawing
+             * the objects themselves.
+             *
+             * @param camera The camera being used to draw onto the screen.  You
+             * should use this to get the x and y scale values and the camera's
+             * position/orientation.
+             */
+            virtual void draw_outline(const Camera& camera)=0;
+            /** @brief Set the outline color and thickness to use when drawing
+             * the outline of this object
+             *
+             * Use a value of 0.0 for the thickness to disable the outline.
+             *
+             * @param color The color of the outline.
+             * @param thickness The width, in ganim units, of the outline.
+             */
+            virtual void set_outline(const Color& color, double thickness)=0;
+            virtual void invalidate_outline()=0;
+
             /** @brief Set the color of this object, ignoring alpha. */
             virtual Object& set_color(Color color);
             /** @brief Set the color of this object, including alpha. */

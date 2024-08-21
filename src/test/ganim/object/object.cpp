@@ -42,6 +42,10 @@ namespace {
             std::unique_ptr<TestObject> anim_copy() const
                 {return std::make_unique<TestObject>(*this);}
             virtual Box get_true_bounding_box() const override {return Box();}
+            virtual void draw(const Camera&) override {}
+            virtual void draw_outline(const Camera&) override {}
+            virtual void set_outline(const Color&, double) override {}
+            virtual void invalidate_outline() override {}
     };
 }
 

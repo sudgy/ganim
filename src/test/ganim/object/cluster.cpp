@@ -12,18 +12,13 @@
 using namespace ganim;
 
 namespace {
-    class TestDrawable : public DrawableObject {
+    class TestObject : public SingleObject {
         public:
             virtual void draw(const Camera&) override
             {
                 ++draw_count;
             }
             int draw_count = 0;
-            virtual Box get_true_bounding_box() const override {return Box();}
-            Box bounding_box;
-    };
-    class TestObject : public Object {
-        public:
             virtual Box get_true_bounding_box() const override
                 {return true_bounding_box;}
             Box true_bounding_box;
@@ -74,7 +69,7 @@ TEST_CASE("Cluster adding", "[object]") {
 TEST_CASE("Cluster adding to scene", "[object]") {
     auto obj1 = TestObject();
     auto obj2 = TestObject();
-    auto draw = TestDrawable();
+    auto draw = TestObject();
     auto sub1 = Cluster(obj1, draw);
     auto sub2 = Cluster();
     auto test = Cluster(sub1, sub2, obj2);

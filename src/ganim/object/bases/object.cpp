@@ -74,6 +74,10 @@ std::unique_ptr<Object> Object::anim_copy() const
                 {return M_true_box;}
             virtual Box get_logical_bounding_box() const override
                 {return M_logical_box;}
+            virtual void draw(const Camera&) override {}
+            virtual void draw_outline(const Camera&) override {}
+            virtual void set_outline(const Color&, double) override {}
+            virtual void invalidate_outline() override {}
     };
     return std::make_unique<FakeObject>(
         *this,

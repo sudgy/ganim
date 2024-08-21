@@ -2,13 +2,13 @@
 
 #include "test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
-#include "ganim/object/bases/drawable_object.hpp"
+#include "ganim/object/bases/single_object.hpp"
 #include "ganim/object/shaders.hpp"
 
 using namespace ganim;
 
 namespace {
-    class TestDrawable : public DrawableObject {
+    class TestDrawable : public SingleObject {
         public:
             virtual void draw(const Camera&) override
             {

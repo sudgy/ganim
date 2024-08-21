@@ -1,4 +1,4 @@
-#include "group_base.hpp"
+#include "compound_object.hpp"
 
 #include <format>
 #include <ranges>
@@ -8,16 +8,20 @@
 
 using namespace ganim;
 
-void GroupBase::add(Object& object)
+void CompoundObject::add(Object& object)
 {
     M_subobjects.push_back(&object);
 }
 
-std::unique_ptr<GroupBase> GroupBase::anim_copy() const
+std::unique_ptr<CompoundObject> CompoundObject::anim_copy() const
 {
-    struct OwningGroup : public GroupBase {
-        OwningGroup(const GroupBase& other) : GroupBase(other) {}
+    struct OwningGroup : public CompoundObject {
+        OwningGroup(const CompoundObject& other) : CompoundObject(other) {}
         std::vector<std::unique_ptr<Object>> M_owned_subobjects;
+        virtual void draw(const Camera&) override {}
+        virtual void draw_outline(const Camera&) override {}
+        virtual void set_outline(const Color&, double) override {}
+        virtual void invalidate_outline() override {}
     };
     auto result = std::make_unique<OwningGroup>(*this);
     result->M_subobjects.clear();
@@ -33,7 +37,7 @@ std::unique_ptr<GroupBase> GroupBase::anim_copy() const
     return result;
 }
 
-void GroupBase::interpolate(const GroupBase& start, const GroupBase& end, double t)
+void CompoundObject::interpolate(const CompoundObject& start, const CompoundObject& end, double t)
 {
     if (size() != start.size()) {
         throw std::invalid_argument(std::format(
@@ -105,7 +109,7 @@ void GroupBase::interpolate(const GroupBase& start, const GroupBase& end, double
     M_propogate = true;
 }
 
-void GroupBase::interpolate(
+void CompoundObject::interpolate(
     const Transformable& start,
     const Transformable& end,
     double t
@@ -120,7 +124,7 @@ void GroupBase::interpolate(
     interpolate(*start_group, *end_group, t);
 }
 
-void GroupBase::interpolate(
+void CompoundObject::interpolate(
     const Object& start,
     const Object& end,
     double t
@@ -135,7 +139,7 @@ void GroupBase::interpolate(
     interpolate(*start_group, *end_group, t);
 }
 
-GroupBase& GroupBase::apply_rotor(const pga3::Even& rotor)
+CompoundObject& CompoundObject::apply_rotor(const pga3::Even& rotor)
 {
     Transformable::apply_rotor(rotor);
     if (M_propogate) {
@@ -146,7 +150,7 @@ GroupBase& GroupBase::apply_rotor(const pga3::Even& rotor)
     return *this;
 }
 
-GroupBase& GroupBase::set_color(Color color)
+CompoundObject& CompoundObject::set_color(Color color)
 {
     auto new_color = color;
     new_color.a = get_color().a;
@@ -159,7 +163,7 @@ GroupBase& GroupBase::set_color(Color color)
     return *this;
 }
 
-GroupBase& GroupBase::set_color_with_alpha(Color color)
+CompoundObject& CompoundObject::set_color_with_alpha(Color color)
 {
     Object::set_color_with_alpha(color);
     if (M_propogate) {
@@ -170,7 +174,7 @@ GroupBase& GroupBase::set_color_with_alpha(Color color)
     return *this;
 }
 
-GroupBase& GroupBase::set_opacity(double opacity)
+CompoundObject& CompoundObject::set_opacity(double opacity)
 {
     Object::set_opacity(opacity);
     if (M_propogate) {
@@ -181,7 +185,7 @@ GroupBase& GroupBase::set_opacity(double opacity)
     return *this;
 }
 
-GroupBase& GroupBase::scale(const pga3::Trivector& about_point, double amount)
+CompoundObject& CompoundObject::scale(const pga3::Trivector& about_point, double amount)
 {
     if (M_propogate) {
         M_propogate = false;
@@ -195,7 +199,7 @@ GroupBase& GroupBase::scale(const pga3::Trivector& about_point, double amount)
     return *this;
 }
 
-GroupBase& GroupBase::set_visible(bool visible)
+CompoundObject& CompoundObject::set_visible(bool visible)
 {
     Object::set_visible(visible);
     if (M_propogate) {
@@ -206,7 +210,7 @@ GroupBase& GroupBase::set_visible(bool visible)
     return *this;
 }
 
-void GroupBase::set_draw_fraction(double value)
+void CompoundObject::set_draw_fraction(double value)
 {
     Object::set_draw_fraction(value);
     const auto s = size();
@@ -218,7 +222,7 @@ void GroupBase::set_draw_fraction(double value)
     }
 }
 
-void GroupBase::set_creating(bool creating)
+void CompoundObject::set_creating(bool creating)
 {
     Object::set_creating(creating);
     if (M_propogate) {
@@ -228,7 +232,7 @@ void GroupBase::set_creating(bool creating)
     }
 }
 
-void GroupBase::set_noise_creating(double noise_creating)
+void CompoundObject::set_noise_creating(double noise_creating)
 {
     Object::set_noise_creating(noise_creating);
     if (M_propogate) {
@@ -238,7 +242,7 @@ void GroupBase::set_noise_creating(double noise_creating)
     }
 }
 
-Box GroupBase::get_true_bounding_box() const
+Box CompoundObject::get_true_bounding_box() const
 {
     if (size() == 0) return Box();
     auto boxes = M_subobjects
@@ -251,7 +255,7 @@ Box GroupBase::get_true_bounding_box() const
     );
 }
 
-Box GroupBase::get_logical_bounding_box() const
+Box CompoundObject::get_logical_bounding_box() const
 {
     if (size() == 0) return Box();
     auto boxes = M_subobjects
@@ -264,14 +268,14 @@ Box GroupBase::get_logical_bounding_box() const
     );
 }
 
-void GroupBase::set_draw_subobject_ratio(double ratio)
+void CompoundObject::set_draw_subobject_ratio(double ratio)
 {
     if (ratio < 0 or ratio > 1) throw std::invalid_argument(
             "The draw subobject ratio must be between zero and 1.");
     M_ratio = ratio;
 }
 
-Group GroupBase::range(int i1, int i2)
+Group CompoundObject::range(int i1, int i2)
 {
     auto result = Group();
     if (i1 < 0) i1 = size() - i1;
