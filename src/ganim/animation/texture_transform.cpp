@@ -69,7 +69,7 @@ void main()
     if (color1.a > 0 && color2.a > 0) {
         color1 /= sqrt(color1.a);
         color2 /= sqrt(color2.a);
-        out_color = color1 + color2;
+        out_color = mix(color1, color2, t);
     }
     else if (color1.a > 0) {
         color1 /= sqrt(color1.a);
@@ -94,7 +94,8 @@ void main()
         return result;
     }
     struct StaticPart : public Animatable {
-        Object* M_tracked_object = nullptr;
+        std::optional<MaybeOwningRef<Object>> M_tracked_object;
+        Object& tracked_object() {return **M_tracked_object;}
         gl::Texture M_object_texture = 0;
         gl::Texture M_distance_transform = 0;
         Box M_bounding_box;
@@ -112,11 +113,11 @@ void main()
         }
         void generate_textures(const Camera& camera)
         {
-            auto rotor = M_tracked_object->get_rotor();
-            auto scale = M_tracked_object->get_scale();
-            M_tracked_object->apply_rotor(~rotor);
-            M_tracked_object->scale(1/scale);
-            M_bounding_box = M_tracked_object->get_true_bounding_box();
+            auto rotor = tracked_object().get_rotor();
+            auto scale = tracked_object().get_scale();
+            tracked_object().apply_rotor(~rotor);
+            tracked_object().scale(1/scale);
+            M_bounding_box = tracked_object().get_true_bounding_box();
             using namespace vga3;
             const auto x1 = M_bounding_box.p1.blade_project<e1>();
             const auto x2 = M_bounding_box.p2.blade_project<e1>();
@@ -126,8 +127,8 @@ void main()
             const auto z2 = M_bounding_box.p2.blade_project<e3>();
             {
                 if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
-                    M_tracked_object->apply_rotor(rotor);
-                    M_tracked_object->scale(scale);
+                    tracked_object().apply_rotor(rotor);
+                    tracked_object().scale(scale);
                     throw std::runtime_error("A texture transform was attempted"
                             " on an object that seems to have 3D extent.");
                 }
@@ -171,7 +172,7 @@ void main()
             auto fake_camera = Camera(20, size, -size);
             fake_camera.shift((x1 + x2)/2*e1 + (y1 + y2)/2*e2);
 
-            M_tracked_object->draw(fake_camera);
+            tracked_object().draw(fake_camera);
 
             M_distance_transform = distance_transform(
                 alpha_threshold(
@@ -204,8 +205,8 @@ void main()
                 current_viewport[0], current_viewport[1],
                 current_viewport[2], current_viewport[3]
             );
-            M_tracked_object->scale(scale);
-            M_tracked_object->apply_rotor(rotor);
+            tracked_object().scale(scale);
+            tracked_object().apply_rotor(rotor);
         }
     };
     struct TransformingPart : public SingleObject {
@@ -235,7 +236,7 @@ void main()
             double t
         )
         {
-            interpolate(*M_from->M_tracked_object, *M_to->M_tracked_object, t);
+            interpolate(**M_from->M_tracked_object, **M_to->M_tracked_object, t);
             M_t = t;
         }
 
@@ -459,8 +460,8 @@ void main()
         gl::VertexArray M_vertex_array;
         gl::Buffer M_vertex_buffer;
         gl::Buffer M_element_buffer;
-        float M_scale1 = 0;
-        float M_scale2 = 0;
+        float M_scale1 = 5;
+        float M_scale2 = 5;
     };
 }
 
@@ -472,15 +473,15 @@ void ganim::texture_transform(
 )
 {
     from->set_visible(false);
-    auto temp_object = std::unique_ptr<TransformingPart>();
+    auto temp_object = std::make_unique<TransformingPart>();
     temp_object->set_visible(true);
     scene.add(*temp_object);
 
     auto anim = Animation(scene, MaybeOwningRef(*temp_object), args);
     auto& from_part = anim.get_starting_object();
     auto& to_part = anim.get_ending_object();
-    from_part.M_tracked_object = &*from;
-    to_part.M_tracked_object = &*to;
+    from_part.M_tracked_object = std::move(from);
+    to_part.M_tracked_object = std::move(to);
     temp_object->M_from = &from_part;
     temp_object->M_to = &to_part;
 

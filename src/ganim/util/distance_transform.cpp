@@ -172,5 +172,14 @@ gl::Texture ganim::distance_transform(
     glDispatchCompute(size / 8, size / 8, 1);
     glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
+    glBindTexture(GL_TEXTURE_2D, result);
+    glTexParameteri(
+        GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR
+    );
+    glTexParameteri(
+        GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
+    );
+    glGenerateMipmap(GL_TEXTURE_2D);
+
     return result;
 }

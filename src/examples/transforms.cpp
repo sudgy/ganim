@@ -8,12 +8,13 @@ void transforms()
     auto scene = Scene("transforms.mp4", 2560, 1440, 16, 9, 60);
 
     //auto text1 = Text("1");
-    //auto text2 = Text("2");
+    //auto text2 = Text("1");
     //scene.add(text1, text2);
     //text1.set_visible(true);
     //scene.wait(1);
     //texture_transform(scene, text1, text2);
     //scene.wait(2);
+    //return;
 
     auto text = std::vector<Text>();
     for (int i = 0; i < 11; ++i) {
