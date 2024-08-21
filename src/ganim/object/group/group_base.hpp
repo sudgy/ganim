@@ -9,6 +9,7 @@
 
 namespace ganim {
 
+class Group;
 /** @brief The base class for objects that contains other objects
  *
  * There are two kinds of groups: @ref Group, and @ref Cluster.  The main
@@ -184,6 +185,8 @@ class GroupBase : public Object {
         int size() const {return static_cast<int>(M_subobjects.size());}
         Object& operator[](int index) {return *M_subobjects[index];}
         const Object& operator[](int index) const {return *M_subobjects[index];}
+
+        Group range(int i1, int i2);
 
     private:
         std::vector<Object*> M_subobjects;

@@ -4,6 +4,8 @@
 #include <ranges>
 #include <numeric>
 
+#include "group.hpp"
+
 using namespace ganim;
 
 void GroupBase::add(Object& object)
@@ -267,4 +269,19 @@ void GroupBase::set_draw_subobject_ratio(double ratio)
     if (ratio < 0 or ratio > 1) throw std::invalid_argument(
             "The draw subobject ratio must be between zero and 1.");
     M_ratio = ratio;
+}
+
+Group GroupBase::range(int i1, int i2)
+{
+    auto result = Group();
+    if (i1 < 0) i1 = size() - i1;
+    if (i2 < 0) i2 = size() - i2;
+    if (i2 >= size()) {
+        throw std::out_of_range(
+                "Ending index too high when finding a range of a group");
+    }
+    for (int i = i1; i < i2; ++i) {
+        result.add((*this)[i]);
+    }
+    return result;
 }
