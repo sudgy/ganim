@@ -396,6 +396,8 @@ void main()
             }
             M_scale1 *= 1.1;
             M_scale2 *= 1.1;
+            if (M_scale1 == 0) M_scale1 = 1;
+            if (M_scale2 == 0) M_scale2 = 1;
         }
         virtual Box get_true_bounding_box() const override
         {
@@ -460,8 +462,8 @@ void main()
         gl::VertexArray M_vertex_array;
         gl::Buffer M_vertex_buffer;
         gl::Buffer M_element_buffer;
-        float M_scale1 = 5;
-        float M_scale2 = 5;
+        float M_scale1 = 0;
+        float M_scale2 = 0;
     };
 }
 
