@@ -9,6 +9,8 @@ namespace {
     struct TestObject {
         ~TestObject() {++destroyed_count;}
     };
+    struct A {};
+    struct B : A {};
 }
 
 TEST_CASE("MaybeOwningRef simple", "[ganim]") {
@@ -97,4 +99,17 @@ TEST_CASE("MaybeOwningRef move assignment", "[ganim]") {
         REQUIRE(destroyed_count == 2);
     }
     REQUIRE(destroyed_count == 3);
+}
+
+TEST_CASE("MaybeOwningRef converting", "[ganim]") {
+    auto test1 = MaybeOwningRef(B());
+    auto test2 = MaybeOwningRef<A>(std::move(test1));
+    REQUIRE(&*test1 == &*test2);
+    REQUIRE(!test1.is_owning());
+    REQUIRE(test2.is_owning());
+    auto test3 = MaybeOwningRef(B());
+    test2 = std::move(test3);
+    REQUIRE(&*test2 == &*test3);
+    REQUIRE(test2.is_owning());
+    REQUIRE(!test3.is_owning());
 }
