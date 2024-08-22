@@ -141,6 +141,14 @@ void CompoundObject::interpolate(
     interpolate(*start_group, *end_group, t);
 }
 
+void CompoundObject::set_fps(int fps)
+{
+    Animatable::set_fps(fps);
+    for (auto obj : M_subobjects) {
+        obj->set_fps(fps);
+    }
+}
+
 CompoundObject& CompoundObject::apply_rotor(const pga3::Even& rotor)
 {
     Transformable::apply_rotor(rotor);

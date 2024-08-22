@@ -151,6 +151,7 @@ class CompoundObject : public Object {
             {Object::scale(amount); return *this;}
         CompoundObject& scale(const pointlike auto& about_point, double amount)
             {Object::scale(about_point, amount); return *this;}
+        virtual void set_fps(int fps) override;
         virtual CompoundObject& apply_rotor(const pga3::Even& rotor) override;
         virtual CompoundObject& set_color(Color color) override;
         virtual CompoundObject& set_color_with_alpha(Color color) override;

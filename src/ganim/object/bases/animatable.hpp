@@ -32,7 +32,7 @@ namespace ganim {
              * scene, so in practice this means that you must add an object to a
              * scene before animating it.
              */
-            void set_fps(int fps);
+            virtual void set_fps(int fps);
             /** @brief Get the fps that this object will use when animating */
             int get_fps() const {return M_fps;}
             /** @brief Returns this as a @ref CompoundObject, if possible.

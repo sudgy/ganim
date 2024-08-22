@@ -5,8 +5,17 @@
 
 #include "ganim/object/group/group.hpp"
 #include "ganim/object/shape.hpp"
+#include "ganim/animation/animation.hpp"
 
 using namespace ganim;
+
+namespace {
+    class TestObject : public SingleObject {
+        public:
+            virtual void draw(const Camera&) override {}
+            virtual Box get_true_bounding_box() const override {return Box();}
+    };
+}
 
 TEST_CASE("Group drawing", "[object]") {
     auto scene = TestScene(4, 4, 4, 4, 4);
@@ -40,4 +49,12 @@ TEST_CASE("Group drawing", "[object]") {
     REQUIRE(scene.get_pixel(0, 1, 0) == ApproxColor("408000"));
     REQUIRE(scene.get_pixel(0, 2, 0) == ApproxColor("004080"));
     REQUIRE(scene.get_pixel(0, 3, 0) == ApproxColor("000080"));
+}
+
+TEST_CASE("Group animating subobjects", "[object]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto obj = TestObject();
+    auto test = Group(obj);
+    scene.add(test);
+    animate(scene, obj); // Verify that the object got its fps set
 }
