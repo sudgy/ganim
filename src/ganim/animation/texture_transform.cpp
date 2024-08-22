@@ -6,6 +6,7 @@
 #include "ganim/animation/animation.hpp"
 #include "ganim/object/bases/single_object.hpp"
 #include "ganim/gl/gl.hpp"
+#include "ganim/math.hpp"
 
 #include "ganim/util/alpha_threshold.hpp"
 #include "ganim/util/distance_transform.hpp"
@@ -488,7 +489,7 @@ void ganim::texture_transform(
     SceneBase& scene,
     MaybeOwningRef<Object> from,
     MaybeOwningRef<Object> to,
-    AnimationArgs args
+    TransformAnimationArgs args
 )
 {
     from->set_visible(false);
@@ -496,7 +497,11 @@ void ganim::texture_transform(
     temp_object->set_visible(true);
     scene.add(*temp_object);
 
-    auto anim = Animation(scene, MaybeOwningRef(*temp_object), args);
+    auto anim = Animation(
+        scene,
+        MaybeOwningRef(*temp_object),
+        {args.duration, args.rate_function}
+    );
     auto& from_part = anim.get_starting_object();
     auto& to_part = anim.get_ending_object();
     from_part.M_tracked_object = std::move(from);
@@ -511,6 +516,9 @@ void ganim::texture_transform(
         scene.remove(object);
     });
     temp_object->add_updater(std::move(anim), true);
+    temp_object->add_updater([&object = *temp_object, direction = args.direction]{
+        object.shift(std::sin(object.M_t * τ/2)*direction);
+    });
     scene.add_updater([object = std::move(temp_object)]() mutable {
         if (object->M_finished) {
             object.reset();
