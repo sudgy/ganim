@@ -64,6 +64,7 @@ void main()
 
 void SingleObject::draw_outline(const Camera& camera)
 {
+    if (get_scale() == 0.0) return;
     if (M_outline_thickness == 0.0) return;
     if (!M_outline_texture or M_always_invalidate_outline) {
         create_outline(camera);
