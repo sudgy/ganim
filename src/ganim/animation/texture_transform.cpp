@@ -47,7 +47,6 @@ R"(
 in vec2 out_tex_coord1;
 in vec2 out_tex_coord2;
 
-uniform vec4 color;
 uniform sampler2D object1;
 uniform sampler2D distance_transform1;
 uniform sampler2D object2;
@@ -82,7 +81,6 @@ void main()
     else {
         out_color = vec4(0, 0, 0, 0);
     }
-    out_color *= color;
 }
 )"
         );
@@ -285,9 +283,6 @@ void main()
             shader.set_rotor_uniform("view", ~camera.get_rotor());
             shader.set_rotor_uniform("model", get_rotor());
             glUniform1f(shader.get_uniform("scale"), get_scale());
-            glUniform4f(shader.get_uniform("color"),
-                    get_color().r / 255.0, get_color().g / 255.0,
-                    get_color().b / 255.0, get_color().a / 255.0);
 
             glBindVertexArray(M_vertex_array);
 
