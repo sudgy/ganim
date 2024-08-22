@@ -8,7 +8,7 @@ void transforms()
     auto scene = Scene("transforms.mp4", 2560, 1440, 16, 9, 60);
 
     //auto text1 = Text("1");
-    //auto text2 = Text("1");
+    //auto text2 = Text("2");
     //scene.add(text1, text2);
     //text1.set_visible(true);
     //scene.wait(1);

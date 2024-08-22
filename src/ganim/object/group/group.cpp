@@ -5,19 +5,22 @@ using namespace ganim;
 void Group::draw(const Camera& camera)
 {
     for (auto drawable : M_subobjects) {
-        drawable->draw(camera);
+        if (drawable->is_visible()) drawable->draw(camera);
     }
 }
 
 bool Group::is_visible() const
 {
-    return Object::is_visible();
+    for (auto drawable : M_subobjects) {
+        if (drawable->is_visible()) return true;
+    }
+    return false;
 }
 
 void Group::draw_outline(const Camera& camera)
 {
     for (auto drawable : M_subobjects) {
-        drawable->draw_outline(camera);
+        if (drawable->is_visible()) drawable->draw_outline(camera);
     }
 }
 

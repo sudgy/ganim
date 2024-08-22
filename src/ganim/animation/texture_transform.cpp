@@ -175,7 +175,7 @@ void main()
             M_distance_transform = distance_transform(
                 alpha_threshold(
                     M_object_texture,
-                    1,
+                    0.01,
                     M_texture_size,
                     M_texture_size
                 ),
