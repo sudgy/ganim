@@ -416,7 +416,7 @@ void main()
         virtual Box get_true_bounding_box() const override
         {
             const auto& box1 = M_from->M_bounding_box;
-            const auto& box2 = M_from->M_bounding_box;
+            const auto& box2 = M_to->M_bounding_box;
             auto box = Box(
                 box1.p1 * (1 - M_t) + box2.p1 * M_t,
                 box1.p2 * (1 - M_t) + box2.p2 * M_t
