@@ -7,6 +7,113 @@
 using namespace ganim;
 using namespace vga3;
 
+vga3::Vector Box::get_center() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto y1 = p1.blade_project<e2>();
+    auto z1 = p1.blade_project<e3>();
+    auto x2 = p2.blade_project<e1>();
+    auto y2 = p2.blade_project<e2>();
+    auto z2 = p2.blade_project<e3>();
+    return {(x1 + x2) / 2, (y1 + y2) / 2, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_left() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto y1 = p1.blade_project<e2>();
+    auto z1 = p1.blade_project<e3>();
+    auto y2 = p2.blade_project<e2>();
+    auto z2 = p2.blade_project<e3>();
+    return {x1, (y1 + y2) / 2, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_right() const
+{
+    auto y1 = p1.blade_project<e2>();
+    auto z1 = p1.blade_project<e3>();
+    auto x2 = p2.blade_project<e1>();
+    auto y2 = p2.blade_project<e2>();
+    auto z2 = p2.blade_project<e3>();
+    return {x2, (y1 + y2) / 2, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_up() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto z1 = p1.blade_project<e3>();
+    auto x2 = p2.blade_project<e1>();
+    auto y2 = p2.blade_project<e2>();
+    auto z2 = p2.blade_project<e3>();
+    return {(x1 + x2) / 2, y2, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_down() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto y1 = p1.blade_project<e2>();
+    auto z1 = p1.blade_project<e3>();
+    auto x2 = p2.blade_project<e1>();
+    auto z2 = p2.blade_project<e3>();
+    return {(x1 + x2) / 2, y1, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_out() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto y1 = p1.blade_project<e2>();
+    auto x2 = p2.blade_project<e1>();
+    auto y2 = p2.blade_project<e2>();
+    auto z2 = p2.blade_project<e3>();
+    return {(x1 + x2) / 2, (y1 + y2) / 2, z2};
+}
+
+vga3::Vector Box::get_in() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto y1 = p1.blade_project<e2>();
+    auto z1 = p1.blade_project<e3>();
+    auto x2 = p2.blade_project<e1>();
+    auto y2 = p2.blade_project<e2>();
+    return {(x1 + x2) / 2, (y1 + y2) / 2, z1};
+}
+
+vga3::Vector Box::get_upper_left() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto z1 = p1.blade_project<e3>();
+    auto y2 = p2.blade_project<e2>();
+    auto z2 = p2.blade_project<e3>();
+    return {x1, y2, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_upper_right() const
+{
+    auto z1 = p1.blade_project<e3>();
+    auto x2 = p2.blade_project<e1>();
+    auto y2 = p2.blade_project<e2>();
+    auto z2 = p2.blade_project<e3>();
+    return {x2, y2, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_lower_left() const
+{
+    auto x1 = p1.blade_project<e1>();
+    auto y1 = p1.blade_project<e2>();
+    auto z1 = p1.blade_project<e3>();
+    auto z2 = p2.blade_project<e3>();
+    return {x1, y1, (z1 + z2) / 2};
+}
+
+vga3::Vector Box::get_lower_right() const
+{
+    auto y1 = p1.blade_project<e2>();
+    auto z1 = p1.blade_project<e3>();
+    auto x2 = p2.blade_project<e1>();
+    auto z2 = p2.blade_project<e3>();
+    return {x2, y1, (z1 + z2) / 2};
+}
+
 Box ganim::merge_boxes(const Box& box1, const Box& box2)
 {
     return Box(

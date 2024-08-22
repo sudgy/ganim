@@ -71,3 +71,32 @@ TEST_CASE("transform_box", "[object]") {
     REQUIRE_THAT(res9.p1, GAEquals(      - 2*e2));
     REQUIRE_THAT(res9.p2, GAEquals( 4*e1 + 2*e2));
 }
+
+TEST_CASE("Box sides", "[object]") {
+    const auto box = Box({1, 2, 3}, {4, 5, 6});
+
+    const auto center = box.get_center();
+    const auto left = box.get_left();
+    const auto right = box.get_right();
+    const auto up = box.get_up();
+    const auto down = box.get_down();
+    const auto out = box.get_out();
+    const auto in = box.get_in();
+    const auto ur = box.get_upper_right();
+    const auto ul = box.get_upper_left();
+    const auto lr = box.get_lower_right();
+    const auto ll = box.get_lower_left();
+
+    using namespace vga3;
+    REQUIRE_THAT(center, GAEquals(2.5*e1 + 3.5*e2 + 4.5*e3));
+    REQUIRE_THAT(left, GAEquals(e1 + 3.5*e2 + 4.5*e3));
+    REQUIRE_THAT(right, GAEquals(4*e1 + 3.5*e2 + 4.5*e3));
+    REQUIRE_THAT(up, GAEquals(2.5*e1 + 5*e2 + 4.5*e3));
+    REQUIRE_THAT(down, GAEquals(2.5*e1 + 2*e2 + 4.5*e3));
+    REQUIRE_THAT(out, GAEquals(2.5*e1 + 3.5*e2 + 6*e3));
+    REQUIRE_THAT(in, GAEquals(2.5*e1 + 3.5*e2 + 3*e3));
+    REQUIRE_THAT(ur, GAEquals(4*e1 + 5*e2 + 4.5*e3));
+    REQUIRE_THAT(ul, GAEquals(1*e1 + 5*e2 + 4.5*e3));
+    REQUIRE_THAT(lr, GAEquals(4*e1 + 2*e2 + 4.5*e3));
+    REQUIRE_THAT(ll, GAEquals(1*e1 + 2*e2 + 4.5*e3));
+}
