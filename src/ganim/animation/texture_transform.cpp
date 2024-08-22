@@ -234,8 +234,21 @@ void main()
             double t
         )
         {
-            interpolate(**M_from->M_tracked_object, **M_to->M_tracked_object, t);
             M_t = t;
+            auto& from = **M_from->M_tracked_object;
+            auto& to = **M_to->M_tracked_object;
+            interpolate(from, to, t);
+            auto c1 = from.get_outline_color();
+            auto c2 = to.get_outline_color();
+            auto t1 = from.get_outline_thickness();
+            auto t2 = from.get_outline_thickness();
+            auto outline_color = Color(
+                static_cast<unsigned char>(c1.r * (1 - t) + c2.r * t),
+                static_cast<unsigned char>(c1.g * (1 - t) + c2.g * t),
+                static_cast<unsigned char>(c1.b * (1 - t) + c2.b * t),
+                static_cast<unsigned char>(c1.a * (1 - t) + c2.a * t)
+            );
+            set_outline(outline_color, t1 * (1 - t) + t2 * t);
         }
 
         virtual void draw(const Camera& camera) override
@@ -321,6 +334,12 @@ void main()
 
             glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
             glBindVertexArray(0);
+        }
+        virtual void draw_outline(const Camera& camera) override
+        {
+            M_from->get_textures(camera);
+            M_to->get_textures(camera);
+            SingleObject::draw_outline(camera);
         }
         void get_scales(unsigned from, unsigned to)
         {
