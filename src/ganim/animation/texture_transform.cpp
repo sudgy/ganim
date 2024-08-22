@@ -68,7 +68,10 @@ void main()
     if (color1.a > 0 && color2.a > 0) {
         color1 /= sqrt(color1.a);
         color2 /= sqrt(color2.a);
-        out_color = mix(color1, color2, t);
+        out_color = vec4(
+            mix(color1.rgb, color2.rgb, t),
+            max(color1.a, color2.a)
+        );
     }
     else if (color1.a > 0) {
         color1 /= sqrt(color1.a);
