@@ -114,9 +114,7 @@ class Animation {
             M_scene(scene),
             M_owning(object.is_owning())
         {
-            if (M_owning) {
-                scene.add_for_animation(std::move(object));
-            }
+            scene.add_for_animation(std::move(object));
             if constexpr (std::convertible_to<
                     std::unique_ptr<CompoundObject>, std::unique_ptr<copy_type>>)
             {

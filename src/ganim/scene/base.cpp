@@ -197,6 +197,10 @@ void SceneBase::remove_group(CompoundObject& object)
 
 void SceneBase::add_for_animation(MaybeOwningRef<Animatable> object)
 {
+    if (&*object == &M_camera) return;
+    for (auto old_object : M_objects) {
+        if (old_object == &*object) return;
+    }
     object->set_fps(M_fps);
     M_ghost_animating_objects.push_back(std::move(object));
 }

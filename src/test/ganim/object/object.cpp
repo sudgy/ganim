@@ -67,7 +67,7 @@ TEST_CASE("Object color", "[object]") {
 
 TEST_CASE("Object animating color", "[object]") {
     auto test = TestObject();
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 4);
     test.set_fps(4);
     animate(scene, test, {.rate_function = [](double t){return t;}})
         .set_color("000000");
@@ -159,7 +159,7 @@ TEST_CASE("Object scaling", "[object]") {
 TEST_CASE("Object animating scale", "[object]") {
     using namespace pga3;
     auto test = TestObject();
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 4);
     test.set_fps(4);
     test.shift(e1);
     auto get_p = [&](pga3::Trivector p){

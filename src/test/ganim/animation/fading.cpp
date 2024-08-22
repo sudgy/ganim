@@ -21,7 +21,7 @@ namespace {
 
 TEST_CASE("Fading", "[animation]") {
     auto test = TestObject();
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 4);
     test.set_fps(4);
     fade_in(scene, test);
     REQUIRE(test.is_visible());

@@ -142,7 +142,7 @@ TEST_CASE("Transformable animate", "[object]") {
     const auto& r = test.get_rotor();
     const auto& r2 = test.last_applied_rotor;
     test.set_fps(4);
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 4);
     animate(scene, test, {.rate_function = [](double x){return x*x;}})
         .rotate(e12, τ/2);
     REQUIRE_THAT(r, GAEquals(1));
@@ -173,7 +173,7 @@ TEST_CASE("Transformable non-commuting rotors", "[object]") {
     auto test = TestTransformable();
     test.set_fps(2);
     test.shift(e1);
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 2);
     animate(scene, test).rotate(e12, τ/2);
     REQUIRE_THAT(test.get_center(), GAEquals((e1 + e0).dual(), 1e-5));
     test.update();

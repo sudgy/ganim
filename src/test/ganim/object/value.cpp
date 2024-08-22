@@ -9,7 +9,7 @@
 using namespace ganim;
 
 TEST_CASE("Value tracker double", "[object]") {
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 4);
     auto val = Value();
     REQUIRE(val.get_value() == 0);
     REQUIRE(val() == 0);
@@ -57,7 +57,7 @@ TEST_CASE("Value tracker double", "[object]") {
 TEST_CASE("Value tracker vector", "[object]") {
     using namespace vga2;
     auto val = Value<Vector>();
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene = TestScene(1, 1, 1, 1, 4);
     REQUIRE(val.get_value() == 0);
     REQUIRE(val() == 0);
     REQUIRE(val == 0);

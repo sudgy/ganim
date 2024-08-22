@@ -52,8 +52,7 @@ static_assert(std::is_same_v<
 
 TEST_CASE("Animation basics", "[animation]") {
     auto test = TestAnimatable();
-    auto scene = TestScene(1, 1, 1, 1, 1);
-    REQUIRE_THROWS(animate(scene, test));
+    auto scene = TestScene(1, 1, 1, 1, 2);
     test.set_fps(2);
     auto anim = Animation(
         scene,
@@ -132,11 +131,12 @@ TEST_CASE("Animation with rvalues", "[animation]") {
 TEST_CASE("Animatable different framerates", "[animation]") {
     auto test1 = TestAnimatable();
     auto test2 = TestAnimatable();
-    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto scene1 = TestScene(1, 1, 1, 1, 3);
+    auto scene2 = TestScene(1, 1, 1, 1, 6);
     test1.set_fps(3);
     test2.set_fps(6);
-    animate(scene, test1);
-    animate(scene, test2);
+    animate(scene1, test1);
+    animate(scene2, test2);
     test1.update();
     test2.update();
     test2.update();
