@@ -2,7 +2,7 @@
 #define GANIM_OBJECT_TEXT_TEX_HPP
 
 #include "ganim/object/texture_shape.hpp"
-#include "ganim/object/group/group.hpp"
+#include "ganim/object/bases/group.hpp"
 #include "dvi_reader.hpp"
 
 namespace ganim {

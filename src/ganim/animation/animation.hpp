@@ -12,7 +12,7 @@
 #include <iostream>
 
 #include "ganim/object/bases/animatable.hpp"
-#include "ganim/object/group/compound_object.hpp"
+#include "ganim/object/bases/compound_object.hpp"
 #include "ganim/scene/base.hpp"
 
 #include "ganim/rate_functions.hpp"

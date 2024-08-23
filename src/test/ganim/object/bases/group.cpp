@@ -3,7 +3,7 @@
 #include "test/ganim/scene/test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
 
-#include "ganim/object/group/group.hpp"
+#include "ganim/object/bases/group.hpp"
 #include "ganim/object/shape.hpp"
 #include "ganim/animation/animation.hpp"
 

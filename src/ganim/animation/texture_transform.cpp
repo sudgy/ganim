@@ -6,6 +6,7 @@
 #include "ganim/animation/animation.hpp"
 #include "ganim/object/bases/single_object.hpp"
 #include "ganim/gl/gl.hpp"
+#include "ganim/object/shaders.hpp"
 #include "ganim/math.hpp"
 
 #include "ganim/util/alpha_threshold.hpp"
