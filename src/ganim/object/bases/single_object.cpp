@@ -64,7 +64,7 @@ void main()
 
 void SingleObject::draw_outline(const Camera& camera)
 {
-    if (get_scale() == 0.0) return;
+    if (get_scale() == 0) return;
     if (M_outline_thickness == 0.0) return;
     if (!M_outline_texture or M_always_invalidate_outline) {
         create_outline(camera);
@@ -160,7 +160,7 @@ void SingleObject::create_outline(const Camera& camera)
     const auto camera_width = camera.get_starting_width();
     const auto gtp = current_viewport[2] / camera_width;
     const auto texture_size
-        = std::bit_ceil(static_cast<unsigned>(size_base * gtp));
+        = std::max(std::bit_ceil(static_cast<unsigned>(size_base * gtp)), 8U);
     const auto size = texture_size / gtp;
 
     auto framebuffer = gl::Framebuffer();
