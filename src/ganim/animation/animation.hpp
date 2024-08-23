@@ -156,6 +156,7 @@ class Animation {
                 M_animation_time = 0;
                 M_scene.add_updater([&object = M_object, &scene = M_scene]{
                     scene.remove_for_animation(object);
+                    return false;
                 });
                 if (M_at_end) M_at_end();
                 return false;
