@@ -290,7 +290,7 @@ Group CompoundObject::range(int i1, int i2)
     auto result = Group();
     if (i1 < 0) i1 = size() - i1;
     if (i2 < 0) i2 = size() - i2;
-    if (i2 >= size()) {
+    if (i2 > size()) {
         throw std::out_of_range(
                 "Ending index too high when finding a range of a group");
     }
