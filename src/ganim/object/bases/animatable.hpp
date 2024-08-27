@@ -11,7 +11,7 @@
 #include "updatable.hpp"
 
 namespace ganim {
-    class CompoundObject;
+    class Group;
     /** @brief Represents any kind of thing that can be animated
      *
      * This class doesn't actually implement any animations itself.  It is
@@ -35,13 +35,13 @@ namespace ganim {
             virtual void set_fps(int fps);
             /** @brief Get the fps that this object will use when animating */
             int get_fps() const {return M_fps;}
-            /** @brief Returns this as a @ref CompoundObject, if possible.
+            /** @brief Returns this as a @ref Group, if possible.
              *
              * Groups often need to be handled specially, and this function
              * should be faster than a dynamic cast.
              */
-            virtual CompoundObject* as_group() {return nullptr;}
-            virtual const CompoundObject* as_group() const {return nullptr;}
+            virtual Group* as_group() {return nullptr;}
+            virtual const Group* as_group() const {return nullptr;}
 
         private:
             int M_fps = -1;

@@ -165,7 +165,7 @@ void SceneBase::add_drawable(Object& object)
     }
 }
 
-void SceneBase::add_group(CompoundObject& object)
+void SceneBase::add_group(Group& object)
 {
     for (auto* obj : object) {
         add(*obj);
@@ -188,7 +188,7 @@ void SceneBase::remove_drawable(Object& object)
     }
 }
 
-void SceneBase::remove_group(CompoundObject& object)
+void SceneBase::remove_group(Group& object)
 {
     for (auto* obj : object) {
         remove(*obj);

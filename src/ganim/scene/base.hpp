@@ -14,7 +14,7 @@
 
 #include "camera.hpp"
 
-#include "ganim/object/bases/cluster.hpp"
+#include "ganim/object/bases/group.hpp"
 
 namespace ganim {
     /** @brief The base class for scenes, which contains most of the scene logic
@@ -113,14 +113,18 @@ namespace ganim {
                 if constexpr (std::convertible_to<T&, Animatable&>) {
                     add_animatable(object);
                 }
-                if constexpr (std::convertible_to<T&, Cluster>) {
-                    add_group(object);
-                    return;
+                if constexpr (std::convertible_to<T&, Group&>) {
+                    if (!object.drawing_together()) {
+                        add_group(object);
+                        return;
+                    }
                 }
                 else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Cluster*>(&object)) {
-                        add_group(*p);
-                        return;
+                    if (auto* p = dynamic_cast<Group*>(&object)) {
+                        if (!p->drawing_together()) {
+                            add_group(*p);
+                            return;
+                        }
                     }
                 }
                 if constexpr (std::convertible_to<T&, Object&>) {
@@ -159,12 +163,12 @@ namespace ganim {
                 if constexpr (std::convertible_to<T&, Animatable&>) {
                     remove_animatable(object);
                 }
-                if constexpr (std::convertible_to<T&, Cluster>) {
+                if constexpr (std::convertible_to<T&, Group&>) {
                     remove_group(object);
                     return;
                 }
                 else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Cluster*>(&object)) {
+                    if (auto* p = dynamic_cast<Group*>(&object)) {
                         remove(*p);
                         return;
                     }
@@ -206,10 +210,10 @@ namespace ganim {
 
             void add_animatable(Animatable& object);
             void add_drawable(Object& object);
-            void add_group(CompoundObject& object);
+            void add_group(Group& object);
             void remove_animatable(Animatable& object);
             void remove_drawable(Object& object);
-            void remove_group(CompoundObject& object);
+            void remove_group(Group& object);
 
             gl::Framebuffer M_framebuffer;
             gl::Texture M_framebuffer_texture;
