@@ -491,6 +491,12 @@ void ganim::texture_transform(
     TransformAnimationArgs args
 )
 {
+    if (from->is_animating()) {
+        throw std::invalid_argument(
+            "Attempting to animate an object that is already being animated."
+        );
+    }
+    to->set_animating(true);
     from->set_visible(false);
     auto temp_object = std::make_unique<TransformingPart>();
     temp_object->set_visible(true);
@@ -512,6 +518,7 @@ void ganim::texture_transform(
         object.M_finished = true;
         object.set_visible(false);
         to.set_visible(true);
+        to.set_animating(false);
         scene.remove(object);
     });
     temp_object->add_updater(std::move(anim), true);

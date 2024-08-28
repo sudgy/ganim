@@ -354,3 +354,58 @@ TEST_CASE("texture_transform multiple times to the same object", "[animation]")
         }
     }
 }
+
+TEST_CASE(
+    "texture_transform objects before they finished transforming/animating",
+    "[animation]"
+)
+{
+    auto scene = TestScene(4, 4, 4, 4, 2);
+    auto shape1 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape3 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape4 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape5 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    scene.add(shape1, shape2, shape3, shape4, shape5);
+    texture_transform(scene, shape1, shape2);
+    REQUIRE_THROWS(texture_transform(scene, shape2, shape3));
+    REQUIRE_THROWS(animate(scene, shape2));
+    animate(scene, shape4);
+    REQUIRE_THROWS(texture_transform(scene, shape4, shape5));
+}
+
+TEST_CASE("texture_transform multiple times in a row", "[animation]") {
+    auto scene = TestScene(4, 4, 4, 4, 2);
+    auto shape1 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape3 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    scene.add(shape1, shape2, shape3);
+    texture_transform(scene, shape1, shape2);
+    scene.wait();
+    texture_transform(scene, shape2, shape3);
+    scene.wait();
+}
