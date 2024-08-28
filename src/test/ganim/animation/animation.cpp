@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 
 #include "ganim/animation/animation.hpp"
+#include "ganim/object/bases/group.hpp"
 
 #include "test/ganim/scene/test_scene.hpp"
 
@@ -39,6 +40,16 @@ namespace {
         public:
             std::unique_ptr<TestAnimatable3> anim_copy() const
                 {return std::make_unique<TestAnimatable3>(*this);}
+    };
+    class TestObject : public Object {
+        public:
+            virtual Box get_true_bounding_box() const override {return Box();}
+            virtual void draw(const Camera&) override {}
+            virtual void draw_outline(const Camera&) override {}
+            virtual void set_outline(const Color&, double) override {}
+            virtual void invalidate_outline() override {}
+            virtual Color get_outline_color() const override {return Color();}
+            virtual double get_outline_thickness() const override {return 0.0;}
     };
 }
 
@@ -149,4 +160,27 @@ TEST_CASE("Animatable different framerates", "[animation]") {
     test2.update();
     test2.update();
     REQUIRE(test1.last_t == test2.last_t);
+}
+
+TEST_CASE("Animating lvalues that are not directly in the scene", "[animation]")
+{
+    auto test1 = TestObject();
+    auto test2 = Group(test1);
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    scene.add(test2);
+    animate(scene, test2[0]).set_color(Color("FF0000"));
+    REQUIRE(test1.get_color() == Color("FFFFFF"));
+    scene.wait(1);
+    REQUIRE(test1.get_color() == Color("FF0000"));
+}
+
+TEST_CASE("Animating rvalues", "[animation]")
+{
+    auto test = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    scene.add(test);
+    animate(scene, Group(test)).set_color(Color("FF0000"));
+    REQUIRE(test.get_color() == Color("FFFFFF"));
+    scene.wait(1);
+    REQUIRE(test.get_color() == Color("FF0000"));
 }
