@@ -1,6 +1,7 @@
 #include "test_scene.hpp"
 
 #include "ganim/gl/gl.hpp"
+#include "ganim/util/stb_image_write.h"
 
 TestScene::TestScene(
     int pixel_width, int pixel_height,
@@ -22,4 +23,16 @@ void TestScene::process_frame()
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, pixel_width(), pixel_height(), GL_RGB, GL_UNSIGNED_BYTE,
                  new_frame.data());
+}
+
+void TestScene::write_frames_to_file(std::string_view filename_base) const
+{
+    int i = 1;
+    for (auto& frame : M_data) {
+        auto filename = std::format("{}{}.png", filename_base, i++);
+        stbi_write_png(
+            filename.c_str(), pixel_width(), pixel_height(), 3,
+            frame.data(), pixel_width() * 3
+        );
+    }
 }
