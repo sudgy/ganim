@@ -158,6 +158,8 @@ class Group : public Object {
         virtual void set_noise_creating(double noise_creating) override;
         virtual Box get_true_bounding_box() const override;
         virtual Box get_logical_bounding_box() const override;
+        virtual void set_animating(bool animating) override;
+        virtual bool is_animating() const override;
         /** @brief Set how far into one subobject to draw before starting to
          * draw the next one
          *

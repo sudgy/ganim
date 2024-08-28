@@ -200,3 +200,13 @@ TEST_CASE("Animating twice in a row", "[animation]") {
     animate(scene, test);
     scene.wait();
 }
+
+TEST_CASE("Animating twice with groups", "[animation]") {
+    auto test1 = TestObject();
+    auto test2 = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    animate(scene, test1);
+    REQUIRE_THROWS(animate(scene, Group(test1)));
+    animate(scene, Group(test2));
+    REQUIRE_THROWS(animate(scene, test2));
+}

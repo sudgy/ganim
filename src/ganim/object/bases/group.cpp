@@ -332,6 +332,25 @@ Box Group::get_logical_bounding_box() const
     );
 }
 
+void Group::set_animating(bool animating)
+{
+    Object::set_animating(animating);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->set_animating(animating);
+        }
+    }
+}
+
+bool Group::is_animating() const
+{
+    if (Object::is_animating()) return true;
+    for (auto obj : M_subobjects) {
+        if (obj->is_animating()) return true;
+    }
+    return false;
+}
+
 void Group::set_draw_subobject_ratio(double ratio)
 {
     if (ratio < 0 or ratio > 1) throw std::invalid_argument(
