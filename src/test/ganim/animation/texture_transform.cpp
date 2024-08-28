@@ -255,3 +255,102 @@ TEST_CASE("texture_transform moving with direction", "[animation]") {
         }
     }
 }
+
+TEST_CASE("texture_transform multiple times on the same object", "[animation]")
+{
+    auto scene = TestScene(4, 6, 4, 6, 2);
+    auto shape1 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape3 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    shape1.shift(-vga2::e1);
+    shape2.shift(vga2::e1 + 2*vga2::e2);
+    shape3.shift(vga2::e1 - 2*vga2::e2);
+    scene.add(shape1, shape2, shape3);
+    shape1.set_visible(true);
+    scene.frame_advance();
+    texture_transform(scene, shape1, shape2);
+    texture_transform(scene, shape1, shape3);
+    scene.wait(1);
+    scene.frame_advance();
+    scene.write_frames_to_file("test");
+    const auto black = Color("000000");
+    const auto white = Color("FFFFFF");
+    for (int x = 0; x < 4; ++x) {
+        for (int y = 0; y < 6; ++y) {
+            INFO("x = " << x << ", y = " << y);
+
+            auto color = black;
+            if (x < 2 and y > 1 and y < 4) color = white;
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+
+            color = black;
+            if (x > 0 and x < 3 and y > 0 and y < 5) color = white;
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+
+            color = black;
+            if (x > 1 and y < 2) color = white;
+            if (x > 1 and y > 3) color = white;
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+        }
+    }
+}
+
+TEST_CASE("texture_transform multiple times to the same object", "[animation]")
+{
+    auto scene = TestScene(4, 6, 4, 6, 2);
+    auto shape1 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape3 = Shape(
+        {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    shape1.shift(-vga2::e1);
+    shape2.shift(vga2::e1 + 2*vga2::e2);
+    shape3.shift(vga2::e1 - 2*vga2::e2);
+    scene.add(shape1, shape2, shape3);
+    shape2.set_visible(true);
+    shape3.set_visible(true);
+    scene.frame_advance();
+    texture_transform(scene, shape2, shape1);
+    texture_transform(scene, shape3, shape1);
+    scene.wait(1);
+    scene.frame_advance();
+    scene.write_frames_to_file("test");
+    const auto black = Color("000000");
+    const auto white = Color("FFFFFF");
+    for (int x = 0; x < 4; ++x) {
+        for (int y = 0; y < 6; ++y) {
+            INFO("x = " << x << ", y = " << y);
+
+            auto color = black;
+            if (x > 1 and y < 2) color = white;
+            if (x > 1 and y > 3) color = white;
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+
+            color = black;
+            if (x > 0 and x < 3 and y > 0 and y < 5) color = white;
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+
+            color = black;
+            if (x < 2 and y > 1 and y < 4) color = white;
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+        }
+    }
+}
