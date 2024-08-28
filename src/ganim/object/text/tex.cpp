@@ -139,6 +139,7 @@ Tex::Tex(const std::vector<std::string>& tex_strings)
 Tex::Tex(std::filesystem::path dvi_filename)
 {
     draw_together();
+    set_draw_subobject_ratio(0.2);
     read_dvi(dvi_filename, *this);
     double x_min = INFINITY;
     double x_max = -INFINITY;
