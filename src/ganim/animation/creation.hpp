@@ -46,6 +46,12 @@ void noise_create(
     AnimationArgs args = AnimationArgs()
 );
 
+void write(
+    SceneBase& scene,
+    MaybeOwningRef<Object> object,
+    AnimationArgs args = AnimationArgs()
+);
+
 }
 
 #endif

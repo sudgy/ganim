@@ -35,4 +35,14 @@ void noise_create(
     object->set_noise_creating(noise_scale);
 }
 
+void write(
+    SceneBase& scene,
+    MaybeOwningRef<Object> object,
+    AnimationArgs args
+)
+{
+    args.rate_function = rf::linear;
+    noise_create(scene, std::move(object), 0.25, args);
+}
+
 }
