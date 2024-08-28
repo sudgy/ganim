@@ -38,6 +38,7 @@ void Shape::set_vertices(
 
 void Shape::draw(const Camera& camera)
 {
+    if (M_vertices.empty()) return;
     if (!M_valid) {
         glBindVertexArray(M_vertex_array);
         glBindBuffer(GL_ARRAY_BUFFER, M_vertex_buffer);
@@ -47,7 +48,6 @@ void Shape::draw(const Camera& camera)
         glBindVertexArray(0);
         M_valid = true;
     }
-    if (M_vertices.empty()) return;
     auto& shader = *get_shader();
     glUseProgram(shader);
     glUniform2f(shader.get_uniform("camera_scale"),
