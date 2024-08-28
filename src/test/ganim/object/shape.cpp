@@ -459,3 +459,25 @@ TEST_CASE("Shape bounding box", "[object]") {
     REQUIRE_THAT(box3.p1, GAEquals(-2*e1 - 2*e2));
     REQUIRE_THAT(box3.p2, GAEquals( 2*e1 + 2*e2));
 }
+
+TEST_CASE("Shape scaling to zero", "[object]") {
+    auto scene = TestScene(6, 6, 6, 6, 1);
+    auto shape = Shape(
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape.set_visible(true);
+    scene.add(shape);
+    shape.set_outline(Color("FFFFFF"), 5);
+    shape.scale(0);
+    scene.frame_advance();
+    for (int x = 0; x < 6; ++x) {
+        for (int y = 0; y < 6; ++y) {
+            INFO("x = " << x << ", y = " << y);
+            REQUIRE(scene.get_pixel(0, x, y) == Color("000000"));
+        }
+    }
+}
