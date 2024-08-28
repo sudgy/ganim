@@ -11,7 +11,6 @@ namespace ganim {
         std::function<double(double)> rate_function = rf::smoothererstep;
         vga3::Vector direction = 0*vga3::e1;
     };
-    class SceneBase;
     void texture_transform(
         SceneBase& scene,
         MaybeOwningRef<Object> from,

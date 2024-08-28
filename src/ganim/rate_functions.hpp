@@ -5,12 +5,14 @@
  * @brief Contains rate functions, used to describe the rate that animations
  * happen
  *
- * A rate function is a function from doubles to doubles such that f(0) = 0 and
- * f(1) = 1.  Note that rate functions are allowed to go outside the range [0,
- * 1].  Particular animations are allowed to assume that these outside values
- * won't happen, in which case you must pass a rate function that doesn't do
- * this to them.
+ * A rate function is a function from doubles to doubles, usually such that f(0)
+ * = 0 and f(1) = 1.  Note that rate functions are allowed to go outside the
+ * range [0, 1].  Particular animations are allowed to assume that these outside
+ * values won't happen, in which case you must pass a rate function that doesn't
+ * do this to them.
  */
+
+#include <functional>
 
 namespace ganim::rf {
     /** @brief Just the identity function */
@@ -25,6 +27,14 @@ namespace ganim::rf {
     double smoothererstep(double t);
     /** @brief The first half of the cosine, but flipped and scaled. */
     double cosine(double t);
+    /** @brief Goes from zero to one and then back to zero.  It will use the
+     * passed in function (which defaults to smoothererstep), squished to [0,
+     * 0.5] to go there and back.
+     */
+    double there_and_back(
+        double t,
+        std::function<double(double)> rate_func = smoothererstep
+    );
 }
 
 #endif

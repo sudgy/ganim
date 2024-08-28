@@ -30,3 +30,13 @@ double rf::cosine(double t)
 {
     return (1 - std::cos(t*τ/2)) / 2;
 }
+
+double rf::there_and_back(
+    double t,
+    std::function<double(double)> rate_func
+)
+{
+    t *= 2;
+    if (t < 1) return rate_func(t);
+    else return 1 - rate_func(t - 1);
+}

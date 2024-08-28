@@ -9,8 +9,6 @@
 
 namespace ganim {
 
-class Object;
-
 /** @brief An animation to fade in an object.
  *
  * This will automatically make the object visible.

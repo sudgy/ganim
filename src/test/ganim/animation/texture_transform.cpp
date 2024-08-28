@@ -281,7 +281,6 @@ TEST_CASE("texture_transform multiple times on the same object", "[animation]")
     texture_transform(scene, shape1, shape3);
     scene.wait(1);
     scene.frame_advance();
-    scene.write_frames_to_file("test");
     const auto black = Color("000000");
     const auto white = Color("FFFFFF");
     for (int x = 0; x < 4; ++x) {
@@ -331,7 +330,6 @@ TEST_CASE("texture_transform multiple times to the same object", "[animation]")
     texture_transform(scene, shape3, shape1);
     scene.wait(1);
     scene.frame_advance();
-    scene.write_frames_to_file("test");
     const auto black = Color("000000");
     const auto white = Color("FFFFFF");
     for (int x = 0; x < 4; ++x) {
@@ -430,7 +428,6 @@ TEST_CASE("texture_transform with groups", "[animation]") {
     texture_transform(scene, group1, group2);
     scene.wait(1);
     scene.frame_advance();
-    scene.write_frames_to_file("test");
     const auto black = Color("000000");
     const auto white = Color("FFFFFF");
     for (int x = 0; x < 8; ++x) {
