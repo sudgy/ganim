@@ -502,3 +502,40 @@ TEST_CASE("Group outlines", "[object]") {
     REQUIRE(draws[7].first == &obj2);
     REQUIRE(!draws[7].second);
 }
+
+TEST_CASE("Group ranges", "[object]") {
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    auto obj3 = TestObject();
+    auto test = Group(obj1, obj2, obj3);
+    test.set_draw_subobject_ratio(0.2);
+    REQUIRE_THROWS(test.range(0, 4));
+    REQUIRE_THROWS(test.range(-6, -4));
+    REQUIRE_THROWS(test.range(-6));
+    REQUIRE_THROWS(test.range(3));
+    auto test2 = test.range(0, 2);
+    auto test3 = test.range(-1, 3);
+    REQUIRE(test2.size() == 2);
+    REQUIRE(test3.size() == 1);
+    REQUIRE(&test2[0] == &obj1);
+    REQUIRE(&test2[1] == &obj2);
+    REQUIRE(&test3[0] == &obj3);
+    REQUIRE(test2.get_draw_subobject_ratio() == 0.2);
+    REQUIRE(test3.get_draw_subobject_ratio() == 0.2);
+    REQUIRE(!test2.drawing_together());
+    REQUIRE(!test3.drawing_together());
+
+    test.set_draw_subobject_ratio(0.3);
+    test.draw_together();
+    auto test4 = test.range(0, -2);
+    auto test5 = test.range(1);
+    REQUIRE(test4.size() == 1);
+    REQUIRE(test5.size() == 2);
+    REQUIRE(&test4[0] == &obj1);
+    REQUIRE(&test5[0] == &obj2);
+    REQUIRE(&test5[1] == &obj3);
+    REQUIRE(test4.get_draw_subobject_ratio() == 0.3);
+    REQUIRE(test5.get_draw_subobject_ratio() == 0.3);
+    REQUIRE(test4.drawing_together());
+    REQUIRE(test5.drawing_together());
+}

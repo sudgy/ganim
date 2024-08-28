@@ -358,11 +358,20 @@ void Group::set_draw_subobject_ratio(double ratio)
     M_ratio = ratio;
 }
 
+double Group::get_draw_subobject_ratio() const
+{
+    return M_ratio;
+}
+
 Group Group::range(int i1, int i2)
 {
     auto result = Group();
-    if (i1 < 0) i1 = size() - i1;
-    if (i2 < 0) i2 = size() - i2;
+    if (i1 < 0) i1 = size() + i1;
+    if (i2 < 0) i2 = size() + i2;
+    if (i1 < 0) {
+        throw std::out_of_range(
+                "Starting index too low when finding a range of a group");
+    }
     if (i2 > size()) {
         throw std::out_of_range(
                 "Ending index too high when finding a range of a group");
@@ -370,5 +379,27 @@ Group Group::range(int i1, int i2)
     for (int i = i1; i < i2; ++i) {
         result.add((*this)[i]);
     }
+    result.set_draw_subobject_ratio(M_ratio);
+    if (M_draw_together) result.draw_together();
+    return result;
+}
+
+Group Group::range(int i)
+{
+    auto result = Group();
+    if (i < 0) i = size() + i;
+    if (i < 0) {
+        throw std::out_of_range(
+                "Starting index too low when finding a range of a group");
+    }
+    if (i >= size()) {
+        throw std::out_of_range(
+                "Starting index too high when finding a range of a group");
+    }
+    for (; i < size(); ++i) {
+        result.add((*this)[i]);
+    }
+    result.set_draw_subobject_ratio(M_ratio);
+    if (M_draw_together) result.draw_together();
     return result;
 }

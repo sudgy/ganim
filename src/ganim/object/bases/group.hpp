@@ -170,6 +170,7 @@ class Group : public Object {
          * exception will be thrown.
          */
         void set_draw_subobject_ratio(double ratio);
+        double get_draw_subobject_ratio() const;
         void draw_together() {M_draw_together = true;}
         void draw_separately() {M_draw_together = false;}
         bool drawing_together() const {return M_draw_together;}
@@ -185,6 +186,7 @@ class Group : public Object {
         const Object& operator[](int index) const {return *M_subobjects[index];}
 
         Group range(int i1, int i2);
+        Group range(int i);
 
     private:
         std::vector<Object*> M_subobjects;
