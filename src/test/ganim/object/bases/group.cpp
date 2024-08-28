@@ -429,3 +429,34 @@ TEST_CASE("Group animating subobjects", "[object]") {
     scene.add(test);
     animate(scene, obj); // Verify that the object got its fps set
 }
+
+TEST_CASE("Group subobject visibility", "[object]") {
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    auto test = Group(obj1, obj2);
+    test.set_visible(true);
+    auto camera = Camera(1, 1, 1);
+
+    test.draw(camera);
+    REQUIRE(test.is_visible());
+    REQUIRE(obj1.is_visible());
+    REQUIRE(obj2.is_visible());
+    REQUIRE(obj1.draw_count == 1);
+    REQUIRE(obj2.draw_count == 1);
+
+    obj1.set_visible(false);
+    test.draw(camera);
+    REQUIRE(test.is_visible());
+    REQUIRE(!obj1.is_visible());
+    REQUIRE(obj2.is_visible());
+    REQUIRE(obj1.draw_count == 1);
+    REQUIRE(obj2.draw_count == 2);
+
+    obj2.set_visible(false);
+    test.draw(camera);
+    REQUIRE(!test.is_visible());
+    REQUIRE(!obj1.is_visible());
+    REQUIRE(!obj2.is_visible());
+    REQUIRE(obj1.draw_count == 1);
+    REQUIRE(obj2.draw_count == 2);
+}
