@@ -175,7 +175,9 @@ void main()
             auto fake_camera = Camera(20, size, -size);
             fake_camera.shift((x1 + x2)/2*e1 + (y1 + y2)/2*e2);
 
+            tracked_object().set_visible(true);
             tracked_object().draw(fake_camera);
+            tracked_object().set_visible(false);
 
             M_distance_transform = distance_transform(
                 alpha_threshold(

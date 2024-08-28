@@ -409,3 +409,47 @@ TEST_CASE("texture_transform multiple times in a row", "[animation]") {
     texture_transform(scene, shape2, shape3);
     scene.wait();
 }
+
+TEST_CASE("texture_transform with groups", "[animation]") {
+    auto scene = TestScene(8, 8, 8, 8, 2);
+    auto shape1 = Shape(
+        {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = Shape(
+        {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto group1 = Group(shape1);
+    auto group2 = Group(shape2);
+    group1.draw_together();
+    group2.draw_together();
+    scene.add(group1, group2);
+    group1.set_visible(true);
+    scene.frame_advance();
+    texture_transform(scene, group1, group2);
+    scene.wait(1);
+    scene.frame_advance();
+    scene.write_frames_to_file("test");
+    const auto black = Color("000000");
+    const auto white = Color("FFFFFF");
+    for (int x = 0; x < 8; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            INFO("x = " << x << ", y = " << y);
+
+            auto color = black;
+            if (x > 0 and x < 7 and y > 2 and y < 5) color = white;
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+
+            color = black;
+            if (x > 1 and x < 6 and y > 2 and y < 5) color = white;
+            if (x > 2 and x < 5 and y > 1 and y < 6) color = white;
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+
+            color = black;
+            if (x > 2 and x < 5 and y > 0 and y < 7) color = white;
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+        }
+    }
+}
