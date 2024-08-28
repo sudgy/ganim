@@ -87,3 +87,91 @@ TEST_CASE("texture_transform changing bounding box", "[animation]") {
         }
     }
 }
+
+TEST_CASE("texture_transform with a static color", "[animation]") {
+    auto scene = TestScene(8, 8, 8, 8, 2);
+    auto shape1 = Shape(
+        {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = Shape(
+        {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    const auto black = Color("000000");
+    const auto orange = Color("FF8000");
+    shape1.set_color(orange);
+    shape2.set_color(orange);
+    scene.add(shape1, shape2);
+    shape1.set_visible(true);
+    scene.frame_advance();
+    texture_transform(scene, shape1, shape2);
+    scene.wait(1);
+    scene.frame_advance();
+    for (int x = 0; x < 8; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            INFO("x = " << x << ", y = " << y);
+
+            auto color = black;
+            if (x > 0 and x < 7 and y > 2 and y < 5) color = orange;
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+
+            color = black;
+            if (x > 1 and x < 6 and y > 2 and y < 5) color = orange;
+            if (x > 2 and x < 5 and y > 1 and y < 6) color = orange;
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+
+            color = black;
+            if (x > 2 and x < 5 and y > 0 and y < 7) color = orange;
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+        }
+    }
+}
+
+TEST_CASE("texture_transform with a changing color", "[animation]") {
+    auto scene = TestScene(8, 8, 8, 8, 2);
+    auto shape1 = Shape(
+        {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = Shape(
+        {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}, {-3, -3}, {3, 3}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    const auto white = Color("FFFFFF");
+    const auto black = Color("000000");
+    const auto dark_red = Color("800000");
+    const auto redish = Color("C08080");
+    shape1.set_color(white);
+    shape2.set_color(dark_red);
+    scene.add(shape1, shape2);
+    shape1.set_visible(true);
+    scene.frame_advance();
+    texture_transform(scene, shape1, shape2);
+    scene.wait(1);
+    scene.frame_advance();
+    for (int x = 0; x < 8; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            INFO("x = " << x << ", y = " << y);
+
+            auto color = black;
+            if (x > 0 and x < 7 and y > 2 and y < 5) color = white;
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+
+            // I'm not sure if this is the final algorithm I want for colors in
+            // texture_transform, so feel free to change this test later if you
+            // change it
+            color = black;
+            if (x > 1 and x < 6 and y > 2 and y < 5) color = white;
+            if (x > 2 and x < 5 and y > 1 and y < 6) color = dark_red;
+            if (x > 2 and x < 5 and y > 2 and y < 5) color = redish;
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+
+            color = black;
+            if (x > 2 and x < 5 and y > 0 and y < 7) color = dark_red;
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+        }
+    }
+}
