@@ -18,8 +18,14 @@ namespace {
             virtual void draw(const Camera&) override
             {
                 ++draw_count;
+                if (draws) draws->emplace_back(this, false);
+            }
+            virtual void draw_outline(const Camera&) override
+            {
+                if (draws) draws->emplace_back(this, true);
             }
             int draw_count = 0;
+            std::vector<std::pair<TestObject*, bool>>* draws = nullptr;
             virtual Box get_true_bounding_box() const override
                 {return true_bounding_box;}
             Box true_bounding_box;
@@ -459,4 +465,40 @@ TEST_CASE("Group subobject visibility", "[object]") {
     REQUIRE(!obj2.is_visible());
     REQUIRE(obj1.draw_count == 1);
     REQUIRE(obj2.draw_count == 2);
+}
+
+TEST_CASE("Group outlines", "[object]") {
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    auto test = Group(obj1, obj2);
+    test.set_visible(true);
+    auto camera = Camera(1, 1, 1);
+    auto draws = std::vector<std::pair<TestObject*, bool>>();
+    obj1.draws = &draws;
+    obj2.draws = &draws;
+    test.draw_outline(camera);
+    test.draw(camera);
+    REQUIRE(draws.size() == 4);
+    test.draw_together();
+    test.draw_outline(camera);
+    test.draw(camera);
+    REQUIRE(draws.size() == 8);
+
+    REQUIRE(draws[0].first == &obj1);
+    REQUIRE(draws[0].second);
+    REQUIRE(draws[1].first == &obj1);
+    REQUIRE(!draws[1].second);
+    REQUIRE(draws[2].first == &obj2);
+    REQUIRE(draws[2].second);
+    REQUIRE(draws[3].first == &obj2);
+    REQUIRE(!draws[3].second);
+
+    REQUIRE(draws[4].first == &obj1);
+    REQUIRE(draws[4].second);
+    REQUIRE(draws[5].first == &obj2);
+    REQUIRE(draws[5].second);
+    REQUIRE(draws[6].first == &obj1);
+    REQUIRE(!draws[6].second);
+    REQUIRE(draws[7].first == &obj2);
+    REQUIRE(!draws[7].second);
 }
