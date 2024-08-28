@@ -9,8 +9,6 @@
 
 namespace ganim {
 
-class Object;
-
 /** @brief An animation to "create" objects.
  *
  * "Creating" an object is setting its draw fraction continuously from zero to
