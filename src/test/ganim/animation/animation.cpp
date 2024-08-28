@@ -184,3 +184,19 @@ TEST_CASE("Animating rvalues", "[animation]")
     scene.wait(1);
     REQUIRE(test.get_color() == Color("FF0000"));
 }
+
+TEST_CASE("Animating twice at once", "[animation]") {
+    auto test = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    animate(scene, test);
+    REQUIRE_THROWS(animate(scene, test));
+}
+
+TEST_CASE("Animating twice in a row", "[animation]") {
+    auto test = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 2);
+    animate(scene, test);
+    scene.wait();
+    animate(scene, test);
+    scene.wait();
+}

@@ -42,9 +42,12 @@ namespace ganim {
              */
             virtual Group* as_group() {return nullptr;}
             virtual const Group* as_group() const {return nullptr;}
+            void set_animating(bool animating) {M_animating = animating;}
+            bool is_animating() const {return M_animating;}
 
         private:
             int M_fps = -1;
+            bool M_animating = false;
     };
 }
 

@@ -114,6 +114,15 @@ class Animation {
             M_scene(scene),
             M_owning(object.is_owning())
         {
+            if (object->is_animating()) {
+                throw std::invalid_argument(
+                    "Attempting to animate an object that is already being "
+                    "animated."
+                );
+            }
+            else {
+                object->set_animating(true);
+            }
             scene.add_for_animation(std::move(object));
             if constexpr (std::convertible_to<
                     std::unique_ptr<Group>, std::unique_ptr<copy_type>>)
@@ -159,6 +168,7 @@ class Animation {
                     return false;
                 });
                 if (M_at_end) M_at_end();
+                M_object.set_animating(false);
                 return false;
             }
             return true;
