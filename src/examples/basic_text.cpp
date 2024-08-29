@@ -6,9 +6,9 @@ void basic_text()
 {
     auto scene = Scene("basic_text.mp4", 2560, 1440, 16, 9, 60);
     scene.set_background_color(Color("#808080"));
-    auto text = Tex("\\int", "_{-1}", "^1", "\\sqrt{",
-            "\\frac{1", "-", "x", "^2", "}{", "{1 \\over 4}}}",
-            "\\,\\mathrm{d}", "x", "=", "\\frac{\\tau", "}{", "2}");
+    auto text = Tex("\\int  _{-1}  ^1  \\sqrt{",
+            "\\frac{1  -  x  ^2  }{  {1 \\over 4}}}",
+            "\\,\\mathrm{d}  x  =  \\frac{\\tau  }{  2}");
     text.set_colors({
         {"x", "#FF0000"},
         {"\\frac{\\tau", "#00FF00"},

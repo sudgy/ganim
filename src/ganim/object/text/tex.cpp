@@ -125,13 +125,32 @@ R"(
         }
         return "ganim_files/tex/ganim.dvi";
     }
+    std::vector<std::string> split_tex_strings(
+        const std::vector<std::string>& tex_strings
+    )
+    {
+        auto result = std::vector<std::string>();
+        result.reserve(tex_strings.size());
+        auto pos = std::string::npos;
+        for (std::string_view str : tex_strings) {
+            while ((pos = str.find("  ")) != std::string::npos) {
+                if (pos != 0) {
+                    result.emplace_back(str.substr(0, pos));
+                }
+                str.remove_prefix(pos + 2);
+            }
+            if (str.size() > 0) result.emplace_back(str);
+        }
+        return result;
+    }
 }
 
+// TODO: Find a way to stop this ridiculous double-splitting
 Tex::Tex(const std::vector<std::string>& tex_strings)
-: Tex(create_dvi(tex_strings))
+: Tex(create_dvi(split_tex_strings(tex_strings)))
 {
     auto i = 0;
-    for (auto& s : tex_strings) {
+    for (auto& s : split_tex_strings(tex_strings)) {
         M_pieces_by_string[s].push_back(i++);
     }
 }
