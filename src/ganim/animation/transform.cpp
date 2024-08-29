@@ -1,4 +1,4 @@
-#include "texture_transform.hpp"
+#include "transform.hpp"
 
 #include <ranges>
 
@@ -11,6 +11,7 @@
 
 #include "ganim/util/alpha_threshold.hpp"
 #include "ganim/util/distance_transform.hpp"
+#include "ganim/util/discrete_interpolate.hpp"
 
 using namespace ganim;
 
@@ -146,8 +147,8 @@ void main()
             glGetIntegerv(GL_VIEWPORT, current_viewport.data());
             const auto camera_width = camera.get_starting_width();
             const auto gtp = current_viewport[2] / camera_width;
-            M_texture_size
-                = std::bit_ceil(static_cast<unsigned>(size_base * gtp));
+            M_texture_size = std::max(
+                int(std::bit_ceil(static_cast<unsigned>(size_base * gtp))), 8);
             M_texture_width = (x2 - x1) * gtp;
             M_texture_height = (y2 - y1) * gtp;
             const auto size = M_texture_size / gtp;
@@ -534,4 +535,19 @@ void ganim::texture_transform(
         }
         return true;
     }, true);
+}
+
+void ganim::group_transform(
+    SceneBase& scene,
+    MaybeOwningRef<Group> from,
+    MaybeOwningRef<Group> to,
+    TransformAnimationArgs args
+)
+{
+    auto indices = discrete_interpolate(from->size(), to->size());
+    for (int i = 0; i < ssize(indices); ++i) {
+        for (auto j : indices[i]) {
+            texture_transform(scene, (*from)[i], (*to)[j], args);
+        }
+    }
 }

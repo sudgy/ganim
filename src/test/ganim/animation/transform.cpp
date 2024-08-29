@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "ganim/animation/texture_transform.hpp"
+#include "ganim/animation/transform.hpp"
 #include "ganim/object/shape.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 
@@ -445,6 +445,82 @@ TEST_CASE("texture_transform with groups", "[animation]") {
 
             color = black;
             if (x > 2 and x < 5 and y > 0 and y < 7) color = white;
+            REQUIRE(scene.get_pixel(2, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+        }
+    }
+}
+
+TEST_CASE("group_transform", "[animation]") {
+    auto scene = TestScene(4, 8, 4, 8, 2);
+    auto shape1 = Shape(
+        {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
+        {0, 1, 2, 2, 0, 3}
+    );
+    auto shape2 = Shape(
+        {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
+        {0, 1, 2, 2, 0, 3}
+    );
+    auto shape3 = Shape(
+        {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
+        {0, 1, 2, 2, 0, 3}
+    );
+    auto shape4 = Shape(
+        {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
+        {0, 1, 2, 2, 0, 3}
+    );
+    auto shape5 = Shape(
+        {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
+        {0, 1, 2, 2, 0, 3}
+    );
+    auto shape6 = Shape(
+        {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
+        {0, 1, 2, 2, 0, 3}
+    );
+    const auto black = Color("000000");
+    const auto white = Color("FFFFFF");
+    const auto red = Color("FF0000");
+    const auto green = Color("00FF00");
+    const auto blue = Color("0000FF");
+    const auto yellow = Color("FFFF00");
+    const auto cyan = Color("00FFFF");
+    using namespace vga2;
+    shape1.set_color(white).shift(-1*e1 + 1*e2);
+    shape2.set_color(red).shift(-1*e1 - 2*e2);
+    shape3.set_color(green).shift(1*e1 + 3*e2);
+    shape4.set_color(blue).shift(1*e1 - 1*e2);
+    shape5.set_color(yellow).shift(1*e1);
+    shape6.set_color(cyan).shift(1*e1 - 4*e2);
+    auto group1 = Group(shape1, shape2);
+    auto group2 = Group(shape3, shape4, shape5, shape6);
+    scene.add(group1, group2);
+    group1.set_visible(true);
+    scene.frame_advance();
+    group_transform(scene, group1, group2);
+    scene.wait();
+    scene.frame_advance();
+
+    for (int x = 0; x < 4; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            INFO("x = " << x << ", y = " << y);
+
+            auto color = black;
+            if (x == 1 and y == 2) color = white;
+            if (x == 1 and y == 5) color = red;
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+
+            color = black;
+            if (x == 2 and y == 1) color = Color("80FF80");
+            if (x == 2 and y == 3) color = Color("8080FF");
+            if (x == 2 and y == 4) color = Color("FF8000");
+            if (x == 2 and y == 6) color = Color("808080");
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+
+            color = black;
+            if (x == 3 and y == 0) color = green;
+            if (x == 3 and y == 4) color = blue;
+            if (x == 3 and y == 3) color = yellow;
+            if (x == 3 and y == 7) color = cyan;
             REQUIRE(scene.get_pixel(2, x, y) == color);
             REQUIRE(scene.get_pixel(3, x, y) == color);
         }

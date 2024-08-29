@@ -3,4 +3,4 @@
 #include "ganim/animation/fading.hpp"
 #include "ganim/animation/indicate.hpp"
 #include "ganim/animation/scaling.hpp"
-#include "ganim/animation/texture_transform.hpp"
+#include "ganim/animation/transform.hpp"

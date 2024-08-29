@@ -17,6 +17,12 @@ namespace ganim {
         MaybeOwningRef<Object> to,
         TransformAnimationArgs args = TransformAnimationArgs()
     );
+    void group_transform(
+        SceneBase& scene,
+        MaybeOwningRef<Group> from,
+        MaybeOwningRef<Group> to,
+        TransformAnimationArgs args = TransformAnimationArgs()
+    );
 }
 
 #endif
