@@ -170,3 +170,20 @@ TEST_CASE("Scene skipping", "[scene]") {
     scene.frame_advance();
     REQUIRE(scene.time_size() == 2);
 }
+
+TEST_CASE("Scene object removing itself in its updater", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto test1 = Animatable();
+    auto test2 = Animatable();
+    auto test3 = Animatable();
+    scene.add(test1, test2, test3);
+    test1.add_updater([&]{
+        scene.remove(test1);
+    });
+    bool updated = false;
+    test2.add_updater([&]{
+        updated = true;
+    });
+    scene.frame_advance();
+    REQUIRE(updated);
+}

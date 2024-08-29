@@ -84,10 +84,16 @@ SceneBase::SceneBase(
 void SceneBase::frame_advance()
 {
     update();
-    for (auto object : M_objects) {
+    auto objects_copy = M_objects;
+    for (auto object : objects_copy) {
         object->update();
     }
+    auto ghosts_copy = std::vector<Animatable*>();
+    ghosts_copy.reserve(M_ghost_animating_objects.size());
     for (auto& object : M_ghost_animating_objects) {
+        ghosts_copy.push_back(&*object);
+    }
+    for (auto object : ghosts_copy) {
         object->update();
     }
     glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
