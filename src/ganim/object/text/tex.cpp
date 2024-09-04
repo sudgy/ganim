@@ -84,7 +84,12 @@ R"(}
                 end_spaces = s.substr(end + 1);
                 s.remove_suffix(s.size() - 1 - end);
             }
-            if (s[0] != '_' and s[0] != '^') {
+            if (s[0] == '&') {
+                tex_file << '&';
+                tex_file << "\\ganimsection" << "{" << i << "}";
+                s.remove_prefix(1);
+            }
+            else if (s[0] != '_' and s[0] != '^') {
                 tex_file << "\\ganimsection" << "{" << i << "}";
             }
             auto pos = std::size_t();
