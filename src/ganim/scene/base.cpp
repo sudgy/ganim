@@ -96,23 +96,25 @@ void SceneBase::frame_advance()
     for (auto object : ghosts_copy) {
         object->update();
     }
-    glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
-    glViewport(0, 0, M_pixel_width, M_pixel_height);
-    glClearColor(
-        M_background_color.r / 255.0,
-        M_background_color.g / 255.0,
-        M_background_color.b / 255.0,
-        1
-    );
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    if (M_background_object) M_background_object->draw(M_static_camera);
-    for (auto object : M_drawables) {
-        if (object->is_visible()) {
-            object->draw_outline(M_camera);
-            object->draw(M_camera);
+    if (M_animating) {
+        glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
+        glViewport(0, 0, M_pixel_width, M_pixel_height);
+        glClearColor(
+            M_background_color.r / 255.0,
+            M_background_color.g / 255.0,
+            M_background_color.b / 255.0,
+            1
+        );
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        if (M_background_object) M_background_object->draw(M_static_camera);
+        for (auto object : M_drawables) {
+            if (object->is_visible()) {
+                object->draw_outline(M_camera);
+                object->draw(M_camera);
+            }
         }
+        process_frame();
     }
-    if (M_animating) process_frame();
     ++M_frame_count;
 }
 

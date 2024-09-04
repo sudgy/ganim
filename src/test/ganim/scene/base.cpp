@@ -161,14 +161,20 @@ TEST_CASE("Scene time", "[scene]") {
 
 TEST_CASE("Scene skipping", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
+    auto test = TestDrawable();
+    test.set_visible(true);
+    scene.add(test);
     scene.frame_advance();
     REQUIRE(scene.time_size() == 1);
+    REQUIRE(test.draw_count == 1);
     scene.stop_animating();
     scene.frame_advance();
     REQUIRE(scene.time_size() == 1);
+    REQUIRE(test.draw_count == 1);
     scene.start_animating();
     scene.frame_advance();
     REQUIRE(scene.time_size() == 2);
+    REQUIRE(test.draw_count == 2);
 }
 
 TEST_CASE("Scene object removing itself in its updater", "[scene]") {
