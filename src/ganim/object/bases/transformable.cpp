@@ -16,7 +16,7 @@ Transformable& Transformable::reset()
     return *this;
 }
 
-Trivector Transformable::get_center() const
+Trivector Transformable::get_origin() const
 {
     return (~M_rotor * e123 * M_rotor).grade_project<3>();
 }

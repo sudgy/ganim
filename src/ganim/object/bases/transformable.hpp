@@ -20,11 +20,6 @@ namespace ganim {
  * easier to apply operations to it.  Just call whatever functions you want on
  * it, then get the rotor with @ref Transformable::get_rotor.
  *
- * Note that unlike in manim, the center of an object is not considered to be
- * the center of the object's bounding box.  Instead, it's just whatever the
- * origin is brought to by the object's rotor.  This definition of "center" is
- * what is used in the documentation here.
- *
  * Also, note that in ganim, rotors transform in the opposite way than most
  * people do!  Most people use RAR† to do their transformations, whereas here
  * R†AR is used.  This means that to compose two rotors A and B such that A
@@ -47,8 +42,8 @@ class Transformable : public Animatable {
         Transformable& reset();
         /** @brief Get the rotor that transforms this object */
         constexpr const pga3::Even& get_rotor() const {return M_rotor;}
-        /** @brief Get the center of this object, defined as `~R*e123*R` */
-        pga3::Trivector get_center() const;
+        /** @brief Get the origin of this object, defined as `~R*e123*R` */
+        pga3::Trivector get_origin() const;
 
         /** @brief Compose this rotor with another one.
          *
@@ -75,10 +70,10 @@ class Transformable : public Animatable {
          */
         virtual Transformable& apply_rotor(const pga3::Even& rotor);
 
-        /** @brief Move the center of the object to a point. */
+        /** @brief Move the origin of the object to a point. */
         Transformable& move_to(const pointlike auto& p)
             {return move_to(pointlike_to_pga3(p));}
-        /** @brief Move the center of the object to the point represented by the
+        /** @brief Move the origin of the object to the point represented by the
          * 3D PGA trivector p.
          */
         Transformable& move_to(const pga3::Trivector& p);

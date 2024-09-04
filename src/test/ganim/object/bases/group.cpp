@@ -122,20 +122,20 @@ TEST_CASE("Group movement", "[object]") {
     obj1.shift(e1);
     obj2.shift(2*e2);
     test.shift(e1);
-    REQUIRE_THAT(obj1.get_center(), GAEquals((2*e1 + e0).dual()));
-    REQUIRE_THAT(obj2.get_center(), GAEquals((e1 + 2*e2 + e0).dual()));
-    REQUIRE_THAT(group.get_center(), GAEquals((e1 + e0).dual()));
-    REQUIRE_THAT(test.get_center(), GAEquals((e1 + e0).dual()));
+    REQUIRE_THAT(obj1.get_origin(), GAEquals((2*e1 + e0).dual()));
+    REQUIRE_THAT(obj2.get_origin(), GAEquals((e1 + 2*e2 + e0).dual()));
+    REQUIRE_THAT(group.get_origin(), GAEquals((e1 + e0).dual()));
+    REQUIRE_THAT(test.get_origin(), GAEquals((e1 + e0).dual()));
     test.rotate(e12, τ/4);
-    REQUIRE_THAT(obj1.get_center(), GAEquals((2*e2 + e0).dual(), 1e-5));
-    REQUIRE_THAT(obj2.get_center(), GAEquals((e2 - 2*e1 + e0).dual(), 1e-5));
-    REQUIRE_THAT(group.get_center(), GAEquals((e2 + e0).dual(), 1e-5));
-    REQUIRE_THAT(test.get_center(), GAEquals((e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(obj1.get_origin(), GAEquals((2*e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(obj2.get_origin(), GAEquals((e2 - 2*e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(group.get_origin(), GAEquals((e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(test.get_origin(), GAEquals((e2 + e0).dual(), 1e-5));
     test.move_to(e123);
-    REQUIRE_THAT(obj1.get_center(), GAEquals((e2 + e0).dual(), 1e-5));
-    REQUIRE_THAT(obj2.get_center(), GAEquals((-2*e1 + e0).dual(), 1e-5));
-    REQUIRE_THAT(group.get_center(), GAEquals(e0.dual(), 1e-5));
-    REQUIRE_THAT(test.get_center(), GAEquals(e0.dual(), 1e-5));
+    REQUIRE_THAT(obj1.get_origin(), GAEquals((e2 + e0).dual(), 1e-5));
+    REQUIRE_THAT(obj2.get_origin(), GAEquals((-2*e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(group.get_origin(), GAEquals(e0.dual(), 1e-5));
+    REQUIRE_THAT(test.get_origin(), GAEquals(e0.dual(), 1e-5));
 }
 
 TEST_CASE("Group color/opacity", "[object]") {
@@ -170,11 +170,11 @@ TEST_CASE("Group scaling", "[object]") {
     obj2.shift(2*e2);
     test.scale(-e1, 2);
     REQUIRE(test.get_scale() == 2);
-    REQUIRE_THAT(test.get_center(), GAEquals((e1 + e0).dual()));
+    REQUIRE_THAT(test.get_origin(), GAEquals((e1 + e0).dual()));
     REQUIRE(obj1.get_scale() == 2);
-    REQUIRE_THAT(obj1.get_center(), GAEquals((3*e1 + e0).dual()));
+    REQUIRE_THAT(obj1.get_origin(), GAEquals((3*e1 + e0).dual()));
     REQUIRE(obj2.get_scale() == 2);
-    REQUIRE_THAT(obj2.get_center(), GAEquals((e1 + 4*e2 + e0).dual()));
+    REQUIRE_THAT(obj2.get_origin(), GAEquals((e1 + 4*e2 + e0).dual()));
 }
 
 TEST_CASE("Group visible", "[object]") {
