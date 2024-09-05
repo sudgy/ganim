@@ -11,6 +11,7 @@ class Box {
         Box(const pointlike auto& p1, const pointlike auto& p2)
             : Box(pointlike_to_pga3(p1), pointlike_to_pga3(p2)) {}
         Box(const pga3::Trivector& p1, const pga3::Trivector& p2);
+
         pga3::Vector get_left_face() const;
         pga3::Vector get_right_face() const;
         pga3::Vector get_up_face() const;
@@ -58,6 +59,13 @@ class Box {
         pga2::Bivector get_upper_right() const;
         pga2::Bivector get_lower_left() const;
         pga2::Bivector get_lower_right() const;
+
+        pga2::Bivector get_outside_point(const pga2::Bivector& point) const;
+        pga2::Bivector get_outside_point(const pointlike auto& point)const
+            {return get_outside_point(pga3_to_pga2(pointlike_to_pga3(point)));}
+        pga3::Trivector get_outside_point_3d(const pga3::Trivector& point)const;
+        pga3::Trivector get_outside_point_3d(const pointlike auto& point)const
+            {return get_outside_point_3d(pointlike_to_pga3(point));}
 
     private:
         pga3::Trivector p1 = pga3::e123;

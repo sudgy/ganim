@@ -160,3 +160,73 @@ TEST_CASE("Box sides", "[object]") {
         REQUIRE_THAT(ll, GAEquals(!(e0 + 1*e1 + 2*e2)));
     }
 }
+
+TEST_CASE("Box get_outside_point", "[object]") {
+    const auto box1 = Box(vga3::Vector{0, 0, 0}, vga3::Vector{1, 1, 1});
+    const auto box2 = Box(vga3::Vector{-1, -1, -1}, vga3::Vector{1, 3, 3});
+
+    {
+        using namespace pga2;
+        REQUIRE_THAT(box1.get_outside_point(e1).undual(),
+                GAEquals(e0 + e1 + 0.5*e2));
+        REQUIRE_THAT(box1.get_outside_point(-e1).undual(),
+                GAEquals(e0 + 0.5*e2));
+        REQUIRE_THAT(box1.get_outside_point(e2).undual(),
+                GAEquals(e0 + 0.5*e1 + e2));
+        REQUIRE_THAT(box1.get_outside_point(-e2).undual(),
+                GAEquals(e0 + 0.5*e1));
+        REQUIRE_THAT(box1.get_outside_point(e1 + e2).undual(),
+                GAEquals(e0 + e1 + e2));
+        REQUIRE_THAT(box1.get_outside_point(2*e1 + e2).undual(),
+                GAEquals(e0 + e1 + 0.75*e2));
+
+        REQUIRE_THAT(box2.get_outside_point(e1).undual(),
+                GAEquals(e0 + e1 + e2));
+        REQUIRE_THAT(box2.get_outside_point(-e1).undual(),
+                GAEquals(e0 - e1 + e2));
+        REQUIRE_THAT(box2.get_outside_point(e2).undual(),
+                GAEquals(e0 + 3*e2));
+        REQUIRE_THAT(box2.get_outside_point(-e2).undual(),
+                GAEquals(e0 - e2));
+        REQUIRE_THAT(box2.get_outside_point(e1 + e2).undual(),
+                GAEquals(e0 + e1 + 2*e2));
+        REQUIRE_THAT(box2.get_outside_point(2*e1 + e2).undual(),
+                GAEquals(e0 + e1 + 1.5*e2));
+    }
+    {
+        using namespace pga3;
+        REQUIRE_THAT(box1.get_outside_point_3d(e1).undual(),
+                GAEquals(e0 + e1 + 0.5*e2 + 0.5*e3));
+        REQUIRE_THAT(box1.get_outside_point_3d(-e1).undual(),
+                GAEquals(e0 + 0.5*e2 + 0.5*e3));
+        REQUIRE_THAT(box1.get_outside_point_3d(e2).undual(),
+                GAEquals(e0 + 0.5*e1 + e2 + 0.5*e3));
+        REQUIRE_THAT(box1.get_outside_point_3d(-e2).undual(),
+                GAEquals(e0 + 0.5*e1 + 0.5*e3));
+        REQUIRE_THAT(box1.get_outside_point_3d(e3).undual(),
+                GAEquals(e0 + 0.5*e1 + 0.5*e2 + e3));
+        REQUIRE_THAT(box1.get_outside_point_3d(-e3).undual(),
+                GAEquals(e0 + 0.5*e1 + 0.5*e2));
+        REQUIRE_THAT(box1.get_outside_point_3d(e1 + e2).undual(),
+                GAEquals(e0 + e1 + e2 + 0.5*e3));
+        REQUIRE_THAT(box1.get_outside_point_3d(2*e1 + e2).undual(),
+                GAEquals(e0 + e1 + 0.75*e2 + 0.5*e3));
+
+        REQUIRE_THAT(box2.get_outside_point_3d(e1).undual(),
+                GAEquals(e0 + e1 + e2 + e3));
+        REQUIRE_THAT(box2.get_outside_point_3d(-e1).undual(),
+                GAEquals(e0 - e1 + e2 + e3));
+        REQUIRE_THAT(box2.get_outside_point_3d(e2).undual(),
+                GAEquals(e0 + 3*e2 + e3));
+        REQUIRE_THAT(box2.get_outside_point_3d(-e2).undual(),
+                GAEquals(e0 - e2 + e3));
+        REQUIRE_THAT(box2.get_outside_point_3d(e3).undual(),
+                GAEquals(e0 + e2 + 3*e3));
+        REQUIRE_THAT(box2.get_outside_point_3d(-e3).undual(),
+                GAEquals(e0 + e2 - e3));
+        REQUIRE_THAT(box2.get_outside_point_3d(e1 + e2).undual(),
+                GAEquals(e0 + e1 + 2*e2 + e3));
+        REQUIRE_THAT(box2.get_outside_point_3d(2*e1 + e2).undual(),
+                GAEquals(e0 + e1 + 1.5*e2 + e3));
+    }
+}

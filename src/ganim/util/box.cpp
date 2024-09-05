@@ -266,6 +266,66 @@ pga2::Bivector Box::get_lower_right() const
     return get_right_edge() ^ get_down_edge();
 }
 
+pga2::Bivector Box::get_outside_point(const pga2::Bivector& point) const
+{
+    using namespace pga2;
+    auto p = point;
+    p -= p.blade_project<e12>() * e12;
+    auto center = get_center();
+    auto line = center & p;
+    auto result = Bivector();
+    auto distance = INFINITY;
+    for (auto side : {
+            -get_left_edge(),
+            get_right_edge(),
+            get_up_edge(),
+            -get_down_edge()
+        })
+    {
+        auto intersect = side ^ line;
+        if (intersect.blade_project<e12>() > 0) {
+            intersect /= intersect.blade_project<e12>();
+            auto this_distance = (center - intersect).undual().norm2();
+            if (this_distance < distance) {
+                result = intersect;
+                distance = this_distance;
+            }
+        }
+    }
+    return result;
+}
+
+pga3::Trivector Box::get_outside_point_3d(const pga3::Trivector& point) const
+{
+    using namespace pga3;
+    auto p = point;
+    p -= p.blade_project<e123>() * e123;
+    auto center = get_center_3d();
+    auto line = center & p;
+    auto result = Trivector();
+    auto distance = INFINITY;
+    for (auto side : {
+            -get_left_face(),
+            get_right_face(),
+            get_up_face(),
+            -get_down_face(),
+            get_out_face(),
+            -get_in_face()
+        })
+    {
+        auto intersect = side ^ line;
+        if (intersect.blade_project<e123>() > 0) {
+            intersect /= intersect.blade_project<e123>();
+            auto this_distance = (center - intersect).undual().norm2();
+            if (this_distance < distance) {
+                result = intersect;
+                distance = this_distance;
+            }
+        }
+    }
+    return result;
+}
+
 Box ganim::merge_boxes(const Box& box1, const Box& box2)
 {
     auto p11 = box1.get_inner_lower_left_vertex().undual();
