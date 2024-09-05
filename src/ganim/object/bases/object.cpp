@@ -170,3 +170,39 @@ pga2::Bivector Object::get_lower_right() const
 {
     return get_logical_bounding_box().get_lower_right();
 }
+
+Object& Object::next_to(
+    const pga3::Trivector& point,
+    const pga3::Trivector& direction,
+    double buff
+)
+{
+    auto npoint = point;
+    npoint /= npoint.blade_project<e123>();
+
+    auto ideal_direction = direction;
+    auto scale = ideal_direction.blade_project<e123>();
+    if (scale != 0) {
+        ideal_direction /= scale;
+        ideal_direction -= e123;
+    }
+
+    ideal_direction /= ideal_direction.undual().norm();
+    ideal_direction *= buff;
+    auto point2 = npoint + ideal_direction;
+    auto point3 = get_logical_bounding_box().get_outside_point_3d(-direction);
+    // Using undual makes this use the "cheat" conversion
+    shift((point2 - point3).undual());
+
+    return *this;
+}
+
+Object& Object::next_to(
+    Object& object,
+    const pga3::Trivector& direction,
+    double buff
+)
+{
+    const auto other_box = object.get_logical_bounding_box();
+    return next_to(other_box.get_outside_point(direction), direction, buff);
+}

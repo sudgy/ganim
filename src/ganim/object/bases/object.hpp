@@ -182,6 +182,37 @@ namespace ganim {
             pga2::Bivector get_lower_left() const;
             pga2::Bivector get_lower_right() const;
 
+            Object& next_to(
+                const pga3::Trivector& point,
+                const pga3::Trivector& direction,
+                double buff = 0.25
+            );
+            Object& next_to(
+                Object& object,
+                const pga3::Trivector& direction,
+                double buff = 0.25
+            );
+            Object& next_to(
+                const pointlike auto& point,
+                const pointlike auto& direction,
+                double buff = 0.25
+            )
+            {
+                return next_to(
+                    pointlike_to_pga3(point),
+                    pointlike_to_pga3(direction),
+                    buff
+                );
+            }
+            Object& next_to(
+                Object& object,
+                const pointlike auto& direction,
+                double buff = 0.25
+            )
+            {
+                return next_to(object, pointlike_to_pga3(direction), buff);
+            }
+
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
