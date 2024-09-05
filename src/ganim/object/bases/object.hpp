@@ -188,7 +188,7 @@ namespace ganim {
                 double buff = 0.25
             );
             Object& next_to(
-                Object& object,
+                const Object& object,
                 const pga3::Trivector& direction,
                 double buff = 0.25
             );
@@ -205,12 +205,56 @@ namespace ganim {
                 );
             }
             Object& next_to(
-                Object& object,
+                const Object& object,
                 const pointlike auto& direction,
                 double buff = 0.25
             )
             {
                 return next_to(object, pointlike_to_pga3(direction), buff);
+            }
+
+            Object& align_to(
+                const pga3::Trivector& point,
+                const pga3::Trivector& direction
+            );
+            Object& align_to(
+                const Object& object,
+                const pga3::Trivector& direction
+            );
+            Object& align_to(
+                const pointlike auto& point,
+                const pointlike auto& direction
+            )
+            {
+                return align_to(
+                    pointlike_to_pga3(point),
+                    pointlike_to_pga3(direction)
+                );
+            }
+            Object& align_to(
+                const Object& object,
+                const pointlike auto& direction
+            )
+            {
+                return align_to(object, pointlike_to_pga3(direction));
+            }
+            Object& align_to(
+                const Object& object,
+                const pointlike auto& direction1,
+                const pointlike auto& direction2
+            )
+            {
+                align_to(object, direction1);
+                return align_to(object, direction2);
+            }
+            Object& align_to(
+                const pointlike auto& point,
+                const pointlike auto& direction1,
+                const pointlike auto& direction2
+            )
+            {
+                align_to(point, direction1);
+                return align_to(point, direction2);
             }
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);

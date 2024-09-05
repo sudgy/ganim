@@ -278,3 +278,45 @@ TEST_CASE("Object next_to", "[object]") {
     constexpr auto q = p + 0.5;
     REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + q*e1 + q*e2, 1e-5));
 }
+
+TEST_CASE("Object align_to", "[object]") {
+    auto test1 = TestObject();
+    auto test2 = TestObject();
+    test1.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(1, 1, 1));
+    test2.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(1, 1, 1));
+    using namespace pga2;
+
+    test2.align_to(e12, e1);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 - 0.5*e1 + 0.5*e2));
+
+    test2.align_to(test1, e1);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + 0.5*e1 + 0.5*e2));
+
+    test2.shift(e1 + e2);
+    test2.align_to(test1, e2);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + 1.5*e1 + 0.5*e2));
+
+    test2.align_to(test1, e1 + e2);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + e1));
+
+    test2.align_to(test1, e1, e2);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + 0.5*e1 + 0.5*e2));
+
+    test2.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(2, 2, 2));
+
+    test2.align_to(e12, e1);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 - e1 + e2));
+
+    test2.align_to(test1, e1);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + e2));
+
+    test2.shift(e1 + e2);
+    test2.align_to(test1, e2);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + e1));
+
+    test2.align_to(test1, e1 + e2);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + 0.5*e1 - 0.5*e2));
+
+    test2.align_to(test1, e1, e2);
+    REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0));
+}

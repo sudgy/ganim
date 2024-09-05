@@ -198,11 +198,42 @@ Object& Object::next_to(
 }
 
 Object& Object::next_to(
-    Object& object,
+    const Object& object,
     const pga3::Trivector& direction,
     double buff
 )
 {
     const auto other_box = object.get_logical_bounding_box();
     return next_to(other_box.get_outside_point(direction), direction, buff);
+}
+
+Object& Object::align_to(
+    const pga3::Trivector& point,
+    const pga3::Trivector& direction
+)
+{
+    auto ideal_direction = direction;
+    auto scale = ideal_direction.blade_project<e123>();
+    if (scale != 0) {
+        ideal_direction /= scale;
+        ideal_direction -= e123;
+    }
+
+    auto plane = point | (point & ideal_direction);
+    auto outside = get_logical_bounding_box().get_outside_point_3d(direction);
+    auto to_point = (outside | plane) ^ plane;
+    to_point /= to_point.blade_project<e123>();
+    // Using undual makes this use the "cheat" conversion
+    shift((to_point - outside).undual());
+
+    return *this;
+}
+
+Object& Object::align_to(
+    const Object& object,
+    const pga3::Trivector& direction
+)
+{
+    const auto other_box = object.get_logical_bounding_box();
+    return align_to(other_box.get_outside_point(direction), direction);
 }
