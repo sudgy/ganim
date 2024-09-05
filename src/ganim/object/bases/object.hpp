@@ -67,7 +67,7 @@ namespace ganim {
             /** @brief Get the color of this object, including alpha. */
             Color get_color() const {return M_color;}
 
-            /** @brief Scale the object about its center */
+            /** @brief Scale the object about its origin */
             Object& scale(double amount);
             /** @brief Scale the object about a particular point */
             Object& scale(const pointlike auto& p, double amount)
@@ -151,6 +151,7 @@ namespace ganim {
              */
             virtual Box get_logical_bounding_box() const
                 {return get_true_bounding_box();}
+            pga2::Bivector get_center() const;
             pga2::Bivector get_left() const;
             pga2::Bivector get_right() const;
             pga2::Bivector get_up() const;

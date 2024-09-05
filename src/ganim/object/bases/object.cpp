@@ -108,6 +108,11 @@ void Object::interpolate(const Object& start, const Object& end, double t)
             + (end.M_draw_fraction - start.M_draw_fraction) * t);
 }
 
+pga2::Bivector Object::get_center() const
+{
+    return get_logical_bounding_box().get_center();
+}
+
 pga2::Bivector Object::get_left() const
 {
     return get_logical_bounding_box().get_left();
