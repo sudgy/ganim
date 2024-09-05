@@ -120,7 +120,7 @@ gl::Shader* Shape::get_shader()
     }
 }
 
-Box Shape::get_true_bounding_box() const
+Box Shape::get_original_true_bounding_box() const
 {
     if (M_vertices.empty()) return Box();
     // TODO: Use caching to be more efficient

@@ -308,6 +308,16 @@ void Group::set_noise_creating(double noise_creating)
 
 Box Group::get_true_bounding_box() const
 {
+    return get_original_true_bounding_box();
+}
+
+Box Group::get_logical_bounding_box() const
+{
+    return get_original_logical_bounding_box();
+}
+
+Box Group::get_original_true_bounding_box() const
+{
     if (size() == 0) return Box();
     auto boxes = M_subobjects
         | std::views::transform(&Object::get_true_bounding_box);
@@ -319,7 +329,7 @@ Box Group::get_true_bounding_box() const
     );
 }
 
-Box Group::get_logical_bounding_box() const
+Box Group::get_original_logical_bounding_box() const
 {
     if (size() == 0) return Box();
     auto boxes = M_subobjects

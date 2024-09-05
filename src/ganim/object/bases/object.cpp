@@ -70,9 +70,9 @@ std::unique_ptr<Object> Object::anim_copy() const
                   M_logical_box(logical_box) {}
             Box M_true_box;
             Box M_logical_box;
-            virtual Box get_true_bounding_box() const override
+            virtual Box get_original_true_bounding_box() const override
                 {return M_true_box;}
-            virtual Box get_logical_bounding_box() const override
+            virtual Box get_original_logical_bounding_box() const override
                 {return M_logical_box;}
             virtual void draw(const Camera&) override {}
             virtual void draw_outline(const Camera&) override {}
@@ -83,8 +83,8 @@ std::unique_ptr<Object> Object::anim_copy() const
     };
     return std::make_unique<FakeObject>(
         *this,
-        get_true_bounding_box(),
-        get_logical_bounding_box()
+        get_original_true_bounding_box(),
+        get_original_logical_bounding_box()
     );
 }
 
@@ -106,6 +106,24 @@ void Object::interpolate(const Object& start, const Object& end, double t)
     scale(current_scale / M_scale);
     set_draw_fraction(start.M_draw_fraction
             + (end.M_draw_fraction - start.M_draw_fraction) * t);
+}
+
+Box Object::get_true_bounding_box() const
+{
+    return transform_box(
+        get_original_true_bounding_box(),
+        get_rotor(),
+        get_scale()
+    );
+}
+
+Box Object::get_logical_bounding_box() const
+{
+    return transform_box(
+        get_original_logical_bounding_box(),
+        get_rotor(),
+        get_scale()
+    );
 }
 
 pga2::Bivector Object::get_center() const

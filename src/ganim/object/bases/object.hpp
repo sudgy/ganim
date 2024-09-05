@@ -139,18 +139,39 @@ namespace ganim {
             /** @brief Get the true bounding box of this object
              *
              * This bounding box must be big enough that the entirety of the
-             * object is inside it.
+             * object is inside it.  Note that this function returns the
+             * transformed bounding box.  Unless you know what you're doing, you
+             * probably shouldn't override this function.
              */
-            virtual Box get_true_bounding_box() const=0;
+            virtual Box get_true_bounding_box() const;
             /** @brief Get the logical bounding box of this object
+             *
+             * Sometimes, the thing that "feels" like the bounding box of an
+             * object isn't the actual bounding box.  Note that this function
+             * returns the transformed bounding box.  Unless you know what
+             * you're doing, you probably shouldn't override this function.
+             */
+            virtual Box get_logical_bounding_box() const;
+            /** @brief Get the true bounding box of this object, before any
+             * transformations are applied.
+             *
+             * This bounding box must be big enough that the entirety of the
+             * object is inside it.  This is the one function that you need to
+             * override, and the other three bounding box functions will have
+             * reasonable defaults based on it.
+             */
+            virtual Box get_original_true_bounding_box() const=0;
+            /** @brief Get the logical bounding box of this object, before any
+             * transformations are applied.
              *
              * Sometimes, the thing that "feels" like the bounding box of an
              * object isn't the actual bounding box.  If your object is like
              * this, override this function to return this "logical" bounding
-             * box.  It defaults to just returning @ref get_true_bounding_box.
+             * box.  It defaults to just returning @ref
+             * get_original_true_bounding_box.
              */
-            virtual Box get_logical_bounding_box() const
-                {return get_true_bounding_box();}
+            virtual Box get_original_logical_bounding_box() const
+                {return get_original_true_bounding_box();}
             pga2::Bivector get_center() const;
             pga2::Bivector get_left() const;
             pga2::Bivector get_right() const;

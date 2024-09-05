@@ -9,7 +9,8 @@ using namespace ganim;
 
 namespace {
     class TestObject : public Object {
-        virtual Box get_true_bounding_box() const override {return Box();}
+        virtual Box get_original_true_bounding_box() const override
+            {return Box();}
         virtual void draw(const Camera&) override {}
         virtual void draw_outline(const Camera&) override {}
         virtual void set_outline(const Color&, double) override {}

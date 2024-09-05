@@ -15,6 +15,7 @@ namespace {
             pga3::Trivector scaled_point;
             double last_scale = -1;
             bool last_visible = false;
+            Box bounding_box;
 
             virtual TestObject& set_visible(bool visible) override
             {
@@ -41,7 +42,8 @@ namespace {
             }
             std::unique_ptr<TestObject> anim_copy() const
                 {return std::make_unique<TestObject>(*this);}
-            virtual Box get_true_bounding_box() const override {return Box();}
+            virtual Box get_original_true_bounding_box() const override
+                {return bounding_box;}
             virtual void draw(const Camera&) override {}
             virtual void draw_outline(const Camera&) override {}
             virtual void set_outline(const Color&, double) override {}
@@ -227,4 +229,16 @@ TEST_CASE("Object interpolate", "[object]") {
     REQUIRE(test1.get_color() == "FFFFFFFF");
     REQUIRE(test1.get_scale() == 6);
     REQUIRE(test1.get_draw_fraction() == 0.75);
+}
+
+TEST_CASE("Object Box wrappers", "[object]") {
+    auto test = TestObject();
+    test.bounding_box = Box(vga3::Vector(-1, -1, -1), vga3::Vector(1, 1, 1));
+    using namespace pga2;
+    REQUIRE_THAT(test.get_center().undual(), GAEquals(e0));
+    REQUIRE_THAT(test.get_right().undual(), GAEquals(e0 + e1));
+
+    test.shift(e1);
+    REQUIRE_THAT(test.get_center().undual(), GAEquals(e0 + e1));
+    REQUIRE_THAT(test.get_right().undual(), GAEquals(e0 + 2*e1));
 }

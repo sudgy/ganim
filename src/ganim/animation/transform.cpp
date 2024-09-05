@@ -421,7 +421,7 @@ void main()
             if (M_scale1 == 0) M_scale1 = 1;
             if (M_scale2 == 0) M_scale2 = 1;
         }
-        virtual Box get_true_bounding_box() const override
+        virtual Box get_original_true_bounding_box() const override
         {
             const auto& box1 = M_from->M_bounding_box;
             const auto& box2 = M_to->M_bounding_box;

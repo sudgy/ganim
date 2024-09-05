@@ -26,10 +26,10 @@ namespace {
             }
             int draw_count = 0;
             std::vector<std::pair<TestObject*, bool>>* draws = nullptr;
-            virtual Box get_true_bounding_box() const override
+            virtual Box get_original_true_bounding_box() const override
                 {return true_bounding_box;}
             Box true_bounding_box;
-            virtual Box get_logical_bounding_box() const override
+            virtual Box get_original_logical_bounding_box() const override
                 {return logical_bounding_box;}
             Box logical_bounding_box;
     };
@@ -358,11 +358,12 @@ TEST_CASE("Group bounding box", "[object]") {
     auto obj3 = TestObject();
     using namespace vga3;
     obj1.true_bounding_box = Box(Vector{0,  0, 0}, Vector{1, 1, 0});
-    obj2.true_bounding_box = Box(Vector{1,  1, 0}, Vector{2, 2, 0});
+    obj2.true_bounding_box = Box(Vector{0,  1, 0}, Vector{1, 2, 0});
     obj3.true_bounding_box = Box(Vector{2, -1, 0}, Vector{3, 0, 0});
     obj1.logical_bounding_box = Box(Vector{0,  0, 0}, Vector{0.5, 0.5, 0});
-    obj2.logical_bounding_box = Box(Vector{1,  1, 0}, Vector{1.5, 1.5, 0});
+    obj2.logical_bounding_box = Box(Vector{0,  1, 0}, Vector{0.5, 1.5, 0});
     obj3.logical_bounding_box = Box(Vector{2, -1, 0}, Vector{2.5, 0, 0});
+    obj2.shift(e1);
 
     auto group1 = Group();
     auto group2 = Group(obj1);
@@ -375,6 +376,7 @@ TEST_CASE("Group bounding box", "[object]") {
     auto res2 = group2.get_logical_bounding_box();
     auto res3 = group3.get_true_bounding_box();
     auto res4 = group3.get_logical_bounding_box();
+    group4.shift(e1);
     auto res5 = group4.get_true_bounding_box();
     auto res6 = group4.get_logical_bounding_box();
     auto res1p1 = pga3_to_vga3(res1.get_inner_lower_left_vertex());
@@ -398,10 +400,10 @@ TEST_CASE("Group bounding box", "[object]") {
     REQUIRE_THAT(res3p2, GAEquals(2*e1 + 2*e2));
     REQUIRE_THAT(res4p1, GAEquals(0));
     REQUIRE_THAT(res4p2, GAEquals(1.5*e1 + 1.5*e2));
-    REQUIRE_THAT(res5p1, GAEquals(-e2));
-    REQUIRE_THAT(res5p2, GAEquals(3*e1 + 2*e2));
-    REQUIRE_THAT(res6p1, GAEquals(-e2));
-    REQUIRE_THAT(res6p2, GAEquals(2.5*e1 + 1.5*e2));
+    REQUIRE_THAT(res5p1, GAEquals(e1 - e2));
+    REQUIRE_THAT(res5p2, GAEquals(4*e1 + 2*e2));
+    REQUIRE_THAT(res6p1, GAEquals(e1 - e2));
+    REQUIRE_THAT(res6p2, GAEquals(3.5*e1 + 1.5*e2));
 }
 
 TEST_CASE("Group draw_together", "[object]") {
