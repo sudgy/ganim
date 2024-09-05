@@ -108,52 +108,42 @@ void Object::interpolate(const Object& start, const Object& end, double t)
             + (end.M_draw_fraction - start.M_draw_fraction) * t);
 }
 
-vga3::Vector Object::get_left() const
+pga2::Bivector Object::get_left() const
 {
     return get_logical_bounding_box().get_left();
 }
 
-vga3::Vector Object::get_right() const
+pga2::Bivector Object::get_right() const
 {
     return get_logical_bounding_box().get_right();
 }
 
-vga3::Vector Object::get_up() const
+pga2::Bivector Object::get_up() const
 {
     return get_logical_bounding_box().get_up();
 }
 
-vga3::Vector Object::get_down() const
+pga2::Bivector Object::get_down() const
 {
     return get_logical_bounding_box().get_down();
 }
 
-vga3::Vector Object::get_out() const
-{
-    return get_logical_bounding_box().get_out();
-}
-
-vga3::Vector Object::get_in() const
-{
-    return get_logical_bounding_box().get_in();
-}
-
-vga3::Vector Object::get_upper_left() const
+pga2::Bivector Object::get_upper_left() const
 {
     return get_logical_bounding_box().get_upper_left();
 }
 
-vga3::Vector Object::get_upper_right() const
+pga2::Bivector Object::get_upper_right() const
 {
     return get_logical_bounding_box().get_upper_right();
 }
 
-vga3::Vector Object::get_lower_left() const
+pga2::Bivector Object::get_lower_left() const
 {
     return get_logical_bounding_box().get_lower_left();
 }
 
-vga3::Vector Object::get_lower_right() const
+pga2::Bivector Object::get_lower_right() const
 {
     return get_logical_bounding_box().get_lower_right();
 }

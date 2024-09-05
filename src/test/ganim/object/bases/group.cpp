@@ -356,12 +356,13 @@ TEST_CASE("Group bounding box", "[object]") {
     auto obj1 = TestObject();
     auto obj2 = TestObject();
     auto obj3 = TestObject();
-    obj1.true_bounding_box = Box({0,  0, 0}, {1, 1, 0});
-    obj2.true_bounding_box = Box({1,  1, 0}, {2, 2, 0});
-    obj3.true_bounding_box = Box({2, -1, 0}, {3, 0, 0});
-    obj1.logical_bounding_box = Box({0,  0, 0}, {0.5, 0.5, 0});
-    obj2.logical_bounding_box = Box({1,  1, 0}, {1.5, 1.5, 0});
-    obj3.logical_bounding_box = Box({2, -1, 0}, {2.5, 0, 0});
+    using namespace vga3;
+    obj1.true_bounding_box = Box(Vector{0,  0, 0}, Vector{1, 1, 0});
+    obj2.true_bounding_box = Box(Vector{1,  1, 0}, Vector{2, 2, 0});
+    obj3.true_bounding_box = Box(Vector{2, -1, 0}, Vector{3, 0, 0});
+    obj1.logical_bounding_box = Box(Vector{0,  0, 0}, Vector{0.5, 0.5, 0});
+    obj2.logical_bounding_box = Box(Vector{1,  1, 0}, Vector{1.5, 1.5, 0});
+    obj3.logical_bounding_box = Box(Vector{2, -1, 0}, Vector{2.5, 0, 0});
 
     auto group1 = Group();
     auto group2 = Group(obj1);
@@ -376,20 +377,31 @@ TEST_CASE("Group bounding box", "[object]") {
     auto res4 = group3.get_logical_bounding_box();
     auto res5 = group4.get_true_bounding_box();
     auto res6 = group4.get_logical_bounding_box();
+    auto res1p1 = pga3_to_vga3(res1.get_inner_lower_left_vertex());
+    auto res1p2 = pga3_to_vga3(res1.get_outer_upper_right_vertex());
+    auto res2p1 = pga3_to_vga3(res2.get_inner_lower_left_vertex());
+    auto res2p2 = pga3_to_vga3(res2.get_outer_upper_right_vertex());
+    auto res3p1 = pga3_to_vga3(res3.get_inner_lower_left_vertex());
+    auto res3p2 = pga3_to_vga3(res3.get_outer_upper_right_vertex());
+    auto res4p1 = pga3_to_vga3(res4.get_inner_lower_left_vertex());
+    auto res4p2 = pga3_to_vga3(res4.get_outer_upper_right_vertex());
+    auto res5p1 = pga3_to_vga3(res5.get_inner_lower_left_vertex());
+    auto res5p2 = pga3_to_vga3(res5.get_outer_upper_right_vertex());
+    auto res6p1 = pga3_to_vga3(res6.get_inner_lower_left_vertex());
+    auto res6p2 = pga3_to_vga3(res6.get_outer_upper_right_vertex());
 
-    using namespace vga3;
-    REQUIRE_THAT(res1.p1, GAEquals(0));
-    REQUIRE_THAT(res1.p2, GAEquals(e1 + e2));
-    REQUIRE_THAT(res2.p1, GAEquals(0));
-    REQUIRE_THAT(res2.p2, GAEquals(0.5*e1 + 0.5*e2));
-    REQUIRE_THAT(res3.p1, GAEquals(0));
-    REQUIRE_THAT(res3.p2, GAEquals(2*e1 + 2*e2));
-    REQUIRE_THAT(res4.p1, GAEquals(0));
-    REQUIRE_THAT(res4.p2, GAEquals(1.5*e1 + 1.5*e2));
-    REQUIRE_THAT(res5.p1, GAEquals(-e2));
-    REQUIRE_THAT(res5.p2, GAEquals(3*e1 + 2*e2));
-    REQUIRE_THAT(res6.p1, GAEquals(-e2));
-    REQUIRE_THAT(res6.p2, GAEquals(2.5*e1 + 1.5*e2));
+    REQUIRE_THAT(res1p1, GAEquals(0));
+    REQUIRE_THAT(res1p2, GAEquals(e1 + e2));
+    REQUIRE_THAT(res2p1, GAEquals(0));
+    REQUIRE_THAT(res2p2, GAEquals(0.5*e1 + 0.5*e2));
+    REQUIRE_THAT(res3p1, GAEquals(0));
+    REQUIRE_THAT(res3p2, GAEquals(2*e1 + 2*e2));
+    REQUIRE_THAT(res4p1, GAEquals(0));
+    REQUIRE_THAT(res4p2, GAEquals(1.5*e1 + 1.5*e2));
+    REQUIRE_THAT(res5p1, GAEquals(-e2));
+    REQUIRE_THAT(res5p2, GAEquals(3*e1 + 2*e2));
+    REQUIRE_THAT(res6p1, GAEquals(-e2));
+    REQUIRE_THAT(res6p2, GAEquals(2.5*e1 + 1.5*e2));
 }
 
 TEST_CASE("Group draw_together", "[object]") {

@@ -122,13 +122,15 @@ void main()
             tracked_object().apply_rotor(~rotor);
             tracked_object().scale(1/scale);
             M_bounding_box = tracked_object().get_true_bounding_box();
-            using namespace vga3;
-            const auto x1 = M_bounding_box.p1.blade_project<e1>();
-            const auto x2 = M_bounding_box.p2.blade_project<e1>();
-            const auto y1 = M_bounding_box.p1.blade_project<e2>();
-            const auto y2 = M_bounding_box.p2.blade_project<e2>();
-            const auto z1 = M_bounding_box.p1.blade_project<e3>();
-            const auto z2 = M_bounding_box.p2.blade_project<e3>();
+            using namespace pga3;
+            auto p1 = M_bounding_box.get_inner_lower_left_vertex().undual();
+            auto p2 = M_bounding_box.get_outer_upper_right_vertex().undual();
+            const auto x1 = p1.blade_project<e1>();
+            const auto x2 = p2.blade_project<e1>();
+            const auto y1 = p1.blade_project<e2>();
+            const auto y2 = p2.blade_project<e2>();
+            const auto z1 = p1.blade_project<e3>();
+            const auto z2 = p2.blade_project<e3>();
             {
                 if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
                     tracked_object().apply_rotor(rotor);
@@ -423,10 +425,12 @@ void main()
         {
             const auto& box1 = M_from->M_bounding_box;
             const auto& box2 = M_to->M_bounding_box;
-            auto box = Box(
-                box1.p1 * (1 - M_t) + box2.p1 * M_t,
-                box1.p2 * (1 - M_t) + box2.p2 * M_t
-            );
+            auto p11 = box1.get_inner_lower_left_vertex().undual();
+            auto p12 = box1.get_outer_upper_right_vertex().undual();
+            auto p21 = box2.get_inner_lower_left_vertex().undual();
+            auto p22 = box2.get_outer_upper_right_vertex().undual();
+            auto p1 = p11 * (1 - M_t) + p21 * M_t;
+            auto p2 = p12 * (1 - M_t) + p22 * M_t;
             auto rotor = get_rotor();
             auto convert_point = [&](const vga3::Vector& p) {
                 auto new_p = ~rotor * vga3_to_pga3(get_scale()*p) * rotor;
@@ -434,17 +438,20 @@ void main()
             };
             auto points = std::array<vga3::Vector, 8>();
             int i = 0;
-            using namespace vga3;
-            for (auto x : {box.p1.blade_project<e1>(),
-                           box.p2.blade_project<e1>()}) {
-                for (auto y : {box.p1.blade_project<e2>(),
-                               box.p2.blade_project<e2>()}) {
-                    for (auto z : {box.p1.blade_project<e3>(),
-                                   box.p2.blade_project<e3>()}) {
-                        points[i++] = {x, y, z};
+            {
+                using namespace pga3;
+                for (auto x : {p1.blade_project<e1>(),
+                               p2.blade_project<e1>()}) {
+                    for (auto y : {p1.blade_project<e2>(),
+                                   p2.blade_project<e2>()}) {
+                        for (auto z : {p1.blade_project<e3>(),
+                                       p2.blade_project<e3>()}) {
+                            points[i++] = {x, y, z};
+                        }
                     }
                 }
             }
+            using namespace vga3;
             auto transformed_points = points | std::views::transform(convert_point);
             auto xs = transformed_points
                 | std::views::transform(&vga3::Vector::blade_project<e1>);
@@ -453,12 +460,12 @@ void main()
             auto zs = transformed_points
                 | std::views::transform(&vga3::Vector::blade_project<e3>);
             return Box(
-                {
+                vga3::Vector{
                     *std::ranges::min_element(xs),
                     *std::ranges::min_element(ys),
                     *std::ranges::min_element(zs)
                 },
-                {
+                vga3::Vector{
                     *std::ranges::max_element(xs),
                     *std::ranges::max_element(ys),
                     *std::ranges::max_element(zs)

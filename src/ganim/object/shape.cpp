@@ -139,12 +139,12 @@ Box Shape::get_true_bounding_box() const
     auto zs = transformed_points
         | std::views::transform(&vga3::Vector::blade_project<e3>);
     return Box(
-        {
+        vga3::Vector{
             *std::ranges::min_element(xs),
             *std::ranges::min_element(ys),
             *std::ranges::min_element(zs)
         },
-        {
+        vga3::Vector{
             *std::ranges::max_element(xs),
             *std::ranges::max_element(ys),
             *std::ranges::max_element(zs)

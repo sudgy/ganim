@@ -132,13 +132,15 @@ void SingleObject::create_outline(const Camera& camera)
     apply_rotor(~rotor);
     this->scale(1/scale);
     auto bounding_box = get_true_bounding_box();
-    using namespace vga3;
-    const auto x1 = bounding_box.p1.blade_project<e1>();
-    const auto x2 = bounding_box.p2.blade_project<e1>();
-    const auto y1 = bounding_box.p1.blade_project<e2>();
-    const auto y2 = bounding_box.p2.blade_project<e2>();
-    const auto z1 = bounding_box.p1.blade_project<e3>();
-    const auto z2 = bounding_box.p2.blade_project<e3>();
+    using namespace pga3;
+    auto p1 = bounding_box.get_inner_lower_left_vertex().undual();
+    auto p2 = bounding_box.get_outer_upper_right_vertex().undual();
+    const auto x1 = p1.blade_project<e1>();
+    const auto x2 = p2.blade_project<e1>();
+    const auto y1 = p1.blade_project<e2>();
+    const auto y2 = p2.blade_project<e2>();
+    const auto z1 = p1.blade_project<e3>();
+    const auto z2 = p2.blade_project<e3>();
     {
         if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
             apply_rotor(rotor);

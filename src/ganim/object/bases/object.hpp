@@ -151,16 +151,14 @@ namespace ganim {
              */
             virtual Box get_logical_bounding_box() const
                 {return get_true_bounding_box();}
-            vga3::Vector get_left() const;
-            vga3::Vector get_right() const;
-            vga3::Vector get_up() const;
-            vga3::Vector get_down() const;
-            vga3::Vector get_out() const;
-            vga3::Vector get_in() const;
-            vga3::Vector get_upper_left() const;
-            vga3::Vector get_upper_right() const;
-            vga3::Vector get_lower_left() const;
-            vga3::Vector get_lower_right() const;
+            pga2::Bivector get_left() const;
+            pga2::Bivector get_right() const;
+            pga2::Bivector get_up() const;
+            pga2::Bivector get_down() const;
+            pga2::Bivector get_upper_left() const;
+            pga2::Bivector get_upper_right() const;
+            pga2::Bivector get_lower_left() const;
+            pga2::Bivector get_lower_right() const;
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 

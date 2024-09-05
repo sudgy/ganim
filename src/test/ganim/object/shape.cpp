@@ -434,7 +434,7 @@ TEST_CASE("Empty shapes", "[object]") {
 }
 
 TEST_CASE("Shape bounding box", "[object]") {
-    using namespace vga3;
+    using namespace pga3;
     auto shape1 = Shape();
     auto shape2 = Shape(
         {{ 2,  2, 0},
@@ -454,10 +454,14 @@ TEST_CASE("Shape bounding box", "[object]") {
     REQUIRE_NOTHROW(shape1.get_true_bounding_box());
     auto box2 = shape2.get_true_bounding_box();
     auto box3 = shape3.get_true_bounding_box();
-    REQUIRE_THAT(box2.p1, GAEquals(-2*e1 - 2*e2));
-    REQUIRE_THAT(box2.p2, GAEquals( 2*e1 + 2*e2));
-    REQUIRE_THAT(box3.p1, GAEquals(-2*e1 - 2*e2));
-    REQUIRE_THAT(box3.p2, GAEquals( 2*e1 + 2*e2));
+    auto box2p1 = box2.get_inner_lower_left_vertex().undual();
+    auto box2p2 = box2.get_outer_upper_right_vertex().undual();
+    auto box3p1 = box3.get_inner_lower_left_vertex().undual();
+    auto box3p2 = box3.get_outer_upper_right_vertex().undual();
+    REQUIRE_THAT(box2p1, GAEquals(e0 + -2*e1 - 2*e2));
+    REQUIRE_THAT(box2p2, GAEquals(e0 +  2*e1 + 2*e2));
+    REQUIRE_THAT(box3p1, GAEquals(e0 + -2*e1 - 2*e2));
+    REQUIRE_THAT(box3p2, GAEquals(e0 +  2*e1 + 2*e2));
 }
 
 TEST_CASE("Shape scaling to zero", "[object]") {
