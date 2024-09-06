@@ -553,3 +553,26 @@ TEST_CASE("Group ranges", "[object]") {
     REQUIRE(test4.drawing_together());
     REQUIRE(test5.drawing_together());
 }
+
+TEST_CASE("Group align_by_subobject", "[object]") {
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    auto obj3 = TestObject();
+    auto box = Box(vga2::Vector(0, 0), vga2::Vector(1, 1));
+    obj1.logical_bounding_box = box;
+    obj2.logical_bounding_box = box;
+    obj3.logical_bounding_box = box;
+
+    auto group = Group(obj1, obj2);
+    using namespace pga2;
+    obj2.shift(2*e1);
+    group.shift(e2 - e1);
+    group.align_by_subobject(1, obj3, -e1);
+    REQUIRE_THAT(obj1.get_center().undual(), GAEquals(e0 - 1.5*e1 + 1.5*e2));
+    REQUIRE_THAT(obj2.get_center().undual(), GAEquals(e0 + 0.5*e1 + 1.5*e2));
+    REQUIRE_THAT(obj3.get_center().undual(), GAEquals(e0 + 0.5*e1 + 0.5*e2));
+    group.align_by_subobject(0, obj3, e1, e2);
+    REQUIRE_THAT(obj1.get_center().undual(), GAEquals(e0 + 0.5*e1 + 0.5*e2));
+    REQUIRE_THAT(obj2.get_center().undual(), GAEquals(e0 + 2.5*e1 + 0.5*e2));
+    REQUIRE_THAT(obj3.get_center().undual(), GAEquals(e0 + 0.5*e1 + 0.5*e2));
+}

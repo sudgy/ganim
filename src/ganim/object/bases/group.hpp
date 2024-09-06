@@ -190,6 +190,61 @@ class Group : public Object {
         Group range(int i1, int i2);
         Group range(int i);
 
+        Group& align_by_subobject(
+            int index,
+            const pga3::Trivector& point,
+            const pga3::Trivector& direction
+        );
+        Group& align_by_subobject(
+            int index,
+            const Object& object,
+            const pga3::Trivector& direction
+        );
+        Group& align_by_subobject(
+            int index,
+            const pointlike auto& point,
+            const pointlike auto& direction
+        )
+        {
+            return align_by_subobject(
+                index,
+                pointlike_to_pga3(point),
+                pointlike_to_pga3(direction)
+            );
+        }
+        Group& align_by_subobject(
+            int index,
+            const Object& object,
+            const pointlike auto& direction
+        )
+        {
+            return align_by_subobject(
+                index,
+                object,
+                pointlike_to_pga3(direction)
+            );
+        }
+        Group& align_by_subobject(
+            int index,
+            const Object& object,
+            const pointlike auto& direction1,
+            const pointlike auto& direction2
+        )
+        {
+            align_by_subobject(index, object, direction1);
+            return align_by_subobject(index, object, direction2);
+        }
+        Group& align_by_subobject(
+            int index,
+            const pointlike auto& point,
+            const pointlike auto& direction1,
+            const pointlike auto& direction2
+        )
+        {
+            align_by_subobject(index, point, direction1);
+            return align_by_subobject(index, point, direction2);
+        }
+
     private:
         std::vector<Object*> M_subobjects;
         double M_ratio = 1;

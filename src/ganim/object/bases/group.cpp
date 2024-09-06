@@ -413,3 +413,33 @@ Group Group::range(int i)
     if (M_draw_together) result.draw_together();
     return result;
 }
+
+Group& Group::align_by_subobject(
+    int index,
+    const pga3::Trivector& point,
+    const pga3::Trivector& direction
+)
+{
+    auto& subobject = *M_subobjects[index];
+    auto orig_pos = subobject.get_center();
+    subobject.align_to(point, direction);
+    auto new_pos = subobject.get_center();
+    auto dir = (new_pos - orig_pos).undual();
+    subobject.shift(-dir);
+    shift(dir);
+    return *this;
+}
+
+Group& Group::align_by_subobject(
+    int index,
+    const Object& object,
+    const pga3::Trivector& direction
+)
+{
+    const auto other_box = object.get_logical_bounding_box();
+    return align_by_subobject(
+        index,
+        other_box.get_outside_point(direction),
+        direction
+    );
+}
