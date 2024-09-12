@@ -112,13 +112,18 @@ void SceneBase::frame_advance()
         }
         for (auto object : M_drawables) {
             if (object->is_visible()) {
+                if (!object->is_fixed_in_frame()) {
+                    object->draw_outline(M_camera);
+                    object->draw(M_camera);
+                }
+            }
+        }
+        glClear(GL_DEPTH_BUFFER_BIT);
+        for (auto object : M_drawables) {
+            if (object->is_visible()) {
                 if (object->is_fixed_in_frame()) {
                     object->draw_outline(M_static_camera);
                     object->draw(M_static_camera);
-                }
-                else {
-                    object->draw_outline(M_camera);
-                    object->draw(M_camera);
                 }
             }
         }
