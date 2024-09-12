@@ -124,6 +124,9 @@ namespace ganim {
              */
             virtual void set_noise_creating(double noise_creating)
                 {M_noise_creating = noise_creating;}
+            virtual void set_fixed_in_frame(bool fixed_in_frame)
+                {M_fixed_in_frame = fixed_in_frame;}
+            bool is_fixed_in_frame() const {return M_fixed_in_frame;}
             /** @brief Determine whether or not this object is being created.
              *
              * Used internally by things like the create animation.
@@ -260,13 +263,13 @@ namespace ganim {
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
-
-            Color M_color = {255, 255, 255, 255};
             double M_scale = 1;
             double M_draw_fraction = 1;
+            double M_noise_creating = 0.0;
+            Color M_color = {255, 255, 255, 255};
             bool M_visible = false;
             bool M_creating = false;
-            double M_noise_creating = 0.0;
+            bool M_fixed_in_frame = false;
     };
 }
 

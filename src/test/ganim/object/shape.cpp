@@ -485,3 +485,37 @@ TEST_CASE("Shape scaling to zero", "[object]") {
         }
     }
 }
+
+
+TEST_CASE("Object fixed_in_frame", "[object]") {
+    auto scene = TestScene(10, 10, 10, 10, 4);
+    auto shape = Shape(
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape.set_visible(true);
+    shape.set_fixed_in_frame(true);
+    scene.add(shape);
+    scene.get_camera().add_updater([&]{
+        scene.get_camera().rotate(pga3::e13, τ/8);
+    });
+    scene.wait(2);
+    for (int i = 0; i < 8; ++i) {
+        INFO("i = " << i);
+        REQUIRE(scene.get_pixel(i, 3, 3) == Color("FFFFFF"));
+        REQUIRE(scene.get_pixel(i, 3, 6) == Color("FFFFFF"));
+        REQUIRE(scene.get_pixel(i, 6, 3) == Color("FFFFFF"));
+        REQUIRE(scene.get_pixel(i, 6, 6) == Color("FFFFFF"));
+        REQUIRE(scene.get_pixel(i, 2, 3) == Color("000000"));
+        REQUIRE(scene.get_pixel(i, 3, 2) == Color("000000"));
+        REQUIRE(scene.get_pixel(i, 2, 6) == Color("000000"));
+        REQUIRE(scene.get_pixel(i, 3, 7) == Color("000000"));
+        REQUIRE(scene.get_pixel(i, 7, 3) == Color("000000"));
+        REQUIRE(scene.get_pixel(i, 6, 2) == Color("000000"));
+        REQUIRE(scene.get_pixel(i, 7, 6) == Color("000000"));
+        REQUIRE(scene.get_pixel(i, 6, 7) == Color("000000"));
+    }
+}

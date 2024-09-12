@@ -109,8 +109,14 @@ void SceneBase::frame_advance()
         if (M_background_object) M_background_object->draw(M_static_camera);
         for (auto object : M_drawables) {
             if (object->is_visible()) {
-                object->draw_outline(M_camera);
-                object->draw(M_camera);
+                if (object->is_fixed_in_frame()) {
+                    object->draw_outline(M_static_camera);
+                    object->draw(M_static_camera);
+                }
+                else {
+                    object->draw_outline(M_camera);
+                    object->draw(M_camera);
+                }
             }
         }
         process_frame();

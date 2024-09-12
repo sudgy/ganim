@@ -306,6 +306,16 @@ void Group::set_noise_creating(double noise_creating)
     }
 }
 
+void Group::set_fixed_in_frame(bool fixed_in_frame)
+{
+    Object::set_fixed_in_frame(fixed_in_frame);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->set_fixed_in_frame(fixed_in_frame);
+        }
+    }
+}
+
 Box Group::get_true_bounding_box() const
 {
     return get_original_true_bounding_box();
