@@ -106,7 +106,10 @@ void SceneBase::frame_advance()
             1
         );
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if (M_background_object) M_background_object->draw(M_static_camera);
+        if (M_background_object) {
+            M_background_object->draw(M_static_camera);
+            glClear(GL_DEPTH_BUFFER_BIT);
+        }
         for (auto object : M_drawables) {
             if (object->is_visible()) {
                 if (object->is_fixed_in_frame()) {
