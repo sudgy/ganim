@@ -4,7 +4,7 @@ R"(
     pos.w = -pos.z;
     pos.x *= camera_scale.x;
     pos.y *= -camera_scale.y; // ffmpeg has the y axis swapped
-    pos.z *= pos.z / 1024;
+    pos.z *= pos.z / 4096;
     gl_Position = pos;
     vertex_t = in_t;
     out_color = in_color;
