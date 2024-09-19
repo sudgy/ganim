@@ -10,4 +10,11 @@ Camera::Camera(double distance, double width, double height) :
     M_starting_height(height)
 {
     shift(distance*e3);
+    M_original_rotor = get_rotor();
+}
+
+void Camera::reset()
+{
+    Transformable::reset();
+    apply_rotor(M_original_rotor);
 }

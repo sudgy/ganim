@@ -65,12 +65,14 @@ class Camera : public Transformable {
         /** @brief Get the starting width passed to the constructor
          */
         double get_starting_height() const {return M_starting_height;}
+        void reset();
 
     private:
         double M_x_scale = -1;
         double M_y_scale = -1;
         double M_starting_width = -1;
         double M_starting_height = -1;
+        pga3::Even M_original_rotor;
 };
 
 }
