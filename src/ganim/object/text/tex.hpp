@@ -55,6 +55,7 @@ class Tex : public Group, public DVIConsumer {
 
         std::vector<TextureShape<Shape>> M_shapes;
         std::unordered_map<std::string, std::vector<int>> M_pieces_by_string;
+        std::vector<std::string> M_tex_strings;
 };
 
 }

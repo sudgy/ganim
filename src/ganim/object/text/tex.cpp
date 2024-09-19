@@ -152,10 +152,11 @@ R"(
 
 // TODO: Find a way to stop this ridiculous double-splitting
 Tex::Tex(const std::vector<std::string>& tex_strings)
-: Tex(create_dvi(split_tex_strings(tex_strings)))
+:   Tex(create_dvi(split_tex_strings(tex_strings)))
 {
+    M_tex_strings = split_tex_strings(tex_strings);
     auto i = 0;
-    for (auto& s : split_tex_strings(tex_strings)) {
+    for (auto& s : M_tex_strings) {
         M_pieces_by_string[s].push_back(i++);
     }
 }
@@ -327,12 +328,21 @@ void Tex::process_special(std::string_view special)
 
 void Tex::set_colors(const std::unordered_map<std::string, Color>& colors)
 {
-    for (auto& [string, color] : colors) {
-        auto it = M_pieces_by_string.find(string);
-        if (it != M_pieces_by_string.end()) {
-            for (auto i : it->second) {
+    for (auto i = 0; i < ssize(M_tex_strings); ++i) {
+        for (auto& [str, color] : colors) {
+            auto& tex = M_tex_strings[i];
+            if (tex.find(str) != tex.npos) {
                 M_shapes[i].set_color(color);
+                break;
             }
         }
     }
+    //for (auto& [string, color] : colors) {
+    //    auto it = M_pieces_by_string.find(string);
+    //    if (it != M_pieces_by_string.end()) {
+    //        for (auto i : it->second) {
+    //            M_shapes[i].set_color(color);
+    //        }
+    //    }
+    //}
 }
