@@ -151,7 +151,10 @@ constexpr auto simple_log(const T& r)
 {
     const auto b = r.template grade_project<2>();
     const auto b2 = (b*b).template binary_blade_project<0>();
-    if (b2 == 0) return b;
+    // This 1e-10 check is not just for accounting for numerical instability,
+    // it's also mathematically valid: When |b| is small, the Taylor series of
+    // each expansion looks like 1 + b
+    if (std::abs(b2) < 1e-10) return b;
     const auto b_norm = b / std::sqrt(std::abs(b2));
     const auto s = r.template binary_blade_project<0>();
     if (b2 > 0) return std::acosh(s) * b_norm;
