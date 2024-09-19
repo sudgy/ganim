@@ -260,6 +260,9 @@ namespace ganim {
                 return align_to(point, direction2);
             }
 
+            std::unique_ptr<Object>
+                get_bounding_box_object(Color color = "80808080") const;
+
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:

@@ -5,6 +5,8 @@
 #include "ganim/ga/conversions.hpp"
 #include "ganim/rate_functions.hpp"
 
+#include "ganim/object/shape.hpp"
+
 using namespace ganim;
 using namespace pga3;
 
@@ -236,4 +238,30 @@ Object& Object::align_to(
 {
     const auto other_box = object.get_logical_bounding_box();
     return align_to(other_box.get_outside_point(direction), direction);
+}
+
+std::unique_ptr<Object> Object::get_bounding_box_object(Color color) const
+{
+    auto box = get_logical_bounding_box();
+    auto p1 = box.get_lower_left().undual();
+    auto p2 = box.get_upper_left().undual();
+    auto p3 = box.get_lower_right().undual();
+    auto p4 = box.get_upper_right().undual();
+    using namespace pga2;
+    std::cout << p1.blade_project<e1>() << " " << p1.blade_project<e2>() << "\n";
+    std::cout << p2.blade_project<e1>() << " " << p2.blade_project<e2>() << "\n";
+    std::cout << p3.blade_project<e1>() << " " << p3.blade_project<e2>() << "\n";
+    std::cout << p4.blade_project<e1>() << " " << p4.blade_project<e2>() << "\n\n";
+    auto result = std::make_unique<Shape>(
+        std::vector<Shape::Vertex>{
+            {float(p1.blade_project<e1>()), float(p1.blade_project<e2>())},
+            {float(p2.blade_project<e1>()), float(p2.blade_project<e2>())},
+            {float(p3.blade_project<e1>()), float(p3.blade_project<e2>())},
+            {float(p4.blade_project<e1>()), float(p4.blade_project<e2>())},
+        },
+        std::vector<unsigned>{0, 1, 2, 2, 1, 3}
+    );
+    result->set_color(color);
+    result->set_opacity(0.5);
+    return result;
 }
