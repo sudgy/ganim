@@ -125,11 +125,8 @@ Box Shape::get_original_true_bounding_box() const
     if (M_vertices.empty()) return Box();
     // TODO: Use caching to be more efficient
     using namespace vga3;
-    auto rotor = get_rotor();
     auto convert_point = [&](const Vertex& p) {
-        auto p_vec = p.x*e1 + p.y*e2 + p.z*e3;
-        auto new_p = ~rotor * vga3_to_pga3(get_scale()*p_vec) * rotor;
-        return pga3_to_vga3(new_p.grade_project<3>());
+        return p.x*e1 + p.y*e2 + p.z*e3;
     };
     auto transformed_points = M_vertices | std::views::transform(convert_point);
     auto xs = transformed_points
