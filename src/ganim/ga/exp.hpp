@@ -69,11 +69,10 @@ constexpr auto ga_inv(const T& v)
         );
         using namespace pga3;
         const Bivector& b = v;
-        const auto r = ~b;
-        const auto s = b*r;
-        const auto c = s.blade_project<e>()
-                     - s.blade_project<e0123>()*e0123;
-        return r * (c / (s * c).blade_project<e>());
+        const auto c = b*b;
+        const auto c2 = c.blade_project<e>() - c.blade_project<e0123>()*e0123;
+        const auto d = (c*c2).blade_project<e>();
+        return b*c2/d;
     }
 }
 
