@@ -31,6 +31,7 @@
 #include <algorithm>
 #include <concepts>
 #include <stdexcept>
+#include <bit>
 
 namespace ganim {
 
