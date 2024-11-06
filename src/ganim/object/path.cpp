@@ -33,7 +33,7 @@ namespace {
         auto orientation = (join1 ^ join2).blade_project<e12>();
         auto direction = (join1 | join2).blade_project<e>();
         // The three points are roughly collinear
-        if (std::abs(orientation) < 1e-2) {
+        if (std::abs(orientation) < 1e-1) {
             auto b = midpoint | join2;
             add_vertex((join2 - d*e0) ^ b);
             add_vertex((join2 + d*e0) ^ b);
