@@ -56,20 +56,13 @@ namespace ganim {
             virtual void draw(const Camera& camera) override;
 
         private:
-            void reposition();
-            void reorient();
-            void calculate_size();
-
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;
             gl::Buffer M_element_buffer;
 
             double M_max_tip_to_length_ratio = 0.5;
             double M_tip_size = 0.35;
-            double M_tip_pos = 0.0;
-            vga3::Vector M_start;
-            vga3::Vector M_end;
-            bool M_redoing = false;
+            bool M_manual_transform = false;
     };
 }
 

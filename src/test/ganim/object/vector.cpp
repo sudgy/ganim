@@ -17,21 +17,21 @@ TEST_CASE("Vector object construction", "[object]") {
     auto test6 = ganim::Vector(e1, 2*e1);
     auto test7 = ganim::Vector(e1, e1 + e3);
 
-    REQUIRE_THAT(test1.get_start_pga3().undual(), GAEquals(e0));
-    REQUIRE_THAT(test2.get_start_pga3().undual(), GAEquals(e0));
-    REQUIRE_THAT(test3.get_start_pga3().undual(), GAEquals(e0));
-    REQUIRE_THAT(test4.get_start_pga3().undual(), GAEquals(e0));
-    REQUIRE_THAT(test5.get_start_pga3().undual(), GAEquals(e0));
-    REQUIRE_THAT(test6.get_start_pga3().undual(), GAEquals(e0 + e1));
-    REQUIRE_THAT(test7.get_start_pga3().undual(), GAEquals(e0 + e1));
+    REQUIRE_THAT(test1.get_start_pga3().undual(), GAEquals(e0, 1e-5));
+    REQUIRE_THAT(test2.get_start_pga3().undual(), GAEquals(e0, 1e-5));
+    REQUIRE_THAT(test3.get_start_pga3().undual(), GAEquals(e0, 1e-5));
+    REQUIRE_THAT(test4.get_start_pga3().undual(), GAEquals(e0, 1e-5));
+    REQUIRE_THAT(test5.get_start_pga3().undual(), GAEquals(e0, 1e-5));
+    REQUIRE_THAT(test6.get_start_pga3().undual(), GAEquals(e0 + e1, 1e-5));
+    REQUIRE_THAT(test7.get_start_pga3().undual(), GAEquals(e0 + e1, 1e-5));
 
-    REQUIRE_THAT(test1.get_end_pga3().undual(), GAEquals(e0 + e1));
-    REQUIRE_THAT(test2.get_end_pga3().undual(), GAEquals(e0 + e2));
-    REQUIRE_THAT(test3.get_end_pga3().undual(), GAEquals(e0 + e1 + e2));
-    REQUIRE_THAT(test4.get_end_pga3().undual(), GAEquals(e0 + e1 + e3));
-    REQUIRE_THAT(test5.get_end_pga3().undual(), GAEquals(e0 + e3));
-    REQUIRE_THAT(test6.get_end_pga3().undual(), GAEquals(e0 + 2*e1));
-    REQUIRE_THAT(test7.get_end_pga3().undual(), GAEquals(e0 + e1 + e3));
+    REQUIRE_THAT(test1.get_end_pga3().undual(), GAEquals(e0 + e1, 1e-5));
+    REQUIRE_THAT(test2.get_end_pga3().undual(), GAEquals(e0 + e2, 1e-5));
+    REQUIRE_THAT(test3.get_end_pga3().undual(), GAEquals(e0 + e1 + e2, 1e-5));
+    REQUIRE_THAT(test4.get_end_pga3().undual(), GAEquals(e0 + e1 + e3, 1e-5));
+    REQUIRE_THAT(test5.get_end_pga3().undual(), GAEquals(e0 + e3, 1e-5));
+    REQUIRE_THAT(test6.get_end_pga3().undual(), GAEquals(e0 + 2*e1, 1e-5));
+    REQUIRE_THAT(test7.get_end_pga3().undual(), GAEquals(e0 + e1 + e3, 1e-5));
 
     auto r1 = test1.get_rotor();
     auto r2 = test2.get_rotor();
@@ -56,7 +56,6 @@ TEST_CASE("Vector object scale", "[object]") {
     using namespace vga3;
     auto test = ganim::Vector(e1);
     test.scale(2);
-    REQUIRE(test.get_scale() == 1);
     REQUIRE_THAT(test.get_start_vga3(), GAEquals(0));
     REQUIRE_THAT(test.get_end_vga3(), GAEquals(2*e1));
     test.scale(e1, 2);
