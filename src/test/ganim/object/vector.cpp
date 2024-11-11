@@ -88,3 +88,16 @@ TEST_CASE("Vector object transforms", "[object]") {
     r = test.get_rotor();
     REQUIRE_THAT((~r*(e0 - e2).dual()*r).undual(), GAEquals(e0 + e2+e3, 1e-5));
 }
+
+TEST_CASE("Vector object zero vector", "[object]") {
+    using namespace pga3;
+    auto test = ganim::Vector(0*e1);
+    REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
+    REQUIRE_THAT(test.get_end_pga3(), GAEquals(e123));
+    test.set_end(e1);
+    REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
+    REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 + e1));
+    test.set_end(0*e1);
+    REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
+    REQUIRE_THAT(test.get_end_pga3(), GAEquals(e123));
+}

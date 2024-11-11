@@ -22,17 +22,24 @@ Vector& Vector::set_end(pga3::Trivector p)
     using namespace pga3;
     p /= p.blade_project<e123>();
     const auto current_start = get_start_pga3();
-    const auto current_end = get_end_pga3();
+    auto current_end = get_end_pga3();
     const auto current_length = (current_end - current_start).undual().norm();
     const auto new_length = (p - current_start).undual().norm();
     M_manual_transform = true;
-    Object::scale(new_length / current_length);
+    if (current_length == 0) {
+        reset_scale();
+        scale(new_length);
+    }
+    else {
+        scale(new_length / current_length);
+    }
     M_manual_transform = false;
-    // We're only caring about orientation here so using current_end even though
-    // it represents the current end before scaling is fine
-    auto current_line = (current_start & current_end).normalized();
-    auto final_line = (current_start & p).normalized();
-    apply_rotor(current_line * (current_line + final_line).normalized());
+    if (new_length != 0) {
+        current_end = get_end_pga3();
+        auto current_line = (current_start & current_end).normalized();
+        auto final_line = (current_start & p).normalized();
+        apply_rotor(current_line * (current_line + final_line).normalized());
+    }
     return *this;
 }
 

@@ -79,6 +79,13 @@ namespace ganim {
             );
             /** @brief Get the amount that this object is scaled */
             double get_scale() const;
+            /** @brief Reset the scale back to 1.0
+             *
+             * This is mainly here if, for any reason, an object's scale was set
+             * to zero.  Note that any shifting caused by previous scaling
+             * around non-origin points is *not* reset.
+             */
+            void reset_scale() {M_scale = 1.0;}
             /** @brief Set whether this object is visible */
             virtual Object& set_visible(bool visible);
             /** @brief See whether this object is visible */
