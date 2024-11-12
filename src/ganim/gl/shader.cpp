@@ -41,6 +41,39 @@ Shader::Shader(const Source& vertex, const Source& fragment)
     }
 }
 
+Shader::Shader(
+    const Source& vertex,
+    const Source& geometry,
+    const Source& fragment
+)
+{
+    unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
+    compile_part(vertex_shader, vertex, "vertex");
+    unsigned int geometry_shader = glCreateShader(GL_GEOMETRY_SHADER);
+    compile_part(geometry_shader, geometry, "geometry");
+    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    compile_part(fragment_shader, fragment, "fragment");
+    M_program_id = glCreateProgram();
+    glAttachShader(M_program_id, vertex_shader);
+    glAttachShader(M_program_id, geometry_shader);
+    glAttachShader(M_program_id, fragment_shader);
+    glLinkProgram(M_program_id);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(geometry_shader);
+    glDeleteShader(fragment_shader);
+    int success = 0;
+    glGetProgramiv(M_program_id, GL_LINK_STATUS, &success);
+    if (!success) {
+        constexpr auto C_log_size = std::size_t(512);
+        auto info_log = std::array<char, 512>{0};
+        glGetProgramInfoLog(M_program_id, C_log_size, nullptr,
+                            info_log.data());
+        glDeleteProgram(M_program_id);
+        M_program_id = 0;
+        std::cerr << "Couldn't link shader: " << info_log.data() << "\n";
+    }
+}
+
 Shader::Shader(const Source& compute)
 {
     constexpr auto C_log_size = std::size_t(512);

@@ -42,10 +42,16 @@ namespace ganim::gl {
             };
             /** @brief Create a shader with corresponding vertex and fragment
              * sources.
-             *
-             * Note that at least currently, geometry shaders are not possible.
              */
             Shader(const Source& vertex, const Source& fragment);
+            /** @brief Create a shader with corresponding vertex, geometry, and
+             * fragment sources.
+             */
+            Shader(
+                const Source& vertex,
+                const Source& geometry,
+                const Source& fragment
+            );
             /** @brief Create a compute shader
              */
             Shader(const Source& compute);
