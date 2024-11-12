@@ -122,7 +122,7 @@ Vector& Vector::set_end(pga3::Trivector p)
             apply_rotor(ga_exp(axis * τ/4));
         }
         else {
-            apply_rotor(current_line * mid_line.normalized());
+            apply_rotor(-current_line * mid_line.normalized());
         }
     }
     return *this;
