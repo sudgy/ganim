@@ -105,7 +105,13 @@ void Object::interpolate(const Object& start, const Object& end, double t)
     set_color_with_alpha(new_color);
     auto current_scale
         = start.M_scale + (end.M_scale - start.M_scale) * t;
-    scale(current_scale / M_scale);
+    if (M_scale == 0.0) {
+        reset_scale();
+        scale(current_scale);
+    }
+    else {
+        scale(current_scale / M_scale);
+    }
     set_draw_fraction(start.M_draw_fraction
             + (end.M_draw_fraction - start.M_draw_fraction) * t);
 }
