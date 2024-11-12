@@ -19,7 +19,9 @@ std::vector<Path> get_coordinate_grid()
         }
     }
     result.push_back(Path({-10*e1, 10*e1}, false, 0.03));
+    result.back().shift(0.001*vga3::e3);
     result.push_back(Path({-10*e2, 10*e2}, false, 0.03));
+    result.back().shift(0.001*vga3::e3);
     return result;
 }
 
