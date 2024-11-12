@@ -65,6 +65,12 @@ namespace ganim::gl {
 
         private:
             unsigned M_program_id = 0;
+
+            bool compile_part(
+                unsigned int shader,
+                const Source& source,
+                std::string_view type
+            );
     };
 }
 

@@ -18,43 +18,21 @@ const std::vector<const char*>& Shader::Source::source() const
 
 Shader::Shader(const Source& vertex, const Source& fragment)
 {
-    constexpr auto C_log_size = std::size_t(512);
-    auto info_log = std::array<char, 512>{0};
-    int success;
     unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, vertex.source().size(),
-                   vertex.source().data(), nullptr);
-    glCompileShader(vertex_shader);
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(vertex_shader, C_log_size, nullptr, info_log.data());
-        glDeleteShader(vertex_shader);
-        std::cerr << "Couldn't compile vertex shader: "
-                  << info_log.data() << "\n";
-        return;
-    }
-    unsigned int fragment_shader
-        = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, fragment.source().size(),
-                   fragment.source().data(), nullptr);
-    glCompileShader(fragment_shader);
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(fragment_shader, C_log_size, nullptr,
-                           info_log.data());
-        glDeleteShader(fragment_shader);
-        std::cerr << "Couldn't compile fragment shader: "
-                  << info_log.data() << "\n";
-        return;
-    }
+    compile_part(vertex_shader, vertex, "vertex");
+    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
+    compile_part(fragment_shader, fragment, "fragment");
     M_program_id = glCreateProgram();
     glAttachShader(M_program_id, vertex_shader);
     glAttachShader(M_program_id, fragment_shader);
     glLinkProgram(M_program_id);
     glDeleteShader(vertex_shader);
     glDeleteShader(fragment_shader);
+    int success = 0;
     glGetProgramiv(M_program_id, GL_LINK_STATUS, &success);
     if (!success) {
+        constexpr auto C_log_size = std::size_t(512);
+        auto info_log = std::array<char, 512>{0};
         glGetProgramInfoLog(M_program_id, C_log_size, nullptr,
                             info_log.data());
         glDeleteProgram(M_program_id);
@@ -67,23 +45,13 @@ Shader::Shader(const Source& compute)
 {
     constexpr auto C_log_size = std::size_t(512);
     auto info_log = std::array<char, 512>{0};
-    int success;
     unsigned int compute_shader = glCreateShader(GL_COMPUTE_SHADER);
-    glShaderSource(compute_shader, compute.source().size(),
-                   compute.source().data(), nullptr);
-    glCompileShader(compute_shader);
-    glGetShaderiv(compute_shader, GL_COMPILE_STATUS, &success);
-    if (!success) {
-        glGetShaderInfoLog(compute_shader, C_log_size, nullptr, info_log.data());
-        glDeleteShader(compute_shader);
-        std::cerr << "Couldn't compile compute shader: "
-                  << info_log.data() << "\n";
-        return;
-    }
+    if (!compile_part(compute_shader, compute, "compute")) return;
     M_program_id = glCreateProgram();
     glAttachShader(M_program_id, compute_shader);
     glLinkProgram(M_program_id);
     glDeleteShader(compute_shader);
+    int success = 0;
     glGetProgramiv(M_program_id, GL_LINK_STATUS, &success);
     if (!success) {
         glGetProgramInfoLog(M_program_id, C_log_size, nullptr,
@@ -92,6 +60,30 @@ Shader::Shader(const Source& compute)
         M_program_id = 0;
         std::cerr << "Couldn't link shader: " << info_log.data() << "\n";
     }
+}
+
+bool Shader::compile_part(
+    unsigned int shader,
+    const Source& source,
+    std::string_view type
+)
+{
+    glShaderSource(
+        shader, source.source().size(), source.source().data(), nullptr
+    );
+    glCompileShader(shader);
+    int success = 0;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        constexpr auto C_log_size = std::size_t(512);
+        auto info_log = std::array<char, C_log_size>{0};
+        glGetShaderInfoLog(shader, C_log_size, nullptr, info_log.data());
+        glDeleteShader(shader);
+        std::cerr << "Couldn't compile " << type << " shader: "
+                  << info_log.data() << "\n";
+        return false;
+    }
+    return true;
 }
 
 Shader::~Shader()
