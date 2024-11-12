@@ -7,5 +7,4 @@ R"(
     pos.z *= pos.z / 4096;
     gl_Position = pos;
     vertex_t = in_t;
-    out_color = in_color;
 )"

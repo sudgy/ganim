@@ -1,3 +1,3 @@
 R"(
-    color = out_color * object_color;
+    color = object_color;
 )"

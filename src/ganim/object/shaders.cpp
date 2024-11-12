@@ -14,11 +14,13 @@ namespace {
         #include "ganim/shaders/basic_shader_vertex_functions.glsl"
         ,
         #include "ganim/shaders/basic_shader_vertex_main.glsl"
+        #include "ganim/shaders/basic_shader_color_vertex_main.glsl"
         ,
         #include "ganim/shaders/basic_shader_fragment_uniforms.glsl"
         ,
         nullptr,
         #include "ganim/shaders/basic_shader_fragment_main.glsl"
+        #include "ganim/shaders/basic_shader_color_fragment_main.glsl"
     );
     auto texture_shader_parts_ = ShaderParts(
         {"vec2 in_tex_coord;\n"},
@@ -56,6 +58,22 @@ namespace {
         ,
         #include "ganim/shaders/noise_create_shader_fragment_main.glsl"
     );
+    auto vector_shader_parts_ = ShaderParts(
+        {"vec3 real_in_pos;\n", "float in_t;\n"},
+        {"float vertex_t;\n"},
+        #include "ganim/shaders/basic_shader_vertex_uniforms.glsl"
+        #include "ganim/shaders/vector_shader_vertex_uniforms.glsl"
+        ,
+        #include "ganim/shaders/basic_shader_vertex_functions.glsl"
+        ,
+        #include "ganim/shaders/vector_shader_vertex_main.glsl"
+        #include "ganim/shaders/basic_shader_vertex_main.glsl"
+        ,
+        #include "ganim/shaders/basic_shader_fragment_uniforms.glsl"
+        ,
+        nullptr,
+        #include "ganim/shaders/basic_shader_fragment_main.glsl"
+    );
 
     struct vector_hash {
         std::size_t operator()(const std::vector<ShaderParts*>& parts) const
@@ -77,6 +95,7 @@ ShaderParts& basic_shader_parts() {return basic_shader_parts_;}
 ShaderParts& texture_shader_parts() {return texture_shader_parts_;}
 ShaderParts& create_shader_parts() {return create_shader_parts_;}
 ShaderParts& noise_create_shader_parts() {return noise_create_shader_parts_;}
+ShaderParts& vector_shader_parts() {return vector_shader_parts_;}
 
 gl::Shader& get_shader(const std::vector<ShaderParts*>& parts)
 {

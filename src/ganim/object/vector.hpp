@@ -3,10 +3,13 @@
 
 #include "bases/single_object.hpp"
 
+#include "ganim/gl/shader.hpp"
+
 namespace ganim {
     struct VectorArgs {
         double max_tip_to_length_ratio = 0.5;
         double tip_size = 0.35;
+        double thickness = 0.06;
     };
     class Vector : public SingleObject {
         public:
@@ -56,6 +59,8 @@ namespace ganim {
             virtual void draw(const Camera& camera) override;
 
         private:
+            gl::Shader* get_shader();
+
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;
             gl::Buffer M_element_buffer;
