@@ -58,8 +58,19 @@ namespace ganim {
 
             virtual void draw(const Camera& camera) override;
 
+            /** @brief Copy the object for the sake of transformations */
+            std::unique_ptr<Vector> anim_copy() const;
+            /** @brief Interpolate between two Vectors */
+            virtual void interpolate(
+                const Vector& start,
+                const Vector& end,
+                double t
+            );
+
         private:
             gl::Shader* get_shader();
+
+            Vector(const Vector& other);
 
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;
@@ -68,6 +79,7 @@ namespace ganim {
             double M_max_tip_to_length_ratio = 0.5;
             double M_tip_size = 0.35;
             bool M_manual_transform = false;
+            bool M_animating = false;
     };
 }
 

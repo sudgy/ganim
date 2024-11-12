@@ -185,7 +185,7 @@ vga3::Vector Vector::get_end_vga3() const
 
 Vector& Vector::scale(const pga3::Trivector& about_point, double scale)
 {
-    if (M_manual_transform) {
+    if (M_manual_transform or M_animating) {
         Object::scale(about_point, scale);
         return *this;
     }
@@ -301,4 +301,29 @@ gl::Shader* Vector::get_shader()
             &vector_shader_parts()
         });
     }
+}
+
+std::unique_ptr<Vector> Vector::anim_copy() const
+{
+    // Calling new directly here because make_unique apparently can't call
+    // private constructors
+    return std::unique_ptr<Vector>(new Vector(*this));
+}
+
+Vector::Vector(const Vector& other)
+:   M_vertex_array(0),
+    M_vertex_buffer(0),
+    M_element_buffer(0),
+    M_max_tip_to_length_ratio(other.M_max_tip_to_length_ratio),
+    M_tip_size(other.M_tip_size),
+    M_manual_transform(other.M_manual_transform),
+    M_animating(true)
+{
+    interpolate(other, other, 0.0);
+}
+
+void Vector::interpolate(const Vector& start, const Vector& end, double t)
+{
+    SingleObject::interpolate(start, end, t);
+    if (t == 1.0) set_start_and_end(end.get_start_pga3(), end.get_end_pga3());
 }
