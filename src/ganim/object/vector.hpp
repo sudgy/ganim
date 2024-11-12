@@ -8,7 +8,7 @@
 namespace ganim {
     struct VectorArgs {
         double max_tip_to_length_ratio = 0.5;
-        double tip_size = 0.35;
+        double tip_size = 0.4;
         double thickness = 0.06;
     };
     class Vector : public SingleObject {
