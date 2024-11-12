@@ -216,7 +216,9 @@ namespace ganim {
             void remove_group(Group& object);
 
             gl::Framebuffer M_framebuffer;
+            gl::Framebuffer M_downsampled_framebuffer;
             gl::Texture M_framebuffer_texture;
+            gl::Texture M_downsampled_framebuffer_texture;
             gl::Texture M_depth_buffer;
             int M_pixel_width = 0;
             int M_pixel_height = 0;

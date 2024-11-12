@@ -13,7 +13,7 @@
 // I may need to do something else later, but for now this should work to get a
 // valid context
 namespace {
-    auto settings = sf::ContextSettings(24, 0, 0, 4, 3, sf::ContextSettings::Debug);
+    auto settings = sf::ContextSettings(24, 0, 4, 4, 3, sf::ContextSettings::Debug);
     auto context = sf::Context(settings, 1, 1);
     void debug_callback(
         GLenum source,
@@ -59,26 +59,48 @@ SceneBase::SceneBase(
     add(M_camera);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_BLEND);
+    glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDepthFunc(GL_LEQUAL);
-    glBindTexture(GL_TEXTURE_2D, M_framebuffer_texture);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, pixel_width, pixel_height, 0,
-                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, M_framebuffer_texture);
+    glTexImage2DMultisample(
+        GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA32F, pixel_width, pixel_height,
+        GL_TRUE
+    );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                           M_framebuffer_texture, 0);
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+        M_framebuffer_texture, 0
+    );
     auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
     if (status != GL_FRAMEBUFFER_COMPLETE) {
         throw std::runtime_error("Error: Framebuffer is not complete.");
     }
-    glBindTexture(GL_TEXTURE_2D, M_depth_buffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-                 pixel_width, pixel_height, 0,
-                 GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
-                           M_depth_buffer, 0);
+
+    glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, M_depth_buffer);
+    glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_DEPTH_COMPONENT,
+                 pixel_width, pixel_height, GL_TRUE);
+    glFramebufferTexture2D(
+        GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE,
+        M_depth_buffer, 0
+    );
+
+    glBindTexture(GL_TEXTURE_2D, M_downsampled_framebuffer_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, pixel_width, pixel_height, 0,
+                 GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glBindFramebuffer(GL_FRAMEBUFFER, M_downsampled_framebuffer);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           M_downsampled_framebuffer_texture, 0);
+    status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    if (status != GL_FRAMEBUFFER_COMPLETE) {
+        throw std::runtime_error(
+                "Error: Downsampled framebuffer is not complete.");
+    }
 }
 
 void SceneBase::frame_advance()
@@ -127,6 +149,13 @@ void SceneBase::frame_advance()
                 }
             }
         }
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, M_downsampled_framebuffer);
+        glBlitFramebuffer(
+            0, 0, M_pixel_width, M_pixel_height,
+            0, 0, M_pixel_width, M_pixel_height,
+            GL_COLOR_BUFFER_BIT, GL_NEAREST
+        );
+        glBindFramebuffer(GL_FRAMEBUFFER, M_downsampled_framebuffer);
         process_frame();
     }
     ++M_frame_count;

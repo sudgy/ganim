@@ -80,7 +80,7 @@ TEST_CASE("Path single turn", "[object]") {
         {
             -4*e1,
             2*e1,
-            4*e2
+            6*e2 - e1
         },
         false,
         4
@@ -129,7 +129,7 @@ TEST_CASE("Path single turn", "[object]") {
         {
             -4*e1,
             -2*e1,
-            4*e2
+            6*e2 + e1
         },
         false,
         4
@@ -154,7 +154,7 @@ TEST_CASE("Path single turn", "[object]") {
         {
             -4*e1,
             2*e1,
-            -4*e2
+            -6*e2 - e1
         },
         false,
         4
@@ -202,7 +202,7 @@ TEST_CASE("Path single turn", "[object]") {
         {
             -4*e1,
             -2*e1,
-            -4*e2
+            -6*e2 + e1
         },
         false,
         4

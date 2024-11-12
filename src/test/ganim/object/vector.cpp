@@ -133,15 +133,15 @@ TEST_CASE("Vector rotating around", "[object]") {
 
 TEST_CASE("Vector drawing", "[object]") {
     using namespace pga3;
-    auto test = ganim::Vector(12*e1, {0.5, 6, 2});
+    auto test = ganim::Vector(12*e1, {0.5, 5.9, 2});
     auto scene = TestScene(40, 10, 40, 10, 1);
     test.set_visible(true);
-    test.scale(0.5);
+    // There seems to be some kind of ugly rounding that happens with a pure 0.5
+    test.scale(0.51);
     scene.add(test);
     scene.frame_advance();
     test.scale(2);
     scene.frame_advance();
-    // There seems to be some kind of ugly rounding that happens with a pure 1.5
     test.scale(1.51);
     scene.frame_advance();
     const auto white = Color("FFFFFF");
@@ -174,14 +174,20 @@ TEST_CASE("Vector drawing", "[object]") {
                         }
                         else if ((x == 26 and y == 2) or
                                  (x == 27 and y == 2) or
+                                 (x == 28 and y == 2) or
                                  (x == 28 and y == 3) or
                                  (x == 29 and y == 3) or
+                                 (x == 30 and y == 3) or
                                  (x == 30 and y == 4) or
                                  (x == 31 and y == 4) or
+                                 (x == 32 and y == 4) or
+                                 (x == 32 and y == 5) or
                                  (x == 31 and y == 5) or
                                  (x == 30 and y == 5) or
+                                 (x == 30 and y == 6) or
                                  (x == 29 and y == 6) or
                                  (x == 28 and y == 6) or
+                                 (x == 28 and y == 7) or
                                  (x == 27 and y == 7) or
                                  (x == 26 and y == 7)) continue;
                     }
@@ -191,14 +197,20 @@ TEST_CASE("Vector drawing", "[object]") {
                         }
                         else if ((x == 32 and y == 2) or
                                  (x == 33 and y == 2) or
+                                 (x == 34 and y == 2) or
                                  (x == 34 and y == 3) or
                                  (x == 35 and y == 3) or
+                                 (x == 36 and y == 3) or
                                  (x == 36 and y == 4) or
                                  (x == 37 and y == 4) or
+                                 (x == 38 and y == 4) or
+                                 (x == 38 and y == 5) or
                                  (x == 37 and y == 5) or
                                  (x == 36 and y == 5) or
+                                 (x == 36 and y == 6) or
                                  (x == 35 and y == 6) or
                                  (x == 34 and y == 6) or
+                                 (x == 34 and y == 7) or
                                  (x == 33 and y == 7) or
                                  (x == 32 and y == 7)) continue;
                     }
