@@ -144,7 +144,6 @@ TEST_CASE("Vector drawing", "[object]") {
     // There seems to be some kind of ugly rounding that happens with a pure 1.5
     test.scale(1.51);
     scene.frame_advance();
-    scene.write_frames_to_file("test");
     const auto white = Color("FFFFFF");
     const auto black = Color("000000");
     for (int x = 0; x < 40; ++x) {
