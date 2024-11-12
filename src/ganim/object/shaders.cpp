@@ -120,6 +120,13 @@ gl::Shader& get_shader(const std::vector<ShaderParts*>& parts)
             fragment_inputs << "in " << output;
         }
     }
+    // For some reason, the depth buffer fails unless I set gl_FragDepth to
+    // exactly what OpenGL says it's supposed to be.  I have no idea why this is
+    // the case.  Since I apparently can't trust gl_FragCoord.z to be correct I
+    // have to calculate the value myself in the vertex shader and pass it to
+    // the fragment shader using this "confusing_z" variable.
+    vertex_outputs << "out float confusing_z;\n";
+    fragment_inputs << "in float confusing_z;\n";
     auto vertex_inputs_str = vertex_inputs.str();
     auto vertex_outputs_str = vertex_outputs.str();
     auto fragment_inputs_str = fragment_inputs.str();
@@ -142,7 +149,9 @@ gl::Shader& get_shader(const std::vector<ShaderParts*>& parts)
         if (part->vertex_main) vertex.add_source(part->vertex_main);
         if (part->fragment_main) fragment.add_source(part->fragment_main);
     }
+    vertex.add_source("confusing_z = 0.5*(gl_Position.z / gl_Position.w) + 0.5;\n");
     vertex.add_source("}\n");
+    fragment.add_source("gl_FragDepth = confusing_z;\n");
     fragment.add_source("}\n");
 
     return G_shaders.emplace(parts, gl::Shader(vertex, fragment)).first->second;
