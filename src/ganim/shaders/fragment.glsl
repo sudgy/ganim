@@ -1,8 +1,34 @@
 R"(
+#ifdef TIME
+in float out_t;
+#endif
+#ifdef VERTEX_COLORS
+in vec4 out_color;
+#endif
+#ifdef TEXTURE
+in vec2 out_tex_coord;
+uniform sampler2D in_texture;
+#endif
+#ifdef CREATE
+uniform float this_t;
+#endif
+#ifdef NOISE_CREATE
+in vec2 noise_coord;
+uniform float this_t;
+uniform float noise_scale;
+#endif
+
+in float confusing_z;
+
+out vec4 color;
+
+uniform vec4 object_color;
+
+// Various helper functions
+
 // psrdnoise (c) Stefan Gustavson and Ian McEwan,
 // ver. 2021-12-02, published under the MIT license:
 // https://github.com/stegu/psrdnoise/
-
 float psrdnoise(vec2 x, vec2 period, float alpha, out vec2 gradient)
 {
   vec2 uv = vec2(x.x+x.y*0.5, x.y);
@@ -44,5 +70,30 @@ float psrdnoise(vec2 x, vec2 period, float alpha, out vec2 gradient)
   vec2 dn2 = w4.z*g2 + dw.z*x2;
   gradient = 10.9*(dn0 + dn1 + dn2);
   return 10.9*n;
+}
+
+void main()
+{
+#ifdef CREATE
+    if (this_t < out_t) discard;
+#endif
+#ifdef NOISE_CREATE
+    vec2 unused_noise_gradient;
+    float final_t = this_t + noise_scale * psrdnoise(
+        noise_coord,
+        vec2(0.0, 0.0),
+        0.0,
+        unused_noise_gradient
+    );
+    if (final_t < out_t) discard;
+#endif
+    color = object_color;
+#ifdef VERTEX_COLORS
+    color *= out_color;
+#endif
+#ifdef TEXTURE
+    color *= texture(in_texture, out_tex_coord);
+#endif
+    gl_FragDepth = confusing_z;
 }
 )"

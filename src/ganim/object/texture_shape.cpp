@@ -11,28 +11,11 @@ gl::Shader& texture_shape_helper::get_shader(
     double noise_creating
 )
 {
-    auto& result = [&]() -> gl::Shader& {
-        if (is_creating) {
-            return ganim::get_shader({
-                &basic_shader_parts(),
-                &texture_shader_parts(),
-                &create_shader_parts()
-            });
-        }
-        if (noise_creating) {
-            return ganim::get_shader({
-                &basic_shader_parts(),
-                &texture_shader_parts(),
-                &noise_create_shader_parts()
-            });
-        }
-        else {
-            return ganim::get_shader({
-                &basic_shader_parts(),
-                &texture_shader_parts()
-            });
-        }
-    }();
+    using enum ShaderFeature;
+    auto flags = Time | VertexColors | Texture;
+    if (is_creating) flags |= Create;
+    if (noise_creating) flags |= NoiseCreate;
+    auto& result = ganim::get_shader(flags);
     glUseProgram(result);
     glUniform1i(result.get_uniform("in_texture"), 0);
     return result;

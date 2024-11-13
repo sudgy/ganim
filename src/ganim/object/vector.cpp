@@ -284,23 +284,11 @@ void Vector::draw(const Camera& camera)
 
 gl::Shader* Vector::get_shader()
 {
-    if (is_creating()) {
-        return &ganim::get_shader({
-            &vector_shader_parts(),
-            &create_shader_parts()
-        });
-    }
-    else if (noise_creating()) {
-        return &ganim::get_shader({
-            &vector_shader_parts(),
-            &noise_create_shader_parts()
-        });
-    }
-    else {
-        return &ganim::get_shader({
-            &vector_shader_parts()
-        });
-    }
+    using enum ShaderFeature;
+    auto flags = Time | Vector;
+    if (is_creating()) flags |= Create;
+    else if (noise_creating()) flags |= NoiseCreate;
+    return &ganim::get_shader(flags);
 }
 
 std::unique_ptr<Vector> Vector::anim_copy() const

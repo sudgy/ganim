@@ -101,23 +101,11 @@ void Shape::buffer_indices()
 
 gl::Shader* Shape::get_shader()
 {
-    if (is_creating()) {
-        return &ganim::get_shader({
-            &basic_shader_parts(),
-            &create_shader_parts()
-        });
-    }
-    else if (noise_creating()) {
-        return &ganim::get_shader({
-            &basic_shader_parts(),
-            &noise_create_shader_parts()
-        });
-    }
-    else {
-        return &ganim::get_shader({
-            &basic_shader_parts()
-        });
-    }
+    using enum ShaderFeature;
+    auto flags = Time | VertexColors;
+    if (is_creating()) flags |= Create;
+    else if (noise_creating()) flags |= NoiseCreate;
+    return &ganim::get_shader(flags);
 }
 
 Box Shape::get_original_true_bounding_box() const

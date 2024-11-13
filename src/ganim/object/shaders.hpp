@@ -11,23 +11,36 @@
 #include "ganim/gl/shader.hpp"
 
 namespace ganim {
-    struct ShaderParts {
-        std::vector<const char*> vertex_inputs;
-        std::vector<const char*> vertex_outputs;
-        const char* vertex_uniforms = nullptr;
-        const char* vertex_functions = nullptr;
-        const char* vertex_main = nullptr;
-        const char* fragment_uniforms = nullptr;
-        const char* fragment_functions = nullptr;
-        const char* fragment_main = nullptr;
+    enum class ShaderFeature : std::uint64_t {
+        Time = 1 << 0,
+        VertexColors = 1 << 1,
+        Texture = 1 << 2,
+        Vector = 1 << 3,
+        Create = 1 << 4,
+        NoiseCreate = 1 << 5
     };
-    ShaderParts& basic_shader_parts();
-    ShaderParts& texture_shader_parts();
-    ShaderParts& outline_shader_parts();
-    ShaderParts& create_shader_parts();
-    ShaderParts& noise_create_shader_parts();
-    ShaderParts& vector_shader_parts();
-    gl::Shader& get_shader(const std::vector<ShaderParts*>& parts);
+    constexpr bool operator&(ShaderFeature f1, ShaderFeature f2)
+    {
+        return static_cast<bool>(
+            static_cast<std::uint64_t>(f1) & static_cast<std::uint64_t>(f2));
+    }
+    constexpr ShaderFeature operator|(ShaderFeature f1, ShaderFeature f2)
+    {
+        return static_cast<ShaderFeature>(
+            static_cast<std::uint64_t>(f1) | static_cast<std::uint64_t>(f2));
+    }
+    constexpr ShaderFeature operator^(ShaderFeature f1, ShaderFeature f2)
+    {
+        return static_cast<ShaderFeature>(
+            static_cast<std::uint64_t>(f1) ^ static_cast<std::uint64_t>(f2));
+    }
+    constexpr ShaderFeature& operator|=(ShaderFeature& f1, ShaderFeature f2)
+        {f1 = f1 | f2; return f1;}
+    constexpr ShaderFeature& operator^=(ShaderFeature& f1, ShaderFeature f2)
+        {f1 = f1 ^ f2; return f1;}
+
+
+    gl::Shader& get_shader(ShaderFeature features);
 }
 
 #endif
