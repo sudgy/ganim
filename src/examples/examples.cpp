@@ -6,6 +6,7 @@ void basic_text();
 void transforms();
 void paths();
 void vectors();
+void lighting();
 
 int main()
 {
@@ -15,7 +16,8 @@ int main()
               << "3: basic_text\n"
               << "4: transforms\n"
               << "5: paths\n"
-              << "6: vectors\n";
+              << "6: vectors\n"
+              << "7: lighting\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -36,6 +38,9 @@ int main()
             break;
         case 6:
             vectors();
+            break;
+        case 7:
+            lighting();
             break;
         default:
             std::cout << "Invalid input\n";

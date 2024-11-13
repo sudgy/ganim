@@ -61,6 +61,7 @@ namespace ganim {
                 std::vector<Vertex> vertices,
                 std::vector<unsigned> indices
             );
+            void do_shading(bool shading) {M_do_shading = shading;}
             const std::vector<Vertex>& get_vertices() const {return M_vertices;}
             const std::vector<unsigned>& get_indices() const {return M_indices;}
             virtual void draw(const Camera& camera) override;
@@ -92,6 +93,7 @@ namespace ganim {
             gl::Buffer M_vertex_buffer;
             gl::Buffer M_element_buffer;
             bool M_valid = false;
+            bool M_do_shading = false;
     };
 }
 

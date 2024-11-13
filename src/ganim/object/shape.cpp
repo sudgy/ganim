@@ -32,6 +32,13 @@ void Shape::set_vertices(
             | std::views::transform([](const auto& v) {return v.t;});
         M_min_draw_fraction = *std::ranges::min_element(ts);
         M_max_draw_fraction = *std::ranges::max_element(ts);
+        M_do_shading = false;
+        for (auto& v : M_vertices) {
+            if (v.z != M_vertices[0].z) {
+                M_do_shading = true;
+                break;
+            }
+        }
     }
     M_valid = false;
 }
@@ -105,6 +112,7 @@ gl::Shader* Shape::get_shader()
     auto flags = Time | VertexColors;
     if (is_creating()) flags |= Create;
     else if (noise_creating()) flags |= NoiseCreate;
+    if (M_do_shading) flags |= FaceShading;
     return &ganim::get_shader(flags);
 }
 

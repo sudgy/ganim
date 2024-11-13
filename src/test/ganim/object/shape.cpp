@@ -45,6 +45,7 @@ TEST_CASE("Shape perspective", "[object]") {
          {-2,  2,  2}},
         {0, 1, 2, 0, 2, 3}
     );
+    shape.do_shading(false);
     shape.set_visible(true);
     scene.add(shape);
     scene.frame_advance();
