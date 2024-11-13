@@ -10,6 +10,7 @@ namespace ganim {
         double max_tip_to_length_ratio = 0.5;
         double tip_size = 0.4;
         double thickness = 0.06;
+        bool three_d = false;
     };
     class Vector : public SingleObject {
         public:
@@ -80,6 +81,7 @@ namespace ganim {
             double M_tip_size = 0.35;
             bool M_manual_transform = false;
             bool M_animating = false;
+            bool M_do_shading = false;
     };
 }
 

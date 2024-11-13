@@ -11,7 +11,8 @@ using namespace ganim;
 
 Vector::Vector(pga3::Trivector p1, pga3::Trivector p2, VectorArgs args)
 :   M_max_tip_to_length_ratio(args.max_tip_to_length_ratio),
-    M_tip_size(args.tip_size)
+    M_tip_size(args.tip_size),
+    M_do_shading(args.three_d)
 {
     set_start_and_end(p1, p2);
     glBindVertexArray(M_vertex_array);
@@ -75,12 +76,22 @@ Vector::Vector(pga3::Trivector p1, pga3::Trivector p2, VectorArgs args)
          9, 10,  8,
         11, 13, 12
     };
-    glBufferData(
-        GL_ELEMENT_ARRAY_BUFFER,
-        sizeof(indices),
-        indices.data(),
-        GL_STATIC_DRAW
-    );
+    if (args.three_d) {
+        glBufferData(
+            GL_ELEMENT_ARRAY_BUFFER,
+            sizeof(indices),
+            indices.data(),
+            GL_STATIC_DRAW
+        );
+    }
+    else {
+        glBufferData(
+            GL_ELEMENT_ARRAY_BUFFER,
+            sizeof(unsigned)*9,
+            indices.data(),
+            GL_STATIC_DRAW
+        );
+    }
     glBindVertexArray(0);
 }
 
@@ -285,7 +296,8 @@ void Vector::draw(const Camera& camera)
 gl::Shader* Vector::get_shader()
 {
     using enum ShaderFeature;
-    auto flags = Time | Vector | FaceShading;
+    auto flags = Time | Vector;
+    if (M_do_shading) flags |= FaceShading;
     if (is_creating()) flags |= Create;
     else if (noise_creating()) flags |= NoiseCreate;
     return &ganim::get_shader(flags);

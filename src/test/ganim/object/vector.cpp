@@ -1,6 +1,7 @@
 #include <catch2/catch_test_macros.hpp>
 #include "test/ganim/ga_equals.hpp"
 #include "test/ganim/scene/test_scene.hpp"
+#include "test/ganim/approx_color.hpp"
 
 #include "ganim/object/vector.hpp"
 
@@ -223,4 +224,19 @@ TEST_CASE("Vector drawing", "[object]") {
     REQUIRE(scene.get_pixel(2, 37, 7) == black);
     REQUIRE(scene.get_pixel(2, 39, 4) == black);
     REQUIRE(scene.get_pixel(2, 39, 5) == black);
+}
+
+TEST_CASE("Vector object 2D/3D", "[object]") {
+    auto v1 = Vector(2*vga2::e1, {.thickness = 2});
+    auto v2 = Vector(vga2::e1, {.thickness = 2, .three_d = true});
+    auto scene = TestScene(4, 4, 4, 4, 1);
+    scene.add(v1, v2);
+    scene.get_camera().rotate(vga3::e23, τ/4);
+    v1.set_visible(true);
+    scene.frame_advance();
+    v1.set_visible(false);
+    v2.set_visible(true);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("000000"));
+    REQUIRE(scene.get_pixel(1, 2, 1) == ApproxColor("FFFFFF"));
 }
