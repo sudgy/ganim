@@ -2,30 +2,42 @@ R"(
 layout (location = 0) in vec3 in_pos;
 #ifdef TIME
 layout (location = 1) in float in_t;
-out float out_t;
 #endif
 #ifdef VERTEX_COLORS
 layout (location = 2) in vec4 in_color;
-out vec4 out_color;
 #endif
 #ifdef TEXTURE
 layout (location = 3) in vec2 in_tex_coord;
-out vec2 out_tex_coord;
+#endif
+
+out VertexData {
+#ifdef TIME
+    float t;
+#endif
+#ifdef VERTEX_COLORS
+    vec4 color;
+#endif
+#ifdef TEXTURE
+    vec2 tex_coord;
 #endif
 #ifdef NOISE_CREATE
-out vec2 noise_coord;
+    vec2 noise_coord;
 #endif
+#ifdef FACE_SHADING
+    vec3 true_position;
+#endif
+    // For some reason, the depth buffer fails unless I set gl_FragDepth to
+    // exactly what OpenGL says it's supposed to be.  I have no idea why this is
+    // the case.  Since I apparently can't trust gl_FragCoord.z to be correct I
+    // have to calculate the value myself in the vertex shader and pass it to
+    // the fragment shader using this "confusing_z" variable.
+    out float confusing_z;
+} vs_out;
+
 #ifdef VECTOR
 uniform float mid_pos;
 uniform float end_pos;
 #endif
-
-// For some reason, the depth buffer fails unless I set gl_FragDepth to exactly
-// what OpenGL says it's supposed to be.  I have no idea why this is the case.
-// Since I apparently can't trust gl_FragCoord.z to be correct I have to
-// calculate the value myself in the vertex shader and pass it to the fragment
-// shader using this "confusing_z" variable.
-out float confusing_z;
 
 uniform vec2 camera_scale;
 uniform vec4 view[2];
@@ -76,6 +88,9 @@ void main()
 
     vec4[2] r = rotor_mult(model, view);
     vec4 pos = vec4(rotor_trivector_sandwich(r, m_in_pos*scale), 1.0);
+#ifdef FACE_SHADING
+    vs_out.true_position = pos.xyz;
+#endif
     pos.w = -pos.z;
     pos.x *= camera_scale.x;
     pos.y *= -camera_scale.y; // ffmpeg has the y axis swapped
@@ -83,18 +98,18 @@ void main()
     gl_Position = pos;
 
 #ifdef TIME
-    out_t = in_t;
+    vs_out.t = in_t;
 #endif
 #ifdef VERTEX_COLORS
-    out_color = in_color;
+    vs_out.color = in_color;
 #endif
 #ifdef NOISE_CREATE
-    noise_coord = m_in_pos.xy;
+    vs_out.noise_coord = m_in_pos.xy;
 #endif
 #ifdef TEXTURE
-    out_tex_coord = in_tex_coord;
+    vs_out.tex_coord = in_tex_coord;
 #endif
 
-    confusing_z = 0.5*(gl_Position.z / gl_Position.w) + 0.5;
+    vs_out.confusing_z = 0.5*(gl_Position.z / gl_Position.w) + 0.5;
 }
 )"

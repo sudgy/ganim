@@ -19,9 +19,12 @@ const std::vector<const char*>& Shader::Source::source() const
 Shader::Shader(const Source& vertex, const Source& fragment)
 {
     unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    compile_part(vertex_shader, vertex, "vertex");
+    if (!compile_part(vertex_shader, vertex, "vertex")) return;
     unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    compile_part(fragment_shader, fragment, "fragment");
+    if (!compile_part(fragment_shader, fragment, "fragment")) {
+        glDeleteShader(vertex_shader);
+        return;
+    }
     M_program_id = glCreateProgram();
     glAttachShader(M_program_id, vertex_shader);
     glAttachShader(M_program_id, fragment_shader);
@@ -50,9 +53,16 @@ Shader::Shader(
     unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
     compile_part(vertex_shader, vertex, "vertex");
     unsigned int geometry_shader = glCreateShader(GL_GEOMETRY_SHADER);
-    compile_part(geometry_shader, geometry, "geometry");
+    if (!compile_part(geometry_shader, geometry, "geometry")) {
+        glDeleteShader(vertex_shader);
+        return;
+    }
     unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    compile_part(fragment_shader, fragment, "fragment");
+    if (!compile_part(fragment_shader, fragment, "fragment")) {
+        glDeleteShader(vertex_shader);
+        glDeleteShader(geometry_shader);
+        return;
+    }
     M_program_id = glCreateProgram();
     glAttachShader(M_program_id, vertex_shader);
     glAttachShader(M_program_id, geometry_shader);

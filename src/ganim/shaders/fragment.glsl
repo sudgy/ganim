@@ -1,24 +1,37 @@
 R"(
+#ifdef FACE_SHADING
+in GeometryData {
+#else
+in VertexData {
+#endif
 #ifdef TIME
-in float out_t;
+    float t;
 #endif
 #ifdef VERTEX_COLORS
-in vec4 out_color;
+    vec4 color;
 #endif
 #ifdef TEXTURE
-in vec2 out_tex_coord;
+    vec2 tex_coord;
+#endif
+#ifdef NOISE_CREATE
+    vec2 noise_coord;
+#endif
+#ifdef FACE_SHADING
+    float lighting;
+#endif
+    float confusing_z;
+} fs_in;
+
+#ifdef TEXTURE
 uniform sampler2D in_texture;
 #endif
 #ifdef CREATE
 uniform float this_t;
 #endif
 #ifdef NOISE_CREATE
-in vec2 noise_coord;
 uniform float this_t;
 uniform float noise_scale;
 #endif
-
-in float confusing_z;
 
 out vec4 color;
 
@@ -75,25 +88,28 @@ float psrdnoise(vec2 x, vec2 period, float alpha, out vec2 gradient)
 void main()
 {
 #ifdef CREATE
-    if (this_t < out_t) discard;
+    if (this_t < fs_in.t) discard;
 #endif
 #ifdef NOISE_CREATE
     vec2 unused_noise_gradient;
     float final_t = this_t + noise_scale * psrdnoise(
-        noise_coord,
+        fs_in.noise_coord,
         vec2(0.0, 0.0),
         0.0,
         unused_noise_gradient
     );
-    if (final_t < out_t) discard;
+    if (final_t < fs_in.t) discard;
 #endif
     color = object_color;
 #ifdef VERTEX_COLORS
-    color *= out_color;
+    color *= fs_in.color;
 #endif
 #ifdef TEXTURE
-    color *= texture(in_texture, out_tex_coord);
+    color *= texture(in_texture, fs_in.tex_coord);
 #endif
-    gl_FragDepth = confusing_z;
+#ifdef FACE_SHADING
+    color.xyz *= fs_in.lighting;
+#endif
+    gl_FragDepth = fs_in.confusing_z;
 }
 )"

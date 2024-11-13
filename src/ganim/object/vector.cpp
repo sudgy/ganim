@@ -73,7 +73,7 @@ Vector::Vector(pga3::Trivector p1, pga3::Trivector p2, VectorArgs args)
 
          7,  9,  8,
          9, 10,  8,
-        11, 12, 13
+        11, 13, 12
     };
     glBufferData(
         GL_ELEMENT_ARRAY_BUFFER,
@@ -285,7 +285,7 @@ void Vector::draw(const Camera& camera)
 gl::Shader* Vector::get_shader()
 {
     using enum ShaderFeature;
-    auto flags = Time | Vector;
+    auto flags = Time | Vector | FaceShading;
     if (is_creating()) flags |= Create;
     else if (noise_creating()) flags |= NoiseCreate;
     return &ganim::get_shader(flags);
