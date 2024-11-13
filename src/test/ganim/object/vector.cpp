@@ -240,3 +240,18 @@ TEST_CASE("Vector object 2D/3D", "[object]") {
     REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("000000"));
     REQUIRE(scene.get_pixel(1, 2, 1) == ApproxColor("FFFFFF"));
 }
+
+TEST_CASE("Vector object orientation locking", "[object]") {
+    using namespace pga3;
+    auto test = ganim::Vector(e1);
+    test.rotate(e23, τ/4);
+    auto r = test.get_rotor();
+    REQUIRE_THAT((~r*(e2 + e0).dual()*r).undual(), GAEquals(e2 + e0, 1e-5));
+    test.lock_orientation(false);
+    test.rotate(e23, τ/4);
+    r = test.get_rotor();
+    REQUIRE_THAT((~r*(e2 + e0).dual()*r).undual(), GAEquals(e3 + e0, 1e-5));
+    test.lock_orientation(true);
+    r = test.get_rotor();
+    REQUIRE_THAT((~r*(e2 + e0).dual()*r).undual(), GAEquals(e2 + e0, 1e-5));
+}

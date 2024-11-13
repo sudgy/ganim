@@ -194,6 +194,12 @@ vga3::Vector Vector::get_end_vga3() const
     return pga3_to_vga3(get_end_pga3());
 }
 
+void Vector::lock_orientation(bool lock)
+{
+    M_lock_orientation = lock;
+    if (lock) apply_rotor(pga3::Even(1));
+}
+
 Vector& Vector::scale(const pga3::Trivector& about_point, double scale)
 {
     if (M_manual_transform or M_animating) {
@@ -219,7 +225,7 @@ Vector& Vector::scale(const pga3::Trivector& about_point, double scale)
 Vector& Vector::apply_rotor(const pga3::Even& rotor)
 {
     Object::apply_rotor(rotor);
-    if (!M_manual_transform) {
+    if (!M_manual_transform and M_lock_orientation) {
         using namespace pga3;
         auto start_point = get_start_pga3();
         auto end_point = get_end_pga3();

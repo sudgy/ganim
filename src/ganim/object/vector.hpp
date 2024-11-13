@@ -48,6 +48,8 @@ namespace ganim {
             vga2::Vector get_end_vga2() const;
             vga3::Vector get_end_vga3() const;
 
+            void lock_orientation(bool lock);
+
             virtual Vector& scale(
                 const pga3::Trivector& about_point,
                 double scale
@@ -82,6 +84,7 @@ namespace ganim {
             bool M_manual_transform = false;
             bool M_animating = false;
             bool M_do_shading = false;
+            bool M_lock_orientation = true;
     };
 }
 
