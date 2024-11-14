@@ -11,6 +11,8 @@
 #include "ganim/util/box.hpp"
 #include "ganim/scene/camera.hpp"
 
+#include "ganim/gl/texture.hpp"
+
 namespace ganim {
     /** @brief The base class for objects that have some kind of extent
      *
@@ -50,6 +52,11 @@ namespace ganim {
             virtual void invalidate_outline()=0;
             virtual Color get_outline_color() const=0;
             virtual double get_outline_thickness() const=0;
+
+            virtual void set_peeling_depth_buffer(gl::Texture* texture)
+                {M_peeling_depth_buffer = texture;}
+            gl::Texture* peeling_depth_buffer() const
+                {return M_peeling_depth_buffer;}
 
             /** @brief Set the color of this object, ignoring alpha. */
             virtual Object& set_color(Color color);
@@ -280,6 +287,7 @@ namespace ganim {
             bool M_visible = false;
             bool M_creating = false;
             bool M_fixed_in_frame = false;
+            gl::Texture* M_peeling_depth_buffer = nullptr;
     };
 }
 

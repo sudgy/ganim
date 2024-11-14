@@ -114,6 +114,7 @@ class Group : public Object {
         virtual void invalidate_outline() override;
         virtual Color get_outline_color() const override;
         virtual double get_outline_thickness() const override;
+        virtual void set_peeling_depth_buffer(gl::Texture* texture) override;
 
         // I can't use the macro here because I'm overloading some of the
         // functions

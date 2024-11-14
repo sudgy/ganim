@@ -19,7 +19,7 @@ in VertexData {
 #ifdef FACE_SHADING
     float lighting;
 #endif
-    float confusing_z;
+    vec3 window_pos;
 } fs_in;
 
 #ifdef TEXTURE
@@ -31,6 +31,9 @@ uniform float this_t;
 #ifdef NOISE_CREATE
 uniform float this_t;
 uniform float noise_scale;
+#endif
+#ifdef DEPTH_PEELING
+uniform sampler2DMS layer_depth_buffer;
 #endif
 
 out vec4 color;
@@ -100,6 +103,18 @@ void main()
     );
     if (final_t < fs_in.t) discard;
 #endif
+#ifdef DEPTH_PEELING
+    ivec2 depth_pos = ivec2(
+        round(gl_FragCoord.x - 0.5),
+        round(gl_FragCoord.y - 0.5)
+    );
+    float depth = 0;
+    for (int i = 0; i < 4; ++i) {
+        depth += texelFetch(layer_depth_buffer, depth_pos, i).r;
+    }
+    depth /= 4;
+    if (depth >= fs_in.window_pos.z) discard;
+#endif
     color = object_color;
 #ifdef VERTEX_COLORS
     color *= fs_in.color;
@@ -110,6 +125,6 @@ void main()
 #ifdef FACE_SHADING
     color.xyz *= fs_in.lighting;
 #endif
-    gl_FragDepth = fs_in.confusing_z;
+    gl_FragDepth = fs_in.window_pos.z;
 }
 )"

@@ -11,6 +11,8 @@
 #include "ganim/maybe_owning_ref.hpp"
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/texture.hpp"
+#include "ganim/gl/buffer.hpp"
+#include "ganim/gl/vertex_array.hpp"
 
 #include "camera.hpp"
 
@@ -98,6 +100,7 @@ namespace ganim {
             /** @brief Set the background color of this scene. */
             constexpr void set_background_color(const Color& color)
                 {M_background_color = color;}
+            void set_transparency_layers(int layers);
 
 
             void set_background_image(const std::string& filename);
@@ -207,6 +210,7 @@ namespace ganim {
              * active.
              */
             virtual void process_frame()=0;
+            void draw_objects();
 
             void add_animatable(Animatable& object);
             void add_drawable(Object& object);
@@ -233,6 +237,16 @@ namespace ganim {
             std::unique_ptr<Object> M_background_object;
             gl::Texture M_background_texture = 0;
             bool M_animating = true;
+
+            struct DepthLayer {
+                gl::Framebuffer framebuffer;
+                gl::Texture texture;
+                gl::Texture depth_buffer;
+                gl::VertexArray vertex_array;
+                gl::Buffer vertex_buffer;
+                gl::Buffer element_buffer;
+            };
+            std::vector<DepthLayer> M_depth_layers;
     };
 }
 

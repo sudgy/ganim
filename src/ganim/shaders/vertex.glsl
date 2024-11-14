@@ -26,12 +26,7 @@ out VertexData {
 #ifdef FACE_SHADING
     vec3 true_position;
 #endif
-    // For some reason, the depth buffer fails unless I set gl_FragDepth to
-    // exactly what OpenGL says it's supposed to be.  I have no idea why this is
-    // the case.  Since I apparently can't trust gl_FragCoord.z to be correct I
-    // have to calculate the value myself in the vertex shader and pass it to
-    // the fragment shader using this "confusing_z" variable.
-    out float confusing_z;
+    out vec3 window_pos;
 } vs_out;
 
 #ifdef VECTOR
@@ -110,6 +105,7 @@ void main()
     vs_out.tex_coord = in_tex_coord;
 #endif
 
-    vs_out.confusing_z = 0.5*(gl_Position.z / gl_Position.w) + 0.5;
+    //vs_out.confusing_z = 0.5*(gl_Position.z / gl_Position.w) + 0.5;
+    vs_out.window_pos = gl_Position.xyz / gl_Position.w;
 }
 )"

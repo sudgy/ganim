@@ -195,6 +195,14 @@ double Group::get_outline_thickness() const
     return M_outline_thickness;
 }
 
+void Group::set_peeling_depth_buffer(gl::Texture* texture)
+{
+    Object::set_peeling_depth_buffer(texture);
+    for (auto obj : M_subobjects) {
+        obj->set_peeling_depth_buffer(texture);
+    }
+}
+
 void Group::set_fps(int fps)
 {
     Animatable::set_fps(fps);

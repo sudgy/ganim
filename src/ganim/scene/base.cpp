@@ -3,12 +3,15 @@
 #include <stdexcept>
 #include <cmath>
 #include <format>
+#include <ranges>
 #include <SFML/Window.hpp>
 
 #include "ganim/gl/gl.hpp"
 #include "ganim/util/stb_image.h"
 
 #include "ganim/object/texture_shape.hpp"
+
+using namespace ganim;
 
 // I may need to do something else later, but for now this should work to get a
 // valid context
@@ -39,9 +42,50 @@ namespace {
         glDebugMessageCallback(debug_callback, nullptr);
         return 1;
     }();
-}
 
-using namespace ganim;
+    auto layer_vertices = std::array{
+         1.0f,  1.0f,
+        -1.0f,  1.0f,
+         1.0f, -1.0f,
+        -1.0f, -1.0f,
+    };
+    auto layer_indices = std::array{
+        0U, 1U, 3U,
+        0U, 3U, 2U
+    };
+    auto layer_shader = []{
+        auto vertex = gl::Shader::Source();
+        auto fragment = gl::Shader::Source();
+        vertex.add_source(R"(
+#version 330 core
+
+layout (location = 0) in vec2 in_pos;
+
+void main()
+{
+    gl_Position = vec4(in_pos.xy, 1, 1);
+}
+        )");
+        fragment.add_source(R"(
+#version 330 core
+
+out vec4 color;
+
+uniform sampler2DMS texture;
+
+void main()
+{
+    ivec2 pos = ivec2(round(gl_FragCoord.x - 0.5), round(gl_FragCoord.y - 0.5));
+    color = vec4(0);
+    for (int i = 0; i < 4; ++i) {
+        color += texelFetch(texture, pos, i);
+    }
+    color /= 4;
+}
+        )");
+        return gl::Shader(vertex, fragment);
+    }();
+}
 
 SceneBase::SceneBase(
     int pixel_width,
@@ -119,8 +163,34 @@ void SceneBase::frame_advance()
         object->update();
     }
     if (M_animating) {
-        glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
         glViewport(0, 0, M_pixel_width, M_pixel_height);
+        if (!M_depth_layers.empty()) {
+            glDisable(GL_BLEND);
+            for (int i = 0; i < ssize(M_depth_layers); ++i) {
+                auto& l = M_depth_layers[i];
+                glBindFramebuffer(GL_FRAMEBUFFER, l.framebuffer);
+                glClearColor(0, 0, 0, 0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                for (auto object : M_drawables) {
+                    if (object->is_visible()) {
+                        if (!object->is_fixed_in_frame()) {
+                            if (i == 0) {
+                                object->set_peeling_depth_buffer(nullptr);
+                            }
+                            else {
+                                object->set_peeling_depth_buffer(
+                                    &M_depth_layers[i-1].depth_buffer
+                                );
+                            }
+                            object->draw_outline(M_camera);
+                            object->draw(M_camera);
+                        }
+                    }
+                }
+            }
+            glEnable(GL_BLEND);
+        }
+        glBindFramebuffer(GL_FRAMEBUFFER, M_framebuffer);
         glClearColor(
             M_background_color.r / 255.0,
             M_background_color.g / 255.0,
@@ -132,11 +202,25 @@ void SceneBase::frame_advance()
             M_background_object->draw(M_static_camera);
             glClear(GL_DEPTH_BUFFER_BIT);
         }
-        for (auto object : M_drawables) {
-            if (object->is_visible()) {
-                if (!object->is_fixed_in_frame()) {
-                    object->draw_outline(M_camera);
-                    object->draw(M_camera);
+        if (!M_depth_layers.empty()) {
+            for (auto& layer : std::views::reverse(M_depth_layers)) {
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, layer.texture);
+                glUseProgram(layer_shader);
+                glBindVertexArray(layer.vertex_array);
+                glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+                glBindVertexArray(0);
+                glClear(GL_DEPTH_BUFFER_BIT);
+            }
+        }
+        else {
+            for (auto object : M_drawables) {
+                object->set_peeling_depth_buffer(nullptr);
+                if (object->is_visible()) {
+                    if (!object->is_fixed_in_frame()) {
+                        object->draw_outline(M_camera);
+                        object->draw(M_camera);
+                    }
                 }
             }
         }
@@ -263,6 +347,52 @@ void SceneBase::remove_for_animation(Animatable& object)
     });
     if (it != M_ghost_animating_objects.end()) {
         M_ghost_animating_objects.erase(it);
+    }
+}
+
+void SceneBase::set_transparency_layers(int layers)
+{
+    auto old_size = M_depth_layers.size();
+    M_depth_layers.resize(layers);
+    for (int i = old_size; i < layers; ++i) {
+        auto& l = M_depth_layers[i];
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, l.texture);
+        glTexImage2DMultisample(
+            GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA32F,
+            M_pixel_width, M_pixel_height, GL_TRUE
+        );
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glBindFramebuffer(GL_FRAMEBUFFER, l.framebuffer);
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE,
+            l.texture, 0
+        );
+
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, l.depth_buffer);
+        glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4,
+            GL_DEPTH_COMPONENT, M_pixel_width, M_pixel_height, GL_TRUE);
+        glFramebufferTexture2D(
+            GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE,
+            l.depth_buffer, 0
+        );
+
+        auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+        if (status != GL_FRAMEBUFFER_COMPLETE) {
+            throw std::runtime_error("Error: Framebuffer is not complete.");
+        }
+
+        glBindVertexArray(l.vertex_array);
+        glBindBuffer(GL_ARRAY_BUFFER, l.vertex_buffer);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(layer_vertices),
+                     layer_vertices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float)*2,
+                              reinterpret_cast<void*>(0));
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, l.element_buffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(layer_indices),
+                     layer_indices.data(), GL_STATIC_DRAW);
+        glBindVertexArray(0);
     }
 }
 

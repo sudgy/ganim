@@ -63,6 +63,11 @@ gl::Shader& get_shader(ShaderFeature features)
         geometry.add_source("#define FACE_SHADING\n");
         fragment.add_source("#define FACE_SHADING\n");
     }
+    if (features & DepthPeeling) {
+        vertex.add_source("#define DEPTH_PEELING\n");
+        geometry.add_source("#define DEPTH_PEELING\n");
+        fragment.add_source("#define DEPTH_PEELING\n");
+    }
 
     vertex.add_source(
 #include "ganim/shaders/vertex.glsl"

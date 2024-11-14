@@ -520,3 +520,36 @@ TEST_CASE("Object fixed_in_frame", "[object]") {
         REQUIRE(scene.get_pixel(i, 6, 7) == Color("000000"));
     }
 }
+
+TEST_CASE("Order-independent Transparency", "[object]") {
+    auto scene = TestScene(6, 6, 6, 6, 1);
+
+    scene.set_transparency_layers(2);
+
+    auto square1 = Shape(
+        {{ 2,  2},
+         { 2, -2},
+         {-2, -2},
+         {-2,  2}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto square2 = Shape(
+        {{ 2,  2},
+         { 2, -2},
+         {-2, -2},
+         {-2,  2}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    square1.set_color("FF0000");
+    square2.set_color("00FF00");
+    square1.set_opacity(0.5);
+    square2.set_opacity(0.5);
+    square1.set_visible(true);
+    square2.set_visible(true);
+    scene.add(square1, square2);
+    square2.rotate(pga3::e23, 0.1);
+    scene.frame_advance();
+
+    REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("408000"));
+    REQUIRE(scene.get_pixel(0, 2, 4) == ApproxColor("804000"));
+}

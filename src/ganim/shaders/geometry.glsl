@@ -16,7 +16,7 @@ in VertexData {
     vec2 noise_coord;
 #endif
     vec3 true_position;
-    float confusing_z;
+    vec3 window_pos;
 } gs_in[];
 
 out GeometryData {
@@ -33,7 +33,7 @@ out GeometryData {
     vec2 noise_coord;
 #endif
     float lighting;
-    float confusing_z;
+    vec3 window_pos;
 } gs_out;
 
 void main() {
@@ -51,7 +51,7 @@ void main() {
 #ifdef NOISE_CREATE
         gs_out.noise_coord = gs_in[i].noise_coord;
 #endif
-        gs_out.confusing_z = gs_in[i].confusing_z;
+        gs_out.window_pos = gs_in[i].window_pos;
         vec3 a1 = gs_in[1].true_position - gs_in[0].true_position;
         vec3 a2 = gs_in[2].true_position - gs_in[0].true_position;
         vec3 n = normalize(cross(a1, a2));

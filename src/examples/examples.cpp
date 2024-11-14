@@ -7,6 +7,7 @@ void transforms();
 void paths();
 void vectors();
 void lighting();
+void oit();
 
 int main()
 {
@@ -17,7 +18,8 @@ int main()
               << "4: transforms\n"
               << "5: paths\n"
               << "6: vectors\n"
-              << "7: lighting\n";
+              << "7: lighting\n"
+              << "8: Order-independent Transparency\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -41,6 +43,9 @@ int main()
             break;
         case 7:
             lighting();
+            break;
+        case 8:
+            oit();
             break;
         default:
             std::cout << "Invalid input\n";

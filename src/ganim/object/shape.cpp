@@ -57,6 +57,11 @@ void Shape::draw(const Camera& camera)
     }
     auto& shader = *get_shader();
     glUseProgram(shader);
+    if (auto buffer = peeling_depth_buffer()) {
+        glUniform1i(shader.get_uniform("layer_depth_buffer"), 15);
+        glActiveTexture(GL_TEXTURE15);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, *buffer);
+    }
     glUniform2f(shader.get_uniform("camera_scale"),
                 camera.get_x_scale(), camera.get_y_scale());
     shader.set_rotor_uniform("view", ~camera.get_rotor());
@@ -110,6 +115,7 @@ gl::Shader* Shape::get_shader()
 {
     using enum ShaderFeature;
     auto flags = Time | VertexColors;
+    if (peeling_depth_buffer()) flags |= DepthPeeling;
     if (is_creating()) flags |= Create;
     else if (noise_creating()) flags |= NoiseCreate;
     if (M_do_shading) flags |= FaceShading;
