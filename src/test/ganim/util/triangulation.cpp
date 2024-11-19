@@ -188,10 +188,30 @@ TEST_CASE("Triangulation", "[util]") {
         -e2,
         -0.5*e1 - e2
     };
-    test_triangulation(t1, triangulate(t1), "Triangle");
-    test_triangulation(t2, triangulate(t2), "Square");
-    test_triangulation(t3, triangulate(t3), "Reverse square");
-    test_triangulation(t4, triangulate(t4), "Concave");
-    test_triangulation(t5, triangulate(t5), "Collinear", true, true);
-    test_triangulation(t6, triangulate(t6), "Complicated", true);
+    auto t1_concave = triangulate_concave(t1);
+    auto t2_concave = triangulate_concave(t2);
+    auto t3_concave = triangulate_concave(t3);
+    auto t4_concave = triangulate_concave(t4);
+    auto t5_concave = triangulate_concave(t5);
+    auto t6_concave = triangulate_concave(t6);
+    auto t1_convex = triangulate_convex(t1);
+    auto t2_convex = triangulate_convex(t2);
+    auto t3_convex = triangulate_convex(t3);
+    auto t5_convex = triangulate_convex(t5);
+    test_triangulation(t1, t1_concave, "Triangle with concave");
+    test_triangulation(t2, t2_concave, "Square with concave");
+    test_triangulation(t3, t3_concave, "Reverse square with concave");
+    test_triangulation(t4, t4_concave, "Concave with concave");
+    test_triangulation(t5, t5_concave, "Collinear with concave", true, true);
+    test_triangulation(t6, t6_concave, "Complicated with concave", true);
+    test_triangulation(t1, t1_convex, "Triangle with convex");
+    test_triangulation(t2, t2_convex, "Square with convex");
+    test_triangulation(t3, t3_convex, "Reverse square with convex");
+    test_triangulation(t5, t5_convex, "Collinear with convex", true, true);
+    REQUIRE(triangulate(t1) == t1_convex);
+    REQUIRE(triangulate(t2) == t2_convex);
+    REQUIRE(triangulate(t3) == t3_convex);
+    REQUIRE(triangulate(t4) == t4_concave);
+    REQUIRE(triangulate(t5) == t5_convex);
+    REQUIRE(triangulate(t6) == t6_concave);
 }

@@ -11,6 +11,18 @@ namespace ganim {
     std::vector<unsigned> triangulate(
         const std::vector<pga2::Bivector>& polygon
     );
+    std::vector<unsigned> triangulate_convex(
+        const std::vector<vga2::Vector>& polygon
+    );
+    std::vector<unsigned> triangulate_convex(
+        const std::vector<pga2::Bivector>& polygon
+    );
+    std::vector<unsigned> triangulate_concave(
+        const std::vector<vga2::Vector>& polygon
+    );
+    std::vector<unsigned> triangulate_concave(
+        const std::vector<pga2::Bivector>& polygon
+    );
 }
 
 #endif

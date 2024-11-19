@@ -9,6 +9,44 @@
 
 namespace ganim {
 
+std::vector<unsigned> triangulate(
+    const std::vector<vga2::Vector>& polygon
+)
+{
+    if (polygon.size() < 3) {
+        throw std::invalid_argument(
+            "When triangulating a polygon, the polygon must have at least three"
+            " points!"
+        );
+    }
+    auto last_area = 0.0;
+    for (int i = 0; i < ssize(polygon); ++i) {
+        auto p1 = polygon[i];
+        auto p2 = polygon[(i + 1) % ssize(polygon)];
+        auto p3 = polygon[(i + 2) % ssize(polygon)];
+        auto next_area = ((p2 - p1) ^ (p3 - p2)).blade_project<vga2::e12>();
+        if ((last_area < 0 and next_area > 0) or
+            (last_area > 0 and next_area < 0))
+        {
+            return triangulate_concave(polygon);
+        }
+        last_area = next_area;
+    }
+    return triangulate_convex(polygon);
+}
+
+std::vector<unsigned> triangulate(
+    const std::vector<pga2::Bivector>& polygon
+)
+{
+    auto vga_polygon = std::vector<vga2::Vector>();
+    vga_polygon.reserve(polygon.size());
+    for (auto p : polygon) {
+        vga_polygon.emplace_back(pga2_to_vga2(p));
+    }
+    return triangulate(vga_polygon);
+}
+
 // Name lookup for operators works a bit differently for static functions vs.
 // anonymous namespaces, and this won't be found if it's in an anomymous
 // namespace
@@ -329,7 +367,9 @@ namespace {
     };
 }
 
-std::vector<unsigned> triangulate(const std::vector<vga2::Vector>& polygon)
+std::vector<unsigned> triangulate_concave(
+    const std::vector<vga2::Vector>& polygon
+)
 {
     if (polygon.size() < 3) {
         throw std::invalid_argument(
@@ -344,14 +384,52 @@ std::vector<unsigned> triangulate(const std::vector<vga2::Vector>& polygon)
     return triangulator.M_triangulation;
 }
 
-std::vector<unsigned> triangulate(const std::vector<pga2::Bivector>& polygon)
+std::vector<unsigned> triangulate_concave(
+    const std::vector<pga2::Bivector>& polygon
+)
 {
     auto vga_polygon = std::vector<vga2::Vector>();
     vga_polygon.reserve(polygon.size());
     for (auto p : polygon) {
         vga_polygon.emplace_back(pga2_to_vga2(p));
     }
-    return triangulate(vga_polygon);
+    return triangulate_concave(vga_polygon);
+}
+
+std::vector<unsigned> triangulate_convex(
+    const std::vector<vga2::Vector>& polygon
+)
+{
+    if (polygon.size() < 3) {
+        throw std::invalid_argument(
+            "When triangulating a polygon, the polygon must have at least three"
+            " points!"
+        );
+    }
+    auto result = std::vector<unsigned>();
+    for (int i = 2; i < ssize(polygon); ++i) {
+        auto p1 = polygon[0];
+        auto p2 = polygon[i-1];
+        auto p3 = polygon[i];
+        if (((p2 - p1) ^ (p3 - p2)).blade_project<vga2::e12>() != 0) {
+            result.push_back(0);
+            result.push_back(i-1);
+            result.push_back(i);
+        }
+    }
+    return result;
+}
+
+std::vector<unsigned> triangulate_convex(
+    const std::vector<pga2::Bivector>& polygon
+)
+{
+    auto vga_polygon = std::vector<vga2::Vector>();
+    vga_polygon.reserve(polygon.size());
+    for (auto p : polygon) {
+        vga_polygon.emplace_back(pga2_to_vga2(p));
+    }
+    return triangulate_convex(vga_polygon);
 }
 
 }
