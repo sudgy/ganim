@@ -92,16 +92,16 @@ namespace ganim::pga3 {
     constexpr auto e3201 = -e0123;
     constexpr auto e3210 = e0123;
     constexpr const char names[] = "0123";
-}
 
-template <std::uint64_t... bases>
-std::ostream& operator<<(
-    std::ostream& stream,
-    const ganim::pga3::Multivector<bases...>& m
-)
-{
-    output_multivector<ganim::pga3::names>(stream, m);
-    return stream;
+    template <std::uint64_t... bases>
+    inline std::ostream& operator<<(
+        std::ostream& stream,
+        const ganim::pga3::Multivector<bases...>& m
+    )
+    {
+        output_multivector<ganim::pga3::names>(stream, m);
+        return stream;
+    }
 }
 
 #endif

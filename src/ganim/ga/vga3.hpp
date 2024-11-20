@@ -43,16 +43,16 @@ namespace ganim::vga3 {
     constexpr auto e321 = -e123;
 
     constexpr const char names[] = "123";
-}
 
-template <std::uint64_t... bases>
-std::ostream& operator<<(
-    std::ostream& stream,
-    const ganim::vga3::Multivector<bases...>& m
-)
-{
-    output_multivector<ganim::vga3::names>(stream, m);
-    return stream;
+    template <std::uint64_t... bases>
+    inline std::ostream& operator<<(
+        std::ostream& stream,
+        const ganim::vga3::Multivector<bases...>& m
+    )
+    {
+        output_multivector<ganim::vga3::names>(stream, m);
+        return stream;
+    }
 }
 
 #endif
