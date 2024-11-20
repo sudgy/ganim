@@ -8,6 +8,7 @@
 #include "ganim/object/path.hpp"
 #include "ganim/object/vector.hpp"
 #include "ganim/object/polygon_shape.hpp"
+#include "ganim/object/arrow_path.hpp"
 #include "ganim/object/text/character.hpp"
 #include "ganim/object/text/text.hpp"
 #include "ganim/object/text/tex.hpp"
