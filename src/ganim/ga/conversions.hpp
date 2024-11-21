@@ -37,6 +37,20 @@ vga3::Bivector vga2_to_vga3(const vga2::Bivector& in);
  */
 vga3::Even vga2_to_vga3(const vga2::Even& in);
 
+#define DEFINE_VECTOR_CONVERTER(conversion_func) \
+template <typename T> \
+auto conversion_func(const std::vector<T>& in) \
+{ \
+    auto result = std::vector<decltype(conversion_func(in[0]))>(); \
+    result.reserve(in.size()); \
+    for (const auto& a : in) { \
+        result.push_back(conversion_func(a)); \
+    } \
+    return result; \
+}
+
+DEFINE_VECTOR_CONVERTER(vga2_to_vga3);
+
 /** @brief Convert a 3D VGA scalar to a 2D VGA scalar */
 vga2::Scalar vga3_to_vga2(const vga3::Scalar& in);
 /** @brief Convert a 3D VGA vector to a 2D VGA vector
@@ -49,6 +63,8 @@ vga2::Vector vga3_to_vga2(const vga3::Vector& in);
  * This projects the bivector onto the xy-plane.
  */
 vga2::Bivector vga3_to_vga2(const vga3::Bivector& in);
+
+DEFINE_VECTOR_CONVERTER(vga3_to_vga2);
 
 /** @brief Convert a 2D PGA scalar to a 3D PGA scalar */
 pga3::Scalar pga2_to_pga3(const pga2::Scalar& in);
@@ -78,6 +94,8 @@ pga3::Bivector pga2_to_pga3_flat(const pga2::Vector& in);
  */
 pga3::Trivector pga2_to_pga3_flat(const pga2::Bivector& in);
 
+DEFINE_VECTOR_CONVERTER(pga2_to_pga3);
+
 /** @brief Convert a 3D PGA scalar to a 2D PGA scalar */
 pga2::Scalar pga3_to_pga2(const pga3::Scalar& in);
 /** @brief Convert a 3D PGA plane to a 2D PGA line
@@ -95,6 +113,8 @@ pga2::Bivector pga3_to_pga2(const pga3::Bivector& in);
  * This projects the input point onto the xy-plane.
  */
 pga2::Bivector pga3_to_pga2(const pga3::Trivector& in);
+
+DEFINE_VECTOR_CONVERTER(pga3_to_pga2);
 
 /** @brief Convert a 2D VGA scalar to a 2D PGA scalar */
 pga2::Scalar vga2_to_pga2(const vga2::Scalar& in);
@@ -115,6 +135,8 @@ pga2::Even vga2_to_pga2(const vga2::Even& in);
  */
 pga2::Vector vga2_to_pga2_full(const vga2::Vector& in);
 
+DEFINE_VECTOR_CONVERTER(vga2_to_pga2);
+
 /** @brief Convert a 2D PGA scalar to a 2D VGA scalar */
 vga2::Scalar pga2_to_vga2(const pga2::Scalar& in);
 /** @brief Convert a 2D PGA point to a 2D VGA vector
@@ -129,6 +151,8 @@ vga2::Vector pga2_to_vga2(const pga2::Bivector& in);
  * Any e0 component will be ignored.
  */
 vga2::Vector pga2_to_vga2_cheat(const pga2::Vector& in);
+
+DEFINE_VECTOR_CONVERTER(pga2_to_vga2);
 
 /** @brief Convert a 3D VGA scalar to a 3D PGA scalar */
 pga3::Scalar vga3_to_pga3(const vga3::Scalar& in);
@@ -154,6 +178,8 @@ pga3::Even vga3_to_pga3(const vga3::Even& in);
  */
 pga3::Bivector vga3_to_pga3_full(const vga3::Vector& in);
 
+DEFINE_VECTOR_CONVERTER(vga3_to_pga3);
+
 /** @brief Convert a 3D PGA scalar to a 3D VGA scalar */
 vga3::Scalar pga3_to_vga3(const pga3::Scalar& in);
 /** @brief Convert a 3D PGA point to a 3D VGA vector
@@ -168,6 +194,8 @@ vga3::Vector pga3_to_vga3(const pga3::Trivector& in);
  * Any e0 component will be ignored.
  */
 vga3::Vector pga3_to_vga3_cheat(const pga3::Vector& in);
+
+DEFINE_VECTOR_CONVERTER(pga3_to_vga3);
 
 /** @brief Convert a 2D VGA scalar to a 3D PGA scalar */
 pga3::Scalar vga2_to_pga3(const vga2::Scalar& in);
@@ -187,6 +215,8 @@ pga3::Even vga2_to_pga3(const vga2::Even& in);
  * This produces the line the vector goes through.
  */
 pga3::Bivector vga2_to_pga3_full(const vga2::Vector& in);
+
+DEFINE_VECTOR_CONVERTER(vga2_to_pga3);
 
 /** @brief A lot of functions take in a point in space, and since there are
  * several different representations of points in space, this concept checks if
