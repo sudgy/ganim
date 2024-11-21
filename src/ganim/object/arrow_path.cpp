@@ -1,5 +1,7 @@
 #include "arrow_path.hpp"
 
+#include "ganim/ga/exp.hpp"
+
 using namespace ganim;
 
 ArrowPath::ArrowPath(
@@ -54,7 +56,12 @@ void ArrowPath::recreate(
     r *= e21 * (e12 + tip_point) / 2;
     const auto bad_line = (e1 | tip_point).normalized();
     const auto good_line = (tip_point & end_point).normalized();
-    r *= bad_line * (bad_line + good_line).normalized();
+    if ((bad_line + good_line).norm() < 1e-5) {
+        r *= ga_exp(tip_point*τ/4);
+    }
+    else {
+        r *= bad_line * (bad_line + good_line).normalized();
+    }
 
     auto transform = [&](pga2::Vector p){
         return (~r*p.dual()*r).grade_project<2>().undual();
