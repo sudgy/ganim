@@ -32,6 +32,8 @@ void Shape::set_vertices(
             | std::views::transform([](const auto& v) {return v.t;});
         M_min_draw_fraction = *std::ranges::min_element(ts);
         M_max_draw_fraction = *std::ranges::max_element(ts);
+        auto dif = M_max_draw_fraction - M_min_draw_fraction;
+        M_min_draw_fraction -= dif / 50;
         M_do_shading = false;
         for (auto& v : M_vertices) {
             if (v.z != M_vertices[0].z) {
