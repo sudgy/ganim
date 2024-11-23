@@ -8,6 +8,7 @@ void paths();
 void vectors();
 void lighting();
 void oit();
+void bivectors();
 
 int main()
 {
@@ -19,7 +20,8 @@ int main()
               << "5: paths\n"
               << "6: vectors\n"
               << "7: lighting\n"
-              << "8: Order-independent Transparency\n";
+              << "8: Order-independent Transparency\n"
+              << "9: Bivectors\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -46,6 +48,9 @@ int main()
             break;
         case 8:
             oit();
+            break;
+        case 9:
+            bivectors();
             break;
         default:
             std::cout << "Invalid input\n";
