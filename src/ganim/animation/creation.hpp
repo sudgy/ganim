@@ -9,6 +9,8 @@
 
 namespace ganim {
 
+class BivectorObject;
+
 /** @brief An animation to "create" objects.
  *
  * "Creating" an object is setting its draw fraction continuously from zero to
@@ -47,6 +49,12 @@ void noise_create(
 void write(
     SceneBase& scene,
     MaybeOwningRef<Object> object,
+    AnimationArgs args = AnimationArgs()
+);
+
+void create_bivector(
+    SceneBase& scene,
+    MaybeOwningRef<BivectorObject> bivector,
     AnimationArgs args = AnimationArgs()
 );
 

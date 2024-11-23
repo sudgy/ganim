@@ -48,7 +48,10 @@ BivectorObject::BivectorObject(
 {
     using namespace vga3;
     const auto b = (v1 ^ v2).normalized();
-    const auto r = -b * (b + e12).normalized();
+    auto r = Even(1);
+    if ((b + e12).norm2() > 1e-10) {
+        r *= -b * (b + e12).normalized();
+    }
     auto vga3_flat_points = std::vector{
         0*e1,
         (~r*v1*r).grade_project<1>(),

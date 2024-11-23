@@ -1,6 +1,9 @@
 #include "creation.hpp"
 
 #include "ganim/object/bases/object.hpp"
+#include "ganim/object/bivector.hpp"
+
+#include "fading.hpp"
 
 namespace ganim {
 
@@ -43,6 +46,16 @@ void write(
 {
     args.rate_function = rf::linear;
     noise_create(scene, std::move(object), 0.25, args);
+}
+
+void create_bivector(
+    SceneBase& scene,
+    MaybeOwningRef<BivectorObject> bivector,
+    AnimationArgs args
+)
+{
+    fade_in(scene, bivector->get_inside(), args);
+    create(scene, bivector->get_outside(), args);
 }
 
 }
