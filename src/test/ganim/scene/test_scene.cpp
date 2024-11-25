@@ -1,5 +1,7 @@
 #include "test_scene.hpp"
 
+#include <catch2/catch_test_macros.hpp>
+
 #include "ganim/gl/gl.hpp"
 #include "ganim/util/stb_image_write.h"
 
@@ -23,6 +25,49 @@ void TestScene::process_frame()
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(0, 0, pixel_width(), pixel_height(), GL_RGB, GL_UNSIGNED_BYTE,
                  new_frame.data());
+}
+
+void TestScene::check_draw_equivalent(
+    ganim::Object& o1,
+    ganim::Object& o2,
+    std::string_view description,
+    std::string_view write_to_file_filename
+)
+{
+    INFO(description);
+    int t = M_data.size();
+    add(o1);
+    frame_advance();
+    remove(o1);
+    add(o2);
+    frame_advance();
+    remove(o2);
+    if (write_to_file_filename != "") {
+        auto object_filename = std::format(
+            "{}_object.png",
+            write_to_file_filename
+        );
+        stbi_write_png(
+            object_filename.c_str(), pixel_width(), pixel_height(), 3,
+            M_data[t].data(), pixel_width() * 3
+        );
+        auto reference_filename = std::format(
+            "{}_reference.png",
+            write_to_file_filename
+        );
+        stbi_write_png(
+            reference_filename.c_str(), pixel_width(), pixel_height(), 3,
+            M_data[t + 1].data(), pixel_width() * 3
+        );
+    }
+    for (int x = 0; x < pixel_width(); ++x) {
+        INFO("x = " << x);
+        for (int y = 0; y < pixel_width(); ++y) {
+            INFO("y = " << y);
+            REQUIRE(get_pixel(t, x, y) == get_pixel(t + 1, x, y));
+        }
+    }
+    M_data.resize(t);
 }
 
 void TestScene::write_frames_to_file(std::string_view filename_base) const

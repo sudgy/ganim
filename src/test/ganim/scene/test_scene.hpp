@@ -15,6 +15,12 @@ class TestScene : public ganim::SceneBase {
             int fps
         );
         ganim::Color get_pixel(int t, int x, int y);
+        void check_draw_equivalent(
+            ganim::Object& o1,
+            ganim::Object& o2,
+            std::string_view description,
+            std::string_view write_to_file_filename = ""
+        );
         constexpr int time_size() const {return M_data.size();}
         void write_frames_to_file(std::string_view filename_base) const;
 
