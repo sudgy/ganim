@@ -19,8 +19,8 @@ namespace ganim {
     };
     /// @internal
     namespace texture_shape_helper {
-        gl::Shader& get_shader(bool is_creating, double noise_creating);
         void set_texture(unsigned texture);
+        void set_uniforms(gl::Shader& shader);
         void buffer_vertices(
             const Shape& self,
             const std::vector<TextureVertex>& texture_vertices
@@ -78,12 +78,15 @@ namespace ganim {
                 texture_shape_helper::set_texture(M_texture);
                 T::draw(camera);
             }
-            virtual gl::Shader* get_shader() override
+            virtual ShaderFeature get_shader_flags() override
             {
-                return &texture_shape_helper::get_shader(
-                    this->is_creating(),
-                    this->noise_creating())
-                ;
+                auto flags = Shape::get_shader_flags();
+                flags |= ShaderFeature::Texture;
+                return flags;
+            }
+            virtual void set_subclass_uniforms(gl::Shader& shader) override
+            {
+                texture_shape_helper::set_uniforms(shader);
             }
 
             GANIM_OBJECT_CHAIN_DECLS(TextureShape);

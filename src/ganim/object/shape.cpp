@@ -57,8 +57,9 @@ void Shape::draw(const Camera& camera)
         glBindVertexArray(0);
         M_valid = true;
     }
-    auto& shader = *get_shader();
+    auto& shader = ganim::get_shader(get_shader_flags());
     glUseProgram(shader);
+    set_subclass_uniforms(shader);
     if (auto buffer = peeling_depth_buffer()) {
         glUniform1i(shader.get_uniform("layer_depth_buffer"), 15);
         glActiveTexture(GL_TEXTURE15);
@@ -113,7 +114,7 @@ void Shape::buffer_indices()
                  M_indices.data(), GL_STATIC_DRAW);
 }
 
-gl::Shader* Shape::get_shader()
+ShaderFeature Shape::get_shader_flags()
 {
     using enum ShaderFeature;
     auto flags = Time | VertexColors;
@@ -121,7 +122,7 @@ gl::Shader* Shape::get_shader()
     if (is_creating()) flags |= Create;
     else if (noise_creating()) flags |= NoiseCreate;
     if (M_do_shading) flags |= FaceShading;
-    return &ganim::get_shader(flags);
+    return flags;
 }
 
 Box Shape::get_original_true_bounding_box() const

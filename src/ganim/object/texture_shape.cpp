@@ -6,25 +6,15 @@
 
 using namespace ganim;
 
-gl::Shader& texture_shape_helper::get_shader(
-    bool is_creating,
-    double noise_creating
-)
-{
-    using enum ShaderFeature;
-    auto flags = Time | VertexColors | Texture;
-    if (is_creating) flags |= Create;
-    if (noise_creating) flags |= NoiseCreate;
-    auto& result = ganim::get_shader(flags);
-    glUseProgram(result);
-    glUniform1i(result.get_uniform("in_texture"), 0);
-    return result;
-}
-
 void texture_shape_helper::set_texture(unsigned texture)
 {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
+}
+
+void texture_shape_helper::set_uniforms(gl::Shader& shader)
+{
+    glUniform1i(shader.get_uniform("in_texture"), 0);
 }
 
 void texture_shape_helper::buffer_vertices(

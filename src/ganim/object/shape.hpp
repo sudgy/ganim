@@ -11,7 +11,7 @@
 
 #include "ganim/gl/buffer.hpp"
 #include "ganim/gl/vertex_array.hpp"
-#include "ganim/gl/shader.hpp"
+#include "ganim/object/shaders.hpp"
 
 namespace ganim {
     /** @brief Represents any object that can be thought of as a shape
@@ -66,7 +66,8 @@ namespace ganim {
             const std::vector<unsigned>& get_indices() const {return M_indices;}
             virtual void draw(const Camera& camera) override;
             void make_invalid() {M_valid = false;}
-            virtual gl::Shader* get_shader();
+            virtual ShaderFeature get_shader_flags();
+            virtual void set_subclass_uniforms(gl::Shader&) {}
             virtual Box get_original_true_bounding_box() const override;
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
