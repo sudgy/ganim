@@ -39,7 +39,7 @@ TEST_CASE("ArrowPath straight line", "[object]") {
     auto group = Group(shape1, shape2);
     group.set_visible(true);
 
-    scene.check_draw_equivalent(path, group, "ArrowPath straight line");
+    scene.check_draw_equivalent(path, group);
 }
 
 TEST_CASE("ArrowPath straight left line", "[object]") {
@@ -73,7 +73,7 @@ TEST_CASE("ArrowPath straight left line", "[object]") {
     group.rotate(τ/2);
     group.set_visible(true);
 
-    scene.check_draw_equivalent(path, group, "ArrowPath straight left line");
+    scene.check_draw_equivalent(path, group);
 }
 
 TEST_CASE("ArrowPath turning", "[object]") {
@@ -108,7 +108,7 @@ TEST_CASE("ArrowPath turning", "[object]") {
     auto group = Group(tipless_path, tip);
     group.set_visible(true);
 
-    scene.check_draw_equivalent(path, group, "ArrowPath turning");
+    scene.check_draw_equivalent(path, group);
 }
 
 TEST_CASE("ArrowPath turning right at the end", "[object]") {
@@ -142,6 +142,5 @@ TEST_CASE("ArrowPath turning right at the end", "[object]") {
     auto group = Group(shape1, shape2);
     group.set_visible(true);
 
-    scene.check_draw_equivalent(
-            path, group, "ArrowPath turning right at the end");
+    scene.check_draw_equivalent(path, group);
 }

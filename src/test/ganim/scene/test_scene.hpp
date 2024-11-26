@@ -18,7 +18,7 @@ class TestScene : public ganim::SceneBase {
         void check_draw_equivalent(
             ganim::Object& o1,
             ganim::Object& o2,
-            std::string_view description,
+            std::string_view description = "",
             std::string_view write_to_file_filename = ""
         );
         constexpr int time_size() const {return M_data.size();}

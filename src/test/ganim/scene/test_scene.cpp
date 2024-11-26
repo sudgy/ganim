@@ -34,7 +34,13 @@ void TestScene::check_draw_equivalent(
     std::string_view write_to_file_filename
 )
 {
-    INFO(description);
+    if (description != "") {
+        INFO(description);
+        // This is done with this weird recursion because INFO only works until
+        // the end of its scope
+        check_draw_equivalent(o1, o2, "", write_to_file_filename);
+        return;
+    }
     int t = M_data.size();
     add(o1);
     frame_advance();
