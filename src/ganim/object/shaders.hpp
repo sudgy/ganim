@@ -19,7 +19,8 @@ namespace ganim {
         Create = 1 << 4,
         NoiseCreate = 1 << 5,
         FaceShading = 1 << 6,
-        DepthPeeling = 1 << 7
+        DepthPeeling = 1 << 7,
+        Dash = 1 << 8
     };
     constexpr bool operator&(ShaderFeature f1, ShaderFeature f2)
     {

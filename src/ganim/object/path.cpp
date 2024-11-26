@@ -1,5 +1,7 @@
 #include "path.hpp"
 
+#include "ganim/gl/gl.hpp"
+
 using namespace ganim;
 using namespace pga2;
 
@@ -248,4 +250,27 @@ void Path::recreate(
         }
     }
     set_vertices(std::move(vertices), std::move(indices));
+}
+
+void Path::set_dash(double on_time, double off_time)
+{
+    M_dash_on_time = on_time;
+    M_dash_off_time = off_time;
+}
+
+ShaderFeature Path::get_shader_flags()
+{
+    auto flags = Shape::get_shader_flags();
+    if (M_dash_on_time != 0 and M_dash_off_time != 0) {
+        flags |= ShaderFeature::Dash;
+    }
+    return flags;
+}
+
+void Path::set_subclass_uniforms(gl::Shader& shader)
+{
+    if (M_dash_on_time != 0 and M_dash_off_time != 0) {
+        glUniform1f(shader.get_uniform("dash_on_time"), M_dash_on_time);
+        glUniform1f(shader.get_uniform("dash_off_time"), M_dash_off_time);
+    }
 }

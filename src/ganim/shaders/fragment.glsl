@@ -35,6 +35,10 @@ uniform float noise_scale;
 #ifdef DEPTH_PEELING
 uniform sampler2DMS layer_depth_buffer;
 #endif
+#ifdef DASH
+uniform float dash_on_time;
+uniform float dash_off_time;
+#endif
 
 out vec4 color;
 
@@ -102,6 +106,10 @@ void main()
         unused_noise_gradient
     );
     if (final_t < fs_in.t) discard;
+#endif
+#ifdef DASH
+    float dash_t = mod(fs_in.t, dash_on_time + dash_off_time);
+    if (dash_t > dash_off_time) discard;
 #endif
 #ifdef DEPTH_PEELING
     ivec2 depth_pos = ivec2(

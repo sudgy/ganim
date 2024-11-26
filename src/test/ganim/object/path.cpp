@@ -287,3 +287,34 @@ TEST_CASE("Closed paths", "[object]") {
         }
     }
 }
+
+TEST_CASE("Dashed paths", "[object]") {
+    auto scene = TestScene(8, 8, 8, 8, 1);
+    auto path = Path(
+        {
+            -2*e1,
+            2*e1
+        },
+        false,
+        2
+    );
+    path.set_visible(true);
+    path.set_dash(0.25, 0.25);
+    scene.add(path);
+    scene.frame_advance();
+    path.set_dash(0, 0);
+    scene.frame_advance();
+    for (int x = 0; x < 8; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            INFO("x = " << x << ", y = " << y);
+            auto color1 = Color("000000");
+            auto color2 = Color("000000");
+            if (x >= 2 and x <= 5 and y >= 3 and y <= 4) {
+                if (x == 2 or x == 4) color1 = Color("FFFFFF");
+                color2 = Color("FFFFFF");
+            }
+            REQUIRE(scene.get_pixel(0, x, y) == color1);
+            REQUIRE(scene.get_pixel(1, x, y) == color2);
+        }
+    }
+}

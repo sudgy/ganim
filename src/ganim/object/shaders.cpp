@@ -68,6 +68,11 @@ gl::Shader& get_shader(ShaderFeature features)
         geometry.add_source("#define DEPTH_PEELING\n");
         fragment.add_source("#define DEPTH_PEELING\n");
     }
+    if (features & Dash) {
+        vertex.add_source("#define DASH\n");
+        geometry.add_source("#define DASH\n");
+        fragment.add_source("#define DASH\n");
+    }
 
     vertex.add_source(
 #include "ganim/shaders/vertex.glsl"
