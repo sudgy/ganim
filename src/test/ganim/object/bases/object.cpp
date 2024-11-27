@@ -320,3 +320,25 @@ TEST_CASE("Object align_to", "[object]") {
     test2.align_to(test1, e1, e2);
     REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0));
 }
+
+TEST_CASE("Object to_edge", "[object]") {
+    using namespace pga2;
+    auto test = TestObject();
+    test.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(2, 2, 2));
+    auto camera = Camera(20, 10, 8);
+
+    test.to_edge(camera, e1, 0);
+    REQUIRE_THAT(test.get_center().undual(), GAEquals(e0 + 4*e1));
+
+    test.to_edge(camera, e1, 1);
+    REQUIRE_THAT(test.get_center().undual(), GAEquals(e0 + 3*e1));
+
+    test.to_edge(camera, e2, 1);
+    REQUIRE_THAT(test.get_center().undual(), GAEquals(e0 + 2*e2));
+
+    test.to_edge(camera, e1 + e2, 1);
+    REQUIRE_THAT(test.get_center().undual(), GAEquals(e0 + 3*e1 + 2*e2));
+
+    test.to_edge(camera, e1 + 2*e2, 1);
+    REQUIRE_THAT(test.get_center().undual(), GAEquals(e0 + 1.5*e1 + 2*e2));
+}

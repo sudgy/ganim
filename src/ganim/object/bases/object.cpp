@@ -246,6 +246,35 @@ Object& Object::align_to(
     return align_to(other_box.get_outside_point(direction), direction);
 }
 
+Object& Object::to_edge(
+    const Camera& camera,
+    const pga3::Trivector& direction,
+    double buff
+)
+{
+    using namespace vga2;
+    const auto cx = camera.get_starting_width() / 2;
+    const auto cy = camera.get_starting_height() / 2;
+    const auto box = get_logical_bounding_box();
+    const auto box_size = pga2_to_vga2(
+            box.get_upper_right() - box.get_lower_left());
+    const auto bx = box_size.blade_project<e1>() / 2;
+    const auto by = box_size.blade_project<e2>() / 2;
+    const auto sx = cx - bx - buff;
+    const auto sy = cy - by - buff;
+    auto d = vga3_to_vga2(pga3_to_vga3(direction));
+    d /= std::max(
+        std::abs(d.blade_project<e1>()),
+        std::abs(d.blade_project<e2>())
+    );
+    const auto dx = d.blade_project<e1>();
+    const auto dy = d.blade_project<e2>();
+    const auto x = sx * dx;
+    const auto y = sy * dy;
+    shift(x*e1 + y*e2 - pga2_to_vga2(box.get_center()));
+    return *this;
+}
+
 std::unique_ptr<Object> Object::get_bounding_box_object(Color color) const
 {
     auto box = get_logical_bounding_box();

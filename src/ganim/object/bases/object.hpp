@@ -273,6 +273,19 @@ namespace ganim {
                 align_to(point, direction1);
                 return align_to(point, direction2);
             }
+            Object& to_edge(
+                const Camera& camera,
+                const pga3::Trivector& direction,
+                double buff = 0.5
+            );
+            Object& to_edge(
+                const Camera& camera,
+                const pointlike auto& direction,
+                double buff = 0.5
+            )
+            {
+                return to_edge(camera, pointlike_to_pga3(direction), buff);
+            }
 
             std::unique_ptr<Object>
                 get_bounding_box_object(Color color = "80808080") const;
