@@ -179,6 +179,39 @@ pga2::Bivector Object::get_lower_right() const
     return get_logical_bounding_box().get_lower_right();
 }
 
+void Object::set_x(double x)
+{
+    shift((x - get_x())*e1);
+}
+
+void Object::set_y(double y)
+{
+    shift((y - get_y())*e2);
+}
+
+void Object::set_z(double z)
+{
+    shift((z - get_z())*e3);
+}
+
+double Object::get_x() const
+{
+    return get_logical_bounding_box()
+        .get_center_3d().undual().blade_project<e1>();
+}
+
+double Object::get_y() const
+{
+    return get_logical_bounding_box()
+        .get_center_3d().undual().blade_project<e2>();
+}
+
+double Object::get_z() const
+{
+    return get_logical_bounding_box()
+        .get_center_3d().undual().blade_project<e3>();
+}
+
 Object& Object::next_to(
     const pga3::Trivector& point,
     const pga3::Trivector& direction,

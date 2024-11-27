@@ -199,6 +199,13 @@ namespace ganim {
             pga2::Bivector get_lower_left() const;
             pga2::Bivector get_lower_right() const;
 
+            void set_x(double x);
+            void set_y(double y);
+            void set_z(double z);
+            double get_x() const;
+            double get_y() const;
+            double get_z() const;
+
             Object& next_to(
                 const pga3::Trivector& point,
                 const pga3::Trivector& direction,
