@@ -168,39 +168,47 @@ Tex::Tex(std::filesystem::path dvi_filename)
     read_dvi(dvi_filename, *this);
     double x_min = INFINITY;
     double x_max = -INFINITY;
-    double y_min = INFINITY;
-    double y_max = -INFINITY;
+    double y_bottom = 0.0;
+    bool found_bottom = false;
+    for (auto& section : M_vertices) {
+        for (auto [c, x, y, s] : section) {
+            if (!found_bottom) {
+                y_bottom = y + (c->bearing_y - c->height) * s;
+                found_bottom = true;
+            }
+            x_min = std::min(x_min, x + c->bearing_x);
+            x_max = std::max(x_max, x + c->bearing_x + c->width);
+        }
+    }
+    const auto x_shift = -(x_min + x_max) / 2;
+    const auto y_shift = -y_bottom;
     for (int j = 0; j < ssize(M_vertices); ++j) {
         auto vertices = std::vector<Shape::Vertex>();
         auto indices = std::vector<unsigned>();
         auto tvertices = std::vector<TextureVertex>();
         auto i = 0;
         for (auto [c, x, y, s] : M_vertices[j]) {
-            x_min = std::min(x_min, x + c->bearing_x);
-            x_max = std::max(x_max, x + c->bearing_x + c->width);
-            y_min = std::min(y_min, y + c->bearing_y - c->height);
-            y_max = std::max(y_max, y + c->bearing_y);
             vertices.push_back({
-                static_cast<float>(x + c->bearing_x * s),
-                static_cast<float>(y + c->bearing_y * s),
+                static_cast<float>(x + c->bearing_x * s + x_shift),
+                static_cast<float>(y + c->bearing_y * s + y_shift),
                 0, static_cast<float>(0 + i*4)
             });
             tvertices.push_back({c->texture_x, c->texture_y});
             vertices.push_back({
-                static_cast<float>(x + (c->bearing_x + c->width) * s),
-                static_cast<float>(y + c->bearing_y * s),
+                static_cast<float>(x + (c->bearing_x + c->width) * s + x_shift),
+                static_cast<float>(y + c->bearing_y * s + y_shift),
                 0, static_cast<float>(1 + i*4)
             });
             tvertices.push_back({c->texture_x + c->texture_width, c->texture_y});
             vertices.push_back({
-                static_cast<float>(x + c->bearing_x * s),
-                static_cast<float>(y + (c->bearing_y - c->height) * s),
+                static_cast<float>(x + c->bearing_x * s + x_shift),
+                static_cast<float>(y + (c->bearing_y - c->height) * s + y_shift),
                 0, static_cast<float>(2 + i*4)
             });
             tvertices.push_back({c->texture_x, c->texture_y + c->texture_height});
             vertices.push_back({
-                static_cast<float>(x + (c->bearing_x + c->width) * s),
-                static_cast<float>(y + (c->bearing_y - c->height) * s),
+                static_cast<float>(x + (c->bearing_x + c->width) * s + x_shift),
+                static_cast<float>(y + (c->bearing_y - c->height) * s + y_shift),
                 0, static_cast<float>(3 + i*4)
             });
             tvertices.push_back({c->texture_x + c->texture_width,
@@ -215,31 +223,27 @@ Tex::Tex(std::filesystem::path dvi_filename)
         }
         for (auto [x, y, width, height] : M_rules[j]) {
             const auto td = 1.0f / GC_default_text_texture_size / 2;
-            x_min = std::min(x_min, x);
-            x_max = std::max(x_max, x + width);
-            y_min = std::min(y_min, y);
-            y_max = std::max(y_max, y + height);
             vertices.push_back({
-                static_cast<float>(x),
-                static_cast<float>(y),
+                static_cast<float>(x + x_shift),
+                static_cast<float>(y + y_shift),
                 0, 0
             });
             tvertices.push_back({0, 0});
             vertices.push_back({
-                static_cast<float>(x + width),
-                static_cast<float>(y),
+                static_cast<float>(x + width + x_shift),
+                static_cast<float>(y + y_shift),
                 0, 1
             });
             tvertices.push_back({td, 0});
             vertices.push_back({
-                static_cast<float>(x),
-                static_cast<float>(y + height),
+                static_cast<float>(x + x_shift),
+                static_cast<float>(y + height + y_shift),
                 0, 0
             });
             tvertices.push_back({0, td});
             vertices.push_back({
-                static_cast<float>(x + width),
-                static_cast<float>(y + height),
+                static_cast<float>(x + width + x_shift),
+                static_cast<float>(y + height + y_shift),
                 0, 1
             });
             tvertices.push_back({td, td});
@@ -257,9 +261,6 @@ Tex::Tex(std::filesystem::path dvi_filename)
         new_shape.set_texture(get_text_texture());
     }
     add(M_shapes);
-    const auto x_shift = (x_min + x_max) / 2;
-    const auto y_shift = (y_min + y_max) / 2;
-    shift(-vga2::Vector(x_shift, y_shift));
 }
 
 int Tex::write_character(

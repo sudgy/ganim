@@ -23,7 +23,7 @@ void basic_text()
     scene.add(hello, text);
     text.set_draw_subobject_ratio(0.1);
     text.set_outline(Color("#000000"), 0.04);
-    text.shift(-vga2::e2);
+    text.shift(-2*vga2::e2);
     noise_create(scene, text, 0.25, {.duration = 2});
     scene.wait(3);
 }
