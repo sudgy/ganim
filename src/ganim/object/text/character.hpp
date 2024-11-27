@@ -87,6 +87,8 @@ namespace ganim {
     // TODO: Figure out exactly what this is doing so that you can write
     // documentation
     double get_font_pem(Font& font);
+    double get_font_ascender(Font& font);
+    double get_font_descender(Font& font);
     /** @brief Get the kerning offset for two characters, in ganim units.
      *
      * @param font A font previously returned by @ref get_font.

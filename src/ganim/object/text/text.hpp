@@ -11,6 +11,10 @@ namespace ganim {
     class Text : public TextureShape<Shape> {
         public:
             explicit Text(std::string_view string);
+            virtual Box get_original_logical_bounding_box() const override;
+
+        private:
+            Box M_logical_bounding_box;
     };
 }
 

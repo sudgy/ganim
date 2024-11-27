@@ -167,6 +167,18 @@ double ganim::get_font_pem(Font& font)
     return font.M_face->size->metrics.x_ppem / GC_pixel_size;
 }
 
+double ganim::get_font_ascender(Font& font)
+{
+    auto& metrics = font.M_face->size->metrics;
+    return metrics.ascender / 64 / GC_pixel_size;
+}
+
+double ganim::get_font_descender(Font& font)
+{
+    auto& metrics = font.M_face->size->metrics;
+    return metrics.descender / 64 / GC_pixel_size;
+}
+
 double ganim::get_kerning(
         Font& font, UnicodeCodepoint left, UnicodeCodepoint right)
 {

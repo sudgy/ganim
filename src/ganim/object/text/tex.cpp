@@ -168,6 +168,8 @@ Tex::Tex(std::filesystem::path dvi_filename)
     read_dvi(dvi_filename, *this);
     double x_min = INFINITY;
     double x_max = -INFINITY;
+    double y_min = INFINITY;
+    double y_max = -INFINITY;
     double y_bottom = 0.0;
     bool found_bottom = false;
     for (auto& section : M_vertices) {
@@ -178,10 +180,18 @@ Tex::Tex(std::filesystem::path dvi_filename)
             }
             x_min = std::min(x_min, x + c->bearing_x);
             x_max = std::max(x_max, x + c->bearing_x + c->width);
+            y_min = std::min(y_min, y + M_descender);
+            y_max = std::max(y_max, y + M_ascender);
         }
     }
     const auto x_shift = -(x_min + x_max) / 2;
     const auto y_shift = -y_bottom;
+    x_min += x_shift;
+    x_max += x_shift;
+    y_min += y_shift;
+    y_max += y_shift;
+    using namespace vga2;
+    M_logical_bounding_box = Box(x_min*e1 + y_min*e2, x_max*e1 + y_max*e2);
     for (int j = 0; j < ssize(M_vertices); ++j) {
         auto vertices = std::vector<Shape::Vertex>();
         auto indices = std::vector<unsigned>();
@@ -277,6 +287,10 @@ int Tex::write_character(
             + filename + ".pfb";
     }
     auto& font2 = get_font(filename);
+    if (M_ascender == 0.0) {
+        M_ascender = get_font_ascender(font2);
+        M_descender = get_font_descender(font2);
+    }
     auto& character = get_character(font2, c);
     auto scale = M_magnification * 1e-5 / 2.54 * 72 / 10
         * get_font_pem(font2);
@@ -338,12 +352,16 @@ void Tex::set_colors(const std::unordered_map<std::string, Color>& colors)
             }
         }
     }
-    //for (auto& [string, color] : colors) {
-    //    auto it = M_pieces_by_string.find(string);
-    //    if (it != M_pieces_by_string.end()) {
-    //        for (auto i : it->second) {
-    //            M_shapes[i].set_color(color);
-    //        }
-    //    }
-    //}
+}
+
+Box Tex::get_logical_bounding_box() const
+{
+    // We want to NOT use Group's version of get_logical_bounding_box(), and
+    // have the transforming properties of the original definition in Object.
+    return Object::get_logical_bounding_box();
+}
+
+Box Tex::get_original_logical_bounding_box() const
+{
+    return M_logical_bounding_box;
 }

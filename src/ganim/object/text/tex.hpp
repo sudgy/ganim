@@ -34,6 +34,8 @@ class Tex : public Group, public DVIConsumer {
             {M_magnification = mag;}
         virtual void process_special(std::string_view special) override;
         void set_colors(const std::unordered_map<std::string, Color>& colors);
+        virtual Box get_logical_bounding_box() const override;
+        virtual Box get_original_logical_bounding_box() const override;
 
     private:
         double M_magnification = 0.0;
@@ -56,6 +58,9 @@ class Tex : public Group, public DVIConsumer {
         std::vector<TextureShape<Shape>> M_shapes;
         std::unordered_map<std::string, std::vector<int>> M_pieces_by_string;
         std::vector<std::string> M_tex_strings;
+        Box M_logical_bounding_box;
+        double M_ascender = 0.0;
+        double M_descender = 0.0;
 };
 
 }
