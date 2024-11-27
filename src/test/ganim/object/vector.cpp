@@ -255,3 +255,11 @@ TEST_CASE("Vector object orientation locking", "[object]") {
     r = test.get_rotor();
     REQUIRE_THAT((~r*(e2 + e0).dual()*r).undual(), GAEquals(e2 + e0, 1e-5));
 }
+
+TEST_CASE("Vector bounding box", "[object]") {
+    using namespace vga2;
+    auto test = VectorObject(4*e1, {.tip_size = 2});
+    auto box = test.get_logical_bounding_box();
+    REQUIRE_THAT(pga2_to_vga2(box.get_lower_left()), GAEquals(-e2));
+    REQUIRE_THAT(pga2_to_vga2(box.get_upper_right()), GAEquals(4*e1 + e2));
+}

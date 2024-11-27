@@ -258,7 +258,7 @@ Box VectorObject::get_original_true_bounding_box() const
 {
     auto y = M_tip_size / 2.0;
     using namespace vga2;
-    return {-y*e2, get_scale()*e1 + y*e2};
+    return {-y*e2/get_scale(), e1 + y*e2/get_scale()};
 }
 
 void VectorObject::draw(const Camera& camera)
