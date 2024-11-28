@@ -67,7 +67,7 @@ vec4[2] rotor_mult(vec4 m[2], vec4 n[2])
 void main()
 {
     vec4[2] r = rotor_mult(model, view);
-    vec4 pos = vec4(rotor_trivector_sandwich(r, vec3(in_pos, 0) *scale), 1.0);
+    vec4 pos = vec4(rotor_trivector_sandwich(r, vec3(in_pos, 0)), 1.0);
     pos.w = -pos.z;
     pos.x *= camera_scale.x;
     pos.y *= -camera_scale.y;
@@ -152,10 +152,6 @@ void main()
         }
         void generate_textures(const Camera& camera)
         {
-            auto rotor = tracked_object().get_rotor();
-            auto scale = tracked_object().get_scale();
-            tracked_object().apply_rotor(~rotor);
-            tracked_object().scale(1/scale);
             M_bounding_box = tracked_object().get_true_bounding_box();
             using namespace pga3;
             auto p1 = M_bounding_box.get_inner_lower_left_vertex().undual();
@@ -168,8 +164,6 @@ void main()
             const auto z2 = p2.blade_project<e3>();
             {
                 if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
-                    tracked_object().apply_rotor(rotor);
-                    tracked_object().scale(scale);
                     throw std::runtime_error("A texture transform was attempted"
                             " on an object that seems to have 3D extent.");
                 }
@@ -249,8 +243,6 @@ void main()
                 current_viewport[0], current_viewport[1],
                 current_viewport[2], current_viewport[3]
             );
-            tracked_object().scale(scale);
-            tracked_object().apply_rotor(rotor);
         }
     };
     struct TransformingPart : public SingleObject {
@@ -284,6 +276,7 @@ void main()
             auto& from = **M_from->M_tracked_object;
             auto& to = **M_to->M_tracked_object;
             interpolate(from, to, t);
+            reset();
             auto c1 = from.get_outline_color();
             auto c2 = to.get_outline_color();
             auto t1 = from.get_outline_thickness();
@@ -341,7 +334,6 @@ void main()
                         camera.get_x_scale(), camera.get_y_scale());
             shader.set_rotor_uniform("view", ~camera.get_rotor());
             shader.set_rotor_uniform("model", get_rotor());
-            glUniform1f(shader.get_uniform("scale"), get_scale());
 
             glBindVertexArray(M_vertex_array);
 
@@ -385,7 +377,10 @@ void main()
         {
             M_from->get_textures(camera);
             M_to->get_textures(camera);
+            auto this_scale = get_scale();
+            scale(1/this_scale);
             SingleObject::draw_outline(camera);
+            scale(this_scale);
         }
         void get_scales(unsigned from, unsigned to)
         {
