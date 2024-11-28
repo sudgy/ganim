@@ -32,6 +32,7 @@ out VertexData {
 #ifdef VECTOR
 uniform float mid_pos;
 uniform float end_pos;
+uniform float tip_size;
 #endif
 
 uniform vec2 camera_scale;
@@ -77,7 +78,10 @@ void main()
     vec3 m_in_pos = in_pos;
 
 #ifdef VECTOR
-    if (m_in_pos.x == 0.5) m_in_pos.x = mid_pos;
+    if (m_in_pos.x == 0.5) {
+        m_in_pos.x = mid_pos;
+        if (m_in_pos.y == 512 || m_in_pos.y == -512) m_in_pos.y *= tip_size/512;
+    }
     else if (m_in_pos.x == 1.0) m_in_pos.x = end_pos;
 #endif
 

@@ -19,22 +19,24 @@ VectorObject::VectorObject(
     glBindVertexArray(M_vertex_array);
     glBindBuffer(GL_ARRAY_BUFFER, M_vertex_buffer);
     float t = args.thickness / 2;
-    float y = M_tip_size / 2;
+    float z = args.three_d ? t : 0;
+    // TODO: Don't use a magic number here
+    float y = 512;//M_tip_size / 2;
     auto vertices = std::array{
-        0.0f,   t,  t, 0.0f,
-        0.0f,  -t,  t, 0.0f,
-        0.5f,   t,  t, 0.5f,
-        0.5f,  -t,  t, 0.5f,
-        0.5f,   y,  t, 0.5f,
-        0.5f,  -y,  t, 0.5f,
-        1.0f, 0.f,  t, 1.0f,
-        0.0f,   t, -t, 0.0f,
-        0.0f,  -t, -t, 0.0f,
-        0.5f,   t, -t, 0.5f,
-        0.5f,  -t, -t, 0.5f,
-        0.5f,   y, -t, 0.5f,
-        0.5f,  -y, -t, 0.5f,
-        1.0f, 0.f, -t, 1.0f
+        0.0f,   t,  z, 0.0f,
+        0.0f,  -t,  z, 0.0f,
+        0.5f,   t,  z, 0.5f,
+        0.5f,  -t,  z, 0.5f,
+        0.5f,   y,  z, 0.5f,
+        0.5f,  -y,  z, 0.5f,
+        1.0f, 0.f,  z, 1.0f,
+        0.0f,   t, -z, 0.0f,
+        0.0f,  -t, -z, 0.0f,
+        0.5f,   t, -z, 0.5f,
+        0.5f,  -t, -z, 0.5f,
+        0.5f,   y, -z, 0.5f,
+        0.5f,  -y, -z, 0.5f,
+        1.0f, 0.f, -z, 1.0f
     };
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -301,6 +303,7 @@ void VectorObject::draw(const Camera& camera)
             length * (1 - M_max_tip_to_length_ratio)
         );
     }
+    glUniform1f(shader.get_uniform("tip_size"), M_tip_size / 2);
 
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, 60, GL_UNSIGNED_INT, nullptr);
@@ -341,5 +344,9 @@ void VectorObject::interpolate(
         const VectorObject& start, const VectorObject& end, double t)
 {
     SingleObject::interpolate(start, end, t);
+    M_max_tip_to_length_ratio =
+        (1 - t) * start.M_max_tip_to_length_ratio +
+        t * end.M_max_tip_to_length_ratio;
+    M_tip_size = (1 - t) * start.M_tip_size + t * end.M_tip_size;
     if (t == 1.0) set_start_and_end(end.get_start_pga3(), end.get_end_pga3());
 }
