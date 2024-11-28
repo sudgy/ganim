@@ -10,6 +10,7 @@ namespace ganim {
         /** @brief The rate function to use for this animation */
         std::function<double(double)> rate_function = rf::smoothererstep;
         vga3::Vector direction = 0*vga3::e1;
+        bool copy = false;
     };
     void texture_transform(
         SceneBase& scene,

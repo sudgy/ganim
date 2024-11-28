@@ -213,9 +213,10 @@ void main()
             auto fake_camera = Camera(20, size, -size);
             fake_camera.shift((x1 + x2)/2*e1 + (y1 + y2)/2*e2);
 
-            tracked_object().set_visible(true);
+            bool is_visible = tracked_object().is_visible();
+            if (!is_visible) tracked_object().set_visible(true);
             tracked_object().draw(fake_camera);
-            tracked_object().set_visible(false);
+            if (!is_visible) tracked_object().set_visible(false);
 
             M_distance_transform = distance_transform(
                 alpha_threshold(
@@ -542,7 +543,7 @@ void ganim::texture_transform(
         );
     }
     to->set_animating(true);
-    from->set_visible(false);
+    if (!args.copy) from->set_visible(false);
     auto temp_object = std::make_unique<TransformingPart>();
     temp_object->set_visible(true);
     scene.add(*temp_object);
