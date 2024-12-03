@@ -194,3 +194,17 @@ TEST_CASE("Scene object removing itself in its updater", "[scene]") {
     scene.frame_advance();
     REQUIRE(updated);
 }
+
+TEST_CASE("Scene iterators", "[scene]") {
+    auto test1 = Animatable();
+    auto test2 = TestDrawable();
+    auto test3 = TestDrawable();
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    scene.add(test1, test2, test3);
+    bool first = true;
+    for (auto obj : scene) {
+        if (first) REQUIRE(obj == &test2);
+        else REQUIRE(obj == &test3);
+        first = false;
+    }
+}

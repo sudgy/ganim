@@ -203,6 +203,14 @@ namespace ganim {
 
             Camera& get_camera() {return M_camera;}
 
+            auto begin() {return M_drawables.begin();}
+            auto end() {return M_drawables.end();}
+            auto begin() const {return M_drawables.begin();}
+            auto end() const {return M_drawables.end();}
+            auto cbegin() const {return M_drawables.cbegin();}
+            auto cend() const {return M_drawables.cend();}
+            int size() const {return static_cast<int>(M_drawables.size());}
+
         private:
             /** @brief Used for subclasses to process the frames.
              *
