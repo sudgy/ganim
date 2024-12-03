@@ -200,3 +200,13 @@ TEST_CASE("Transformable interpolate", "[object]") {
     test1.interpolate(test2, test3, 1);
     REQUIRE_THAT(test1.get_rotor(), GAEquals(1 + 2.5*e01));
 }
+
+TEST_CASE("Transformable move_to interpolating", "[object]") {
+    using namespace pga3;
+    auto test1 = TestTransformable();
+    auto test2 = TestTransformable();
+    auto test3 = TestTransformable();
+    test3.move_to(-e2);
+    test1.interpolate(test2, test3, 0.5);
+    REQUIRE_THAT(test1.get_rotor(), GAEquals(1 - 0.25*e02));
+}

@@ -55,7 +55,7 @@ Transformable& Transformable::move_to(const Trivector& p)
     auto new_center = p;
     current_center /= current_center.blade_project<e123>();
     new_center /= new_center.blade_project<e123>();
-    return apply_rotor(current_center * (current_center + new_center) / 2);
+    return apply_rotor(-current_center * (current_center + new_center) / 2);
 }
 
 Transformable& Transformable::shift(const Trivector& p)
