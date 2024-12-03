@@ -504,7 +504,6 @@ void main()
             );
         }
 
-        bool M_finished = false;
         StaticPart* M_from = nullptr;
         StaticPart* M_to = nullptr;
         double M_t = 0;
@@ -540,39 +539,29 @@ void ganim::texture_transform(
     to->set_animating(true);
     if (!args.copy) from->set_visible(false);
     auto temp_object = std::make_unique<TransformingPart>();
-    temp_object->set_visible(true);
-    scene.add(*temp_object);
 
     auto anim = Animation(
         scene,
         MaybeOwningRef(*temp_object),
         {args.duration, args.rate_function}
     );
+    auto& object = *temp_object;
+    anim.add_animation_object(std::move(temp_object));
     auto& from_part = anim.get_starting_object();
     auto& to_part = anim.get_ending_object();
     from_part.M_tracked_object = std::move(from);
     to_part.M_tracked_object = std::move(to);
-    temp_object->M_from = &from_part;
-    temp_object->M_to = &to_part;
+    object.M_from = &from_part;
+    object.M_to = &to_part;
 
-    anim.at_end([&object = *temp_object, &to = *to, &scene]{
-        object.M_finished = true;
-        object.set_visible(false);
+    anim.at_end([&to = *to]{
         to.set_visible(true);
         to.set_animating(false);
-        scene.remove(object);
     });
-    temp_object->add_updater(std::move(anim), true);
-    temp_object->add_updater([&object = *temp_object, direction = args.direction]{
+    object.add_updater(std::move(anim), true);
+    object.add_updater([&object = object, direction = args.direction]{
         object.shift(std::sin(object.M_t * τ/2)*direction);
     });
-    scene.add_updater([object = std::move(temp_object)]() mutable {
-        if (object->M_finished) {
-            object.reset();
-            return false;
-        }
-        return true;
-    }, true);
 }
 
 void ganim::group_transform(

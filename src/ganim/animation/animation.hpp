@@ -168,6 +168,11 @@ class Animation {
                     return false;
                 });
                 if (M_at_end) M_at_end();
+                for (auto [object, finished] : M_animation_objects) {
+                    object->set_visible(false);
+                    M_scene.remove(*object);
+                    *finished = true;
+                }
                 M_object.set_animating(false);
                 return false;
             }
@@ -190,6 +195,25 @@ class Animation {
         {
             M_at_end = std::move(func);
         }
+        void add_animation_object(std::unique_ptr<Object> object)
+        {
+            if (!object) {
+                throw std::invalid_argument(
+                        "Animation objects must be non-null.");
+            }
+            object->set_visible(true);
+            M_scene.remove_for_animation(*object);
+            M_scene.add(*object);
+            auto updater = ObjectRemoverUpdater(
+                std::move(object),
+                std::make_unique<bool>(false)
+            );
+            M_animation_objects.emplace_back(
+                updater.object.get(),
+                updater.finished.get()
+            );
+            M_scene.add_updater(std::move(updater));
+        }
 
     private:
         std::move_only_function<double(double)> M_rate_function;
@@ -198,6 +222,19 @@ class Animation {
         SceneBase& M_scene;
         std::unique_ptr<copy_type> M_starting_object;
         std::unique_ptr<copy_type> M_ending_object;
+        struct ObjectRemoverUpdater {
+            std::unique_ptr<Object> object;
+            std::unique_ptr<bool> finished;
+            bool operator()()
+            {
+                if (*finished) {
+                    object.reset();
+                    return false;
+                }
+                return true;
+            }
+        };
+        std::vector<std::pair<Object*, bool*>> M_animation_objects;
         int M_animation_progress = 0;
         int M_animation_time = 0;
         bool M_owning = false;
