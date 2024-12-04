@@ -10,6 +10,10 @@
 namespace ganim {
 
 class Group;
+struct ArrangeArgs {
+    double buff = 0.25;
+    vga2::Vector align = 0*vga2::e1;
+};
 /** @brief The class for objects that contains other objects
  *
  * Note that this class does not own its subobjects!  You need to make sure to
@@ -246,6 +250,14 @@ class Group : public Object {
             align_by_subobject(index, point, direction1);
             return align_by_subobject(index, point, direction2);
         }
+
+        Group& arrange_down(ArrangeArgs args = {});
+        Group& arrange_right(ArrangeArgs args = {});
+        Group& arrange_in_grid(
+            int columns,
+            ArrangeArgs hor_args = {},
+            ArrangeArgs ver_args = {}
+        );
 
     private:
         std::vector<Object*> M_subobjects;

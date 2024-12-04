@@ -576,3 +576,82 @@ TEST_CASE("Group align_by_subobject", "[object]") {
     REQUIRE_THAT(obj2.get_center().undual(), GAEquals(e0 + 2.5*e1 + 0.5*e2));
     REQUIRE_THAT(obj3.get_center().undual(), GAEquals(e0 + 0.5*e1 + 0.5*e2));
 }
+
+TEST_CASE("Group arranging", "[object]") {
+    auto obj1 = TestObject();
+    auto obj2 = TestObject();
+    auto obj3 = TestObject();
+    auto obj4 = TestObject();
+    auto group = Group(obj1, obj2, obj3, obj4);
+    using namespace vga2;
+    auto simple_box = Box(0*e1, e1 + e2);
+    obj1.logical_bounding_box = simple_box;
+    obj2.logical_bounding_box = simple_box;
+    obj3.logical_bounding_box = simple_box;
+    obj4.logical_bounding_box = simple_box;
+    auto args = ArrangeArgs{.buff = 0.5};
+    group.arrange_down(args);
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(2.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(-0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(-2.25*e2));
+
+    auto bigger_box = Box(0*e1, 2*e1 + 2*e2);
+    obj1.logical_bounding_box = bigger_box;
+    group.arrange_down(args);
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(2.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(0.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(-1.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(-2.75*e2));
+
+    group.shift(e1);
+    obj1.shift(2*e1 + e2);
+    obj2.shift(3*e1 - e2);
+    obj3.shift(4*e1 + e2);
+    obj4.shift(5*e1 - e2);
+    group.arrange_down(args);
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(e1 + 2.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(e1 + 0.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(e1 + -1.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(e1 + -2.75*e2));
+
+    group.arrange_down({.buff = 0.5, .align = e1});
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(e1 + 2.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(1.5*e1 + 0.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(1.5*e1 + -1.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(1.5*e1 + -2.75*e2));
+
+    group.arrange_right(args);
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(-1.25*e1));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(0.75*e1));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(2.25*e1));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(3.75*e1));
+
+    group.arrange_in_grid(2, args, args);
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(0.25*e1 + 0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(2.25*e1 + 0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(0.25*e1 - 1.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(2.25*e1 - 1.25*e2));
+
+    group.arrange_in_grid(2, {.buff = 1}, args);
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(2.5*e1 + 0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(-1.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(2.5*e1 - 1.25*e2));
+
+    group.arrange_in_grid(
+        2,
+        {.buff = 0.5, .align = -e1},
+        {.buff = 0.5, .align = e2}
+    );
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(0.25*e1 + 0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(2.25*e1 + 1.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(-0.25*e1 - 1.25*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(2.25*e1 - 1.25*e2));
+
+    group.arrange_in_grid(3, args, args);
+    REQUIRE_THAT(pga2_to_vga2(obj1.get_center()), GAEquals(-0.5*e1 + 0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj2.get_center()), GAEquals(1.5*e1 + 0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj3.get_center()), GAEquals(3*e1 + 0.75*e2));
+    REQUIRE_THAT(pga2_to_vga2(obj4.get_center()), GAEquals(-0.5*e1 - 1.25*e2));
+}

@@ -461,3 +461,139 @@ Group& Group::align_by_subobject(
         direction
     );
 }
+
+Group& Group::arrange_down(ArrangeArgs args)
+{
+    if (size() == 0) return *this;
+    auto buff = args.buff;
+    auto align = args.align;
+    auto* current = M_subobjects[0];
+    for (int i = 1; i < size(); ++i) {
+        auto* next = M_subobjects[i];
+        next->next_to(*current, -vga2::e2, buff);
+        current = next;
+    }
+    if (align != 0) {
+        for (auto* obj : M_subobjects) {
+            obj->align_to(*this, align);
+        }
+    }
+    auto fake_group = Group();
+    for (auto* obj : M_subobjects) {
+        fake_group.add(*obj);
+    }
+    auto fake_center = fake_group.get_center();
+    auto this_center = pga3_to_pga2(get_origin());
+    fake_group.shift(this_center - fake_center + pga2::e12);
+    return *this;
+}
+
+Group& Group::arrange_right(ArrangeArgs args)
+{
+    if (size() == 0) return *this;
+    auto buff = args.buff;
+    auto align = args.align;
+    auto* current = M_subobjects[0];
+    for (int i = 1; i < size(); ++i) {
+        auto* next = M_subobjects[i];
+        next->next_to(*current, vga2::e1, buff);
+        current = next;
+    }
+    if (align != 0) {
+        for (auto* obj : M_subobjects) {
+            obj->align_to(*this, align);
+        }
+    }
+    auto fake_group = Group();
+    for (auto* obj : M_subobjects) {
+        fake_group.add(*obj);
+    }
+    auto fake_center = fake_group.get_center();
+    auto this_center = pga3_to_pga2(get_origin());
+    fake_group.shift(this_center - fake_center + pga2::e12);
+    return *this;
+}
+
+Group& Group::arrange_in_grid(
+    int columns,
+    ArrangeArgs hor_args,
+    ArrangeArgs ver_args
+)
+{
+    const auto size = this->size();
+    if (size == 0) return *this;
+    auto row_groups = std::vector<Group>();
+    auto col_groups = std::vector<Group>();
+    const auto rows = (size - 1) / columns + 1;
+    row_groups.resize(rows);
+    col_groups.resize(columns);
+    for (int i = 0; i < size; ++i) {
+        row_groups[i / columns].add(*M_subobjects[i]);
+        col_groups[i % columns].add(*M_subobjects[i]);
+    }
+
+    auto heights = std::vector<double>();
+    auto widths = std::vector<double>();
+    heights.resize(rows);
+    widths.resize(columns);
+    for (int i = 0; i < rows; ++i) {
+        for (auto obj : row_groups[i]) {
+            heights[i] = std::max(
+                heights[i],
+                obj->get_logical_bounding_box().get_height()
+            );
+        }
+    }
+    for (int i = 0; i < columns; ++i) {
+        for (auto obj : col_groups[i]) {
+            widths[i] = std::max(
+                widths[i],
+                obj->get_logical_bounding_box().get_width()
+            );
+        }
+    }
+
+    auto xs = std::vector<double>();
+    auto ys = std::vector<double>();
+    xs.resize(columns);
+    ys.resize(rows);
+    for (int i = 1; i < columns; ++i) {
+        xs[i] = xs[i-1] + widths[i-1] / 2 + widths[i] / 2 + hor_args.buff;
+    }
+    for (int i = 1; i < rows; ++i) {
+        ys[i] = ys[i-1] - heights[i-1] / 2 - heights[i] / 2 - ver_args.buff;
+    }
+    const auto total_width = xs.back() + widths.front()/2 + widths.back()/2;
+    const auto total_height = -ys.back() + heights.front()/2 + heights.back()/2;
+    const auto o = get_origin().undual();
+    const auto x_plus
+        = -total_width / 2 + o.blade_project<pga3::e1>() + widths[0] / 2;
+    const auto y_plus
+        = total_height / 2 + o.blade_project<pga3::e2>() - heights[0] / 2;
+    for (auto& x : xs) x += x_plus;
+    for (auto& y : ys) y += y_plus;
+
+    for (int i = 0; i < size; ++i) {
+        auto final_pos = xs[i % columns] * vga2::e1 +
+                         ys[i / columns] * vga2::e2;
+        auto current_pos = pga2_to_vga2(M_subobjects[i]->get_center());
+        M_subobjects[i]->shift(final_pos - current_pos);
+    }
+
+    if (ver_args.align != 0) {
+        for (int i = 0; i < rows; ++i) {
+            for (auto obj : row_groups[i]) {
+                obj->align_to(row_groups[i], ver_args.align);
+            }
+        }
+    }
+    if (hor_args.align != 0) {
+        for (int i = 0; i < columns; ++i) {
+            for (auto obj : col_groups[i]) {
+                obj->align_to(col_groups[i], hor_args.align);
+            }
+        }
+    }
+
+    return *this;
+}

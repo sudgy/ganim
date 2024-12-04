@@ -326,6 +326,21 @@ pga3::Trivector Box::get_outside_point_3d(const pga3::Trivector& point) const
     return result;
 }
 
+double Box::get_width() const
+{
+    return (p2 - p1).undual().blade_project<e1>();
+}
+
+double Box::get_height() const
+{
+    return (p2 - p1).undual().blade_project<e2>();
+}
+
+double Box::get_thickness() const
+{
+    return (p2 - p1).undual().blade_project<e3>();
+}
+
 Box ganim::merge_boxes(const Box& box1, const Box& box2)
 {
     auto p11 = box1.get_inner_lower_left_vertex().undual();

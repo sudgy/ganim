@@ -67,6 +67,10 @@ class Box {
         pga3::Trivector get_outside_point_3d(const pointlike auto& point)const
             {return get_outside_point_3d(pointlike_to_pga3(point));}
 
+        double get_width() const;
+        double get_height() const;
+        double get_thickness() const;
+
     private:
         pga3::Trivector p1 = pga3::e123;
         pga3::Trivector p2 = pga3::e123;
