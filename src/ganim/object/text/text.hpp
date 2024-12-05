@@ -5,16 +5,26 @@
  * @brief Contains the @ref ganim::Text class
  */
 
+#include "../bases/group.hpp"
 #include "../texture_shape.hpp"
 
 namespace ganim {
-    class Text : public TextureShape<Shape> {
+    class Text : public Group {
         public:
-            explicit Text(std::string_view string);
-            virtual Box get_original_logical_bounding_box() const override;
+            template <typename... Ts>
+            explicit Text(Ts&&... strings)
+            : Text(static_cast<const std::vector<std::string_view>&>(
+                std::vector<std::string_view>{std::forward<Ts>(strings)...})) {}
+            explicit Text(const std::vector<std::string_view>& strings);
 
         private:
-            Box M_logical_bounding_box;
+            class TextPiece : public TextureShape<Shape> {
+                public:
+                    using TextureShape<Shape>::TextureShape;
+                    virtual Box get_original_logical_bounding_box() const override;
+                    Box logical_bounding_box;
+            };
+            std::vector<TextPiece> M_pieces;
     };
 }
 

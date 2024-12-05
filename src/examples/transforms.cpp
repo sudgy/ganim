@@ -16,16 +16,16 @@ void transforms()
     //scene.wait(2);
     //return;
 
-    auto text = std::vector<Text>();
+    auto text = std::vector<std::unique_ptr<Text>>();
     for (int i = 0; i < 11; ++i) {
-        text.emplace_back(std::to_string(i));
-        text.back().scale(2);
+        text.emplace_back(std::make_unique<Text>(std::to_string(i)));
+        text.back()->scale(2);
     }
-    scene.add(text);
-    text[0].set_visible(true);
+    for (auto& t : text) scene.add(*t);
+    text[0]->set_visible(true);
     scene.wait(1);
     for (int i = 0; i < 10; ++i) {
-        texture_transform(scene, text[i], text[i+1]);
+        texture_transform(scene, *text[i], *text[i+1]);
         scene.wait(1.5);
     }
     scene.wait(0.5);
