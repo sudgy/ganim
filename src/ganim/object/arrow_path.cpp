@@ -5,7 +5,7 @@
 using namespace ganim;
 
 ArrowPath::ArrowPath(
-    const std::vector<pga2::Bivector>& points,
+    const std::vector<pga2::Bivec>& points,
     ArrowPathArgs args
 )
 {
@@ -13,7 +13,7 @@ ArrowPath::ArrowPath(
 }
 
 ArrowPath::ArrowPath(
-    const std::vector<vga2::Vector>& points,
+    const std::vector<vga2::Vec>& points,
     ArrowPathArgs args
 )
 {
@@ -21,7 +21,7 @@ ArrowPath::ArrowPath(
 }
 
 void ArrowPath::recreate(
-    std::vector<pga2::Bivector> points,
+    std::vector<pga2::Bivec> points,
     ArrowPathArgs args
 )
 {
@@ -63,7 +63,7 @@ void ArrowPath::recreate(
         r *= bad_line * (bad_line + good_line).normalized();
     }
 
-    auto transform = [&](pga2::Vector p){
+    auto transform = [&](pga2::Vec p){
         return (~r*p.dual()*r).grade_project<2>().undual();
     };
     const auto p1 = transform( args.tip_size/2*e2 + e0);
@@ -99,11 +99,11 @@ void ArrowPath::recreate(
 }
 
 void ArrowPath::recreate(
-    const std::vector<vga2::Vector>& points,
+    const std::vector<vga2::Vec>& points,
     ArrowPathArgs args
 )
 {
-    auto pga_points = std::vector<pga2::Bivector>();
+    auto pga_points = std::vector<pga2::Bivec>();
     pga_points.reserve(points.size());
     for (auto p : points) {
         pga_points.push_back(vga2_to_pga2(p));

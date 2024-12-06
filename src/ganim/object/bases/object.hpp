@@ -81,7 +81,7 @@ namespace ganim {
                 {return scale(pointlike_to_pga3(p), amount);}
             /** @brief Scale the object about a particular point */
             virtual Object& scale(
-                const pga3::Trivector& about_point,
+                const pga3::Trivec& about_point,
                 double amount
             );
             /** @brief Get the amount that this object is scaled */
@@ -189,15 +189,15 @@ namespace ganim {
              */
             virtual Box get_original_logical_bounding_box() const
                 {return get_original_true_bounding_box();}
-            pga2::Bivector get_center() const;
-            pga2::Bivector get_left() const;
-            pga2::Bivector get_right() const;
-            pga2::Bivector get_up() const;
-            pga2::Bivector get_down() const;
-            pga2::Bivector get_upper_left() const;
-            pga2::Bivector get_upper_right() const;
-            pga2::Bivector get_lower_left() const;
-            pga2::Bivector get_lower_right() const;
+            pga2::Bivec get_center() const;
+            pga2::Bivec get_left() const;
+            pga2::Bivec get_right() const;
+            pga2::Bivec get_up() const;
+            pga2::Bivec get_down() const;
+            pga2::Bivec get_upper_left() const;
+            pga2::Bivec get_upper_right() const;
+            pga2::Bivec get_lower_left() const;
+            pga2::Bivec get_lower_right() const;
 
             void set_x(double x);
             void set_y(double y);
@@ -207,13 +207,13 @@ namespace ganim {
             double get_z() const;
 
             Object& next_to(
-                const pga3::Trivector& point,
-                const pga3::Trivector& direction,
+                const pga3::Trivec& point,
+                const pga3::Trivec& direction,
                 double buff = 0.25
             );
             Object& next_to(
                 const Object& object,
-                const pga3::Trivector& direction,
+                const pga3::Trivec& direction,
                 double buff = 0.25
             );
             Object& next_to(
@@ -238,12 +238,12 @@ namespace ganim {
             }
 
             Object& align_to(
-                const pga3::Trivector& point,
-                const pga3::Trivector& direction
+                const pga3::Trivec& point,
+                const pga3::Trivec& direction
             );
             Object& align_to(
                 const Object& object,
-                const pga3::Trivector& direction
+                const pga3::Trivec& direction
             );
             Object& align_to(
                 const pointlike auto& point,
@@ -282,7 +282,7 @@ namespace ganim {
             }
             Object& to_edge(
                 const Camera& camera,
-                const pga3::Trivector& direction,
+                const pga3::Trivec& direction,
                 double buff = 0.5
             );
             Object& to_edge(

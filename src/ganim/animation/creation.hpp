@@ -9,7 +9,7 @@
 
 namespace ganim {
 
-class BivectorObject;
+class Bivector;
 
 /** @brief An animation to "create" objects.
  *
@@ -54,7 +54,7 @@ void write(
 
 void create_bivector(
     SceneBase& scene,
-    MaybeOwningRef<BivectorObject> bivector,
+    MaybeOwningRef<Bivector> bivector,
     AnimationArgs args = AnimationArgs()
 );
 

@@ -21,7 +21,7 @@ void paths()
     scene.add(square);
     create(scene, square);
     scene.wait(2);
-    auto circle_points = std::vector<vga2::Vector>();
+    auto circle_points = std::vector<vga2::Vec>();
     for (int i = 0; i < 1000; ++i) {
         circle_points.push_back(std::cos(i*τ/1000)*e1 + std::sin(i*τ/1000)*e2);
     }
@@ -31,7 +31,7 @@ void paths()
     scene.add(circle);
     create(scene, circle);
     scene.wait(2);
-    auto sin_points = std::vector<vga2::Vector>();
+    auto sin_points = std::vector<vga2::Vec>();
     for (int i = 0; i < 1000; ++i) {
         sin_points.push_back(i/100.0*e1 + std::cos(i/50.0)*e2);
     }

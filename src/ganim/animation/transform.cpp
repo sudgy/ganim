@@ -463,11 +463,11 @@ void main()
             auto p1 = p11 * (1 - M_t) + p21 * M_t;
             auto p2 = p12 * (1 - M_t) + p22 * M_t;
             auto rotor = get_rotor();
-            auto convert_point = [&](const vga3::Vector& p) {
+            auto convert_point = [&](const vga3::Vec& p) {
                 auto new_p = ~rotor * vga3_to_pga3(get_scale()*p) * rotor;
                 return pga3_to_vga3(new_p.grade_project<3>());
             };
-            auto points = std::array<vga3::Vector, 8>();
+            auto points = std::array<vga3::Vec, 8>();
             int i = 0;
             {
                 using namespace pga3;
@@ -485,18 +485,18 @@ void main()
             using namespace vga3;
             auto transformed_points = points | std::views::transform(convert_point);
             auto xs = transformed_points
-                | std::views::transform(&vga3::Vector::blade_project<e1>);
+                | std::views::transform(&vga3::Vec::blade_project<e1>);
             auto ys = transformed_points
-                | std::views::transform(&vga3::Vector::blade_project<e2>);
+                | std::views::transform(&vga3::Vec::blade_project<e2>);
             auto zs = transformed_points
-                | std::views::transform(&vga3::Vector::blade_project<e3>);
+                | std::views::transform(&vga3::Vec::blade_project<e3>);
             return Box(
-                vga3::Vector{
+                vga3::Vec{
                     *std::ranges::min_element(xs),
                     *std::ranges::min_element(ys),
                     *std::ranges::min_element(zs)
                 },
-                vga3::Vector{
+                vga3::Vec{
                     *std::ranges::max_element(xs),
                     *std::ranges::max_element(ys),
                     *std::ranges::max_element(zs)

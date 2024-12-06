@@ -36,7 +36,7 @@ void vectors()
     scene.add(bad_coordinate_grid);
     bad_coordinate_grid.set_visible(true);
 
-    auto vector = VectorObject(3*e1 + 2*e2, {.three_d = true});
+    auto vector = Vector(3*e1 + 2*e2, {.three_d = true});
     vector.set_color(Color("FFFF00"));
     scene.add(vector);
     create(scene, vector);

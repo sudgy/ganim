@@ -9,8 +9,8 @@
 
 using namespace ganim;
 
-VectorObject::VectorObject(
-        pga3::Trivector p1, pga3::Trivector p2, VectorArgs args)
+Vector::Vector(
+        pga3::Trivec p1, pga3::Trivec p2, VectorArgs args)
 :   M_max_tip_to_length_ratio(args.max_tip_to_length_ratio),
     M_tip_size(args.tip_size),
     M_do_shading(args.three_d)
@@ -98,13 +98,13 @@ VectorObject::VectorObject(
     glBindVertexArray(0);
 }
 
-VectorObject& VectorObject::set_start(pga3::Trivector p)
+Vector& Vector::set_start(pga3::Trivec p)
 {
     set_start_and_end(p, get_end_pga3());
     return *this;
 }
 
-VectorObject& VectorObject::set_end(pga3::Trivector p)
+Vector& Vector::set_end(pga3::Trivec p)
 {
     using namespace pga3;
     p /= p.blade_project<e123>();
@@ -142,8 +142,8 @@ VectorObject& VectorObject::set_end(pga3::Trivector p)
     return *this;
 }
 
-VectorObject& VectorObject::set_start_and_end(
-        pga3::Trivector p1, pga3::Trivector p2)
+Vector& Vector::set_start_and_end(
+        pga3::Trivec p1, pga3::Trivec p2)
 {
     using namespace pga3;
     auto current_start = get_start_pga3();
@@ -154,58 +154,58 @@ VectorObject& VectorObject::set_start_and_end(
     return *this;
 }
 
-pga2::Bivector VectorObject::get_start_pga2() const
+pga2::Bivec Vector::get_start_pga2() const
 {
     return pga3_to_pga2(get_start_pga3());
 }
 
-pga3::Trivector VectorObject::get_start_pga3() const
+pga3::Trivec Vector::get_start_pga3() const
 {
     using namespace pga3;
     const auto r = get_rotor();
     return (~r*e123*r).grade_project<3>();
 }
 
-vga2::Vector VectorObject::get_start_vga2() const
+vga2::Vec Vector::get_start_vga2() const
 {
     return vga3_to_vga2(get_start_vga3());
 }
 
-vga3::Vector VectorObject::get_start_vga3() const
+vga3::Vec Vector::get_start_vga3() const
 {
     return pga3_to_vga3(get_start_pga3());
 }
 
-pga2::Bivector VectorObject::get_end_pga2() const
+pga2::Bivec Vector::get_end_pga2() const
 {
     return pga3_to_pga2(get_end_pga3());
 }
 
-pga3::Trivector VectorObject::get_end_pga3() const
+pga3::Trivec Vector::get_end_pga3() const
 {
     using namespace pga3;
     const auto r = get_rotor();
     return (~r*(e0 + get_scale()*e1).dual()*r).grade_project<3>();
 }
 
-vga2::Vector VectorObject::get_end_vga2() const
+vga2::Vec Vector::get_end_vga2() const
 {
     return vga3_to_vga2(get_end_vga3());
 }
 
-vga3::Vector VectorObject::get_end_vga3() const
+vga3::Vec Vector::get_end_vga3() const
 {
     return pga3_to_vga3(get_end_pga3());
 }
 
-void VectorObject::lock_orientation(bool lock)
+void Vector::lock_orientation(bool lock)
 {
     M_lock_orientation = lock;
     if (lock) apply_rotor(pga3::Even(1));
 }
 
-VectorObject& VectorObject::scale(
-        const pga3::Trivector& about_point, double scale)
+Vector& Vector::scale(
+        const pga3::Trivec& about_point, double scale)
 {
     if (M_manual_transform or M_animating) {
         Object::scale(about_point, scale);
@@ -214,7 +214,7 @@ VectorObject& VectorObject::scale(
     using namespace pga3;
     auto about_point2 = about_point;
     about_point2 /= about_point2.blade_project<e123>();
-    auto transform = [&](pga3::Trivector point) {
+    auto transform = [&](pga3::Trivec point) {
         point -= about_point2 - e123;
         point *= scale;
         point += (1 - scale)*e123;
@@ -227,7 +227,7 @@ VectorObject& VectorObject::scale(
     return *this;
 }
 
-VectorObject& VectorObject::apply_rotor(const pga3::Even& rotor)
+Vector& Vector::apply_rotor(const pga3::Even& rotor)
 {
     Object::apply_rotor(rotor);
     if (!M_manual_transform and M_lock_orientation) {
@@ -256,14 +256,14 @@ VectorObject& VectorObject::apply_rotor(const pga3::Even& rotor)
     return *this;
 }
 
-Box VectorObject::get_original_true_bounding_box() const
+Box Vector::get_original_true_bounding_box() const
 {
     auto y = M_tip_size / 2.0;
     using namespace vga2;
     return {-y*e2/get_scale(), e1 + y*e2/get_scale()};
 }
 
-void VectorObject::draw(const Camera& camera)
+void Vector::draw(const Camera& camera)
 {
     auto& shader = *get_shader();
     glUseProgram(shader);
@@ -310,7 +310,7 @@ void VectorObject::draw(const Camera& camera)
     glBindVertexArray(0);
 }
 
-gl::Shader* VectorObject::get_shader()
+gl::Shader* Vector::get_shader()
 {
     using enum ShaderFeature;
     auto flags = Time | Vector;
@@ -321,14 +321,14 @@ gl::Shader* VectorObject::get_shader()
     return &ganim::get_shader(flags);
 }
 
-std::unique_ptr<VectorObject> VectorObject::anim_copy() const
+std::unique_ptr<Vector> Vector::anim_copy() const
 {
     // Calling new directly here because make_unique apparently can't call
     // private constructors
-    return std::unique_ptr<VectorObject>(new VectorObject(*this));
+    return std::unique_ptr<Vector>(new Vector(*this));
 }
 
-VectorObject::VectorObject(const VectorObject& other)
+Vector::Vector(const Vector& other)
 :   M_vertex_array(0),
     M_vertex_buffer(0),
     M_element_buffer(0),
@@ -340,8 +340,8 @@ VectorObject::VectorObject(const VectorObject& other)
     interpolate(other, other, 0.0);
 }
 
-void VectorObject::interpolate(
-        const VectorObject& start, const VectorObject& end, double t)
+void Vector::interpolate(
+        const Vector& start, const Vector& end, double t)
 {
     SingleObject::interpolate(start, end, t);
     M_max_tip_to_length_ratio =

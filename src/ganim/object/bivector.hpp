@@ -6,43 +6,43 @@
 #include "ganim/object/arrow_path.hpp"
 
 namespace ganim {
-    class VectorObject;
+    class Vector;
     struct BivectorArgs {
         double max_tip_to_length_ratio = 0.5;
         double tip_size = 0.3;
         double thickness = 0.06;
     };
-    class BivectorObject : public Group {
+    class Bivector : public Group {
         public:
-            BivectorObject(
-                const std::vector<pga2::Bivector>& points,
+            Bivector(
+                const std::vector<pga2::Bivec>& points,
                 BivectorArgs args = {}
             );
-            BivectorObject(
-                const std::vector<vga2::Vector>& points,
+            Bivector(
+                const std::vector<vga2::Vec>& points,
                 BivectorArgs args = {}
             );
-            BivectorObject(
-                const VectorObject& v1,
-                const VectorObject& v2,
+            Bivector(
+                const Vector& v1,
+                const Vector& v2,
                 BivectorArgs args = {}
             );
-            BivectorObject(
-                vga2::Vector v1,
-                vga2::Vector v2,
+            Bivector(
+                vga2::Vec v1,
+                vga2::Vec v2,
                 BivectorArgs args = {}
             );
-            BivectorObject(
-                vga3::Vector v1,
-                vga3::Vector v2,
+            Bivector(
+                vga3::Vec v1,
+                vga3::Vec v2,
                 BivectorArgs args = {}
             );
-            BivectorObject(
-                vga2::Bivector b,
+            Bivector(
+                vga2::Bivec b,
                 BivectorArgs args = {}
             );
-            BivectorObject(
-                vga3::Bivector b,
+            Bivector(
+                vga3::Bivec b,
                 BivectorArgs args = {}
             );
             Group& get_outside() {return *M_outside;}
@@ -50,8 +50,8 @@ namespace ganim {
 
         private:
             void common_construct(
-                const std::vector<pga2::Bivector>& pga_points,
-                const std::vector<vga2::Vector>& vga_points,
+                const std::vector<pga2::Bivec>& pga_points,
+                const std::vector<vga2::Vec>& vga_points,
                 BivectorArgs args
             );
             std::unique_ptr<Group> M_outside;

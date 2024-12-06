@@ -56,7 +56,7 @@ TEST_CASE("Value tracker double", "[object]") {
 
 TEST_CASE("Value tracker vector", "[object]") {
     using namespace vga2;
-    auto val = Value<Vector>();
+    auto val = Value<Vec>();
     auto scene = TestScene(1, 1, 1, 1, 4);
     REQUIRE(val.get_value() == 0);
     REQUIRE(val() == 0);

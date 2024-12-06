@@ -10,12 +10,12 @@ using namespace pga3;
 TEST_CASE("triangle_rotor", "[util]") {
     auto test = [](
         int num,
-        Trivector a1,
-        Trivector a2,
-        Trivector a3,
-        Trivector b1,
-        Trivector b2,
-        Trivector b3
+        Trivec a1,
+        Trivec a2,
+        Trivec a3,
+        Trivec b1,
+        Trivec b2,
+        Trivec b3
     ) {
         INFO("Number " << num);
         auto r = triangle_rotor(a1, a2, a3, b1, b2, b3);

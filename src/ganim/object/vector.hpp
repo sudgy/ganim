@@ -12,72 +12,72 @@ namespace ganim {
         double thickness = 0.06;
         bool three_d = false;
     };
-    class VectorObject : public SingleObject {
+    class Vector : public SingleObject {
         public:
-            explicit VectorObject(pointlike auto p2, VectorArgs args = {})
-                : VectorObject(pga3::e123, pointlike_to_pga3(p2), args) {}
-            VectorObject(
+            explicit Vector(pointlike auto p2, VectorArgs args = {})
+                : Vector(pga3::e123, pointlike_to_pga3(p2), args) {}
+            Vector(
                     pointlike auto p1, pointlike auto p2, VectorArgs args = {})
-                : VectorObject(
+                : Vector(
                         pointlike_to_pga3(p1), pointlike_to_pga3(p2), args) {}
-            VectorObject(
-                    pga3::Trivector p1, pga3::Trivector p2, VectorArgs args={});
+            Vector(
+                    pga3::Trivec p1, pga3::Trivec p2, VectorArgs args={});
 
-            VectorObject& set_start(pointlike auto p)
+            Vector& set_start(pointlike auto p)
             {
                 return set_start(pointlike_to_pga3(p));
             }
-            VectorObject& set_start(pga3::Trivector p);
-            VectorObject& set_end(pointlike auto p)
+            Vector& set_start(pga3::Trivec p);
+            Vector& set_end(pointlike auto p)
             {
                 return set_end(pointlike_to_pga3(p));
             }
-            VectorObject& set_end(pga3::Trivector p);
-            VectorObject& set_start_and_end(pointlike auto p1, pointlike auto p2)
+            Vector& set_end(pga3::Trivec p);
+            Vector& set_start_and_end(pointlike auto p1, pointlike auto p2)
             {
                 return set_start_and_end(
                     pointlike_to_pga3(p1),
                     pointlike_to_pga3(p2)
                 );
             }
-            VectorObject& set_start_and_end(
-                    pga3::Trivector p1, pga3::Trivector p2);
+            Vector& set_start_and_end(
+                    pga3::Trivec p1, pga3::Trivec p2);
 
-            pga2::Bivector get_start_pga2() const;
-            pga3::Trivector get_start_pga3() const;
-            vga2::Vector get_start_vga2() const;
-            vga3::Vector get_start_vga3() const;
-            pga2::Bivector get_end_pga2() const;
-            pga3::Trivector get_end_pga3() const;
-            vga2::Vector get_end_vga2() const;
-            vga3::Vector get_end_vga3() const;
+            pga2::Bivec get_start_pga2() const;
+            pga3::Trivec get_start_pga3() const;
+            vga2::Vec get_start_vga2() const;
+            vga3::Vec get_start_vga3() const;
+            pga2::Bivec get_end_pga2() const;
+            pga3::Trivec get_end_pga3() const;
+            vga2::Vec get_end_vga2() const;
+            vga3::Vec get_end_vga3() const;
 
             void lock_orientation(bool lock);
 
-            virtual VectorObject& scale(
-                const pga3::Trivector& about_point,
+            virtual Vector& scale(
+                const pga3::Trivec& about_point,
                 double scale
             ) override;
             using Object::scale;
-            virtual VectorObject& apply_rotor(const pga3::Even& rotor) override;
+            virtual Vector& apply_rotor(const pga3::Even& rotor) override;
             using Object::apply_rotor;
             virtual Box get_original_true_bounding_box() const override;
 
             virtual void draw(const Camera& camera) override;
 
             /** @brief Copy the object for the sake of transformations */
-            std::unique_ptr<VectorObject> anim_copy() const;
+            std::unique_ptr<Vector> anim_copy() const;
             /** @brief Interpolate between two Vectors */
             virtual void interpolate(
-                const VectorObject& start,
-                const VectorObject& end,
+                const Vector& start,
+                const Vector& end,
                 double t
             );
 
         private:
             gl::Shader* get_shader();
 
-            VectorObject(const VectorObject& other);
+            Vector(const Vector& other);
 
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;

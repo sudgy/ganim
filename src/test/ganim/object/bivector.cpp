@@ -14,7 +14,7 @@ TEST_CASE("Bivector pga list constructor", "[object]") {
         (e0 + 2*e1 - 2*e2).dual(),
         (e0 + 2*e1 + 2*e2).dual()
     };
-    auto bivector = BivectorObject(points, {0.6, 2, 2});
+    auto bivector = Bivector(points, {0.6, 2, 2});
     bivector.set_color(Color("FFFF00"));
     bivector.set_visible(true);
     REQUIRE(bivector.get_outside().size() == 3);
@@ -42,7 +42,7 @@ TEST_CASE("Bivector vga list constructor", "[object]") {
          2*e1 - 2*e2,
          2*e1 + 2*e2
     };
-    auto bivector = BivectorObject(points, {0.6, 2, 2});
+    auto bivector = Bivector(points, {0.6, 2, 2});
     bivector.set_color(Color("FFFF00"));
     bivector.set_visible(true);
     REQUIRE(bivector.get_outside().size() == 3);
@@ -63,13 +63,13 @@ TEST_CASE("Bivector vga list constructor", "[object]") {
     scene.check_draw_equivalent(bivector, group);
 }
 
-TEST_CASE("Bivector VectorObject constructor", "[object]") {
+TEST_CASE("Bivector Vector constructor", "[object]") {
     using namespace vga2;
-    auto obj1 = VectorObject(4*e1);
-    auto obj2 = VectorObject(4*e2);
+    auto obj1 = Vector(4*e1);
+    auto obj2 = Vector(4*e2);
     obj1.shift(-e1);
     obj2.shift(e1 + e2);
-    auto bivector = BivectorObject(obj1, obj2, {0.6, 2, 2});
+    auto bivector = Bivector(obj1, obj2, {0.6, 2, 2});
     bivector.set_color(Color("FFFF00"));
     bivector.set_visible(true);
     REQUIRE(bivector.get_outside().size() == 4);
@@ -95,7 +95,7 @@ TEST_CASE("Bivector VectorObject constructor", "[object]") {
 
 TEST_CASE("Bivector 2D VGA constructor", "[object]") {
     using namespace vga2;
-    auto bivector = BivectorObject(
+    auto bivector = Bivector(
         4*e1,
         4*e2,
         {0.6, 2, 2}
@@ -123,7 +123,7 @@ TEST_CASE("Bivector 2D VGA constructor", "[object]") {
 }
 
 TEST_CASE("Bivector 3D VGA constructor", "[object]") {
-    auto bivector = BivectorObject(
+    auto bivector = Bivector(
         4*vga3::e1,
         4*vga3::e2 + 3*vga3::e3,
         {0.6, 2, 2}
@@ -154,7 +154,7 @@ TEST_CASE("Bivector 3D VGA constructor", "[object]") {
 
 TEST_CASE("Bivector 2D VGA bivector constructor", "[object]") {
     using namespace vga2;
-    auto bivector = BivectorObject(
+    auto bivector = Bivector(
         16*e12,
         {0.6, 2, 2}
     );
@@ -181,7 +181,7 @@ TEST_CASE("Bivector 2D VGA bivector constructor", "[object]") {
 }
 
 TEST_CASE("Bivector 3D VGA bivector constructor", "[object]") {
-    auto bivector = BivectorObject(
+    auto bivector = Bivector(
         (5*vga3::e1) ^ (4*vga3::e2 + 3*vga3::e3),
         {0.6, 2, 2}
     );
@@ -216,7 +216,7 @@ TEST_CASE("Bivector small change at start", "[object]") {
           2*e1 - 2*e2,
           2*e1 + 2*e2
     };
-    auto bivector = BivectorObject(points, {0.6, 2, 2});
+    auto bivector = Bivector(points, {0.6, 2, 2});
     bivector.set_color(Color("FFFF00"));
     bivector.set_visible(true);
     REQUIRE(bivector.get_outside().size() == 2);
@@ -242,7 +242,7 @@ TEST_CASE("Bivector small change in the middle", "[object]") {
          2*e1 - 2*e2,
          2*e1 - 1.9*e2
     };
-    auto bivector = BivectorObject(points, {0.6, 2, 2});
+    auto bivector = Bivector(points, {0.6, 2, 2});
     bivector.set_color(Color("FFFF00"));
     bivector.set_visible(true);
     REQUIRE(bivector.get_outside().size() == 2);

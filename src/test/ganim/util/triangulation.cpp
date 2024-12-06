@@ -8,7 +8,7 @@ using namespace vga2;
 
 namespace {
     void test_triangulation(
-        const std::vector<vga2::Vector>& polygon,
+        const std::vector<vga2::Vec>& polygon,
         const std::vector<unsigned>& triangulation,
         const char* description,
         bool degenerate = false,
@@ -85,31 +85,31 @@ namespace {
 
 TEST_CASE("Triangulation", "[util]") {
     using namespace vga2;
-    REQUIRE_THROWS(triangulate(std::vector<Vector>{}));
-    REQUIRE_THROWS(triangulate(std::vector<Vector>{e1}));
-    REQUIRE_THROWS(triangulate(std::vector<Vector>{e1, e2}));
+    REQUIRE_THROWS(triangulate(std::vector<Vec>{}));
+    REQUIRE_THROWS(triangulate(std::vector<Vec>{e1}));
+    REQUIRE_THROWS(triangulate(std::vector<Vec>{e1, e2}));
     // Simple triangle
-    auto t1 = std::vector<Vector>{
+    auto t1 = std::vector<Vec>{
         0*e1,
         e1,
         e1 + e2
     };
     // Simple square
-    auto t2 = std::vector<Vector>{
+    auto t2 = std::vector<Vec>{
         0*e1,
         e1,
         e1 + e2,
         e2
     };
     // Last one but in reverse
-    auto t3 = std::vector<Vector>{
+    auto t3 = std::vector<Vec>{
         e2,
         e1 + e2,
         e1,
         0*e1
     };
     // More complicated, concave and has multiple repeated x and y values
-    auto t4 = std::vector<Vector>{
+    auto t4 = std::vector<Vec>{
         -e1 - e2,
         2*e1 - e2,
         2*e1 + 2*e2,
@@ -120,7 +120,7 @@ TEST_CASE("Triangulation", "[util]") {
         -e1 + 2*e2
     };
     // A square, but with a point halfway along each edge.
-    auto t5 = std::vector<Vector>{
+    auto t5 = std::vector<Vec>{
         0*e1,
         1*e1,
         2*e1,
@@ -133,7 +133,7 @@ TEST_CASE("Triangulation", "[util]") {
     // A ridiculous shape.  If this doesn't catch an error, I don't know what
     // will.  This was the result of me drawing in my notebook the most
     // ridiculous shape I could think of.
-    auto t6 = std::vector<Vector>{
+    auto t6 = std::vector<Vec>{
         0*e1,
         -1.5*e1,
         -e1 - e2,

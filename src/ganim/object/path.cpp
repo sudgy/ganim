@@ -8,9 +8,9 @@ using namespace pga2;
 namespace {
     std::pair<std::vector<Shape::Vertex>, std::vector<unsigned>>
     get_new_vertices(
-        pga2::Bivector midpoint,
-        pga2::Vector join1,
-        pga2::Vector join2,
+        pga2::Bivec midpoint,
+        pga2::Vec join1,
+        pga2::Vec join2,
         double thickness,
         int t
     )
@@ -20,7 +20,7 @@ namespace {
         auto indices = std::vector<unsigned>();
         vertices.reserve(3);
         indices.reserve(9);
-        auto add_vertex = [&](pga2::Bivector vertex) {
+        auto add_vertex = [&](pga2::Bivec vertex) {
             auto p = vertex.undual();
             p /= p.blade_project<e0>();
             auto x = float(p.blade_project<e1>());
@@ -60,7 +60,7 @@ namespace {
             auto n2 = join2 + d*e0;
             // The line passing through b, perpendicular to the bisector of
             // the two line segments ending on this point
-            auto l = pga2::Vector();
+            auto l = pga2::Vec();
             // The outside points are generally on opposite ends of the middle
             // point
             if (direction > 0) {
@@ -98,7 +98,7 @@ namespace {
 }
 
 Path::Path(
-    const std::vector<pga2::Bivector>& points,
+    const std::vector<pga2::Bivec>& points,
     bool closed,
     double thickness
 )
@@ -107,7 +107,7 @@ Path::Path(
 }
 
 Path::Path(
-    const std::vector<vga2::Vector>& points,
+    const std::vector<vga2::Vec>& points,
     bool closed,
     double thickness
 )
@@ -116,19 +116,19 @@ Path::Path(
 }
 
 void Path::recreate(
-    const std::vector<vga2::Vector>& points,
+    const std::vector<vga2::Vec>& points,
     bool closed,
     double thickness
 )
 {
-    auto new_points = std::vector<pga2::Bivector>();
+    auto new_points = std::vector<pga2::Bivec>();
     new_points.reserve(points.size());
     for (auto p : points) new_points.push_back(vga2_to_pga2(p));
     recreate(new_points, closed, thickness);
 }
 
 void Path::recreate(
-    const std::vector<pga2::Bivector>& points,
+    const std::vector<pga2::Bivec>& points,
     bool closed,
     double thickness
 )
@@ -136,7 +136,7 @@ void Path::recreate(
     if (points.size() < 2) {
         throw std::invalid_argument("Path must be given at least two points.");
     }
-    auto filtered_points = std::vector<pga2::Bivector>();
+    auto filtered_points = std::vector<pga2::Bivec>();
     filtered_points.reserve(points.size());
     for (auto p : points) {
         auto coef = p.blade_project<e12>();
@@ -158,7 +158,7 @@ void Path::recreate(
     // Get all lines joining the input points together.  Note that like fence
     // length vs. fence posts, there is one less join line than points.  These
     // need to be normalized for future calculations.
-    auto joins = std::vector<pga2::Vector>();
+    auto joins = std::vector<pga2::Vec>();
     joins.reserve(s - 1);
     for (int i = 0; i < s - 1; ++i) {
         auto join = filtered_points[i] & filtered_points[i+1];
@@ -171,7 +171,7 @@ void Path::recreate(
     indices.reserve(s*9);
     auto t = 0;
     auto n = 0; // Vertex index
-    auto add_vertex = [&](pga2::Bivector vertex) {
+    auto add_vertex = [&](pga2::Bivec vertex) {
         auto p = vertex.undual();
         p /= p.blade_project<e0>();
         auto x = float(p.blade_project<e1>());

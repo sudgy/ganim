@@ -12,10 +12,10 @@
 using namespace ganim;
 
 static_assert(always_simple<pga3::Scalar>);
-static_assert(always_simple<pga3::Vector>);
-static_assert(!always_simple<pga3::Bivector>);
-static_assert(always_simple<pga3::Trivector>);
-static_assert(always_simple<pga3::Quadvector>);
+static_assert(always_simple<pga3::Vec>);
+static_assert(!always_simple<pga3::Bivec>);
+static_assert(always_simple<pga3::Trivec>);
+static_assert(always_simple<pga3::Quadvec>);
 
 using namespace Catch::Matchers;
 

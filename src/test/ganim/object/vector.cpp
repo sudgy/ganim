@@ -11,13 +11,13 @@ using namespace ganim;
 
 TEST_CASE("Vector object construction", "[object]") {
     using namespace pga3;
-    auto test1 = VectorObject(e1);
-    auto test2 = VectorObject(e2);
-    auto test3 = VectorObject(e1 + e2);
-    auto test4 = VectorObject(e1 + e3);
-    auto test5 = VectorObject(e3);
-    auto test6 = VectorObject(e1, 2*e1);
-    auto test7 = VectorObject(e1, e1 + e3);
+    auto test1 = Vector(e1);
+    auto test2 = Vector(e2);
+    auto test3 = Vector(e1 + e2);
+    auto test4 = Vector(e1 + e3);
+    auto test5 = Vector(e3);
+    auto test6 = Vector(e1, 2*e1);
+    auto test7 = Vector(e1, e1 + e3);
 
     REQUIRE_THAT(test1.get_start_pga3().undual(), GAEquals(e0, 1e-5));
     REQUIRE_THAT(test2.get_start_pga3().undual(), GAEquals(e0, 1e-5));
@@ -56,7 +56,7 @@ TEST_CASE("Vector object construction", "[object]") {
 
 TEST_CASE("Vector object scale", "[object]") {
     using namespace vga3;
-    auto test = VectorObject(e1);
+    auto test = Vector(e1);
     test.scale(2);
     REQUIRE_THAT(test.get_start_vga3(), GAEquals(0));
     REQUIRE_THAT(test.get_end_vga3(), GAEquals(2*e1));
@@ -67,7 +67,7 @@ TEST_CASE("Vector object scale", "[object]") {
 
 TEST_CASE("Vector object transforms", "[object]") {
     using namespace pga3;
-    auto test = VectorObject(e1);
+    auto test = Vector(e1);
     test.rotate(e12, τ/4);
     REQUIRE_THAT(test.get_start_pga3().undual(), GAEquals(e0, 1e-5));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 + e2, 1e-5));
@@ -93,7 +93,7 @@ TEST_CASE("Vector object transforms", "[object]") {
 
 TEST_CASE("Vector object zero vector", "[object]") {
     using namespace pga3;
-    auto test = VectorObject(0*e1);
+    auto test = Vector(0*e1);
     REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
     REQUIRE_THAT(test.get_end_pga3(), GAEquals(e123));
     test.set_end(e1);
@@ -112,7 +112,7 @@ TEST_CASE("Vector object zero vector", "[object]") {
 
 TEST_CASE("Vector turning around", "[object]") {
     using namespace pga3;
-    auto test = VectorObject(e1);
+    auto test = Vector(e1);
     test.set_end(-e1);
     REQUIRE_THAT(test.get_start_pga3().undual(), GAEquals(e0, 1e-5));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 - e1, 1e-5));
@@ -126,7 +126,7 @@ TEST_CASE("Vector turning around", "[object]") {
 
 TEST_CASE("Vector rotating around", "[object]") {
     using namespace pga3;
-    auto test = VectorObject(e1);
+    auto test = Vector(e1);
     test.rotate(e13, τ/2);
     REQUIRE_THAT(test.get_start_pga3().undual(), GAEquals(e0, 1e-5));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 - e1, 1e-5));
@@ -134,7 +134,7 @@ TEST_CASE("Vector rotating around", "[object]") {
 
 TEST_CASE("Vector drawing", "[object]") {
     using namespace pga3;
-    auto test = VectorObject(12*e1, {0.5, 6.2, 2});
+    auto test = Vector(12*e1, {0.5, 6.2, 2});
     auto scene = TestScene(40, 10, 40, 10, 1);
     test.set_visible(true);
     test.scale(0.5);
@@ -227,8 +227,8 @@ TEST_CASE("Vector drawing", "[object]") {
 }
 
 TEST_CASE("Vector object 2D/3D", "[object]") {
-    auto v1 = VectorObject(2*vga2::e1, {.thickness = 2});
-    auto v2 = VectorObject(vga2::e1, {.thickness = 2, .three_d = true});
+    auto v1 = Vector(2*vga2::e1, {.thickness = 2});
+    auto v2 = Vector(vga2::e1, {.thickness = 2, .three_d = true});
     auto scene = TestScene(4, 4, 4, 4, 1);
     scene.add(v1, v2);
     scene.get_camera().rotate(vga3::e23, τ/4);
@@ -243,7 +243,7 @@ TEST_CASE("Vector object 2D/3D", "[object]") {
 
 TEST_CASE("Vector object orientation locking", "[object]") {
     using namespace pga3;
-    auto test = VectorObject(e1);
+    auto test = Vector(e1);
     test.rotate(e23, τ/4);
     auto r = test.get_rotor();
     REQUIRE_THAT((~r*(e2 + e0).dual()*r).undual(), GAEquals(e2 + e0, 1e-5));
@@ -258,7 +258,7 @@ TEST_CASE("Vector object orientation locking", "[object]") {
 
 TEST_CASE("Vector bounding box", "[object]") {
     using namespace vga2;
-    auto test = VectorObject(4*e1, {.tip_size = 2});
+    auto test = Vector(4*e1, {.tip_size = 2});
     auto box = test.get_logical_bounding_box();
     REQUIRE_THAT(pga2_to_vga2(box.get_lower_left()), GAEquals(-e2));
     REQUIRE_THAT(pga2_to_vga2(box.get_upper_right()), GAEquals(4*e1 + e2));

@@ -4,27 +4,27 @@
 
 using namespace ganim;
 
-BivectorObject::BivectorObject(
-    const std::vector<pga2::Bivector>& points,
+Bivector::Bivector(
+    const std::vector<pga2::Bivec>& points,
     BivectorArgs args
 )
 {
     common_construct(points, pga2_to_vga2(points), args);
 }
 
-BivectorObject::BivectorObject(
-    const std::vector<vga2::Vector>& points,
+Bivector::Bivector(
+    const std::vector<vga2::Vec>& points,
     BivectorArgs args
 )
 {
     common_construct(vga2_to_pga2(points), points, args);
 }
 
-BivectorObject::BivectorObject(
-    const VectorObject& v1,
-    const VectorObject& v2,
+Bivector::Bivector(
+    const Vector& v1,
+    const Vector& v2,
     BivectorArgs args
-) : BivectorObject(
+) : Bivector(
         v1.get_end_vga3() - v1.get_start_vga3(),
         v2.get_end_vga3() - v2.get_start_vga3(),
         args
@@ -33,16 +33,16 @@ BivectorObject::BivectorObject(
     shift(v1.get_start_vga3());
 }
 
-BivectorObject::BivectorObject(
-    vga2::Vector v1,
-    vga2::Vector v2,
+Bivector::Bivector(
+    vga2::Vec v1,
+    vga2::Vec v2,
     BivectorArgs args
 )
-:   BivectorObject(vga2_to_vga3(v1), vga2_to_vga3(v2), args) {}
+:   Bivector(vga2_to_vga3(v1), vga2_to_vga3(v2), args) {}
 
-BivectorObject::BivectorObject(
-    vga3::Vector v1,
-    vga3::Vector v2,
+Bivector::Bivector(
+    vga3::Vec v1,
+    vga3::Vec v2,
     BivectorArgs args
 )
 {
@@ -64,15 +64,15 @@ BivectorObject::BivectorObject(
     apply_rotor(~r);
 }
 
-BivectorObject::BivectorObject(vga2::Bivector b, BivectorArgs args)
-: BivectorObject(
+Bivector::Bivector(vga2::Bivec b, BivectorArgs args)
+: Bivector(
     std::sqrt(b.norm())*vga3::e1,
     std::sqrt(b.norm())*vga3::e2,
     args
 ) {}
 
-BivectorObject::BivectorObject(vga3::Bivector b, BivectorArgs args)
-: BivectorObject(
+Bivector::Bivector(vga3::Bivec b, BivectorArgs args)
+: Bivector(
     std::sqrt(b.norm())*vga3::e1,
     std::sqrt(b.norm())*vga3::e2,
     args
@@ -82,9 +82,9 @@ BivectorObject::BivectorObject(vga3::Bivector b, BivectorArgs args)
     apply_rotor(e21 * (e12 + b.normalized()).normalized());
 }
 
-void BivectorObject::common_construct(
-    const std::vector<pga2::Bivector>& pga_points,
-    const std::vector<vga2::Vector>& vga_points,
+void Bivector::common_construct(
+    const std::vector<pga2::Bivec>& pga_points,
+    const std::vector<vga2::Vec>& vga_points,
     BivectorArgs args
 )
 {
@@ -103,7 +103,7 @@ void BivectorObject::common_construct(
 
     double current_path_length = 0.0;
     int current_path_start = 0;
-    auto new_path = std::vector<vga2::Vector>();
+    auto new_path = std::vector<vga2::Vec>();
     for (int i = 0; i < ssize(vga_points); ++i) {
         auto i2 = (i + 1) % ssize(vga_points);
         auto i3 = (i + 2) % ssize(vga_points);

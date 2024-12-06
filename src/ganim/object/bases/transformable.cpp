@@ -16,7 +16,7 @@ Transformable& Transformable::reset()
     return *this;
 }
 
-Trivector Transformable::get_origin() const
+Trivec Transformable::get_origin() const
 {
     return (~M_rotor * e123 * M_rotor).grade_project<3>();
 }
@@ -49,7 +49,7 @@ Transformable& Transformable::apply_rotor(const Even& rotor)
     return *this;
 }
 
-Transformable& Transformable::move_to(const Trivector& p)
+Transformable& Transformable::move_to(const Trivec& p)
 {
     auto current_center = (~M_rotor * e123 * M_rotor).grade_project<3>();
     auto new_center = p;
@@ -58,7 +58,7 @@ Transformable& Transformable::move_to(const Trivector& p)
     return apply_rotor(-current_center * (current_center + new_center) / 2);
 }
 
-Transformable& Transformable::shift(const Trivector& p)
+Transformable& Transformable::shift(const Trivec& p)
 {
     auto new_p = p;
     new_p /= p.blade_project<e123>();
@@ -68,29 +68,29 @@ Transformable& Transformable::shift(const Trivector& p)
 Transformable& Transformable::rotate(double angle)
     {return rotate(e12, angle);}
 Transformable& Transformable::rotate(
-    const vga2::Vector& about_point,
+    const vga2::Vec& about_point,
     double angle
 )
     {return rotate(vga2_to_pga2(about_point), angle);}
 Transformable& Transformable::rotate(
-    const pga2::Vector& about_point,
+    const pga2::Vec& about_point,
     double angle
 )
     {return rotate(pga2_to_vga2_cheat(about_point), angle);}
 Transformable& Transformable::rotate(
-    const vga3::Bivector& about_plane,
+    const vga3::Bivec& about_plane,
     double angle
 )
 {
     return apply_rotor(vga3_to_pga3(ga_exp(about_plane * angle / 2)));
 }
 Transformable& Transformable::rotate(
-    const pga2::Bivector& about_point,
+    const pga2::Bivec& about_point,
     double angle
 )
     {return rotate(pga2_to_pga3(about_point), angle);}
 Transformable& Transformable::rotate(
-    const pga3::Bivector& about_line,
+    const pga3::Bivec& about_line,
     double angle
 )
 {

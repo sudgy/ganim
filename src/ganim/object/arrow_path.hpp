@@ -12,19 +12,19 @@ namespace ganim {
     class ArrowPath : public Group {
         public:
             explicit ArrowPath(
-                const std::vector<pga2::Bivector>& points,
+                const std::vector<pga2::Bivec>& points,
                 ArrowPathArgs args = {}
             );
             explicit ArrowPath(
-                const std::vector<vga2::Vector>& points,
+                const std::vector<vga2::Vec>& points,
                 ArrowPathArgs args = {}
             );
             void recreate(
-                std::vector<pga2::Bivector> points,
+                std::vector<pga2::Bivec> points,
                 ArrowPathArgs args = {}
             );
             void recreate(
-                const std::vector<vga2::Vector>& points,
+                const std::vector<vga2::Vec>& points,
                 ArrowPathArgs args = {}
             );
 

@@ -61,14 +61,14 @@ constexpr auto ga_inv(const T& v)
 {
     if constexpr (always_simple<T>) return ~v / v.norm2();
     else {
-        static_assert(std::is_same_v<T, pga3::Bivector>,
+        static_assert(std::is_same_v<T, pga3::Bivec>,
             "ga_inv is currently only implemented for provably-simple "
             "multivectors and for 3D PGA bivectors.  If you know your "
             "multivector is simple, just use ~v / v.norm2().  If you don't, "
             "then you're out of luck."
         );
         using namespace pga3;
-        const Bivector& b = v;
+        const Bivec& b = v;
         const auto c = b*b;
         const auto c2 = c.blade_project<e>() - c.blade_project<e0123>()*e0123;
         const auto d = (c*c2).blade_project<e>();
@@ -117,14 +117,14 @@ constexpr auto ga_exp(const T& v)
 {
     if constexpr (always_simple<T>) return simple_exp(v);
     else {
-        static_assert(std::is_same_v<T, pga3::Bivector>,
+        static_assert(std::is_same_v<T, pga3::Bivec>,
             "ga_exp is currently only implemented for provably-simple "
             "multivectors and for 3D PGA bivectors.  If you know your "
             "multivector is simple, use simple_exp.  If you don't, then you're "
             "out of luck."
         );
         using namespace pga3;
-        const Bivector& b = v;
+        const Bivec& b = v;
         if ((b*b).blade_project<e>() == 0) return 1 + v + 0*e0123;
         const auto b1 = (b ^ b) * ga_inv(b) / 2;
         const auto b2 = b - b1;
@@ -183,7 +183,7 @@ constexpr auto ga_log(const T& R)
     }
     else {
         static_assert(std::is_same_v<decltype(R.template grade_project<2>()),
-                pga3::Bivector>,
+                pga3::Bivec>,
             "ga_log is currently only implemented for provably-simple rotors "
             "and for 3D PGA rotors.  If you know your rotor is simple, use "
             "simple_log.  If you don't, then you're out of luck."

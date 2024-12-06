@@ -10,7 +10,7 @@
 namespace ganim {
 
 std::vector<unsigned> triangulate(
-    const std::vector<vga2::Vector>& polygon
+    const std::vector<vga2::Vec>& polygon
 )
 {
     if (polygon.size() < 3) {
@@ -36,10 +36,10 @@ std::vector<unsigned> triangulate(
 }
 
 std::vector<unsigned> triangulate(
-    const std::vector<pga2::Bivector>& polygon
+    const std::vector<pga2::Bivec>& polygon
 )
 {
-    auto vga_polygon = std::vector<vga2::Vector>();
+    auto vga_polygon = std::vector<vga2::Vec>();
     vga_polygon.reserve(polygon.size());
     for (auto p : polygon) {
         vga_polygon.emplace_back(pga2_to_vga2(p));
@@ -50,7 +50,7 @@ std::vector<unsigned> triangulate(
 // Name lookup for operators works a bit differently for static functions vs.
 // anonymous namespaces, and this won't be found if it's in an anomymous
 // namespace
-static auto operator<=>(vga2::Vector v1, vga2::Vector v2)
+static auto operator<=>(vga2::Vec v1, vga2::Vec v2)
 {
     auto x1 = v1.blade_project<vga2::e1>();
     auto x2 = v2.blade_project<vga2::e1>();
@@ -63,7 +63,7 @@ static auto operator<=>(vga2::Vector v1, vga2::Vector v2)
 namespace {
     constexpr unsigned invalid = -1;
     struct Triangulator {
-        const std::vector<vga2::Vector>& M_polygon;
+        const std::vector<vga2::Vec>& M_polygon;
         std::vector<std::vector<unsigned>> M_monotone_polygons;
         std::vector<unsigned> M_triangulation;
         std::vector<unsigned> M_sweep_order;
@@ -77,7 +77,7 @@ namespace {
         std::vector<std::pair<unsigned, unsigned>> M_diagonals;
         bool M_ccw = false;
 
-        Triangulator(const std::vector<vga2::Vector>& polygon)
+        Triangulator(const std::vector<vga2::Vec>& polygon)
         : M_polygon(polygon)
         {
             auto area = 0.0;
@@ -368,7 +368,7 @@ namespace {
 }
 
 std::vector<unsigned> triangulate_concave(
-    const std::vector<vga2::Vector>& polygon
+    const std::vector<vga2::Vec>& polygon
 )
 {
     if (polygon.size() < 3) {
@@ -385,10 +385,10 @@ std::vector<unsigned> triangulate_concave(
 }
 
 std::vector<unsigned> triangulate_concave(
-    const std::vector<pga2::Bivector>& polygon
+    const std::vector<pga2::Bivec>& polygon
 )
 {
-    auto vga_polygon = std::vector<vga2::Vector>();
+    auto vga_polygon = std::vector<vga2::Vec>();
     vga_polygon.reserve(polygon.size());
     for (auto p : polygon) {
         vga_polygon.emplace_back(pga2_to_vga2(p));
@@ -397,7 +397,7 @@ std::vector<unsigned> triangulate_concave(
 }
 
 std::vector<unsigned> triangulate_convex(
-    const std::vector<vga2::Vector>& polygon
+    const std::vector<vga2::Vec>& polygon
 )
 {
     if (polygon.size() < 3) {
@@ -421,10 +421,10 @@ std::vector<unsigned> triangulate_convex(
 }
 
 std::vector<unsigned> triangulate_convex(
-    const std::vector<pga2::Bivector>& polygon
+    const std::vector<pga2::Bivec>& polygon
 )
 {
-    auto vga_polygon = std::vector<vga2::Vector>();
+    auto vga_polygon = std::vector<vga2::Vec>();
     vga_polygon.reserve(polygon.size());
     for (auto p : polygon) {
         vga_polygon.emplace_back(pga2_to_vga2(p));

@@ -41,7 +41,7 @@ Object& Object::scale(double amount)
     return scale((~get_rotor()*e123*get_rotor()).grade_project<3>(), amount);
 }
 
-Object& Object::scale(const pga3::Trivector& about_point, double amount)
+Object& Object::scale(const pga3::Trivec& about_point, double amount)
 {
     auto new_about_point = about_point;
     new_about_point /= new_about_point.blade_project<e123>();
@@ -134,47 +134,47 @@ Box Object::get_logical_bounding_box() const
     );
 }
 
-pga2::Bivector Object::get_center() const
+pga2::Bivec Object::get_center() const
 {
     return get_logical_bounding_box().get_center();
 }
 
-pga2::Bivector Object::get_left() const
+pga2::Bivec Object::get_left() const
 {
     return get_logical_bounding_box().get_left();
 }
 
-pga2::Bivector Object::get_right() const
+pga2::Bivec Object::get_right() const
 {
     return get_logical_bounding_box().get_right();
 }
 
-pga2::Bivector Object::get_up() const
+pga2::Bivec Object::get_up() const
 {
     return get_logical_bounding_box().get_up();
 }
 
-pga2::Bivector Object::get_down() const
+pga2::Bivec Object::get_down() const
 {
     return get_logical_bounding_box().get_down();
 }
 
-pga2::Bivector Object::get_upper_left() const
+pga2::Bivec Object::get_upper_left() const
 {
     return get_logical_bounding_box().get_upper_left();
 }
 
-pga2::Bivector Object::get_upper_right() const
+pga2::Bivec Object::get_upper_right() const
 {
     return get_logical_bounding_box().get_upper_right();
 }
 
-pga2::Bivector Object::get_lower_left() const
+pga2::Bivec Object::get_lower_left() const
 {
     return get_logical_bounding_box().get_lower_left();
 }
 
-pga2::Bivector Object::get_lower_right() const
+pga2::Bivec Object::get_lower_right() const
 {
     return get_logical_bounding_box().get_lower_right();
 }
@@ -213,8 +213,8 @@ double Object::get_z() const
 }
 
 Object& Object::next_to(
-    const pga3::Trivector& point,
-    const pga3::Trivector& direction,
+    const pga3::Trivec& point,
+    const pga3::Trivec& direction,
     double buff
 )
 {
@@ -240,7 +240,7 @@ Object& Object::next_to(
 
 Object& Object::next_to(
     const Object& object,
-    const pga3::Trivector& direction,
+    const pga3::Trivec& direction,
     double buff
 )
 {
@@ -249,8 +249,8 @@ Object& Object::next_to(
 }
 
 Object& Object::align_to(
-    const pga3::Trivector& point,
-    const pga3::Trivector& direction
+    const pga3::Trivec& point,
+    const pga3::Trivec& direction
 )
 {
     auto ideal_direction = direction;
@@ -272,7 +272,7 @@ Object& Object::align_to(
 
 Object& Object::align_to(
     const Object& object,
-    const pga3::Trivector& direction
+    const pga3::Trivec& direction
 )
 {
     const auto other_box = object.get_logical_bounding_box();
@@ -281,7 +281,7 @@ Object& Object::align_to(
 
 Object& Object::to_edge(
     const Camera& camera,
-    const pga3::Trivector& direction,
+    const pga3::Trivec& direction,
     double buff
 )
 {

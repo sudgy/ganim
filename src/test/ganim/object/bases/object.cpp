@@ -12,7 +12,7 @@ namespace {
     class TestObject : public Object {
         public:
             Color last_change;
-            pga3::Trivector scaled_point;
+            pga3::Trivec scaled_point;
             double last_scale = -1;
             bool last_visible = false;
             Box bounding_box;
@@ -31,7 +31,7 @@ namespace {
             }
             using Object::scale;
             virtual TestObject& scale(
-                const pga3::Trivector& about_point,
+                const pga3::Trivec& about_point,
                 double amount
             ) override
             {
@@ -106,7 +106,7 @@ TEST_CASE("Object animating color", "[object]") {
 TEST_CASE("Object scaling", "[object]") {
     using namespace pga3;
     auto test = TestObject();
-    auto get_p = [&](pga3::Trivector p){
+    auto get_p = [&](pga3::Trivec p){
         p += -p.blade_project<e123>()*e123;
         p *= test.get_scale();
         p += e123;
@@ -164,7 +164,7 @@ TEST_CASE("Object animating scale", "[object]") {
     auto scene = TestScene(1, 1, 1, 1, 4);
     test.set_fps(4);
     test.shift(e1);
-    auto get_p = [&](pga3::Trivector p){
+    auto get_p = [&](pga3::Trivec p){
         p += -p.blade_project<e123>()*e123;
         p *= test.get_scale();
         p += e123;
@@ -233,7 +233,7 @@ TEST_CASE("Object interpolate", "[object]") {
 
 TEST_CASE("Object Box wrappers", "[object]") {
     auto test = TestObject();
-    test.bounding_box = Box(vga3::Vector(-1, -1, -1), vga3::Vector(1, 1, 1));
+    test.bounding_box = Box(vga3::Vec(-1, -1, -1), vga3::Vec(1, 1, 1));
     using namespace pga2;
     REQUIRE_THAT(test.get_center().undual(), GAEquals(e0));
     REQUIRE_THAT(test.get_right().undual(), GAEquals(e0 + e1));
@@ -246,8 +246,8 @@ TEST_CASE("Object Box wrappers", "[object]") {
 TEST_CASE("Object next_to", "[object]") {
     auto test1 = TestObject();
     auto test2 = TestObject();
-    test1.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(1, 1, 1));
-    test2.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(1, 1, 1));
+    test1.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(1, 1, 1));
+    test2.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(1, 1, 1));
     using namespace pga2;
 
     test2.next_to(e12, e1);
@@ -263,7 +263,7 @@ TEST_CASE("Object next_to", "[object]") {
     constexpr auto p = 1.676776695297;
     REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + p*e1 + p*e2, 1e-5));
 
-    test2.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(2, 2, 2));
+    test2.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(2, 2, 2));
 
     test2.next_to(e12, e1);
     REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + 1.25*e1, 1e-5));
@@ -282,8 +282,8 @@ TEST_CASE("Object next_to", "[object]") {
 TEST_CASE("Object align_to", "[object]") {
     auto test1 = TestObject();
     auto test2 = TestObject();
-    test1.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(1, 1, 1));
-    test2.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(1, 1, 1));
+    test1.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(1, 1, 1));
+    test2.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(1, 1, 1));
     using namespace pga2;
 
     test2.align_to(e12, e1);
@@ -302,7 +302,7 @@ TEST_CASE("Object align_to", "[object]") {
     test2.align_to(test1, e1, e2);
     REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 + 0.5*e1 + 0.5*e2));
 
-    test2.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(2, 2, 2));
+    test2.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(2, 2, 2));
 
     test2.align_to(e12, e1);
     REQUIRE_THAT(test2.get_center().undual(), GAEquals(e0 - e1 + e2));
@@ -324,7 +324,7 @@ TEST_CASE("Object align_to", "[object]") {
 TEST_CASE("Object to_edge", "[object]") {
     using namespace pga2;
     auto test = TestObject();
-    test.bounding_box = Box(vga3::Vector(0, 0, 0), vga3::Vector(2, 2, 2));
+    test.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(2, 2, 2));
     auto camera = Camera(20, 10, 8);
 
     test.to_edge(camera, e1, 0);

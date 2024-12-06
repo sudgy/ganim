@@ -7,12 +7,12 @@ using namespace ganim;
 using namespace pga3;
 
 Even ganim::triangle_rotor(
-    Trivector a1,
-    Trivector a2,
-    Trivector a3,
-    Trivector b1,
-    Trivector b2,
-    Trivector b3
+    Trivec a1,
+    Trivec a2,
+    Trivec a3,
+    Trivec b1,
+    Trivec b2,
+    Trivec b3
 )
 {
     a1 /= a1.blade_project<e123>();

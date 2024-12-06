@@ -135,18 +135,18 @@ Box Shape::get_original_true_bounding_box() const
     };
     auto transformed_points = M_vertices | std::views::transform(convert_point);
     auto xs = transformed_points
-        | std::views::transform(&vga3::Vector::blade_project<e1>);
+        | std::views::transform(&vga3::Vec::blade_project<e1>);
     auto ys = transformed_points
-        | std::views::transform(&vga3::Vector::blade_project<e2>);
+        | std::views::transform(&vga3::Vec::blade_project<e2>);
     auto zs = transformed_points
-        | std::views::transform(&vga3::Vector::blade_project<e3>);
+        | std::views::transform(&vga3::Vec::blade_project<e3>);
     return Box(
-        vga3::Vector{
+        vga3::Vec{
             *std::ranges::min_element(xs),
             *std::ranges::min_element(ys),
             *std::ranges::min_element(zs)
         },
-        vga3::Vector{
+        vga3::Vec{
             *std::ranges::max_element(xs),
             *std::ranges::max_element(ys),
             *std::ranges::max_element(zs)

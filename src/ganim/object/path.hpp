@@ -7,22 +7,22 @@ namespace ganim {
     class Path : public Shape {
         public:
             explicit Path(
-                const std::vector<pga2::Bivector>& points,
+                const std::vector<pga2::Bivec>& points,
                 bool closed = false,
                 double thickness = 0.04
             );
             explicit Path(
-                const std::vector<vga2::Vector>& points,
+                const std::vector<vga2::Vec>& points,
                 bool closed = false,
                 double thickness = 0.04
             );
             void recreate(
-                const std::vector<pga2::Bivector>& points,
+                const std::vector<pga2::Bivec>& points,
                 bool closed = false,
                 double thickness = 0.04
             );
             void recreate(
-                const std::vector<vga2::Vector>& points,
+                const std::vector<vga2::Vec>& points,
                 bool closed = false,
                 double thickness = 0.04
             );

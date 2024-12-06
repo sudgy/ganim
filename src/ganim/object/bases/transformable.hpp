@@ -43,7 +43,7 @@ class Transformable : public Animatable {
         /** @brief Get the rotor that transforms this object */
         constexpr const pga3::Even& get_rotor() const {return M_rotor;}
         /** @brief Get the origin of this object, defined as `~R*e123*R` */
-        pga3::Trivector get_origin() const;
+        pga3::Trivec get_origin() const;
 
         /** @brief Compose this rotor with another one.
          *
@@ -76,25 +76,25 @@ class Transformable : public Animatable {
         /** @brief Move the origin of the object to the point represented by the
          * 3D PGA trivector p.
          */
-        Transformable& move_to(const pga3::Trivector& p);
+        Transformable& move_to(const pga3::Trivec& p);
 
         /** @brief Shift the object. */
         Transformable& shift(const pointlike auto& p)
             {return shift(pointlike_to_pga3(p));}
         /** @brief Shift the object by the 3D PGA trivector p.
          */
-        Transformable& shift(const pga3::Trivector& p);
+        Transformable& shift(const pga3::Trivec& p);
 
         /** @brief Rotate the object in the xy-plane about the origin */
         Transformable& rotate(double angle);
         /** @brief Rotate the object in the xy-plane about a given point */
-        Transformable& rotate(const vga2::Vector& about_point, double angle);
+        Transformable& rotate(const vga2::Vec& about_point, double angle);
         /** @brief Rotate the object in the xy-plane about a 2D PGA vector
          * intepreted as a 2D VGA vector
          */
-        Transformable& rotate(const pga2::Vector& about_point, double angle);
+        Transformable& rotate(const pga2::Vec& about_point, double angle);
         /** @brief Rotate the object in a given plane about the origin */
-        Transformable& rotate(const vga3::Bivector& about_plane, double angle);
+        Transformable& rotate(const vga3::Bivec& about_plane, double angle);
         /** @brief Rotate the object in the xy-plane about a given point
          *
          * Note that no normalization will be done.  If you want to just pass in
@@ -102,7 +102,7 @@ class Transformable : public Animatable {
          * do so.  This is why the angle parameter default to one.
          */
         Transformable& rotate(
-            const pga2::Bivector& about_point,
+            const pga2::Bivec& about_point,
             double angle = 1
         );
         /** @brief Rotate the object about a given line
@@ -112,7 +112,7 @@ class Transformable : public Animatable {
          * so.  This is why the angle parameter default to one.
          */
         Transformable& rotate(
-            const pga3::Bivector& about_line,
+            const pga3::Bivec& about_line,
             double angle = 1
         );
 
@@ -155,15 +155,15 @@ class Transformable : public Animatable {
         {Transformable::shift(p); return *this;} \
     Type& rotate(double angle) \
         {Transformable::rotate(angle); return *this;} \
-    Type& rotate(const vga2::Vector& about_point, double angle) \
+    Type& rotate(const vga2::Vec& about_point, double angle) \
         {Transformable::rotate(about_point, angle); return *this;} \
-    Type& rotate(const pga2::Vector& about_point, double angle) \
+    Type& rotate(const pga2::Vec& about_point, double angle) \
         {Transformable::rotate(about_point, angle); return *this;} \
-    Type& rotate(const vga3::Bivector& about_plane, double angle) \
+    Type& rotate(const vga3::Bivec& about_plane, double angle) \
         {Transformable::rotate(about_plane, angle); return *this;} \
-    Type& rotate(const pga2::Bivector& about_point, double angle = 1) \
+    Type& rotate(const pga2::Bivec& about_point, double angle = 1) \
         {Transformable::rotate(about_point, angle); return *this;} \
-    Type& rotate(const pga3::Bivector& about_line, double angle = 1) \
+    Type& rotate(const pga3::Bivec& about_line, double angle = 1) \
         {Transformable::rotate(about_line, angle); return *this;} \
 
 #endif

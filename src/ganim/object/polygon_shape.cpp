@@ -10,10 +10,10 @@ namespace {
         auto result = std::vector<Shape::Vertex>();
         result.resize(vertices.size());
         for (int i = 0; i < ssize(vertices); ++i) {
-            auto p = vga2::Vector([&]{
+            auto p = vga2::Vec([&]{
                 if constexpr (std::is_same_v<
                         decltype(vertices[0]),
-                        const vga2::Vector&
+                        const vga2::Vec&
                 >) {
                     return vertices[i];
                 }
@@ -31,8 +31,8 @@ namespace {
     }
 }
 
-PolygonShape::PolygonShape(const std::vector<vga2::Vector>& vertices)
+PolygonShape::PolygonShape(const std::vector<vga2::Vec>& vertices)
 :   Shape(get_shape_vertices(vertices), get_shape_indices(vertices)) {}
 
-PolygonShape::PolygonShape(const std::vector<pga2::Bivector>& vertices)
+PolygonShape::PolygonShape(const std::vector<pga2::Bivec>& vertices)
 :   Shape(get_shape_vertices(vertices), get_shape_indices(vertices)) {}

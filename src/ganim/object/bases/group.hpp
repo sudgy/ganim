@@ -12,7 +12,7 @@ namespace ganim {
 class Group;
 struct ArrangeArgs {
     double buff = 0.25;
-    vga2::Vector align = 0*vga2::e1;
+    vga2::Vec align = 0*vga2::e1;
 };
 /** @brief The class for objects that contains other objects
  *
@@ -136,15 +136,15 @@ class Group : public Object {
             {Transformable::shift(p); return *this;}
         Group& rotate(double angle)
             {Transformable::rotate(angle); return *this;}
-        Group& rotate(const vga2::Vector& about_point, double angle)
+        Group& rotate(const vga2::Vec& about_point, double angle)
             {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const pga2::Vector& about_point, double angle)
+        Group& rotate(const pga2::Vec& about_point, double angle)
             {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const vga3::Bivector& about_plane, double angle)
+        Group& rotate(const vga3::Bivec& about_plane, double angle)
             {Transformable::rotate(about_plane, angle); return *this;}
-        Group& rotate(const pga2::Bivector& about_point, double angle = 1)
+        Group& rotate(const pga2::Bivec& about_point, double angle = 1)
             {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const pga3::Bivector& about_line, double angle = 1)
+        Group& rotate(const pga3::Bivec& about_line, double angle = 1)
             {Transformable::rotate(about_line, angle); return *this;}
         Group& scale(double amount)
             {Object::scale(amount); return *this;}
@@ -155,7 +155,7 @@ class Group : public Object {
         virtual Group& set_color(Color color) override;
         virtual Group& set_color_with_alpha(Color color) override;
         virtual Group& set_opacity(double opacity) override;
-        virtual Group& scale(const pga3::Trivector& about_point, double amount)
+        virtual Group& scale(const pga3::Trivec& about_point, double amount)
             override;
         virtual Group& set_visible(bool visible) override;
         virtual void set_draw_fraction(double value) override;
@@ -198,13 +198,13 @@ class Group : public Object {
 
         Group& align_by_subobject(
             int index,
-            const pga3::Trivector& point,
-            const pga3::Trivector& direction
+            const pga3::Trivec& point,
+            const pga3::Trivec& direction
         );
         Group& align_by_subobject(
             int index,
             const Object& object,
-            const pga3::Trivector& direction
+            const pga3::Trivec& direction
         );
         Group& align_by_subobject(
             int index,

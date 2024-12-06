@@ -50,7 +50,7 @@ void write(
 
 void create_bivector(
     SceneBase& scene,
-    MaybeOwningRef<BivectorObject> bivector,
+    MaybeOwningRef<Bivector> bivector,
     AnimationArgs args
 )
 {

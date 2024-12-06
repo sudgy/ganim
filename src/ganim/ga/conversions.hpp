@@ -25,12 +25,12 @@ vga3::Scalar vga2_to_vga3(const vga2::Scalar& in);
  *
  * This produces the same geometric object.
  */
-vga3::Vector vga2_to_vga3(const vga2::Vector& in);
+vga3::Vec vga2_to_vga3(const vga2::Vec& in);
 /** @brief Convert a 2D VGA bivector to a 3D VGA bivector
  *
  * This produces the same geometric object.
  */
-vga3::Bivector vga2_to_vga3(const vga2::Bivector& in);
+vga3::Bivec vga2_to_vga3(const vga2::Bivec& in);
 /** @brief Convert a 2D VGA even element to a 3D VGA even element.
  *
  * This produces the same geometric object.
@@ -57,12 +57,12 @@ vga2::Scalar vga3_to_vga2(const vga3::Scalar& in);
  *
  * This projects the vector onto the xy-plane.
  */
-vga2::Vector vga3_to_vga2(const vga3::Vector& in);
+vga2::Vec vga3_to_vga2(const vga3::Vec& in);
 /** @brief Convert a 3D VGA bivector to a 2D VGA bivector
  *
  * This projects the bivector onto the xy-plane.
  */
-vga2::Bivector vga3_to_vga2(const vga3::Bivector& in);
+vga2::Bivec vga3_to_vga2(const vga3::Bivec& in);
 
 DEFINE_VECTOR_CONVERTER(vga3_to_vga2);
 
@@ -72,12 +72,12 @@ pga3::Scalar pga2_to_pga3(const pga2::Scalar& in);
  *
  * This produces the vertical plane going through the input line.
  */
-pga3::Vector pga2_to_pga3(const pga2::Vector& in);
+pga3::Vec pga2_to_pga3(const pga2::Vec& in);
 /** @brief Convert a 2D PGA point to a 3D PGA line
  *
  * This produces the vertical line going through the input point.
  */
-pga3::Bivector pga2_to_pga3(const pga2::Bivector& in);
+pga3::Bivec pga2_to_pga3(const pga2::Bivec& in);
 /** @brief Convert a 2D PGA even element to a 3D PGA even element
  *
  * This produces the same geometric transformation as the input.
@@ -87,12 +87,12 @@ pga3::Even pga2_to_pga3(const pga2::Even& in);
  *
  * This produces the same geometric object.
  */
-pga3::Bivector pga2_to_pga3_flat(const pga2::Vector& in);
+pga3::Bivec pga2_to_pga3_flat(const pga2::Vec& in);
 /** @brief Convert a 2D PGA point to a 3D PGA point.
  *
  * This produces the same geometric object.
  */
-pga3::Trivector pga2_to_pga3_flat(const pga2::Bivector& in);
+pga3::Trivec pga2_to_pga3_flat(const pga2::Bivec& in);
 
 DEFINE_VECTOR_CONVERTER(pga2_to_pga3);
 
@@ -102,17 +102,17 @@ pga2::Scalar pga3_to_pga2(const pga3::Scalar& in);
  *
  * This finds the intersection of the input plane with the xy-plane.
  */
-pga2::Vector pga3_to_pga2(const pga3::Vector& in);
+pga2::Vec pga3_to_pga2(const pga3::Vec& in);
 /** @brief Convert a 3D PGA line to a 2D PGA point
  *
  * This finds the intersection of the input line with the xy-plane.
  */
-pga2::Bivector pga3_to_pga2(const pga3::Bivector& in);
+pga2::Bivec pga3_to_pga2(const pga3::Bivec& in);
 /** @brief Convert a 3D PGA point to a 2D PGA point
  *
  * This projects the input point onto the xy-plane.
  */
-pga2::Bivector pga3_to_pga2(const pga3::Trivector& in);
+pga2::Bivec pga3_to_pga2(const pga3::Trivec& in);
 
 DEFINE_VECTOR_CONVERTER(pga3_to_pga2);
 
@@ -123,7 +123,7 @@ pga2::Scalar vga2_to_pga2(const vga2::Scalar& in);
  * The resulting point is the point that the vector points at when starting at
  * the origin.
  */
-pga2::Bivector vga2_to_pga2(const vga2::Vector& in);
+pga2::Bivec vga2_to_pga2(const vga2::Vec& in);
 /** @brief Convert a 2D VGA even element to a 2D PGA even element
  *
  * This produces the same geometric transformation.
@@ -133,7 +133,7 @@ pga2::Even vga2_to_pga2(const vga2::Even& in);
  *
  * This produces the line the vector goes through.
  */
-pga2::Vector vga2_to_pga2_full(const vga2::Vector& in);
+pga2::Vec vga2_to_pga2_full(const vga2::Vec& in);
 
 DEFINE_VECTOR_CONVERTER(vga2_to_pga2);
 
@@ -145,12 +145,12 @@ vga2::Scalar pga2_to_vga2(const pga2::Scalar& in);
  * coefficients of a VGA vector.  Otherwise, it produces the vector going from
  * the origin to the input point.
  */
-vga2::Vector pga2_to_vga2(const pga2::Bivector& in);
+vga2::Vec pga2_to_vga2(const pga2::Bivec& in);
 /** @brief Interpret the components of a 2D PGA vector as a 2D VGA vector
  *
  * Any e0 component will be ignored.
  */
-vga2::Vector pga2_to_vga2_cheat(const pga2::Vector& in);
+vga2::Vec pga2_to_vga2_cheat(const pga2::Vec& in);
 
 DEFINE_VECTOR_CONVERTER(pga2_to_vga2);
 
@@ -161,22 +161,22 @@ pga3::Scalar vga3_to_pga3(const vga3::Scalar& in);
  * The resulting point is the point that the vector points at when starting at
  * the origin.
  */
-pga3::Trivector vga3_to_pga3(const vga3::Vector& in);
+pga3::Trivec vga3_to_pga3(const vga3::Vec& in);
 /** @brief Convert a 3D VGA bivector to a 3D PGA plane
  *
  * The resulting plane is the plane of the bivector.
  */
-pga3::Vector vga3_to_pga3(const vga3::Bivector& in);
+pga3::Vec vga3_to_pga3(const vga3::Bivec& in);
 /** @brief Convert a 3D VGA even element to a 3D PGA even element
  *
  * This produces the same geometric transformation.
  */
 pga3::Even vga3_to_pga3(const vga3::Even& in);
-/** @brief Convert a 3D VGA vector to a 3D PGA line
+/** @brief Convert a 3D VGA vec to a 3D PGA line
  *
- * This produces the line the vector goes through.
+ * This produces the line the vec goes through.
  */
-pga3::Bivector vga3_to_pga3_full(const vga3::Vector& in);
+pga3::Bivec vga3_to_pga3_full(const vga3::Vec& in);
 
 DEFINE_VECTOR_CONVERTER(vga3_to_pga3);
 
@@ -188,12 +188,12 @@ vga3::Scalar pga3_to_vga3(const pga3::Scalar& in);
  * coefficients of a VGA vector.  Otherwise, it produces the vector going from
  * the origin to the input point.
  */
-vga3::Vector pga3_to_vga3(const pga3::Trivector& in);
+vga3::Vec pga3_to_vga3(const pga3::Trivec& in);
 /** @brief Interpret the components of a 3D PGA vector as a 3D VGA vector
  *
  * Any e0 component will be ignored.
  */
-vga3::Vector pga3_to_vga3_cheat(const pga3::Vector& in);
+vga3::Vec pga3_to_vga3_cheat(const pga3::Vec& in);
 
 DEFINE_VECTOR_CONVERTER(pga3_to_vga3);
 
@@ -204,7 +204,7 @@ pga3::Scalar vga2_to_pga3(const vga2::Scalar& in);
  * The resulting point is the point that the vector points at when starting at
  * the origin.
  */
-pga3::Trivector vga2_to_pga3(const vga2::Vector& in);
+pga3::Trivec vga2_to_pga3(const vga2::Vec& in);
 /** @brief Convert a 3D VGA even element to a 3D PGA even element
  *
  * This produces the same geometric transformation.
@@ -214,9 +214,11 @@ pga3::Even vga2_to_pga3(const vga2::Even& in);
  *
  * This produces the line the vector goes through.
  */
-pga3::Bivector vga2_to_pga3_full(const vga2::Vector& in);
+pga3::Bivec vga2_to_pga3_full(const vga2::Vec& in);
 
 DEFINE_VECTOR_CONVERTER(vga2_to_pga3);
+
+#undef DEFINE_VECTOR_CONVERTER
 
 /** @brief A lot of functions take in a point in space, and since there are
  * several different representations of points in space, this concept checks if
@@ -234,30 +236,30 @@ DEFINE_VECTOR_CONVERTER(vga2_to_pga3);
  *  ganim::pointlike_to_pga3 pointlike_to_pga3.
  */
 template <typename T>
-concept pointlike = std::same_as<T, vga2::Vector> or
-                    std::same_as<T, vga3::Vector> or
-                    std::same_as<T, pga2::Vector> or
-                    std::same_as<T, pga3::Vector> or
-                    std::same_as<T, pga2::Bivector> or
-                    std::same_as<T, pga3::Trivector>;
+concept pointlike = std::same_as<T, vga2::Vec> or
+                    std::same_as<T, vga3::Vec> or
+                    std::same_as<T, pga2::Vec> or
+                    std::same_as<T, pga3::Vec> or
+                    std::same_as<T, pga2::Bivec> or
+                    std::same_as<T, pga3::Trivec>;
 
 /** @brief Convert one of the pointlike types to a 3D PGA trivector.  */
-pga3::Trivector pointlike_to_pga3(const pointlike auto& p)
+pga3::Trivec pointlike_to_pga3(const pointlike auto& p)
 {
     using T = std::remove_cvref_t<decltype(p)>;
-    if constexpr (std::is_same_v<T, vga2::Vector>) {
+    if constexpr (std::is_same_v<T, vga2::Vec>) {
         return vga2_to_pga3(p);
     }
-    else if constexpr (std::is_same_v<T, vga3::Vector>) {
+    else if constexpr (std::is_same_v<T, vga3::Vec>) {
         return vga3_to_pga3(p);
     }
-    else if constexpr (std::is_same_v<T, pga2::Vector>) {
+    else if constexpr (std::is_same_v<T, pga2::Vec>) {
         return vga2_to_pga3(pga2_to_vga2_cheat(p));
     }
-    else if constexpr (std::is_same_v<T, pga3::Vector>) {
+    else if constexpr (std::is_same_v<T, pga3::Vec>) {
         return vga3_to_pga3(pga3_to_vga3_cheat(p));
     }
-    else if constexpr (std::is_same_v<T, pga2::Bivector>) {
+    else if constexpr (std::is_same_v<T, pga2::Bivec>) {
         return pga2_to_pga3_flat(p);
     }
     else return p;

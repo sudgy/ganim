@@ -357,12 +357,12 @@ TEST_CASE("Group bounding box", "[object]") {
     auto obj2 = TestObject();
     auto obj3 = TestObject();
     using namespace vga3;
-    obj1.true_bounding_box = Box(Vector{0,  0, 0}, Vector{1, 1, 0});
-    obj2.true_bounding_box = Box(Vector{0,  1, 0}, Vector{1, 2, 0});
-    obj3.true_bounding_box = Box(Vector{2, -1, 0}, Vector{3, 0, 0});
-    obj1.logical_bounding_box = Box(Vector{0,  0, 0}, Vector{0.5, 0.5, 0});
-    obj2.logical_bounding_box = Box(Vector{0,  1, 0}, Vector{0.5, 1.5, 0});
-    obj3.logical_bounding_box = Box(Vector{2, -1, 0}, Vector{2.5, 0, 0});
+    obj1.true_bounding_box = Box(Vec{0,  0, 0}, Vec{1, 1, 0});
+    obj2.true_bounding_box = Box(Vec{0,  1, 0}, Vec{1, 2, 0});
+    obj3.true_bounding_box = Box(Vec{2, -1, 0}, Vec{3, 0, 0});
+    obj1.logical_bounding_box = Box(Vec{0,  0, 0}, Vec{0.5, 0.5, 0});
+    obj2.logical_bounding_box = Box(Vec{0,  1, 0}, Vec{0.5, 1.5, 0});
+    obj3.logical_bounding_box = Box(Vec{2, -1, 0}, Vec{2.5, 0, 0});
     obj2.shift(e1);
 
     auto group1 = Group();
@@ -558,7 +558,7 @@ TEST_CASE("Group align_by_subobject", "[object]") {
     auto obj1 = TestObject();
     auto obj2 = TestObject();
     auto obj3 = TestObject();
-    auto box = Box(vga2::Vector(0, 0), vga2::Vector(1, 1));
+    auto box = Box(vga2::Vec(0, 0), vga2::Vec(1, 1));
     obj1.logical_bounding_box = box;
     obj2.logical_bounding_box = box;
     obj3.logical_bounding_box = box;

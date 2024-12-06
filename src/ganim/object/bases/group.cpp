@@ -257,7 +257,7 @@ Group& Group::set_opacity(double opacity)
     return *this;
 }
 
-Group& Group::scale(const pga3::Trivector& about_point, double amount)
+Group& Group::scale(const pga3::Trivec& about_point, double amount)
 {
     if (M_propogate) {
         M_propogate = false;
@@ -434,8 +434,8 @@ Group Group::range(int i)
 
 Group& Group::align_by_subobject(
     int index,
-    const pga3::Trivector& point,
-    const pga3::Trivector& direction
+    const pga3::Trivec& point,
+    const pga3::Trivec& direction
 )
 {
     auto& subobject = *M_subobjects[index];
@@ -451,7 +451,7 @@ Group& Group::align_by_subobject(
 Group& Group::align_by_subobject(
     int index,
     const Object& object,
-    const pga3::Trivector& direction
+    const pga3::Trivec& direction
 )
 {
     const auto other_box = object.get_logical_bounding_box();

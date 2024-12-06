@@ -11,12 +11,12 @@ using namespace ganim;
 
 TEST_CASE("merge_boxes", "[object]") {
     using namespace vga3;
-    const auto box1 = Box(Vector{0, 0, 0}, Vector{1, 1, 1});
-    const auto box2 = Box(Vector{0, 0, 0}, Vector{3, 3, 3});
-    const auto box3 = Box(Vector{1, 1, 1}, Vector{2, 2, 2});
-    const auto box4 = Box(Vector{4, 5, 6}, Vector{5, 6, 7});
-    const auto box5 = Box(Vector{1, 2, 3}, Vector{3, 4, 5});
-    const auto box6 = Box(Vector{1, 1, -1}, Vector{2, 2, 1});
+    const auto box1 = Box(Vec{0, 0, 0}, Vec{1, 1, 1});
+    const auto box2 = Box(Vec{0, 0, 0}, Vec{3, 3, 3});
+    const auto box3 = Box(Vec{1, 1, 1}, Vec{2, 2, 2});
+    const auto box4 = Box(Vec{4, 5, 6}, Vec{5, 6, 7});
+    const auto box5 = Box(Vec{1, 2, 3}, Vec{3, 4, 5});
+    const auto box6 = Box(Vec{1, 1, -1}, Vec{2, 2, 1});
 
     const auto res1 = merge_boxes(box1, box2);
     const auto res2 = merge_boxes(box2, box3);
@@ -48,8 +48,8 @@ TEST_CASE("merge_boxes", "[object]") {
 
 TEST_CASE("transform_box", "[object]") {
     using namespace vga3;
-    const auto box1 = Box(Vector{-1, -1, 0}, Vector{1, 1, 0});
-    const auto box2 = Box(Vector{-1, -1, -1}, Vector{1, 1, 1});
+    const auto box1 = Box(Vec{-1, -1, 0}, Vec{1, 1, 0});
+    const auto box2 = Box(Vec{-1, -1, -1}, Vec{1, 1, 1});
 
     auto res1 = transform_box(box1, 1);
     auto res2 = transform_box(box1, 1 + pga3::e01);
@@ -102,7 +102,7 @@ TEST_CASE("transform_box", "[object]") {
 }
 
 TEST_CASE("Box sides", "[object]") {
-    const auto box = Box(vga3::Vector{1, 2, 3}, vga3::Vector{4, 5, 6});
+    const auto box = Box(vga3::Vec{1, 2, 3}, vga3::Vec{4, 5, 6});
 
     {
         using namespace pga3;
@@ -162,8 +162,8 @@ TEST_CASE("Box sides", "[object]") {
 }
 
 TEST_CASE("Box get_outside_point", "[object]") {
-    const auto box1 = Box(vga3::Vector{0, 0, 0}, vga3::Vector{1, 1, 1});
-    const auto box2 = Box(vga3::Vector{-1, -1, -1}, vga3::Vector{1, 3, 3});
+    const auto box1 = Box(vga3::Vec{0, 0, 0}, vga3::Vec{1, 1, 1});
+    const auto box2 = Box(vga3::Vec{-1, -1, -1}, vga3::Vec{1, 3, 3});
 
     {
         using namespace pga2;
