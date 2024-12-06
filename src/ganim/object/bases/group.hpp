@@ -136,26 +136,26 @@ class Group : public Object {
             {Transformable::shift(p); return *this;}
         Group& rotate(double angle)
             {Transformable::rotate(angle); return *this;}
-        Group& rotate(const vga2::Vec& about_point, double angle)
-            {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const pga2::Vec& about_point, double angle)
-            {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const vga3::Bivec& about_plane, double angle)
-            {Transformable::rotate(about_plane, angle); return *this;}
-        Group& rotate(const pga2::Bivec& about_point, double angle = 1)
-            {Transformable::rotate(about_point, angle); return *this;}
-        Group& rotate(const pga3::Bivec& about_line, double angle = 1)
-            {Transformable::rotate(about_line, angle); return *this;}
+        Group& rotate(double angle, const vga2::Vec& about_point)
+            {Transformable::rotate(angle, about_point); return *this;}
+        Group& rotate(double angle, const pga2::Vec& about_point)
+            {Transformable::rotate(angle, about_point); return *this;}
+        Group& rotate(double angle, const vga3::Bivec& about_plane)
+            {Transformable::rotate(angle, about_plane); return *this;}
+        Group& rotate(double angle, const pga2::Bivec& about_point)
+            {Transformable::rotate(angle, about_point); return *this;}
+        Group& rotate(double angle, const pga3::Bivec& about_line)
+            {Transformable::rotate(angle, about_line); return *this;}
         Group& scale(double amount)
             {Object::scale(amount); return *this;}
         Group& scale(const pointlike auto& about_point, double amount)
-            {Object::scale(about_point, amount); return *this;}
+            {Object::scale(amount, about_point); return *this;}
         virtual void set_fps(int fps) override;
         virtual Group& apply_rotor(const pga3::Even& rotor) override;
         virtual Group& set_color(Color color) override;
         virtual Group& set_color_with_alpha(Color color) override;
         virtual Group& set_opacity(double opacity) override;
-        virtual Group& scale(const pga3::Trivec& about_point, double amount)
+        virtual Group& scale(double amount, const pga3::Trivec& about_point)
             override;
         virtual Group& set_visible(bool visible) override;
         virtual void set_draw_fraction(double value) override;

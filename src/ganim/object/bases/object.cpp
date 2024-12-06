@@ -38,10 +38,10 @@ Object& Object::set_opacity(double opacity)
 
 Object& Object::scale(double amount)
 {
-    return scale((~get_rotor()*e123*get_rotor()).grade_project<3>(), amount);
+    return scale(amount, (~get_rotor()*e123*get_rotor()).grade_project<3>());
 }
 
-Object& Object::scale(const pga3::Trivec& about_point, double amount)
+Object& Object::scale(double amount, const pga3::Trivec& about_point)
 {
     auto new_about_point = about_point;
     new_about_point /= new_about_point.blade_project<e123>();

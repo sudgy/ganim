@@ -55,8 +55,8 @@ namespace ganim {
             void lock_orientation(bool lock);
 
             virtual Vector& scale(
-                const pga3::Trivec& about_point,
-                double scale
+                double scale,
+                const pga3::Trivec& about_point
             ) override;
             using Object::scale;
             virtual Vector& apply_rotor(const pga3::Even& rotor) override;

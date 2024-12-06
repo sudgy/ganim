@@ -120,19 +120,19 @@ TEST_CASE("Transformable rotate", "[object]") {
     test.rotate(τ/4);
     REQUIRE_THAT(~r*up*r, GAEquals((-e1 + e0).dual(), 1e-5));
     REQUIRE_THAT(~r2*up*r2, GAEquals((-e1 + e0).dual(), 1e-5));
-    test.rotate(vga2::e1, τ/4);
+    test.rotate(τ/4, vga2::e1);
     REQUIRE_THAT(~r*up*r, GAEquals((e1 - 2*e2 + e0).dual(), 1e-5));
     REQUIRE_THAT(~r2*up*r2, GAEquals((-e2 + e0).dual(), 1e-5));
-    test.rotate(pga2::e1, -τ/4);
+    test.rotate(-τ/4, pga2::e1);
     REQUIRE_THAT(~r*up*r, GAEquals((-e1 + e0).dual(), 1e-5));
     REQUIRE_THAT(~r2*up*r2, GAEquals((2*e1 + e2 + e0).dual(), 1e-5));
-    test.rotate(vga3::e13, τ/4);
+    test.rotate(τ/4, vga3::e13);
     REQUIRE_THAT(~r*up*r, GAEquals((-e3 + e0).dual(), 1e-5));
     REQUIRE_THAT(~r2*up*r2, GAEquals((e2 + e0).dual(), 1e-5));
     test.rotate((pga2::e1 + pga2::e0).dual()*τ/4);
     REQUIRE_THAT(~r*up*r, GAEquals((e1 - e2 - e3 + e0).dual(), 1e-5));
     REQUIRE_THAT(~r2*up*r2, GAEquals((-e2 + e0).dual(), 1e-5));
-    test.rotate(2*e13 + 2*e01, τ/8);
+    test.rotate(τ/8, 2*e13 + 2*e01);
     REQUIRE_THAT(~r*up*r, GAEquals((2*e1 - e2 + 2*e3 + e0).dual(), 1e-5));
     REQUIRE_THAT(~r2*up*r2, GAEquals((e1 + e2 + e3 + e0).dual(), 1e-5));
 }
@@ -144,7 +144,7 @@ TEST_CASE("Transformable animate", "[object]") {
     test.set_fps(4);
     auto scene = TestScene(1, 1, 1, 1, 4);
     animate(scene, test, {.rate_function = [](double x){return x*x;}})
-        .rotate(e12, τ/2);
+        .rotate(τ/2, e12);
     REQUIRE_THAT(r, GAEquals(1));
     test.update();
     REQUIRE_THAT(r, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));
@@ -174,7 +174,7 @@ TEST_CASE("Transformable non-commuting rotors", "[object]") {
     test.set_fps(2);
     test.shift(e1);
     auto scene = TestScene(1, 1, 1, 1, 2);
-    animate(scene, test).rotate(e12, τ/2);
+    animate(scene, test).rotate(τ/2, e12);
     REQUIRE_THAT(test.get_origin(), GAEquals((e1 + e0).dual(), 1e-5));
     test.update();
     REQUIRE_THAT(test.get_origin(), GAEquals((e2 + e0).dual(), 1e-5));

@@ -28,9 +28,9 @@ void lighting()
     );
     scene.add(cube);
     using namespace vga3;
-    scene.get_camera().rotate(e23, 1).rotate(e12, 0.5);
+    scene.get_camera().rotate(1, e23).rotate(0.5, e12);
     cube.set_visible(true);
     cube.set_color(Color("FFFF00"));
-    cube.add_updater([&]{cube.rotate(e12, 0.01);});
+    cube.add_updater([&]{cube.rotate(0.01, e12);});
     scene.wait(5);
 }

@@ -31,11 +31,11 @@ namespace {
             }
             using Object::scale;
             virtual TestObject& scale(
-                const pga3::Trivec& about_point,
-                double amount
+                double amount,
+                const pga3::Trivec& about_point
             ) override
             {
-                Object::scale(about_point, amount);
+                Object::scale(amount, about_point);
                 scaled_point = about_point;
                 last_scale = amount;
                 return *this;
@@ -122,7 +122,7 @@ TEST_CASE("Object scaling", "[object]") {
     REQUIRE(test.get_scale() == 2);
 
     test.last_scale = 1;
-    test.scale(vga2::e1, 2);
+    test.scale(2, vga2::e1);
     REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e0).dual()));
     REQUIRE(test.last_scale == 2);
     REQUIRE_THAT(get_p(e123), GAEquals((-e1 + e0).dual()));
@@ -138,22 +138,22 @@ TEST_CASE("Object scaling", "[object]") {
     REQUIRE(test.get_scale() == 8);
 
     test.last_scale = 1;
-    test.scale(vga3::e3, 2);
+    test.scale(2, vga3::e3);
     REQUIRE_THAT(test.scaled_point, GAEquals((e3 + e0).dual()));
     REQUIRE(test.last_scale == 2);
     REQUIRE_THAT(get_p(e123), GAEquals((-2*e1 - e3 + e0).dual()));
     REQUIRE_THAT(get_p((e1 + e0).dual()), GAEquals((14*e1 - e3 + e0).dual()));
 
-    test.scale(pga2::e1, 3);
+    test.scale(3, pga2::e1);
     REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e0).dual()));
     REQUIRE(test.last_scale == 3);
-    test.scale(pga3::e2, 2);
+    test.scale(2, pga3::e2);
     REQUIRE_THAT(test.scaled_point, GAEquals((e2 + e0).dual()));
     REQUIRE(test.last_scale == 2);
-    test.scale((pga2::e1 + pga2::e0).dual(), 3);
+    test.scale(3, (pga2::e1 + pga2::e0).dual());
     REQUIRE_THAT(test.scaled_point, GAEquals((e1 + e0).dual()));
     REQUIRE(test.last_scale == 3);
-    test.scale((pga3::e2 + pga3::e0).dual(), 2);
+    test.scale(2, (pga3::e2 + pga3::e0).dual());
     REQUIRE_THAT(test.scaled_point, GAEquals((e2 + e0).dual()));
     REQUIRE(test.last_scale == 2);
 }
@@ -171,7 +171,7 @@ TEST_CASE("Object animating scale", "[object]") {
         return ~test.get_rotor()*p*test.get_rotor();
     };
     animate(scene, test, {.rate_function = [](double t){return t;}})
-        .scale(e1 + e2, 2);
+        .scale(2, e1 + e2);
     auto p = (-e1 + e0).dual();
     REQUIRE_THAT(get_p(p), GAEquals(e123));
     test.update();

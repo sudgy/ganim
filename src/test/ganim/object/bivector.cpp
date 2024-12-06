@@ -145,7 +145,7 @@ TEST_CASE("Bivector 3D VGA constructor", "[object]") {
     outside3.set_color(Color("FFFF00"));
     outside4.set_color(Color("FFFF00"));
     auto group = Group(inside, outside1, outside2, outside3, outside4);
-    group.rotate(vga3::e23, std::atan2(3, 4));
+    group.rotate(std::atan2(3, 4), vga3::e23);
     group.set_visible(true);
 
     auto scene = TestScene(10, 10, 10, 10, 1);
@@ -202,7 +202,7 @@ TEST_CASE("Bivector 3D VGA bivector constructor", "[object]") {
     outside3.set_color(Color("FFFF00"));
     outside4.set_color(Color("FFFF00"));
     auto group = Group(inside, outside1, outside2, outside3, outside4);
-    group.rotate(vga3::e23, std::atan2(3, 4));
+    group.rotate(std::atan2(3, 4), vga3::e23);
     group.set_visible(true);
 
     auto scene = TestScene(10, 10, 10, 10, 1);

@@ -257,17 +257,17 @@ Group& Group::set_opacity(double opacity)
     return *this;
 }
 
-Group& Group::scale(const pga3::Trivec& about_point, double amount)
+Group& Group::scale(double amount, const pga3::Trivec& about_point)
 {
     if (M_propogate) {
         M_propogate = false;
-        Object::scale(about_point, amount);
+        Object::scale(amount, about_point);
         M_propogate = true;
         for (auto obj : M_subobjects) {
-            obj->scale(about_point, amount);
+            obj->scale(amount, about_point);
         }
     }
-    else Object::scale(about_point, amount);
+    else Object::scale(amount, about_point);
     return *this;
 }
 

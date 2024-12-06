@@ -88,32 +88,42 @@ class Transformable : public Animatable {
         /** @brief Rotate the object in the xy-plane about the origin */
         Transformable& rotate(double angle);
         /** @brief Rotate the object in the xy-plane about a given point */
-        Transformable& rotate(const vga2::Vec& about_point, double angle);
+        Transformable& rotate(double angle, const vga2::Vec& about_point);
         /** @brief Rotate the object in the xy-plane about a 2D PGA vector
          * intepreted as a 2D VGA vector
          */
-        Transformable& rotate(const pga2::Vec& about_point, double angle);
+        Transformable& rotate(double angle, const pga2::Vec& about_point);
         /** @brief Rotate the object in a given plane about the origin */
-        Transformable& rotate(const vga3::Bivec& about_plane, double angle);
+        Transformable& rotate(double angle, const vga3::Bivec& about_plane);
         /** @brief Rotate the object in the xy-plane about a given point
          *
-         * Note that no normalization will be done.  If you want to just pass in
-         * a point with the magnitude you want for your rotation, go ahead and
-         * do so.  This is why the angle parameter default to one.
+         * Note that no normalization will be done.
          */
         Transformable& rotate(
-            const pga2::Bivec& about_point,
-            double angle = 1
+            double angle,
+            const pga2::Bivec& about_point
+        );
+        /** @brief Rotate the object in the xy-plane about a given point
+         *
+         * Note that no normalization will be done.
+         */
+        Transformable& rotate(
+            const pga2::Bivec& about_point
         );
         /** @brief Rotate the object about a given line
          *
-         * Note that no normalization will be done.  If you want to just pass in
-         * a line with the magnitude you want for your rotation, go ahead and do
-         * so.  This is why the angle parameter default to one.
+         * Note that no normalization will be done.
          */
         Transformable& rotate(
-            const pga3::Bivec& about_line,
-            double angle = 1
+            double angle,
+            const pga3::Bivec& about_line
+        );
+        /** @brief Rotate the object about a given line
+         *
+         * Note that no normalization will be done.
+         */
+        Transformable& rotate(
+            const pga3::Bivec& about_line
         );
 
         /** @brief Copy the object for the sake of transformations */
@@ -155,15 +165,15 @@ class Transformable : public Animatable {
         {Transformable::shift(p); return *this;} \
     Type& rotate(double angle) \
         {Transformable::rotate(angle); return *this;} \
-    Type& rotate(const vga2::Vec& about_point, double angle) \
-        {Transformable::rotate(about_point, angle); return *this;} \
-    Type& rotate(const pga2::Vec& about_point, double angle) \
-        {Transformable::rotate(about_point, angle); return *this;} \
-    Type& rotate(const vga3::Bivec& about_plane, double angle) \
-        {Transformable::rotate(about_plane, angle); return *this;} \
-    Type& rotate(const pga2::Bivec& about_point, double angle = 1) \
-        {Transformable::rotate(about_point, angle); return *this;} \
-    Type& rotate(const pga3::Bivec& about_line, double angle = 1) \
-        {Transformable::rotate(about_line, angle); return *this;} \
+    Type& rotate(double angle, const vga2::Vec& about_point) \
+        {Transformable::rotate(angle, about_point); return *this;} \
+    Type& rotate(double angle, const pga2::Vec& about_point) \
+        {Transformable::rotate(angle, about_point); return *this;} \
+    Type& rotate(double angle, const vga3::Bivec& about_plane) \
+        {Transformable::rotate(angle, about_plane); return *this;} \
+    Type& rotate(double angle, const pga2::Bivec& about_point) \
+        {Transformable::rotate(angle, about_point); return *this;} \
+    Type& rotate(double angle, const pga3::Bivec& about_line) \
+        {Transformable::rotate(angle, about_line); return *this;} \
 
 #endif

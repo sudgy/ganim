@@ -204,11 +204,10 @@ void Vector::lock_orientation(bool lock)
     if (lock) apply_rotor(pga3::Even(1));
 }
 
-Vector& Vector::scale(
-        const pga3::Trivec& about_point, double scale)
+Vector& Vector::scale(double scale, const pga3::Trivec& about_point)
 {
     if (M_manual_transform or M_animating) {
-        Object::scale(about_point, scale);
+        Object::scale(scale, about_point);
         return *this;
     }
     using namespace pga3;

@@ -41,11 +41,11 @@ void vectors()
     scene.add(vector);
     create(scene, vector);
     scene.wait(2);
-    animate(scene, vector).rotate(e12, τ/4);
+    animate(scene, vector).rotate(τ/4, e12);
     scene.wait(2);
     animate(scene, vector).scale(-1);
     scene.wait(2);
-    animate(scene, scene.get_camera()).rotate(e23, 1).rotate(e12, 0.5);
+    animate(scene, scene.get_camera()).rotate(1, e23).rotate(0.5, e12);
     animate(scene, vector).set_end(e1 + 2*e3);
     scene.wait(2);
     auto t = Value(0.0);

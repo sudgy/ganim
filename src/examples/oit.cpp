@@ -31,7 +31,7 @@ void oit()
     square2.set_visible(true);
     scene.add(square1, square2);
     square2.add_updater([&]{
-        square2.rotate(pga3::e23, 0.02);
+        square2.rotate(0.02, pga3::e23);
     });
     scene.wait(10);
 }

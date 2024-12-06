@@ -53,7 +53,7 @@ void basic_movement()
     scene.add(shapes[0]);
     fade_in(scene, shapes[0]);
     scene.wait(2);
-    animate(scene, shapes[0]).rotate(e23, τ/2).shift(2*e1);
+    animate(scene, shapes[0]).rotate(τ/2, e23).shift(2*e1);
     scene.wait(2);
     animate(scene, shapes[0]).shift(-2*e1);
     scene.wait(2);
@@ -73,7 +73,7 @@ void basic_movement()
     scene.wait(1);
     for (int i = 0; i < 6; ++i) {
         shapes[i].add_updater([&, i]{
-            shapes[i].rotate(e12 + 0.5*e13 + 0.2*e23, 0.05);
+            shapes[i].rotate(0.05, e12 + 0.5*e13 + 0.2*e23);
         });
     }
     scene.wait(5);

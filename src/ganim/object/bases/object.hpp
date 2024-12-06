@@ -77,12 +77,12 @@ namespace ganim {
             /** @brief Scale the object about its origin */
             Object& scale(double amount);
             /** @brief Scale the object about a particular point */
-            Object& scale(const pointlike auto& p, double amount)
-                {return scale(pointlike_to_pga3(p), amount);}
+            Object& scale(double amount, const pointlike auto& p)
+                {return scale(amount, pointlike_to_pga3(p));}
             /** @brief Scale the object about a particular point */
             virtual Object& scale(
-                const pga3::Trivec& about_point,
-                double amount
+                double amount,
+                const pga3::Trivec& about_point
             );
             /** @brief Get the amount that this object is scaled */
             double get_scale() const;
@@ -332,7 +332,7 @@ namespace ganim {
         {Object::set_opacity(opacity); return *this;} \
     Type& scale(double amount) \
         {Object::scale(amount); return *this;} \
-    Type& scale(const pointlike auto& about_point, double amount) \
-        {Object::scale(about_point, amount); return *this;} \
+    Type& scale(double amount, const pointlike auto& about_point) \
+        {Object::scale(amount, about_point); return *this;} \
 
 #endif

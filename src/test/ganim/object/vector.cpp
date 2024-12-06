@@ -60,7 +60,7 @@ TEST_CASE("Vector object scale", "[object]") {
     test.scale(2);
     REQUIRE_THAT(test.get_start_vga3(), GAEquals(0));
     REQUIRE_THAT(test.get_end_vga3(), GAEquals(2*e1));
-    test.scale(e1, 2);
+    test.scale(2, e1);
     REQUIRE_THAT(test.get_start_vga3(), GAEquals(-e1));
     REQUIRE_THAT(test.get_end_vga3(), GAEquals(3*e1));
 }
@@ -68,11 +68,11 @@ TEST_CASE("Vector object scale", "[object]") {
 TEST_CASE("Vector object transforms", "[object]") {
     using namespace pga3;
     auto test = Vector(e1);
-    test.rotate(e12, τ/4);
+    test.rotate(τ/4, e12);
     REQUIRE_THAT(test.get_start_pga3().undual(), GAEquals(e0, 1e-5));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 + e2, 1e-5));
 
-    test.rotate(e23, τ/4);
+    test.rotate(τ/4, e23);
     REQUIRE_THAT(test.get_start_pga3().undual(), GAEquals(e0, 1e-5));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 + e3, 1e-5));
     auto r = test.get_rotor();
@@ -84,7 +84,7 @@ TEST_CASE("Vector object transforms", "[object]") {
     r = test.get_rotor();
     REQUIRE_THAT((~r*(e0 - e2).dual()*r).undual(), GAEquals(e0 + 2*e1, 1e-5));
 
-    test.rotate(e13, τ/4);
+    test.rotate(τ/4, e13);
     REQUIRE_THAT(test.get_start_pga3().undual(), GAEquals(e0 + e3, 1e-5));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 - e1 + e3, 1e-5));
     r = test.get_rotor();
@@ -102,7 +102,7 @@ TEST_CASE("Vector object zero vector", "[object]") {
     test.set_end(0*e1);
     REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
     REQUIRE_THAT(test.get_end_pga3(), GAEquals(e123));
-    test.rotate(e12, τ/4);
+    test.rotate(τ/4, e12);
     REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
     REQUIRE_THAT(test.get_end_pga3(), GAEquals(e123));
     test.reset_scale();
@@ -127,7 +127,7 @@ TEST_CASE("Vector turning around", "[object]") {
 TEST_CASE("Vector rotating around", "[object]") {
     using namespace pga3;
     auto test = Vector(e1);
-    test.rotate(e13, τ/2);
+    test.rotate(τ/2, e13);
     REQUIRE_THAT(test.get_start_pga3().undual(), GAEquals(e0, 1e-5));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 - e1, 1e-5));
 }
@@ -231,7 +231,7 @@ TEST_CASE("Vector object 2D/3D", "[object]") {
     auto v2 = Vector(vga2::e1, {.thickness = 2, .three_d = true});
     auto scene = TestScene(4, 4, 4, 4, 1);
     scene.add(v1, v2);
-    scene.get_camera().rotate(vga3::e23, τ/4);
+    scene.get_camera().rotate(τ/4, vga3::e23);
     v1.set_visible(true);
     scene.frame_advance();
     v1.set_visible(false);
@@ -244,11 +244,11 @@ TEST_CASE("Vector object 2D/3D", "[object]") {
 TEST_CASE("Vector object orientation locking", "[object]") {
     using namespace pga3;
     auto test = Vector(e1);
-    test.rotate(e23, τ/4);
+    test.rotate(τ/4, e23);
     auto r = test.get_rotor();
     REQUIRE_THAT((~r*(e2 + e0).dual()*r).undual(), GAEquals(e2 + e0, 1e-5));
     test.lock_orientation(false);
-    test.rotate(e23, τ/4);
+    test.rotate(τ/4, e23);
     r = test.get_rotor();
     REQUIRE_THAT((~r*(e2 + e0).dual()*r).undual(), GAEquals(e3 + e0, 1e-5));
     test.lock_orientation(true);

@@ -12,9 +12,9 @@ void ganim::grow_from_point(
     auto anim = Animation(scene, std::move(object), new_args);
     auto about_point = args.about_point.value_or(
             pga3_to_vga3(object->get_origin()));
-    anim.get_starting_object().scale(about_point, 1e-5);
+    anim.get_starting_object().scale(1e-5, about_point);
     object->set_visible(true);
-    object->scale(about_point, 1e-5);
+    object->scale(1e-5, about_point);
     object->add_updater(std::move(anim), true);
 }
 
@@ -28,9 +28,9 @@ void ganim::shrink_to_point(
     auto anim = Animation(scene, std::move(object), new_args);
     auto about_point = args.about_point.value_or(
             pga3_to_vga3(object->get_origin()));
-    anim.get_ending_object().scale(about_point, 1e-5);
+    anim.get_ending_object().scale(1e-5, about_point);
     anim.at_end([&object = *object, about_point]{
-        object.scale(about_point, 1e5);
+        object.scale(1e5, about_point);
         object.set_visible(false);
     });
     object->add_updater(std::move(anim), true);

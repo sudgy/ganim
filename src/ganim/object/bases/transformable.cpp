@@ -66,35 +66,47 @@ Transformable& Transformable::shift(const Trivec& p)
 }
 
 Transformable& Transformable::rotate(double angle)
-    {return rotate(e12, angle);}
+    {return rotate(angle, e12);}
 Transformable& Transformable::rotate(
-    const vga2::Vec& about_point,
-    double angle
+    double angle,
+    const vga2::Vec& about_point
 )
-    {return rotate(vga2_to_pga2(about_point), angle);}
+    {return rotate(angle, vga2_to_pga2(about_point));}
 Transformable& Transformable::rotate(
-    const pga2::Vec& about_point,
-    double angle
+    double angle,
+    const pga2::Vec& about_point
 )
-    {return rotate(pga2_to_vga2_cheat(about_point), angle);}
+    {return rotate(angle, pga2_to_vga2_cheat(about_point));}
 Transformable& Transformable::rotate(
-    const vga3::Bivec& about_plane,
-    double angle
+    double angle,
+    const vga3::Bivec& about_plane
 )
 {
     return apply_rotor(vga3_to_pga3(ga_exp(about_plane * angle / 2)));
 }
 Transformable& Transformable::rotate(
-    const pga2::Bivec& about_point,
-    double angle
+    double angle,
+    const pga2::Bivec& about_point
 )
-    {return rotate(pga2_to_pga3(about_point), angle);}
+{
+    return rotate(angle, pga2_to_pga3(about_point));
+}
+Transformable& Transformable::rotate(const pga2::Bivec& about_point)
+{
+    return rotate(1, about_point);
+}
 Transformable& Transformable::rotate(
-    const pga3::Bivec& about_line,
-    double angle
+    double angle,
+    const pga3::Bivec& about_line
 )
 {
     return apply_rotor(ga_exp(about_line * angle / 2));
+}
+Transformable& Transformable::rotate(
+    const pga3::Bivec& about_line
+)
+{
+    return rotate(1, about_line);
 }
 
 void Transformable::interpolate(

@@ -329,7 +329,7 @@ TEST_CASE("Shape scaling", "[object]") {
     scene.frame_advance();
     test.scale(2);
     scene.frame_advance();
-    test.scale(2*e1, 2);
+    test.scale(2, 2*e1);
     scene.frame_advance();
     for (int x = 0; x < 10; ++x) {
         for (int y = 0; y < 10; ++y) {
@@ -366,7 +366,7 @@ TEST_CASE("Shape move back and forth with rotation", "[object]") {
     );
     shape.set_visible(true);
     scene.add(shape);
-    animate(scene, shape).rotate(e23, τ/2);
+    animate(scene, shape).rotate(τ/2, e23);
     scene.wait(1);
     animate(scene, shape).shift(-e1);
     scene.wait(1);
@@ -386,11 +386,11 @@ TEST_CASE("Shape rotating too fast?", "[object]") {
     );
     shape.set_visible(true);
     scene.add(shape);
-    animate(scene, shape).rotate(e23, τ/2).shift(2*e1);
+    animate(scene, shape).rotate(τ/2, e23).shift(2*e1);
     scene.wait(1);
     animate(scene, shape).shift(-2*e1);
     scene.wait(1);
-    shape.rotate(e12 + 0.5*e13 + 0.2*e23, 0.05);
+    shape.rotate(0.05, e12 + 0.5*e13 + 0.2*e23);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(scene.time_size() - 1, 1, 1) == Color("FFFFFF"));
 }
@@ -501,7 +501,7 @@ TEST_CASE("Object fixed_in_frame", "[object]") {
     shape.set_fixed_in_frame(true);
     scene.add(shape);
     scene.get_camera().add_updater([&]{
-        scene.get_camera().rotate(pga3::e13, τ/8);
+        scene.get_camera().rotate(τ/8, pga3::e13);
     });
     scene.wait(2);
     for (int i = 0; i < 8; ++i) {
@@ -547,7 +547,7 @@ TEST_CASE("Order-independent Transparency", "[object]") {
     square1.set_visible(true);
     square2.set_visible(true);
     scene.add(square1, square2);
-    square2.rotate(pga3::e23, 0.1);
+    square2.rotate(0.1, pga3::e23);
     scene.frame_advance();
 
     REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("408000"));

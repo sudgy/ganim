@@ -126,7 +126,7 @@ TEST_CASE("Group movement", "[object]") {
     REQUIRE_THAT(obj2.get_origin(), GAEquals((e1 + 2*e2 + e0).dual()));
     REQUIRE_THAT(group.get_origin(), GAEquals((e1 + e0).dual()));
     REQUIRE_THAT(test.get_origin(), GAEquals((e1 + e0).dual()));
-    test.rotate(e12, τ/4);
+    test.rotate(τ/4, e12);
     REQUIRE_THAT(obj1.get_origin(), GAEquals((2*e2 + e0).dual(), 1e-5));
     REQUIRE_THAT(obj2.get_origin(), GAEquals((e2 - 2*e1 + e0).dual(), 1e-5));
     REQUIRE_THAT(group.get_origin(), GAEquals((e2 + e0).dual(), 1e-5));
