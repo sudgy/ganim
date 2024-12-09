@@ -77,3 +77,45 @@ TEST_CASE("Fading", "[animation]") {
     REQUIRE(!test.is_visible());
     REQUIRE(test.get_color().a == 0x7F);
 }
+
+TEST_CASE("Fading multiple objects", "[animation]") {
+    auto test1 = TestObject();
+    auto test2 = TestObject();
+    auto scene = TestScene(1, 1, 1, 1, 2);
+    scene.add(test1, test2);
+    // I can't think of a simple way to test that this actually affects an
+    // rvalue, but honestly as long as it compiles and runs without crashing
+    // it's probably fine
+    fade_in(scene, test1, test2, TestObject());
+
+    REQUIRE(test1.is_visible());
+    REQUIRE(test2.is_visible());
+    REQUIRE(test1.get_color().a == 0x0);
+    REQUIRE(test2.get_color().a == 0x0);
+    scene.frame_advance();
+    REQUIRE(test1.is_visible());
+    REQUIRE(test2.is_visible());
+    REQUIRE(test1.get_color().a == 0x7F);
+    REQUIRE(test2.get_color().a == 0x7F);
+    scene.frame_advance();
+    REQUIRE(test1.is_visible());
+    REQUIRE(test2.is_visible());
+    REQUIRE(test1.get_color().a == 0xFF);
+    REQUIRE(test2.get_color().a == 0xFF);
+
+    fade_out(scene, test1, test2, TestObject());
+    REQUIRE(test1.is_visible());
+    REQUIRE(test2.is_visible());
+    REQUIRE(test1.get_color().a == 0xFF);
+    REQUIRE(test2.get_color().a == 0xFF);
+    scene.frame_advance();
+    REQUIRE(test1.is_visible());
+    REQUIRE(test2.is_visible());
+    REQUIRE(test1.get_color().a == 0x7F);
+    REQUIRE(test2.get_color().a == 0x7F);
+    scene.frame_advance();
+    REQUIRE(!test1.is_visible());
+    REQUIRE(!test2.is_visible());
+    REQUIRE(test1.get_color().a == 0xFF);
+    REQUIRE(test2.get_color().a == 0xFF);
+}

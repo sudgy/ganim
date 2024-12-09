@@ -18,6 +18,29 @@ void fade_in(
     MaybeOwningRef<Object> object,
     AnimationArgs args = AnimationArgs()
 );
+template <typename... Ts> requires(
+    sizeof...(Ts) > 1 and
+    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+)
+void fade_in(
+    SceneBase& scene,
+    Ts&&... objects
+)
+{
+    (fade_in(scene, std::forward<Ts>(objects)), ...);
+}
+template <typename... Ts> requires(
+    sizeof...(Ts) > 1 and
+    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+)
+void fade_in(
+    SceneBase& scene,
+    AnimationArgs args,
+    Ts&&... objects
+)
+{
+    (fade_in(scene, std::forward<Ts>(objects)), ...);
+}
 /** @brief An animation to fade out an object.
  *
  * This automatically makes the object not visible at the end, and it will set
@@ -28,6 +51,29 @@ void fade_out(
     MaybeOwningRef<Object> object,
     AnimationArgs args = AnimationArgs()
 );
+template <typename... Ts> requires(
+    sizeof...(Ts) > 1 and
+    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+)
+void fade_out(
+    SceneBase& scene,
+    Ts&&... objects
+)
+{
+    (fade_out(scene, std::forward<Ts>(objects)), ...);
+}
+template <typename... Ts> requires(
+    sizeof...(Ts) > 1 and
+    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+)
+void fade_out(
+    SceneBase& scene,
+    AnimationArgs args,
+    Ts&&... objects
+)
+{
+    (fade_out(scene, std::forward<Ts>(objects)), ...);
+}
 
 }
 
