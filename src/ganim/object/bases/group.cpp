@@ -33,12 +33,7 @@ Group* Group::polymorphic_copy_impl() const
     auto result = std::make_unique<OwningGroup>(*this);
     result->M_subobjects.clear();
     for (auto obj : M_subobjects) {
-        if (auto subgroup = obj->as_group()) {
-            result->M_owned_subobjects.emplace_back(subgroup->polymorphic_copy());
-        }
-        else {
-            result->M_owned_subobjects.emplace_back(obj->polymorphic_copy());
-        }
+        result->M_owned_subobjects.emplace_back(obj->polymorphic_copy());
         result->M_subobjects.push_back(result->M_owned_subobjects.back().get());
     }
     return result.release();
@@ -49,9 +44,9 @@ void Group::interpolate(const Animatable& start, const Animatable& end, double t
     auto start2 = dynamic_cast<const Group*>(&start);
     auto end2 = dynamic_cast<const Group*>(&end);
     if (!start2) throw std::invalid_argument(
-        "Interpolating a group between two non-groups is not supported.");
+        "Interpolating a group between non-groups is not supported.");
     if (!end2) throw std::invalid_argument(
-        "Interpolating a group between two non-groups is not supported.");
+        "Interpolating a group between non-groups is not supported.");
     if (size() != start2->size()) {
         throw std::invalid_argument(std::format(
             "When interpolating a group of size {}, the size of the starting "
@@ -69,53 +64,7 @@ void Group::interpolate(const Animatable& start, const Animatable& end, double t
         ));
     }
     for (auto i = 0; i < size(); ++i) {
-        auto group1 = (*this)[i].as_group();
-        auto group2 = (*start2)[i].as_group();
-        auto group3 = (*end2)[i].as_group();
-        if (group1) {
-            if (!group2) {
-                throw std::invalid_argument(std::format(
-                    "When interpolating a group, the object at index {} is a "
-                    "subgroup, while it is not a subgroup in the starting "
-                    "group.",
-                    i
-                ));
-            }
-            if (!group3) {
-                throw std::invalid_argument(std::format(
-                    "When interpolating a group, the object at index {} is a "
-                    "subgroup, while it is not a subgroup in the ending "
-                    "group.",
-                    i
-                ));
-            }
-        }
-        else {
-            if (group2) {
-                throw std::invalid_argument(std::format(
-                    "When interpolating a group, the object at index {} is not "
-                    "a subgroup, while it is a subgroup in the starting group.",
-                    i
-                ));
-            }
-            if (group3) {
-                throw std::invalid_argument(std::format(
-                    "When interpolating a group, the object at index {} is not "
-                    "a subgroup, while it is not a subgroup in the ending ",
-                    "group.",
-                    i
-                ));
-            }
-        }
-    }
-    for (auto i = 0; i < size(); ++i) {
-        auto& obj = (*this)[i];
-        if (auto group = obj.as_group()) {
-            group->interpolate(*(*start2)[i].as_group(), *(*end2)[i].as_group(), t);
-        }
-        else {
-            obj.interpolate((*start2)[i], (*end2)[i], t);
-        }
+        M_subobjects[i]->interpolate((*start2)[i], (*end2)[i], t);
     }
     M_propogate = false;
     Object::interpolate(start, end, t);

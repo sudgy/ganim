@@ -38,6 +38,10 @@ class Group : public Object {
         {
             (add(objects), ...);
         }
+        Group(const Group&)=default;
+        Group(Group&&) noexcept=default;
+        Group& operator=(const Group&)=default;
+        Group& operator=(Group&&) noexcept=default;
         /*** @brief Add an object to this group */
         virtual void add(Object& object);
         /** @brief Adds a range of objects to this group
