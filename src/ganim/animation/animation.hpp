@@ -23,43 +23,9 @@ namespace ganim {
 class SceneBase;
 
 /** @brief A concept specifying what types of objects can be animated
- *
- * For a type to be animatable, it must derive from @ref ganim::Animatable
- * "Animatable" and have two functions: `anim_copy`, which creates a copy of
- * this object in a `std::unique_ptr` for use in animations, and `interpolate`,
- * which takes in two objects and a `double` and interpolates the object between
- * the two input objects.  The reason for using `anim_copy` rather than a copy
- * constructor is that these copies are never drawn, so subclasses that contain
- * a lot of data for drawing (such as OpenGL handles) don't need to create
- * copies of those when getting animated.
- *
- * Interestingly, `anim_copy` doesn't have to return an object of the same type,
- * and `interpolate` doesn't have to take in objects of the same type either!
- * `anim_copy` just needs to return a unique pointer of something that can be
- * converted to an `Animatable`, and `interpolate` only needs to be able to
- * handle whatever `anim_copy` returns.  This is to allow subclasses of
- * animatable classes to still be animatable.  Here are a few examples:
- *  - Class `A` defines `anim_copy` to return a `std::unique_ptr<A>`, and
- *    `interpolate` takes in two `A`s.  This class can be animated like normal.
- *  - Class `B` inherits from `A` and doesn't define either function.  This
- *    class can animated, although you can only ever animate the data in `A`.
- *  - Class `C` inherits from `A` and defines a new `anim_copy` that returns a
- *    `std::unique_ptr<C>`, but doesn't define a new interpolate.  The animation
- *    will work with `C` objects, but will only be able to interpolate the data
- *    in `A`.  This can be useful when you define a new object type that
- *    contains no new data, but it has new functions that manipulate the data in
- *    `A`.
- *
- * Note that a major exception to the second case is groups.  Groups copy and
- * interpolate significantly differently, and if you do an animation on a group
- * but using a base class' functions, the results will be incorrect.
  */
 template <typename T>
-concept animatable = std::derived_from<T, Animatable> and
-requires(T& a, const T& b, const T& c, double t) {
-    {b.anim_copy()} -> std::convertible_to<std::unique_ptr<Animatable>>;
-    {a.interpolate(*b.anim_copy(), *c.anim_copy(), t)};
-};
+concept animatable = std::derived_from<T, Animatable>;
 
 /** @brief A struct to be passed to animations that specifies how the animation
  * should be run
@@ -96,7 +62,7 @@ struct AnimationArgs {
 template <animatable T>
 class Animation {
     using copy_type = std::remove_reference_t<
-        decltype(*std::declval<T>().anim_copy())>;
+        decltype(*std::declval<T>().polymorphic_copy())>;
     public:
         /** @brief constructor
          *
@@ -128,17 +94,17 @@ class Animation {
                     std::unique_ptr<Group>, std::unique_ptr<copy_type>>)
             {
                 if (auto group = object->as_group()) {
-                    M_starting_object = group->anim_copy();
-                    M_ending_object = group->anim_copy();
+                    M_starting_object = group->polymorphic_copy();
+                    M_ending_object = group->polymorphic_copy();
                 }
                 else {
-                    M_starting_object = object->anim_copy();
-                    M_ending_object = object->anim_copy();
+                    M_starting_object = object->polymorphic_copy();
+                    M_ending_object = object->polymorphic_copy();
                 }
             }
             else {
-                M_starting_object = object->anim_copy();
-                M_ending_object = object->anim_copy();
+                M_starting_object = object->polymorphic_copy();
+                M_ending_object = object->polymorphic_copy();
             }
             auto fps = object->get_fps();
             if (fps == -1) {

@@ -65,16 +65,16 @@ namespace ganim {
 
             virtual void draw(const Camera& camera) override;
 
-            /** @brief Copy the object for the sake of transformations */
-            std::unique_ptr<Vector> anim_copy() const;
             /** @brief Interpolate between two Vectors */
             virtual void interpolate(
-                const Vector& start,
-                const Vector& end,
+                const Animatable& start,
+                const Animatable& end,
                 double t
-            );
+            ) override;
+            std::unique_ptr<Vector> polymorphic_copy() const;
 
         private:
+            virtual Vector* polymorphic_copy_impl() const;
             gl::Shader* get_shader();
 
             Vector(const Vector& other);

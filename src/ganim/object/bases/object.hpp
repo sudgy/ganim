@@ -116,15 +116,13 @@ namespace ganim {
              */
             double get_draw_fraction() const {return M_draw_fraction;}
 
-            /** @brief Copy the object for the sake of transformations */
-            std::unique_ptr<Object> anim_copy() const;
-            using Transformable::interpolate;
             /** @brief Interpolate between two Objects */
             virtual void interpolate(
-                const Object& start,
-                const Object& end,
+                const Animatable& start,
+                const Animatable& end,
                 double t
-            );
+            ) override;
+            std::unique_ptr<Object> polymorphic_copy() const;
 
             /** @brief Set whether or not this object is being created.
              *
@@ -300,6 +298,8 @@ namespace ganim {
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
+            virtual Object* polymorphic_copy_impl() const override;
+
             double M_scale = 1;
             double M_draw_fraction = 1;
             double M_noise_creating = 0.0;

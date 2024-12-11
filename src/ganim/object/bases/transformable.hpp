@@ -126,17 +126,16 @@ class Transformable : public Animatable {
             const pga3::Bivec& about_line
         );
 
-        /** @brief Copy the object for the sake of transformations */
-        std::unique_ptr<Transformable> anim_copy() const
-            {return std::make_unique<Transformable>(*this);}
         /** @brief Interpolate between two Transformables */
         virtual void interpolate(
-            const Transformable& start,
-            const Transformable& end,
+            const Animatable& start,
+            const Animatable& end,
             double t
-        );
+        ) override;
+        std::unique_ptr<Transformable> polymorphic_copy() const;
 
     private:
+        virtual Transformable* polymorphic_copy_impl() const override;
         pga3::Even M_rotor = 1;
 };
 

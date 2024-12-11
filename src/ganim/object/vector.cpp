@@ -320,11 +320,14 @@ gl::Shader* Vector::get_shader()
     return &ganim::get_shader(flags);
 }
 
-std::unique_ptr<Vector> Vector::anim_copy() const
+std::unique_ptr<Vector> Vector::polymorphic_copy() const
 {
-    // Calling new directly here because make_unique apparently can't call
-    // private constructors
-    return std::unique_ptr<Vector>(new Vector(*this));
+    return std::unique_ptr<Vector>(polymorphic_copy_impl());
+}
+
+Vector* Vector::polymorphic_copy_impl() const
+{
+    return new Vector(*this);
 }
 
 Vector::Vector(const Vector& other)
@@ -340,12 +343,15 @@ Vector::Vector(const Vector& other)
 }
 
 void Vector::interpolate(
-        const Vector& start, const Vector& end, double t)
+        const Animatable& start, const Animatable& end, double t)
 {
     SingleObject::interpolate(start, end, t);
+    auto start2 = dynamic_cast<const Vector*>(&start);
+    auto end2 = dynamic_cast<const Vector*>(&end);
+    if (!start2 or !end2) return;
     M_max_tip_to_length_ratio =
-        (1 - t) * start.M_max_tip_to_length_ratio +
-        t * end.M_max_tip_to_length_ratio;
-    M_tip_size = (1 - t) * start.M_tip_size + t * end.M_tip_size;
-    if (t == 1.0) set_start_and_end(end.get_start_pga3(), end.get_end_pga3());
+        (1 - t) * start2->M_max_tip_to_length_ratio +
+        t * end2->M_max_tip_to_length_ratio;
+    M_tip_size = (1 - t) * start2->M_tip_size + t * end2->M_tip_size;
+    if (t == 1.0) set_start_and_end(end2->get_start_pga3(), end2->get_end_pga3());
 }

@@ -13,7 +13,12 @@ void Group::add(Object& object)
     M_subobjects.push_back(&object);
 }
 
-std::unique_ptr<Group> Group::anim_copy() const
+std::unique_ptr<Group> Group::polymorphic_copy() const
+{
+    return std::unique_ptr<Group>(polymorphic_copy_impl());
+}
+
+Group* Group::polymorphic_copy_impl() const
 {
     struct OwningGroup : public Group {
         OwningGroup(const Group& other) : Group(other) {}
@@ -29,38 +34,44 @@ std::unique_ptr<Group> Group::anim_copy() const
     result->M_subobjects.clear();
     for (auto obj : M_subobjects) {
         if (auto subgroup = obj->as_group()) {
-            result->M_owned_subobjects.emplace_back(subgroup->anim_copy());
+            result->M_owned_subobjects.emplace_back(subgroup->polymorphic_copy());
         }
         else {
-            result->M_owned_subobjects.emplace_back(obj->anim_copy());
+            result->M_owned_subobjects.emplace_back(obj->polymorphic_copy());
         }
         result->M_subobjects.push_back(result->M_owned_subobjects.back().get());
     }
-    return result;
+    return result.release();
 }
 
-void Group::interpolate(const Group& start, const Group& end, double t)
+void Group::interpolate(const Animatable& start, const Animatable& end, double t)
 {
-    if (size() != start.size()) {
+    auto start2 = dynamic_cast<const Group*>(&start);
+    auto end2 = dynamic_cast<const Group*>(&end);
+    if (!start2) throw std::invalid_argument(
+        "Interpolating a group between two non-groups is not supported.");
+    if (!end2) throw std::invalid_argument(
+        "Interpolating a group between two non-groups is not supported.");
+    if (size() != start2->size()) {
         throw std::invalid_argument(std::format(
             "When interpolating a group of size {}, the size of the starting "
             "group is {}, when the two sizes should be equal.",
             size(),
-            start.size()
+            start2->size()
         ));
     }
-    if (size() != end.size()) {
+    if (size() != end2->size()) {
         throw std::invalid_argument(std::format(
             "When interpolating a group of size {}, the size of the ending "
             "group is {}, when the two sizes should be equal.",
             size(),
-            end.size()
+            end2->size()
         ));
     }
     for (auto i = 0; i < size(); ++i) {
         auto group1 = (*this)[i].as_group();
-        auto group2 = start[i].as_group();
-        auto group3 = end[i].as_group();
+        auto group2 = (*start2)[i].as_group();
+        auto group3 = (*end2)[i].as_group();
         if (group1) {
             if (!group2) {
                 throw std::invalid_argument(std::format(
@@ -100,45 +111,15 @@ void Group::interpolate(const Group& start, const Group& end, double t)
     for (auto i = 0; i < size(); ++i) {
         auto& obj = (*this)[i];
         if (auto group = obj.as_group()) {
-            group->interpolate(*start[i].as_group(), *end[i].as_group(), t);
+            group->interpolate(*(*start2)[i].as_group(), *(*end2)[i].as_group(), t);
         }
         else {
-            obj.interpolate(start[i], end[i], t);
+            obj.interpolate((*start2)[i], (*end2)[i], t);
         }
     }
     M_propogate = false;
     Object::interpolate(start, end, t);
     M_propogate = true;
-}
-
-void Group::interpolate(
-    const Transformable& start,
-    const Transformable& end,
-    double t
-)
-{
-    auto start_group = start.as_group();
-    auto end_group = end.as_group();
-    if (!start_group) throw std::invalid_argument(
-        "Interpolating a group between two non-groups is not supported.");
-    if (!end_group) throw std::invalid_argument(
-        "Interpolating a group between two non-groups is not supported.");
-    interpolate(*start_group, *end_group, t);
-}
-
-void Group::interpolate(
-    const Object& start,
-    const Object& end,
-    double t
-)
-{
-    auto start_group = start.as_group();
-    auto end_group = end.as_group();
-    if (!start_group) throw std::invalid_argument(
-        "Interpolating a group between two non-groups is not supported.");
-    if (!end_group) throw std::invalid_argument(
-        "Interpolating a group between two non-groups is not supported.");
-    interpolate(*start_group, *end_group, t);
 }
 
 void Group::draw(const Camera& camera)

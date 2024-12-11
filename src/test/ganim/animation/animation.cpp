@@ -14,8 +14,10 @@ namespace {
             {
                 if (on_delete) *on_delete = 1;
             }
-            std::unique_ptr<TestAnimatable> anim_copy() const
+            std::unique_ptr<TestAnimatable> polymorphic_copy() const
                 {return std::make_unique<TestAnimatable>(*this);}
+            virtual TestAnimatable* polymorphic_copy_impl() const override
+                {return new TestAnimatable(*this);}
             void interpolate(
                 const TestAnimatable& start,
                 const TestAnimatable& end,
@@ -38,8 +40,10 @@ namespace {
     class TestAnimatable2 : public TestAnimatable {};
     class TestAnimatable3 : public TestAnimatable {
         public:
-            std::unique_ptr<TestAnimatable3> anim_copy() const
+            std::unique_ptr<TestAnimatable3> polymorphic_copy() const
                 {return std::make_unique<TestAnimatable3>(*this);}
+            virtual TestAnimatable3* polymorphic_copy_impl() const override
+                {return new TestAnimatable3(*this);}
     };
     class TestObject : public Object {
         public:

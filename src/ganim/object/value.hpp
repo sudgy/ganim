@@ -48,18 +48,36 @@ class Value : public Animatable {
         operator T() const {return M_value;}
 
         /** @brief Copy the object for the sake of transformations */
-        std::unique_ptr<Value> anim_copy() const
-            {return std::make_unique<Value<T>>(*this);}
+        std::unique_ptr<Value> polymorphic_copy() const
+            {return std::unique_ptr<Value>(polymorphic_copy_impl());}
         /** @brief Interpolate between two Values
          *
          * This requires the value type to be addable and scalable.
          */
-        void interpolate(const Value& start, const Value& end, double t)
+        virtual void interpolate(
+            const Animatable& start,
+            const Animatable& end,
+            double t
+        ) override
         {
-            M_value = (1 - t) * start.M_value + t * end.M_value;
+            if constexpr (requires(double a, T b) {
+                a * b;
+                b + b;
+            }) {
+                auto* start2 = dynamic_cast<const Value*>(&start);
+                auto* end2 = dynamic_cast<const Value*>(&end);
+                if (!start2 or !end2) {
+                    Animatable::interpolate(start, end, t);
+                }
+                M_value = (1 - t) * start2->M_value + t * end2->M_value;
+            }
         }
 
     private:
+        virtual Value* polymorphic_copy_impl() const
+        {
+            return new Value(*this);
+        }
         T M_value;
 };
 

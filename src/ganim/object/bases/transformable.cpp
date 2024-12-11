@@ -110,13 +110,25 @@ Transformable& Transformable::rotate(
 }
 
 void Transformable::interpolate(
-    const Transformable& start,
-    const Transformable& end,
+    const Animatable& start,
+    const Animatable& end,
     double t
 )
 {
-    const auto& r1 = start.M_rotor;
-    const auto& r2 = end.M_rotor;
+    auto start2 = dynamic_cast<const Transformable*>(&start);
+    auto end2 = dynamic_cast<const Transformable*>(&end);
+    const auto& r1 = start2->M_rotor;
+    const auto& r2 = end2->M_rotor;
     auto final_rotor = r1 * ga_exp(t*ga_log(~r1*r2));
     apply_rotor(~M_rotor * final_rotor);
+}
+
+std::unique_ptr<Transformable> Transformable::polymorphic_copy() const
+{
+    return std::unique_ptr<Transformable>(polymorphic_copy_impl());
+}
+
+Transformable* Transformable::polymorphic_copy_impl() const
+{
+    return new Transformable(*this);
 }

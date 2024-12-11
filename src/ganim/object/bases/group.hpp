@@ -69,11 +69,6 @@ class Group : public Object {
         /** @brief Returns this. */
         virtual Group* as_group() override final {return this;}
         virtual const Group* as_group() const override final {return this;}
-        /** @brief Copy a group for the sake of animations.
-         *
-         * This copies a group, including all of its subobjects.
-         */
-        std::unique_ptr<Group> anim_copy() const;
         /** @brief Interpolate two groups.
          *
          * Interpolating groups is more confusing than normal since most of the
@@ -86,30 +81,11 @@ class Group : public Object {
          * interpolation will have happened at all.
          */
         virtual void interpolate(
-            const Group& start,
-            const Group& end,
-            double t
-        );
-        /** @brief Interpolate between two groups.
-         *
-         * If the inputs aren't actually groups, it will throw
-         * std::invalid_argument.
-         */
-        virtual void interpolate(
-            const Transformable& start,
-            const Transformable& end,
+            const Animatable& start,
+            const Animatable& end,
             double t
         ) override;
-        /** @brief Interpolate between two groups.
-         *
-         * If the inputs aren't actually groups, it will throw
-         * std::invalid_argument.
-         */
-        virtual void interpolate(
-            const Object& start,
-            const Object& end,
-            double t
-        ) override;
+        std::unique_ptr<Group> polymorphic_copy() const;
 
         virtual void draw(const Camera& camera) override;
         virtual bool is_visible() const override;
@@ -260,6 +236,8 @@ class Group : public Object {
         );
 
     private:
+        virtual Group* polymorphic_copy_impl() const;
+
         std::vector<Object*> M_subobjects;
         double M_ratio = 1;
         double M_outline_thickness = 0;

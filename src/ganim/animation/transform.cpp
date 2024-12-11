@@ -261,21 +261,20 @@ void main()
             );
             glBindVertexArray(0);
         }
-        std::unique_ptr<StaticPart> anim_copy() const
+        std::unique_ptr<StaticPart> polymorphic_copy() const
         {
             return std::make_unique<StaticPart>();
         }
-        using SingleObject::interpolate;
-        void interpolate(
-            const StaticPart&,
-            const StaticPart&,
+        virtual void interpolate(
+            const Animatable&,
+            const Animatable&,
             double t
-        )
+        ) override
         {
             M_t = t;
             auto& from = **M_from->M_tracked_object;
             auto& to = **M_to->M_tracked_object;
-            interpolate(from, to, t);
+            SingleObject::interpolate(from, to, t);
             reset();
             auto c1 = from.get_outline_color();
             auto c2 = to.get_outline_color();

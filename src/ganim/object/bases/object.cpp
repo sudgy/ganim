@@ -62,7 +62,12 @@ double Object::get_scale() const
     return M_scale;
 }
 
-std::unique_ptr<Object> Object::anim_copy() const
+std::unique_ptr<Object> Object::polymorphic_copy() const
+{
+    return std::unique_ptr<Object>(polymorphic_copy_impl());
+}
+
+Object* Object::polymorphic_copy_impl() const
 {
     class FakeObject : public Object {
         public:
@@ -83,28 +88,35 @@ std::unique_ptr<Object> Object::anim_copy() const
             virtual Color get_outline_color() const override {return Color();}
             virtual double get_outline_thickness() const override {return 0.0;}
     };
-    return std::make_unique<FakeObject>(
+    return new FakeObject(
         *this,
         get_original_true_bounding_box(),
         get_original_logical_bounding_box()
     );
 }
 
-void Object::interpolate(const Object& start, const Object& end, double t)
+void Object::interpolate(
+    const Animatable& start,
+    const Animatable& end,
+    double t
+)
 {
     Transformable::interpolate(start, end, t);
+    auto start2 = dynamic_cast<const Object*>(&start);
+    auto end2 = dynamic_cast<const Object*>(&end);
+    if (!start2 or !end2) return;
     auto interp = [&](std::uint8_t v1, std::uint8_t v2) {
         auto diff = static_cast<int>(v2) - static_cast<int>(v1);
         return static_cast<std::uint8_t>(static_cast<int>(v1) + diff*t);
     };
     auto new_color = Color();
-    new_color.r = interp(start.M_color.r, end.M_color.r);
-    new_color.g = interp(start.M_color.g, end.M_color.g);
-    new_color.b = interp(start.M_color.b, end.M_color.b);
-    new_color.a = interp(start.M_color.a, end.M_color.a);
+    new_color.r = interp(start2->M_color.r, end2->M_color.r);
+    new_color.g = interp(start2->M_color.g, end2->M_color.g);
+    new_color.b = interp(start2->M_color.b, end2->M_color.b);
+    new_color.a = interp(start2->M_color.a, end2->M_color.a);
     set_color_with_alpha(new_color);
     auto current_scale
-        = start.M_scale + (end.M_scale - start.M_scale) * t;
+        = start2->M_scale + (end2->M_scale - start2->M_scale) * t;
     if (M_scale == 0.0) {
         reset_scale();
         scale(current_scale);
@@ -112,8 +124,8 @@ void Object::interpolate(const Object& start, const Object& end, double t)
     else {
         scale(current_scale / M_scale);
     }
-    set_draw_fraction(start.M_draw_fraction
-            + (end.M_draw_fraction - start.M_draw_fraction) * t);
+    set_draw_fraction(start2->M_draw_fraction
+            + (end2->M_draw_fraction - start2->M_draw_fraction) * t);
 }
 
 Box Object::get_true_bounding_box() const
