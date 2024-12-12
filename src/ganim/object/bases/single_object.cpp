@@ -97,6 +97,14 @@ void main()
     }
 }
 
+SingleObject::SingleObject(const SingleObject& other)
+    : Object(other),
+    M_outline_color(other.M_outline_color),
+    M_always_invalidate_outline(other.M_always_invalidate_outline)
+    // The OpenGL stuff gets made whenever it's not there and is needed so we
+    // don't have to copy it here
+{}
+
 void SingleObject::draw_outline(const Camera& camera)
 {
     if (get_scale() == 0) return;

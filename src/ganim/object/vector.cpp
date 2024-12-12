@@ -331,7 +331,8 @@ Vector* Vector::polymorphic_copy_impl() const
 }
 
 Vector::Vector(const Vector& other)
-:   M_vertex_array(0),
+:   SingleObject(other),
+    M_vertex_array(0),
     M_vertex_buffer(0),
     M_element_buffer(0),
     M_max_tip_to_length_ratio(other.M_max_tip_to_length_ratio),

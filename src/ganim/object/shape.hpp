@@ -54,6 +54,10 @@ namespace ganim {
                 std::vector<unsigned> indices
             );
             Shape()=default;
+            Shape(const Shape&);
+            Shape(Shape&&) noexcept=default;
+            Shape& operator=(const Shape&);
+            Shape& operator=(Shape&&) noexcept=default;
             /** @brief Reset the vertices of this shape.  The parameters are
              * identical to the parameters of the constructor.
              */

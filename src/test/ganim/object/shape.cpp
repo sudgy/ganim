@@ -553,3 +553,27 @@ TEST_CASE("Order-independent Transparency", "[object]") {
     REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("408000"));
     REQUIRE(scene.get_pixel(0, 2, 4) == ApproxColor("804000"));
 }
+
+TEST_CASE("Shape copying", "[object]") {
+    auto scene = TestScene(6, 6, 6, 6, 1);
+    auto square1 = Shape(
+        {{ 2,  2},
+         { 2, -2},
+         {-2, -2},
+         {-2,  2}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto square2 = square1;
+    scene.check_draw_equivalent(square1, square2);
+    auto square3 = square1;
+    square3.set_vertices(
+        {{ 3,  2},
+         { 3, -2},
+         {-1, -2},
+         {-1,  2}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    square3.shift(-vga2::e1);
+    scene.check_draw_equivalent(square1, square3);
+    scene.check_draw_equivalent(square2, square3);
+}

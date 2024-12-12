@@ -11,6 +11,11 @@ namespace ganim {
 
 class SingleObject : public Object {
     public:
+        SingleObject()=default;
+        SingleObject(const SingleObject&);
+        SingleObject(SingleObject&&) noexcept=default;
+        SingleObject& operator=(const SingleObject&);
+        SingleObject& operator=(SingleObject&&) noexcept=default;
         virtual bool is_visible() const override
         {
             return Object::is_visible();

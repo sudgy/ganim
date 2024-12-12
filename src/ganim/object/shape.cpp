@@ -45,6 +45,16 @@ void Shape::set_vertices(
     M_valid = false;
 }
 
+Shape::Shape(const Shape& other)
+    : SingleObject(other),
+    M_vertices(other.M_vertices),
+    M_indices(other.M_indices),
+    M_min_draw_fraction(other.M_min_draw_fraction),
+    M_max_draw_fraction(other.M_max_draw_fraction),
+    M_valid(false), // This will make the OpenGL things get remade
+    M_do_shading(other.M_do_shading)
+{}
+
 void Shape::draw(const Camera& camera)
 {
     if (M_vertices.empty()) return;
