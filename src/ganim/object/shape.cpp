@@ -28,12 +28,7 @@ void Shape::set_vertices(
     M_vertices = std::move(vertices);
     M_indices = std::move(indices);
     if (!M_vertices.empty()) {
-        auto ts = M_vertices
-            | std::views::transform([](const auto& v) {return v.t;});
-        M_min_draw_fraction = *std::ranges::min_element(ts);
-        M_max_draw_fraction = *std::ranges::max_element(ts);
-        auto dif = M_max_draw_fraction - M_min_draw_fraction;
-        M_min_draw_fraction -= dif / 50;
+        reset_draw_fractions();
         M_do_shading = false;
         for (auto& v : M_vertices) {
             if (v.z != M_vertices[0].z) {
@@ -42,7 +37,18 @@ void Shape::set_vertices(
             }
         }
     }
-    M_valid = false;
+    M_opengl_valid = false;
+    M_changed_after_construction = true;
+}
+
+void Shape::reset_draw_fractions()
+{
+    auto ts = M_vertices
+        | std::views::transform([](const auto& v) {return v.t;});
+    M_min_draw_fraction = *std::ranges::min_element(ts);
+    M_max_draw_fraction = *std::ranges::max_element(ts);
+    auto dif = M_max_draw_fraction - M_min_draw_fraction;
+    M_min_draw_fraction -= dif / 50;
 }
 
 Shape::Shape(const Shape& other)
@@ -51,21 +57,21 @@ Shape::Shape(const Shape& other)
     M_indices(other.M_indices),
     M_min_draw_fraction(other.M_min_draw_fraction),
     M_max_draw_fraction(other.M_max_draw_fraction),
-    M_valid(false), // This will make the OpenGL things get remade
+    M_opengl_valid(false), // This will make the OpenGL things get remade
     M_do_shading(other.M_do_shading)
 {}
 
 void Shape::draw(const Camera& camera)
 {
     if (M_vertices.empty()) return;
-    if (!M_valid) {
+    if (!M_opengl_valid) {
         glBindVertexArray(M_vertex_array);
         glBindBuffer(GL_ARRAY_BUFFER, M_vertex_buffer);
         buffer_vertices();
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, M_element_buffer);
         buffer_indices();
         glBindVertexArray(0);
-        M_valid = true;
+        M_opengl_valid = true;
     }
     auto& shader = ganim::get_shader(get_shader_flags());
     glUseProgram(shader);
@@ -100,6 +106,56 @@ void Shape::draw(const Camera& camera)
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, M_indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
+}
+
+void Shape::interpolate(
+    const Animatable& start,
+    const Animatable& end,
+    double t
+)
+{
+    SingleObject::interpolate(start, end, t);
+    auto start2 = dynamic_cast<const Shape*>(&start);
+    auto end2 = dynamic_cast<const Shape*>(&end);
+    if (!start2 or !end2) return;
+
+    auto error = []{
+        throw std::invalid_argument("At least for now, you can only interpolate"
+                " between two Shapes that have the same number of vertices and "
+                "indices.");
+    };
+    if (start2->M_indices.size() != end2->M_indices.size()) error();
+    if (start2->M_vertices.size() != end2->M_vertices.size()) error();
+    if (M_indices.size() != end2->M_indices.size()) error();
+    if (M_vertices.size() != end2->M_vertices.size()) error();
+    if (start2->M_changed_after_construction or
+            end2->M_changed_after_construction) {
+        for (int i = 0; i < ssize(M_vertices); ++i) {
+            auto& v1 = start2->M_vertices[i];
+            auto& v2 = M_vertices[i];
+            auto& v3 = end2->M_vertices[i];
+            v2.x = (1 - t)*v1.x + t*v3.x;
+            v2.y = (1 - t)*v1.y + t*v3.y;
+            v2.z = (1 - t)*v1.z + t*v3.z;
+            v2.t = (1 - t)*v1.t + t*v3.t;
+            v2.r = (1 - t)*v1.r + t*v3.r;
+            v2.g = (1 - t)*v1.g + t*v3.g;
+            v2.b = (1 - t)*v1.b + t*v3.b;
+            v2.a = (1 - t)*v1.a + t*v3.a;
+        }
+        M_opengl_valid = false;
+        M_changed_after_construction = true;
+    }
+}
+
+std::unique_ptr<Shape> Shape::polymorphic_copy() const
+{
+    return std::unique_ptr<Shape>(polymorphic_copy_impl());
+}
+
+Shape* Shape::polymorphic_copy_impl() const
+{
+    return new Shape(*this);
 }
 
 void Shape::buffer_vertices()

@@ -180,10 +180,9 @@ TEST_CASE("Shape animation", "[object]") {
     shape.shift(-e1);
     scene.frame_advance();
     animate(scene, shape, {2, [](double x){return x;}}).shift(2*e1);
-    // Change this if Shape ever gets things to animate
     static_assert(std::is_same_v<
         decltype(animate(scene, shape).shift(e1)),
-        Object&
+        Shape&
     >);
     scene.frame_advance(3);
     for (int x = 0; x < 4; ++x) {
@@ -576,4 +575,59 @@ TEST_CASE("Shape copying", "[object]") {
     square3.shift(-vga2::e1);
     scene.check_draw_equivalent(square1, square3);
     scene.check_draw_equivalent(square2, square3);
+}
+
+TEST_CASE("Shape interpolating", "[object]") {
+    auto shape1 = Shape(
+        {{ 1,  1},
+         { 1, -1},
+         {-1, -1},
+         {-1,  1}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto shape2 = Shape(
+        {{ 2,  2},
+         { 2, -2},
+         {-2, -2},
+         {-2,  2}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto shape3 = Shape(
+        {{ 3,  3},
+         { 3, -3},
+         {-3, -3},
+         {-3,  3}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto shape4 = Shape(
+        {{ 4,  4},
+         { 4, -4},
+         {-4, -4},
+         {-4,  4}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto shape5 = Shape(
+        {{ 5,  5},
+         { 5, -5},
+         {-5, -5},
+         {-5,  5}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto test = shape1;
+    auto scene = TestScene(12, 12, 12, 12, 1);
+
+    test.interpolate(shape1, shape5, 0);
+    scene.check_draw_equivalent(test, shape1);
+
+    test.interpolate(shape1, shape5, 0.25);
+    scene.check_draw_equivalent(test, shape2);
+
+    test.interpolate(shape1, shape5, 0.5);
+    scene.check_draw_equivalent(test, shape3);
+
+    test.interpolate(shape1, shape5, 0.75);
+    scene.check_draw_equivalent(test, shape4);
+
+    test.interpolate(shape1, shape5, 1);
+    scene.check_draw_equivalent(test, shape5);
 }

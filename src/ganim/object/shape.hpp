@@ -69,14 +69,22 @@ namespace ganim {
             const std::vector<Vertex>& get_vertices() const {return M_vertices;}
             const std::vector<unsigned>& get_indices() const {return M_indices;}
             virtual void draw(const Camera& camera) override;
-            void make_invalid() {M_valid = false;}
+            void make_invalid() {M_opengl_valid = false;}
             virtual ShaderFeature get_shader_flags();
             virtual void set_subclass_uniforms(gl::Shader&) {}
             virtual Box get_original_true_bounding_box() const override;
 
+            virtual void interpolate(
+                const Animatable& start,
+                const Animatable& end,
+                double t
+            ) override;
+            std::unique_ptr<Shape> polymorphic_copy() const;
+
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 
         private:
+            virtual Shape* polymorphic_copy_impl() const override;
             /** @brief Sends the vertex data to OpenGL.  It's virtual to allow
              * subclasses to change how this happens.  When the function is
              * called, this shape's vertex array will be bound, and this shape's
@@ -90,6 +98,8 @@ namespace ganim {
              */
             virtual void buffer_indices();
 
+            void reset_draw_fractions();
+
             std::vector<Vertex> M_vertices;
             std::vector<unsigned> M_indices;
             double M_min_draw_fraction = INFINITY;
@@ -97,7 +107,8 @@ namespace ganim {
             gl::VertexArray M_vertex_array;
             gl::Buffer M_vertex_buffer;
             gl::Buffer M_element_buffer;
-            bool M_valid = false;
+            bool M_opengl_valid = false;
+            bool M_changed_after_construction = false;
             bool M_do_shading = false;
     };
 }

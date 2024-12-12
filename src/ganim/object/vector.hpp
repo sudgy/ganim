@@ -74,7 +74,7 @@ namespace ganim {
             std::unique_ptr<Vector> polymorphic_copy() const;
 
         private:
-            virtual Vector* polymorphic_copy_impl() const;
+            virtual Vector* polymorphic_copy_impl() const override;
             gl::Shader* get_shader();
 
             Vector(const Vector& other);
