@@ -41,6 +41,19 @@ struct AnimationArgs {
     std::function<double(double)> rate_function = rf::smoothererstep;
 };
 
+struct ObjectRemoverUpdater {
+    std::unique_ptr<Object> object;
+    std::unique_ptr<bool> finished;
+    bool operator()()
+    {
+        if (*finished) {
+            object.reset();
+            return false;
+        }
+        return true;
+    }
+};
+
 /** @brief The main animation class
  *
  * All animations will eventually be run through this class.  Note that it is
@@ -188,18 +201,6 @@ class Animation {
         SceneBase& M_scene;
         std::unique_ptr<copy_type> M_starting_object;
         std::unique_ptr<copy_type> M_ending_object;
-        struct ObjectRemoverUpdater {
-            std::unique_ptr<Object> object;
-            std::unique_ptr<bool> finished;
-            bool operator()()
-            {
-                if (*finished) {
-                    object.reset();
-                    return false;
-                }
-                return true;
-            }
-        };
         std::vector<std::pair<Object*, bool*>> M_animation_objects;
         int M_animation_progress = 0;
         int M_animation_time = 0;

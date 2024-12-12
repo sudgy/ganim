@@ -577,3 +577,88 @@ void ganim::group_transform(
         }
     }
 }
+
+// TODO: Generalize this and animation to remove code copying
+struct TransformAnimation {
+    TransformAnimation(
+        SceneBase& scene,
+        MaybeOwningRef<Object> from,
+        MaybeOwningRef<Object> to,
+        TransformAnimationArgs args
+    )
+    :   M_rate_function(std::move(args.rate_function)),
+        M_from(std::move(from)),
+        M_to(std::move(to)),
+        M_scene(scene),
+        M_direction(args.direction)
+    {
+        if (from->is_animating()) {
+            throw std::invalid_argument(
+                "Attempting to animate an object that is already being "
+                "animated."
+            );
+        }
+        to->set_animating(true);
+        if (!args.copy) from->set_visible(false);
+        auto temp_object = from->polymorphic_copy();
+        scene.add(*temp_object);
+        temp_object->set_visible(true);
+        auto updater = ObjectRemoverUpdater(
+            std::move(temp_object),
+            std::make_unique<bool>(false)
+        );
+        M_object = updater.object.get();
+        M_finished = updater.finished.get();
+        scene.add_updater(std::move(updater));
+        auto fps = M_object->get_fps();
+        if (fps == -1) {
+            throw std::logic_error("An animation was run without setting "
+                "the fps.  Did you forget to add something to the scene?");
+        }
+        M_animation_time = std::round(args.duration * fps);
+        M_object->add_updater(std::move(*this), true);
+    }
+    bool operator()()
+    {
+        M_from->update();
+        M_to->update();
+        ++M_animation_progress;
+        auto t = static_cast<double>(M_animation_progress)
+            / M_animation_time;
+        M_object->interpolate(
+            *M_from,
+            *M_to,
+            M_rate_function(t)
+        );
+        M_object->shift(std::sin(t * τ/2)*M_direction);
+        if (M_animation_progress == M_animation_time) {
+            M_animation_time = 0;
+            M_object->set_visible(false);
+            M_scene.remove(*M_object);
+            *M_finished = true;
+            M_to->set_visible(true);
+            M_to->set_animating(false);
+            return false;
+        }
+        return true;
+    }
+    std::move_only_function<double(double)> M_rate_function;
+    Object* M_object;
+    MaybeOwningRef<Object> M_from;
+    MaybeOwningRef<Object> M_to;
+    int M_animation_progress = 0;
+    int M_animation_time = 0;
+    bool* M_finished = nullptr;
+    SceneBase& M_scene;
+    vga3::Vec M_direction;
+};
+
+void ganim::transform(
+    SceneBase& scene,
+    MaybeOwningRef<Object> from,
+    MaybeOwningRef<Object> to,
+    TransformAnimationArgs args
+)
+{
+    TransformAnimation(scene, std::move(from), std::move(to), std::move(args));
+}
