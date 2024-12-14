@@ -631,3 +631,29 @@ TEST_CASE("Shape interpolating", "[object]") {
     test.interpolate(shape1, shape5, 1);
     scene.check_draw_equivalent(test, shape5);
 }
+
+TEST_CASE("Shape outline over other object", "[object]") {
+    auto scene = TestScene(8, 8, 8, 8, 1);
+    auto big_shape = Shape(
+        {{ 5,  5},
+         { 5, -5},
+         {-5, -5},
+         {-5,  5}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    auto small_shape = Shape(
+        {{ 1,  1},
+         { 1, -1},
+         {-1, -1},
+         {-1,  1}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    small_shape.set_color("00FF00");
+    small_shape.set_outline("FF0000", 2);
+    big_shape.set_visible(true);
+    small_shape.set_visible(true);
+    scene.add(big_shape, small_shape);
+    scene.frame_advance();
+    scene.write_frames_to_file("test");
+    REQUIRE(scene.get_pixel(0, 2, 2) == Color("FF0000"));
+}
