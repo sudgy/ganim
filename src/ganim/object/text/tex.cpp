@@ -287,7 +287,7 @@ int Tex::write_character(
             + filename + ".pfb";
     }
     auto& font2 = get_font(filename);
-    if (M_ascender == 0.0) {
+    if (M_ascender == 0.0 or font.name == "cmr10") {
         M_ascender = get_font_ascender(font2);
         M_descender = get_font_descender(font2);
     }
