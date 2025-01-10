@@ -16,12 +16,9 @@ namespace ganim {
         public:
             explicit Vector(pointlike auto p2, VectorArgs args = {})
                 : Vector(pga3::e123, pointlike_to_pga3(p2), args) {}
-            Vector(
-                    pointlike auto p1, pointlike auto p2, VectorArgs args = {})
-                : Vector(
-                        pointlike_to_pga3(p1), pointlike_to_pga3(p2), args) {}
-            Vector(
-                    pga3::Trivec p1, pga3::Trivec p2, VectorArgs args={});
+            Vector(pointlike auto p1, pointlike auto p2, VectorArgs args = {})
+                : Vector(pointlike_to_pga3(p1), pointlike_to_pga3(p2), args) {}
+            Vector(pga3::Trivec p1, pga3::Trivec p2, VectorArgs args={});
 
             Vector& set_start(pointlike auto p)
             {
@@ -71,7 +68,7 @@ namespace ganim {
                 const Animatable& end,
                 double t
             ) override;
-            std::unique_ptr<Vector> polymorphic_copy() const;
+            ObjectPtr<Vector> polymorphic_copy() const;
 
         private:
             virtual Vector* polymorphic_copy_impl() const override;
@@ -90,6 +87,21 @@ namespace ganim {
             bool M_do_shading = false;
             bool M_lock_orientation = true;
     };
+
+    inline ObjectPtr<Vector> make_vector(pointlike auto p2, VectorArgs args = {})
+    {
+        return ObjectPtr<Vector>(p2, args);
+    }
+    inline ObjectPtr<Vector> make_vector(
+            pointlike auto p1, pointlike auto p2, VectorArgs args = {})
+    {
+        return ObjectPtr<Vector>(p1, p2, args);
+    }
+    inline ObjectPtr<Vector> make_vector(
+            pga3::Trivec p1, pga3::Trivec p2, VectorArgs args = {})
+    {
+        return ObjectPtr<Vector>(p1, p2, args);
+    }
 }
 
 #endif

@@ -123,9 +123,9 @@ void Transformable::interpolate(
     apply_rotor(~M_rotor * final_rotor);
 }
 
-std::unique_ptr<Transformable> Transformable::polymorphic_copy() const
+ObjectPtr<Transformable> Transformable::polymorphic_copy() const
 {
-    return std::unique_ptr<Transformable>(polymorphic_copy_impl());
+    return ObjectPtr<Transformable>::from_new(polymorphic_copy_impl());
 }
 
 Transformable* Transformable::polymorphic_copy_impl() const

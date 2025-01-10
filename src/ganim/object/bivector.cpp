@@ -92,9 +92,9 @@ void Bivector::common_construct(
         throw std::invalid_argument(
                 "Bivectors must have at least three vertices.");
     }
-    M_inside = std::make_unique<PolygonShape>(pga_points);
+    M_inside = make_polygon_shape(pga_points);
     M_inside->set_opacity(0.5);
-    M_outside = std::make_unique<Group>();
+    M_outside = make_group();
     auto path_args = ArrowPathArgs{
         .tip_size = args.tip_size,
         .thickness = args.thickness
@@ -120,7 +120,8 @@ void Bivector::common_construct(
                 for (int j = current_path_start; j <= i2; ++j) {
                     new_path.push_back(vga_points[j]);
                 }
-                M_outside_paths.emplace_back(new_path, path_args);
+                M_outside_paths.emplace_back(make_arrow_path(
+                            new_path, path_args));
                 current_path_length = 0.0;
                 current_path_start = i2;
             }
@@ -133,10 +134,11 @@ void Bivector::common_construct(
     }
     new_path.push_back(vga_points[0]);
     // Maybe find a way to deal with this not being long enough?
-    M_outside_paths.emplace_back(new_path, path_args);
+    M_outside_paths.emplace_back(make_arrow_path(
+                new_path, path_args));
     for (auto& path : M_outside_paths) {
         M_outside->add(path);
     }
-    add(*M_inside);
-    add(*M_outside);
+    add(M_inside);
+    add(M_outside);
 }

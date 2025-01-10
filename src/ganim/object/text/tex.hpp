@@ -55,13 +55,29 @@ class Tex : public Group, public DVIConsumer {
         std::vector<std::vector<rule>> M_rules;
         int M_current_section = 0;
 
-        std::vector<TextureShape<Shape>> M_shapes;
+        std::vector<ObjectPtr<TextureShape<Shape>>> M_shapes;
         std::unordered_map<std::string, std::vector<int>> M_pieces_by_string;
         std::vector<std::string> M_tex_strings;
         Box M_logical_bounding_box;
         double M_ascender = 0.0;
         double M_descender = 0.0;
 };
+
+inline ObjectPtr<Tex> make_tex(std::filesystem::path dvi_filename)
+{
+    return ObjectPtr<Tex>(dvi_filename);
+}
+
+template <typename... Ts>
+ObjectPtr<Tex> make_tex(Ts&&... tex_strings)
+{
+    return ObjectPtr<Tex>(std::forward<Ts>(tex_strings)...);
+}
+
+inline ObjectPtr<Tex> make_tex(const std::vector<std::string>& tex_strings)
+{
+    return ObjectPtr<Tex>(tex_strings);
+}
 
 }
 

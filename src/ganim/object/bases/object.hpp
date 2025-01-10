@@ -122,7 +122,7 @@ namespace ganim {
                 const Animatable& end,
                 double t
             ) override;
-            std::unique_ptr<Object> polymorphic_copy() const;
+            ObjectPtr<Object> polymorphic_copy() const;
 
             /** @brief Set whether or not this object is being created.
              *

@@ -18,7 +18,7 @@ class Bivector;
  */
 void create(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 
@@ -41,20 +41,20 @@ void create(
  */
 void noise_create(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     double noise_scale,
     AnimationArgs args = AnimationArgs()
 );
 
 void write(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 
 void create_bivector(
     SceneBase& scene,
-    MaybeOwningRef<Bivector> bivector,
+    ObjectPtr<Bivector> bivector,
     AnimationArgs args = AnimationArgs()
 );
 

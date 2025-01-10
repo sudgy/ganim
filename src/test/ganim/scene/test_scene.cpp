@@ -28,8 +28,8 @@ void TestScene::process_frame()
 }
 
 void TestScene::check_draw_equivalent(
-    ganim::Object& o1,
-    ganim::Object& o2,
+    ganim::ObjectPtr<ganim::Object> o1,
+    ganim::ObjectPtr<ganim::Object> o2,
     std::string_view description,
     std::string_view write_to_file_filename
 )
@@ -44,10 +44,10 @@ void TestScene::check_draw_equivalent(
     int t = M_data.size();
     add(o1);
     frame_advance();
-    remove(o1);
+    remove(*o1);
     add(o2);
     frame_advance();
-    remove(o2);
+    remove(*o2);
     if (write_to_file_filename != "") {
         auto object_filename = std::format(
             "{}_object.png",

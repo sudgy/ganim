@@ -4,7 +4,7 @@
 
 void ganim::indicate(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     IndicateAnimationArgs args
 )
 {

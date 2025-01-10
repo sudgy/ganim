@@ -14,22 +14,22 @@ namespace ganim {
     };
     void texture_transform(
         SceneBase& scene,
-        MaybeOwningRef<Object> from,
-        MaybeOwningRef<Object> to,
+        ObjectPtr<Object> from,
+        ObjectPtr<Object> to,
         TransformAnimationArgs args = TransformAnimationArgs()
     );
     void group_transform(
         SceneBase& scene,
-        MaybeOwningRef<Group> from,
-        MaybeOwningRef<Group> to,
+        ObjectPtr<Group> from,
+        ObjectPtr<Group> to,
         TransformAnimationArgs args = TransformAnimationArgs()
     );
     // This still doesn't work in all situations yet.  I'll try to improve it
     // later.
     void transform(
         SceneBase& scene,
-        MaybeOwningRef<Object> from,
-        MaybeOwningRef<Object> to,
+        ObjectPtr<Object> from,
+        ObjectPtr<Object> to,
         TransformAnimationArgs args = TransformAnimationArgs()
     );
 }

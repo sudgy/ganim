@@ -16,8 +16,8 @@ class TestScene : public ganim::SceneBase {
         );
         ganim::Color get_pixel(int t, int x, int y);
         void check_draw_equivalent(
-            ganim::Object& o1,
-            ganim::Object& o2,
+            ganim::ObjectPtr<ganim::Object> o1,
+            ganim::ObjectPtr<ganim::Object> o2,
             std::string_view description = "",
             std::string_view write_to_file_filename = ""
         );

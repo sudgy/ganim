@@ -102,14 +102,14 @@ Text::Text(const std::vector<std::string_view>& strings)
     auto text_texture = get_text_texture();
     M_pieces.reserve(ssize(strings));
     for (int n = 0; n < ssize(strings); ++n) {
-        auto& new_piece = M_pieces.emplace_back(
+        auto& new_piece = M_pieces.emplace_back(ObjectPtr<TextPiece>(
             std::move(all_vertices[n]),
             std::move(all_indices[n])
-        );
+        ));
         add(new_piece);
-        new_piece.set_texture_vertices(std::move(all_tvertices[n]));
-        new_piece.set_texture(text_texture);
-        auto true_bounding_box = new_piece.get_true_bounding_box();
+        new_piece->set_texture_vertices(std::move(all_tvertices[n]));
+        new_piece->set_texture(text_texture);
+        auto true_bounding_box = new_piece->get_true_bounding_box();
         using namespace vga2;
         auto x_min = pga2_to_vga2(
                 true_bounding_box.get_lower_left()).blade_project<e1>();
@@ -117,7 +117,7 @@ Text::Text(const std::vector<std::string_view>& strings)
                 true_bounding_box.get_upper_right()).blade_project<e1>();
         auto y_min = y_mins[n];
         auto y_max = y_maxs[n];
-        new_piece.logical_bounding_box
+        new_piece->logical_bounding_box
             = Box(x_min*e1 + y_min*e2, x_max*e1 + y_max*e2);
     }
 }

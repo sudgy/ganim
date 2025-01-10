@@ -45,8 +45,8 @@ namespace ganim {
                 vga3::Bivec b,
                 BivectorArgs args = {}
             );
-            Group& get_outside() {return *M_outside;}
-            PolygonShape& get_inside() {return *M_inside;}
+            ObjectPtr<Group> get_outside() {return M_outside;}
+            ObjectPtr<PolygonShape> get_inside() {return M_inside;}
 
         private:
             void common_construct(
@@ -54,10 +54,63 @@ namespace ganim {
                 const std::vector<vga2::Vec>& vga_points,
                 BivectorArgs args
             );
-            std::unique_ptr<Group> M_outside;
-            std::unique_ptr<PolygonShape> M_inside;
-            std::vector<ArrowPath> M_outside_paths;
+            ObjectPtr<Group> M_outside = nullptr;
+            ObjectPtr<PolygonShape> M_inside = nullptr;
+            std::vector<ObjectPtr<ArrowPath>> M_outside_paths;
     };
+
+    inline ObjectPtr<Bivector> make_bivector(
+        const std::vector<pga2::Bivec>& points,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(points, args);
+    }
+    inline ObjectPtr<Bivector> make_bivector(
+        const std::vector<vga2::Vec>& points,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(points, args);
+    }
+    inline ObjectPtr<Bivector> make_bivector(
+        const Vector& v1,
+        const Vector& v2,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(v1, v2, args);
+    }
+    inline ObjectPtr<Bivector> make_bivector(
+        vga2::Vec v1,
+        vga2::Vec v2,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(v1, v2, args);
+    }
+    inline ObjectPtr<Bivector> make_bivector(
+        vga3::Vec v1,
+        vga3::Vec v2,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(v1, v2, args);
+    }
+    inline ObjectPtr<Bivector> make_bivector(
+        vga2::Bivec b,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(b, args);
+    }
+    inline ObjectPtr<Bivector> make_bivector(
+        vga3::Bivec b,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(b, args);
+    }
 }
 
 #endif

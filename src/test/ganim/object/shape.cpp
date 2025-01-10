@@ -12,14 +12,14 @@ using namespace ganim;
 
 TEST_CASE("Shape drawing", "[object]") {
     auto scene = TestScene(10, 10, 10, 10, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 2,  2, 0},
          { 2, -2, 0},
          {-2, -2, 0},
          {-2,  2, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 3, 3) == Color("FFFFFF"));
@@ -38,15 +38,15 @@ TEST_CASE("Shape drawing", "[object]") {
 
 TEST_CASE("Shape perspective", "[object]") {
     auto scene = TestScene(20, 20, 5, 5, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 2,  2,  2},
          { 2, -2, -2},
          {-2, -2, -2},
          {-2,  2,  2}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.do_shading(false);
-    shape.set_visible(true);
+    shape->do_shading(false);
+    shape->set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 1, 2) != Color("000000"));
@@ -72,14 +72,14 @@ TEST_CASE("Shape perspective", "[object]") {
 
 TEST_CASE("Shape behind camera", "[object]") {
     auto scene = TestScene(5, 5, 1, 1, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 2,  2, 30},
          { 2, -2, 30},
          {-2, -2, 30},
          {-2,  2, 30}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
@@ -90,18 +90,18 @@ TEST_CASE("Shape behind camera", "[object]") {
 TEST_CASE("Shape moving", "[object]") {
     using namespace vga2;
     auto scene = TestScene(4, 4, 4, 4, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
-    shape.shift(e1);
+    shape->shift(e1);
     scene.frame_advance();
-    scene.get_camera().shift(e2);
+    scene.get_camera()->shift(e2);
     scene.frame_advance();
     for (int x = 0; x < 4; ++x) {
         for (int y = 0; y < 4; ++y) {
@@ -118,14 +118,14 @@ TEST_CASE("Shape moving", "[object]") {
 
 TEST_CASE("Shape color", "[object]") {
     auto scene = TestScene(3, 3, 2, 2, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 1,  1, 0, 0, 1, 0, 0, 1},
          { 1, -1, 0, 0, 1, 0, 0, 1},
          {-1, -1, 0, 0, 0, 1, 0, 1},
          {-1,  1, 0, 0, 0, 1, 0, 1}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     // I guess OpenGL starts interpolating on the edges instantly?  I hope this
@@ -138,27 +138,27 @@ TEST_CASE("Shape color", "[object]") {
 TEST_CASE("Shape depth test", "[object]") {
     using namespace vga3;
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto red = Shape(
+    auto red = make_shape(
         {{ 1,  1, 0, 0, 1, 0, 0, 1},
          { 1, -1, 0, 0, 1, 0, 0, 1},
          {-1, -1, 0, 0, 1, 0, 0, 1},
          {-1,  1, 0, 0, 1, 0, 0, 1}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto green = Shape(
+    auto green = make_shape(
         {{ 1,  1, 0, 0, 0, 1, 0, 1},
          { 1, -1, 0, 0, 0, 1, 0, 1},
          {-1, -1, 0, 0, 0, 1, 0, 1},
          {-1,  1, 0, 0, 0, 1, 0, 1}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    red.set_visible(true);
-    green.set_visible(true);
+    red->set_visible(true);
+    green->set_visible(true);
     scene.add(red, green);
     scene.frame_advance();
-    green.shift(e3);
+    green->shift(e3);
     scene.frame_advance();
-    green.shift(-2*e3);
+    green->shift(-2*e3);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("00FF00"));
     REQUIRE(scene.get_pixel(1, 0, 0) == Color("00FF00"));
@@ -168,16 +168,16 @@ TEST_CASE("Shape depth test", "[object]") {
 TEST_CASE("Shape animation", "[object]") {
     using namespace vga2;
     auto scene = TestScene(4, 4, 4, 4, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
-    shape.shift(-e1);
+    shape->shift(-e1);
     scene.frame_advance();
     animate(scene, shape, {2, [](double x){return x;}}).shift(2*e1);
     static_assert(std::is_same_v<
@@ -205,16 +205,16 @@ TEST_CASE("Shape animation", "[object]") {
 TEST_CASE("Shape camera animation", "[object]") {
     using namespace vga2;
     auto scene = TestScene(4, 4, 4, 4, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
-    shape.shift(-e1);
+    shape->shift(-e1);
     scene.frame_advance();
     animate(
         scene,
@@ -242,31 +242,31 @@ TEST_CASE("Shape camera animation", "[object]") {
 TEST_CASE("Shape opacity", "[object]") {
     using namespace vga2;
     auto scene = TestScene(4, 4, 4, 4, 1);
-    auto solid = Shape(
+    auto solid = make_shape(
         {{ 1,  1, 0, 0, 1, 1, 1, 1},
          { 1, -1, 0, 0, 1, 1, 1, 1},
          {-1, -1, 0, 0, 1, 1, 1, 1},
          {-1,  1, 0, 0, 1, 1, 1, 1}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    solid.shift(e1);
-    auto red_trans = Shape(
+    solid->shift(e1);
+    auto red_trans = make_shape(
         {{ 1,  1, 0, 0, 1, 0, 0, 0.5},
          { 1, -1, 0, 0, 1, 0, 0, 0.5},
          {-1, -1, 0, 0, 1, 0, 0, 0.5},
          {-1,  1, 0, 0, 1, 0, 0, 0.5}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto invisible = Shape(
+    auto invisible = make_shape(
         {{ 1,  1, 0, 0, 1, 1, 1, 0},
          { 1, -1, 0, 0, 1, 1, 1, 0},
          {-1, -1, 0, 0, 1, 1, 1, 0},
          {-1,  1, 0, 0, 1, 1, 1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    solid.set_visible(true);
-    red_trans.set_visible(true);
-    invisible.set_visible(true);
+    solid->set_visible(true);
+    red_trans->set_visible(true);
+    invisible->set_visible(true);
     scene.add(solid, red_trans, invisible);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 1, 1) == ApproxColor("800000"));
@@ -277,34 +277,34 @@ TEST_CASE("Shape opacity", "[object]") {
 TEST_CASE("Shape Object color", "[object]") {
     using namespace vga2;
     auto scene = TestScene(4, 4, 4, 4, 1);
-    auto solid = Shape(
+    auto solid = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    solid.shift(e1);
-    auto red_trans = Shape(
+    solid->shift(e1);
+    auto red_trans = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    red_trans.set_color("FF0000");
-    red_trans.set_opacity(0.5);
-    auto invisible = Shape(
+    red_trans->set_color("FF0000");
+    red_trans->set_opacity(0.5);
+    auto invisible = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    solid.set_visible(true);
-    red_trans.set_visible(true);
-    invisible.set_visible(true);
-    invisible.set_opacity(0);
+    solid->set_visible(true);
+    red_trans->set_visible(true);
+    invisible->set_visible(true);
+    invisible->set_opacity(0);
     scene.add(solid, red_trans, invisible);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 1, 1) == ApproxColor("7F0000"));
@@ -315,20 +315,20 @@ TEST_CASE("Shape Object color", "[object]") {
 TEST_CASE("Shape scaling", "[object]") {
     using namespace vga2;
     auto scene = TestScene(10, 10, 10, 10, 1);
-    auto test = Shape(
+    auto test = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    test.set_visible(true);
+    test->set_visible(true);
     scene.add(test);
-    test.shift(e1);
+    test->shift(e1);
     scene.frame_advance();
-    test.scale(2);
+    test->scale(2);
     scene.frame_advance();
-    test.scale(2, 2*e1);
+    test->scale(2, 2*e1);
     scene.frame_advance();
     for (int x = 0; x < 10; ++x) {
         for (int y = 0; y < 10; ++y) {
@@ -356,14 +356,14 @@ TEST_CASE("Shape scaling", "[object]") {
 TEST_CASE("Shape move back and forth with rotation", "[object]") {
     using namespace pga3;
     auto scene = TestScene(4, 4, 4, 4, 30);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
     animate(scene, shape).rotate(τ/2, e23);
     scene.wait(1);
@@ -376,29 +376,29 @@ TEST_CASE("Shape move back and forth with rotation", "[object]") {
 TEST_CASE("Shape rotating too fast?", "[object]") {
     using namespace pga3;
     auto scene = TestScene(4, 4, 4, 4, 60);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 2,  2, 0},
          { 2, -2, 0},
          {-2, -2, 0},
          {-2,  2, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
     animate(scene, shape).rotate(τ/2, e23).shift(2*e1);
     scene.wait(1);
     animate(scene, shape).shift(-2*e1);
     scene.wait(1);
-    shape.rotate(0.05, e12 + 0.5*e13 + 0.2*e23);
+    shape->rotate(0.05, e12 + 0.5*e13 + 0.2*e23);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(scene.time_size() - 1, 1, 1) == Color("FFFFFF"));
 }
 
 TEST_CASE("Shape set_vertices", "[object]") {
     auto scene = TestScene(2, 1, 4, 2, 1);
-    auto shape = Shape();
-    shape.set_visible(true);
-    shape.set_vertices(
+    auto shape = make_shape();
+    shape->set_visible(true);
+    shape->set_vertices(
         {{ 0,  1, 0},
          { 0, -1, 0},
          {-2, -1, 0},
@@ -407,7 +407,7 @@ TEST_CASE("Shape set_vertices", "[object]") {
     );
     scene.add(shape);
     scene.frame_advance();
-    shape.set_vertices(
+    shape->set_vertices(
         {{2,  1, 0},
          {2, -1, 0},
          {0, -1, 0},
@@ -423,11 +423,11 @@ TEST_CASE("Shape set_vertices", "[object]") {
 
 TEST_CASE("Empty shapes", "[object]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto shape = Shape();
-    auto shape2 = Shape();
-    shape2.set_vertices({}, {});
-    shape.set_visible(true);
-    shape2.set_visible(true);
+    auto shape = make_shape();
+    auto shape2 = make_shape();
+    shape2->set_vertices({}, {});
+    shape->set_visible(true);
+    shape2->set_visible(true);
     scene.add(shape, shape2);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
@@ -466,17 +466,17 @@ TEST_CASE("Shape bounding box", "[object]") {
 
 TEST_CASE("Shape scaling to zero", "[object]") {
     auto scene = TestScene(6, 6, 6, 6, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 2,  2, 0},
          { 2, -2, 0},
          {-2, -2, 0},
          {-2,  2, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
-    shape.set_outline(Color("FFFFFF"), 5);
-    shape.scale(0);
+    shape->set_outline(Color("FFFFFF"), 5);
+    shape->scale(0);
     scene.frame_advance();
     for (int x = 0; x < 6; ++x) {
         for (int y = 0; y < 6; ++y) {
@@ -489,18 +489,18 @@ TEST_CASE("Shape scaling to zero", "[object]") {
 
 TEST_CASE("Object fixed_in_frame", "[object]") {
     auto scene = TestScene(10, 10, 10, 10, 4);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 2,  2, 0},
          { 2, -2, 0},
          {-2, -2, 0},
          {-2,  2, 0}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
-    shape.set_fixed_in_frame(true);
+    shape->set_visible(true);
+    shape->set_fixed_in_frame(true);
     scene.add(shape);
-    scene.get_camera().add_updater([&]{
-        scene.get_camera().rotate(τ/8, pga3::e13);
+    scene.get_camera()->add_updater([&]{
+        scene.get_camera()->rotate(τ/8, pga3::e13);
     });
     scene.wait(2);
     for (int i = 0; i < 8; ++i) {
@@ -525,28 +525,28 @@ TEST_CASE("Order-independent Transparency", "[object]") {
 
     scene.set_transparency_layers(2);
 
-    auto square1 = Shape(
+    auto square1 = make_shape(
         {{ 2,  2},
          { 2, -2},
          {-2, -2},
          {-2,  2}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto square2 = Shape(
+    auto square2 = make_shape(
         {{ 2,  2},
          { 2, -2},
          {-2, -2},
          {-2,  2}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    square1.set_color("FF0000");
-    square2.set_color("00FF00");
-    square1.set_opacity(0.5);
-    square2.set_opacity(0.5);
-    square1.set_visible(true);
-    square2.set_visible(true);
+    square1->set_color("FF0000");
+    square2->set_color("00FF00");
+    square1->set_opacity(0.5);
+    square2->set_opacity(0.5);
+    square1->set_visible(true);
+    square2->set_visible(true);
     scene.add(square1, square2);
-    square2.rotate(0.1, pga3::e23);
+    square2->rotate(0.1, pga3::e23);
     scene.frame_advance();
 
     REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("408000"));
@@ -555,105 +555,104 @@ TEST_CASE("Order-independent Transparency", "[object]") {
 
 TEST_CASE("Shape copying", "[object]") {
     auto scene = TestScene(6, 6, 6, 6, 1);
-    auto square1 = Shape(
+    auto square1 = make_shape(
         {{ 2,  2},
          { 2, -2},
          {-2, -2},
          {-2,  2}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
     auto square2 = square1;
     scene.check_draw_equivalent(square1, square2);
     auto square3 = square1;
-    square3.set_vertices(
+    square3->set_vertices(
         {{ 3,  2},
          { 3, -2},
          {-1, -2},
          {-1,  2}},
         {0, 1, 2, 0, 2, 3}
     );
-    square3.shift(-vga2::e1);
+    square3->shift(-vga2::e1);
     scene.check_draw_equivalent(square1, square3);
     scene.check_draw_equivalent(square2, square3);
 }
 
 TEST_CASE("Shape interpolating", "[object]") {
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{ 1,  1},
          { 1, -1},
          {-1, -1},
          {-1,  1}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{ 2,  2},
          { 2, -2},
          {-2, -2},
          {-2,  2}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto shape3 = Shape(
+    auto shape3 = make_shape(
         {{ 3,  3},
          { 3, -3},
          {-3, -3},
          {-3,  3}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto shape4 = Shape(
+    auto shape4 = make_shape(
         {{ 4,  4},
          { 4, -4},
          {-4, -4},
          {-4,  4}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto shape5 = Shape(
+    auto shape5 = make_shape(
         {{ 5,  5},
          { 5, -5},
          {-5, -5},
          {-5,  5}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
     auto test = shape1;
     auto scene = TestScene(12, 12, 12, 12, 1);
 
-    test.interpolate(shape1, shape5, 0);
+    test->interpolate(*shape1, *shape5, 0);
     scene.check_draw_equivalent(test, shape1);
 
-    test.interpolate(shape1, shape5, 0.25);
+    test->interpolate(*shape1, *shape5, 0.25);
     scene.check_draw_equivalent(test, shape2);
 
-    test.interpolate(shape1, shape5, 0.5);
+    test->interpolate(*shape1, *shape5, 0.5);
     scene.check_draw_equivalent(test, shape3);
 
-    test.interpolate(shape1, shape5, 0.75);
+    test->interpolate(*shape1, *shape5, 0.75);
     scene.check_draw_equivalent(test, shape4);
 
-    test.interpolate(shape1, shape5, 1);
+    test->interpolate(*shape1, *shape5, 1);
     scene.check_draw_equivalent(test, shape5);
 }
 
 TEST_CASE("Shape outline over other object", "[object]") {
     auto scene = TestScene(8, 8, 8, 8, 1);
-    auto big_shape = Shape(
+    auto big_shape = make_shape(
         {{ 5,  5},
          { 5, -5},
          {-5, -5},
          {-5,  5}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto small_shape = Shape(
+    auto small_shape = make_shape(
         {{ 1,  1},
          { 1, -1},
          {-1, -1},
          {-1,  1}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    small_shape.set_color("00FF00");
-    small_shape.set_outline("FF0000", 2);
-    big_shape.set_visible(true);
-    small_shape.set_visible(true);
+    small_shape->set_color("00FF00");
+    small_shape->set_outline("FF0000", 2);
+    big_shape->set_visible(true);
+    small_shape->set_visible(true);
     scene.add(big_shape, small_shape);
     scene.frame_advance();
-    scene.write_frames_to_file("test");
     REQUIRE(scene.get_pixel(0, 2, 2) == Color("FF0000"));
 }

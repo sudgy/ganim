@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "bases/single_object.hpp"
+#include "object_ptr.hpp"
 
 #include "ganim/gl/buffer.hpp"
 #include "ganim/gl/vertex_array.hpp"
@@ -79,7 +80,7 @@ namespace ganim {
                 const Animatable& end,
                 double t
             ) override;
-            std::unique_ptr<Shape> polymorphic_copy() const;
+            ObjectPtr<Shape> polymorphic_copy() const;
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 
@@ -111,6 +112,14 @@ namespace ganim {
             bool M_changed_after_construction = false;
             bool M_do_shading = false;
     };
+    inline ObjectPtr<Shape> make_shape(
+        std::vector<Shape::Vertex> vertices,
+        std::vector<unsigned> indices
+    )
+    {
+        return ObjectPtr<Shape>(vertices, indices);
+    }
+    inline ObjectPtr<Shape> make_shape() {return ObjectPtr<Shape>();}
 }
 
 #endif

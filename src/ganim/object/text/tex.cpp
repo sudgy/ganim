@@ -266,9 +266,10 @@ Tex::Tex(std::filesystem::path dvi_filename)
             ++i;
         }
         auto& new_shape
-            = M_shapes.emplace_back(std::move(vertices), std::move(indices));
-        new_shape.set_texture_vertices(std::move(tvertices));
-        new_shape.set_texture(get_text_texture());
+            = M_shapes.emplace_back(make_shape_texture_shape(
+                        std::move(vertices), std::move(indices)));
+        new_shape->set_texture_vertices(std::move(tvertices));
+        new_shape->set_texture(get_text_texture());
     }
     add(M_shapes);
 }
@@ -347,7 +348,7 @@ void Tex::set_colors(const std::unordered_map<std::string, Color>& colors)
         for (auto& [str, color] : colors) {
             auto& tex = M_tex_strings[i];
             if (tex.find(str) != tex.npos) {
-                M_shapes[i].set_color(color);
+                M_shapes[i]->set_color(color);
                 break;
             }
         }

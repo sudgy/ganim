@@ -29,9 +29,23 @@ namespace ganim {
             );
 
         private:
-            std::unique_ptr<Path> M_path;
-            std::unique_ptr<Shape> M_tip;
+            ObjectPtr<Path> M_path = nullptr;
+            ObjectPtr<Shape> M_tip = nullptr;
     };
+    inline ObjectPtr<ArrowPath> make_arrow_path(
+        const std::vector<pga2::Bivec>& points,
+        ArrowPathArgs args = {}
+    )
+    {
+        return ObjectPtr<ArrowPath>(points, args);
+    }
+    inline ObjectPtr<ArrowPath> make_arrow_path(
+        const std::vector<vga2::Vec>& points,
+        ArrowPathArgs args = {}
+    )
+    {
+        return ObjectPtr<ArrowPath>(points, args);
+    }
 }
 
 #endif

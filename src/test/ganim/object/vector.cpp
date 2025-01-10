@@ -134,15 +134,15 @@ TEST_CASE("Vector rotating around", "[object]") {
 
 TEST_CASE("Vector drawing", "[object]") {
     using namespace pga3;
-    auto test = Vector(12*e1, {0.5, 6.2, 2});
+    auto test = make_vector(12*e1, {0.5, 6.2, 2});
     auto scene = TestScene(40, 10, 40, 10, 1);
-    test.set_visible(true);
-    test.scale(0.5);
+    test->set_visible(true);
+    test->scale(0.5);
     scene.add(test);
     scene.frame_advance();
-    test.scale(2);
+    test->scale(2);
     scene.frame_advance();
-    test.scale(1.5);
+    test->scale(1.5);
     scene.frame_advance();
     const auto white = Color("FFFFFF");
     const auto black = Color("000000");
@@ -227,15 +227,15 @@ TEST_CASE("Vector drawing", "[object]") {
 }
 
 TEST_CASE("Vector object 2D/3D", "[object]") {
-    auto v1 = Vector(2*vga2::e1, {.thickness = 2});
-    auto v2 = Vector(vga2::e1, {.thickness = 2, .three_d = true});
+    auto v1 = make_vector(2*vga2::e1, {.thickness = 2});
+    auto v2 = make_vector(vga2::e1, {.thickness = 2, .three_d = true});
     auto scene = TestScene(4, 4, 4, 4, 1);
     scene.add(v1, v2);
-    scene.get_camera().rotate(τ/4, vga3::e23);
-    v1.set_visible(true);
+    scene.get_camera()->rotate(τ/4, vga3::e23);
+    v1->set_visible(true);
     scene.frame_advance();
-    v1.set_visible(false);
-    v2.set_visible(true);
+    v1->set_visible(false);
+    v2->set_visible(true);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 2, 1) == ApproxColor("000000"));
     REQUIRE(scene.get_pixel(1, 2, 1) == ApproxColor("FFFFFF"));

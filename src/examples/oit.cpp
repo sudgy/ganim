@@ -9,29 +9,29 @@ void oit()
 
     scene.set_transparency_layers(2);
 
-    auto square1 = Shape(
+    auto square1 = make_shape(
         {{ 2,  2},
          { 2, -2},
          {-2, -2},
          {-2,  2}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    auto square2 = Shape(
+    auto square2 = make_shape(
         {{ 2,  2},
          { 2, -2},
          {-2, -2},
          {-2,  2}},
-        {0, 1, 2, 0, 2, 3}
+         {0, 1, 2, 0, 2, 3}
     );
-    square1.set_color("FFFF00");
-    square2.set_color("00FFFF");
-    square1.set_opacity(0.75);
-    square2.set_opacity(0.75);
-    square1.set_visible(true);
-    square2.set_visible(true);
+    square1->set_color("FFFF00");
+    square2->set_color("00FFFF");
+    square1->set_opacity(0.75);
+    square2->set_opacity(0.75);
+    square1->set_visible(true);
+    square2->set_visible(true);
     scene.add(square1, square2);
-    square2.add_updater([&]{
-        square2.rotate(0.02, pga3::e23);
+    square2->add_updater([&]{
+        square2->rotate(0.02, pga3::e23);
     });
     scene.wait(10);
 }

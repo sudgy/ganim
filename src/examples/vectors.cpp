@@ -2,26 +2,28 @@
 
 using namespace ganim;
 
-std::vector<Path> get_coordinate_grid()
+std::vector<ObjectPtr<Path>> get_coordinate_grid()
 {
     using namespace vga2;
-    auto result = std::vector<Path>();
+    auto result = std::vector<ObjectPtr<Path>>();
     for (int x = -10; x <= 10; ++x) {
         if (x != 0) {
-            result.push_back(Path({x*e1 - 10*e2, x*e1 + 10*e2}, false, 0.03));
-            result.back().set_color("606060");
+            result.push_back(make_path(
+                {x*e1 - 10*e2, x*e1 + 10*e2}, false, 0.03));
+            result.back()->set_color("606060");
         }
     }
     for (int y = -10; y <= 10; ++y) {
         if (y != 0) {
-            result.push_back(Path({y*e2 - 10*e1, y*e2 + 10*e1}, false, 0.03));
-            result.back().set_color("606060");
+            result.push_back(make_path(
+                {y*e2 - 10*e1, y*e2 + 10*e1}, false, 0.03));
+            result.back()->set_color("606060");
         }
     }
-    result.push_back(Path({-10*e1, 10*e1}, false, 0.03));
-    result.back().shift(0.001*vga3::e3);
-    result.push_back(Path({-10*e2, 10*e2}, false, 0.03));
-    result.back().shift(0.001*vga3::e3);
+    result.push_back(make_path({-10*e1, 10*e1}, false, 0.03));
+    result.back()->shift(0.001*vga3::e3);
+    result.push_back(make_path({-10*e2, 10*e2}, false, 0.03));
+    result.back()->shift(0.001*vga3::e3);
     return result;
 }
 
@@ -32,12 +34,14 @@ void vectors()
 
     using namespace vga3;
     auto bad_coordinate_grid_base = get_coordinate_grid();
-    auto bad_coordinate_grid = Group(bad_coordinate_grid_base);
+    auto bad_coordinate_grid = make_group(
+            bad_coordinate_grid_base);
     scene.add(bad_coordinate_grid);
-    bad_coordinate_grid.set_visible(true);
+    bad_coordinate_grid->set_visible(true);
 
-    auto vector = Vector(3*e1 + 2*e2, {.three_d = true});
-    vector.set_color(Color("FFFF00"));
+    auto vector = make_vector(
+            3*e1 + 2*e2, {.three_d = true});
+    vector->set_color(Color("FFFF00"));
     scene.add(vector);
     create(scene, vector);
     scene.wait(2);
@@ -48,10 +52,11 @@ void vectors()
     animate(scene, scene.get_camera()).rotate(1, e23).rotate(0.5, e12);
     animate(scene, vector).set_end(e1 + 2*e3);
     scene.wait(2);
-    auto t = Value(0.0);
-    vector.add_updater([&]{
-        vector.set_end(e1 + 2*std::cos(t())*e3 + 2*std::sin(t())*e2);
+    auto tp = make_value(0.0);
+    auto& t = *tp;
+    vector->add_updater([&]{
+        vector->set_end(e1 + 2*std::cos(t())*e3 + 2*std::sin(t())*e2);
     });
-    animate(scene, t, {.duration = 2}).set_value(τ);
+    animate(scene, tp, {.duration = 2}).set_value(τ);
     scene.wait(3);
 }

@@ -7,9 +7,9 @@
 
 namespace ganim {
 
-void create(SceneBase& scene, MaybeOwningRef<Object> object, AnimationArgs args)
+void create(SceneBase& scene, ObjectPtr<Object> object, AnimationArgs args)
 {
-    auto anim = Animation(scene, std::move(object), args);
+    auto anim = Animation(scene, object, args);
     anim.get_starting_object().set_draw_fraction(0);
     anim.get_ending_object().set_draw_fraction(1);
     anim.at_end([&object = *object]{
@@ -22,12 +22,12 @@ void create(SceneBase& scene, MaybeOwningRef<Object> object, AnimationArgs args)
 
 void noise_create(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     double noise_scale,
     AnimationArgs args
 )
 {
-    auto anim = Animation(scene, std::move(object), args);
+    auto anim = Animation(scene, object, args);
     anim.get_starting_object().set_draw_fraction(0);
     anim.get_ending_object().set_draw_fraction(1);
     anim.at_end([&object = *object]{
@@ -40,7 +40,7 @@ void noise_create(
 
 void write(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     AnimationArgs args
 )
 {
@@ -50,7 +50,7 @@ void write(
 
 void create_bivector(
     SceneBase& scene,
-    MaybeOwningRef<Bivector> bivector,
+    ObjectPtr<Bivector> bivector,
     AnimationArgs args
 )
 {

@@ -15,12 +15,13 @@ namespace ganim {
  */
 void fade_in(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
-    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+    (std::is_base_of_v<
+     Object, typename std::remove_reference_t<Ts>::element_type> and ...)
 )
 void fade_in(
     SceneBase& scene,
@@ -31,7 +32,8 @@ void fade_in(
 }
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
-    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+    (std::is_base_of_v<
+     Object, typename std::remove_reference_t<Ts>::element_type> and ...)
 )
 void fade_in(
     SceneBase& scene,
@@ -48,12 +50,13 @@ void fade_in(
  */
 void fade_out(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
-    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+    (std::is_base_of_v<
+     Object, typename std::remove_reference_t<Ts>::element_type> and ...)
 )
 void fade_out(
     SceneBase& scene,
@@ -64,7 +67,8 @@ void fade_out(
 }
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
-    (std::is_base_of_v<Object, std::remove_reference_t<Ts>> and ...)
+    (std::is_base_of_v<
+     Object, typename std::remove_reference_t<Ts>::element_type> and ...)
 )
 void fade_out(
     SceneBase& scene,

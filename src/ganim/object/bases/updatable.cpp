@@ -33,6 +33,11 @@ void Updatable::clear_updaters()
     }
 }
 
+void Updatable::clear_all_updaters()
+{
+    M_updaters.clear();
+}
+
 void Updatable::update()
 {
     for (auto it = M_updaters.begin(); it != M_updaters.end();) {

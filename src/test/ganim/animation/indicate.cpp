@@ -9,14 +9,14 @@ using namespace ganim;
 
 TEST_CASE("Indicate", "[animation]") {
     auto scene = TestScene(8, 8, 8, 8, 4);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 2,  2, 0},
          { 2, -2, 0},
          {-2, -2, 0},
          {-2,  2, 0}},
         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     indicate(scene, shape, {1, rf::linear, 2});

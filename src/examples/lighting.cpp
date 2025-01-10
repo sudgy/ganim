@@ -6,7 +6,7 @@ void lighting()
 {
     //auto scene = Scene("lighting.mp4", 854, 480, 16, 9, 15);
     auto scene = Scene("lighting.mp4", 2560, 1440, 16, 9, 60);
-    auto cube = Shape(
+    auto cube = make_shape(
         {
             {-1, -1, -1},
             {-1, -1,  1},
@@ -28,9 +28,9 @@ void lighting()
     );
     scene.add(cube);
     using namespace vga3;
-    scene.get_camera().rotate(1, e23).rotate(0.5, e12);
-    cube.set_visible(true);
-    cube.set_color(Color("FFFF00"));
-    cube.add_updater([&]{cube.rotate(0.01, e12);});
+    scene.get_camera()->rotate(1, e23).rotate(0.5, e12);
+    cube->set_visible(true);
+    cube->set_color(Color("FFFF00"));
+    cube->add_updater([&]{cube->rotate(0.01, e12);});
     scene.wait(5);
 }

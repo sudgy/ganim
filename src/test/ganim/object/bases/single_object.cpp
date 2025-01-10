@@ -10,7 +10,7 @@ using namespace ganim;
 
 TEST_CASE("Outlines", "[object]") {
     auto scene = TestScene(8, 8, 8, 8, 1);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{ 0, 0, 0, 0, 1, 1, 1, 1},
          { 1, 0, 0, 0, 1, 1, 1, 1},
          { 1, 1, 0, 0, 1, 1, 1, 1},
@@ -22,10 +22,10 @@ TEST_CASE("Outlines", "[object]") {
          // This coordinate is unused when drawing, but it makes the bounding
          // box have an even height, making this test easier to design
          {-1, 2}},
-        {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7}
+         {0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7}
     );
-    shape.set_outline(Color("#FF0000"), 3);
-    shape.set_visible(true);
+    shape->set_outline(Color("#FF0000"), 3);
+    shape->set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     const auto red = std::array<unsigned char, 8*8>{
@@ -63,17 +63,17 @@ TEST_CASE("Outlines", "[object]") {
 
 TEST_CASE("Outline creating", "[object]") {
     auto scene = TestScene(16, 16, 4, 4, 4);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{-1,  1, 0, 0},
          {-1, -1, 0, 0},
          { 0,  1, 0, 1},
          { 0, -1, 0, 1},
          { 2,  1, 0, 2},
          { 2, -1, 0, 2}},
-        {0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5}
+         {0, 1, 2, 1, 2, 3, 2, 3, 4, 3, 4, 5}
     );
     scene.add(shape);
-    shape.set_outline(Color("#FF0000"), 0.375);
+    shape->set_outline(Color("#FF0000"), 0.375);
     create(scene, shape, {.rate_function = [](double t) {return t;}});
     scene.wait();
     REQUIRE(scene.get_pixel(0, 4, 3) == Color("FF0000"));

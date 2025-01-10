@@ -148,9 +148,9 @@ void Shape::interpolate(
     }
 }
 
-std::unique_ptr<Shape> Shape::polymorphic_copy() const
+ObjectPtr<Shape> Shape::polymorphic_copy() const
 {
-    return std::unique_ptr<Shape>(polymorphic_copy_impl());
+    return ObjectPtr<Shape>::from_new(polymorphic_copy_impl());
 }
 
 Shape* Shape::polymorphic_copy_impl() const

@@ -17,21 +17,21 @@ TEST_CASE("TextureShape drawing", "[object]") {
     };
     auto texture1 = gl::Texture(image1.data(), 2, 2);
     auto texture2 = gl::Texture(image2.data(), 2, 2);
-    auto shape = TextureShape<Shape>(
+    auto shape = make_shape_texture_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_texture_vertices(
+    shape->set_texture_vertices(
         {{ 0,  0},
          { 0, -1},
          {-1, -1},
          {-1,  0}}
     );
-    shape.set_texture(texture1);
-    shape.set_visible(true);
+    shape->set_texture(texture1);
+    shape->set_visible(true);
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 1, 0) == Color("000000"));
@@ -39,7 +39,7 @@ TEST_CASE("TextureShape drawing", "[object]") {
     REQUIRE(scene.get_pixel(0, 2, 1) == Color("FFFFFF"));
     REQUIRE(scene.get_pixel(0, 1, 2) == Color("FF0000"));
     REQUIRE(scene.get_pixel(0, 2, 2) == Color("00FF00"));
-    shape.set_texture(texture2);
+    shape->set_texture(texture2);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(1, 1, 0) == Color("000000"));
     REQUIRE(scene.get_pixel(1, 1, 1) == Color("FF00FF"));
@@ -60,22 +60,22 @@ TEST_CASE("TextureShape color", "[object]") {
     };
     auto texture1 = gl::Texture(image1.data(), 2, 2);
     auto texture2 = gl::Texture(image2.data(), 2, 2);
-    auto shape = TextureShape<Shape>(
+    auto shape = make_shape_texture_shape(
         {{ 1,  1, 0},
          { 1, -1, 0},
          {-1, -1, 0},
          {-1,  1, 0}},
         {0, 1, 2, 0, 2, 3}
     );
-    shape.set_texture_vertices(
+    shape->set_texture_vertices(
         {{ 0,  0},
          { 0, -1},
          {-1, -1},
          {-1,  0}}
     );
-    shape.set_texture(texture1);
-    shape.set_visible(true);
-    shape.set_color("FF0000");
+    shape->set_texture(texture1);
+    shape->set_visible(true);
+    shape->set_color("FF0000");
     scene.add(shape);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 1, 0) == Color("000000"));
@@ -83,7 +83,7 @@ TEST_CASE("TextureShape color", "[object]") {
     REQUIRE(scene.get_pixel(0, 2, 1) == Color("FF0000"));
     REQUIRE(scene.get_pixel(0, 1, 2) == Color("FF0000"));
     REQUIRE(scene.get_pixel(0, 2, 2) == Color("000000"));
-    shape.set_texture(texture2);
+    shape->set_texture(texture2);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(1, 1, 0) == Color("000000"));
     REQUIRE(scene.get_pixel(1, 1, 1) == Color("FF0000"));

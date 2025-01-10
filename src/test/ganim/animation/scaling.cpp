@@ -8,12 +8,12 @@ using namespace ganim;
 
 TEST_CASE("grow_from_point and shrink_to_point", "[animation]") {
     auto scene = TestScene(16, 8, 16, 8, 4);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{-4,  4},
          {-4, -4},
          { 4,  4},
          { 4, -4}},
-        {0, 1, 2, 1, 2, 3}
+         {0, 1, 2, 1, 2, 3}
     );
     scene.add(shape);
     scene.frame_advance();
@@ -30,7 +30,7 @@ TEST_CASE("grow_from_point and shrink_to_point", "[animation]") {
     );
     scene.wait();
     scene.frame_advance();
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.frame_advance();
     const auto black = Color("000000");
     const auto white = Color("FFFFFF");

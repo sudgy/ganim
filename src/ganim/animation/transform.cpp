@@ -133,7 +133,7 @@ void main()
         return result;
     }
     struct StaticPart : public Animatable {
-        std::optional<MaybeOwningRef<Object>> M_tracked_object;
+        std::optional<ObjectPtr<Object>> M_tracked_object;
         Object& tracked_object() {return **M_tracked_object;}
         gl::Texture M_object_texture = 0;
         gl::Texture M_distance_transform = 0;
@@ -261,9 +261,9 @@ void main()
             );
             glBindVertexArray(0);
         }
-        std::unique_ptr<StaticPart> polymorphic_copy() const
+        ObjectPtr<StaticPart> polymorphic_copy() const
         {
-            return std::make_unique<StaticPart>();
+            return ObjectPtr<StaticPart>();
         }
         virtual void interpolate(
             const Animatable&,
@@ -525,8 +525,8 @@ void main()
 
 void ganim::texture_transform(
     SceneBase& scene,
-    MaybeOwningRef<Object> from,
-    MaybeOwningRef<Object> to,
+    ObjectPtr<Object> from,
+    ObjectPtr<Object> to,
     TransformAnimationArgs args
 )
 {
@@ -537,19 +537,19 @@ void ganim::texture_transform(
     }
     to->set_animating(true);
     if (!args.copy) from->set_visible(false);
-    auto temp_object = std::make_unique<TransformingPart>();
+    auto temp_object = ObjectPtr<TransformingPart>();
 
     auto anim = Animation(
         scene,
-        MaybeOwningRef(*temp_object),
+        temp_object,
         {args.duration, args.rate_function}
     );
     auto& object = *temp_object;
-    anim.add_animation_object(std::move(temp_object));
+    object.set_visible(true);
     auto& from_part = anim.get_starting_object();
     auto& to_part = anim.get_ending_object();
-    from_part.M_tracked_object = std::move(from);
-    to_part.M_tracked_object = std::move(to);
+    from_part.M_tracked_object = from;
+    to_part.M_tracked_object = to;
     object.M_from = &from_part;
     object.M_to = &to_part;
 
@@ -565,15 +565,15 @@ void ganim::texture_transform(
 
 void ganim::group_transform(
     SceneBase& scene,
-    MaybeOwningRef<Group> from,
-    MaybeOwningRef<Group> to,
+    ObjectPtr<Group> from,
+    ObjectPtr<Group> to,
     TransformAnimationArgs args
 )
 {
     auto indices = discrete_interpolate(from->size(), to->size());
     for (int i = 0; i < ssize(indices); ++i) {
         for (auto j : indices[i]) {
-            texture_transform(scene, (*from)[i], (*to)[j], args);
+            texture_transform(scene, from[i], to[j], args);
         }
     }
 }
@@ -582,34 +582,28 @@ void ganim::group_transform(
 struct TransformAnimation {
     TransformAnimation(
         SceneBase& scene,
-        MaybeOwningRef<Object> from,
-        MaybeOwningRef<Object> to,
+        ObjectPtr<Object> from,
+        ObjectPtr<Object> to,
         TransformAnimationArgs args
     )
     :   M_rate_function(std::move(args.rate_function)),
+        M_object(from->polymorphic_copy()),
         M_from(std::move(from)),
         M_to(std::move(to)),
         M_scene(scene),
         M_direction(args.direction)
     {
-        if (from->is_animating()) {
+        if (M_from->is_animating()) {
             throw std::invalid_argument(
                 "Attempting to animate an object that is already being "
                 "animated."
             );
         }
-        to->set_animating(true);
-        if (!args.copy) from->set_visible(false);
-        auto temp_object = from->polymorphic_copy();
-        scene.add(*temp_object);
-        temp_object->set_visible(true);
-        auto updater = ObjectRemoverUpdater(
-            std::move(temp_object),
-            std::make_unique<bool>(false)
-        );
-        M_object = updater.object.get();
-        M_finished = updater.finished.get();
-        scene.add_updater(std::move(updater));
+        M_to->set_animating(true);
+        if (!args.copy) M_from->set_visible(false);
+        M_object = M_from->polymorphic_copy();
+        scene.add(M_object);
+        M_object->set_visible(true);
         auto fps = M_object->get_fps();
         if (fps == -1) {
             throw std::logic_error("An animation was run without setting "
@@ -635,7 +629,6 @@ struct TransformAnimation {
             M_animation_time = 0;
             M_object->set_visible(false);
             M_scene.remove(*M_object);
-            *M_finished = true;
             M_to->set_visible(true);
             M_to->set_animating(false);
             return false;
@@ -643,20 +636,19 @@ struct TransformAnimation {
         return true;
     }
     std::move_only_function<double(double)> M_rate_function;
-    Object* M_object;
-    MaybeOwningRef<Object> M_from;
-    MaybeOwningRef<Object> M_to;
+    ObjectPtr<Object> M_object;
+    ObjectPtr<Object> M_from;
+    ObjectPtr<Object> M_to;
     int M_animation_progress = 0;
     int M_animation_time = 0;
-    bool* M_finished = nullptr;
     SceneBase& M_scene;
     vga3::Vec M_direction;
 };
 
 void ganim::transform(
     SceneBase& scene,
-    MaybeOwningRef<Object> from,
-    MaybeOwningRef<Object> to,
+    ObjectPtr<Object> from,
+    ObjectPtr<Object> to,
     TransformAnimationArgs args
 )
 {

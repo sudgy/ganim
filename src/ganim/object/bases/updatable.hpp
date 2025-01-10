@@ -75,6 +75,7 @@ namespace ganim {
              * @ref add_updater was called.
              */
             void clear_updaters();
+            void clear_all_updaters();
             /** @brief Update the object
              *
              * This will call all of the updaters and remove any that return

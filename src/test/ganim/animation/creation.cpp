@@ -8,7 +8,7 @@ using namespace ganim;
 
 TEST_CASE("Shape creating", "[animation]") {
     auto scene = TestScene(16, 1, 4, 2, 4);
-    auto shape = Shape(
+    auto shape = make_shape(
         {{-1,  1, 0, 0},
          {-1, -1, 0, 0},
          { 0,  1, 0, 1},

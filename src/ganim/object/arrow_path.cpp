@@ -44,12 +44,12 @@ void ArrowPath::recreate(
     auto final_line = (end_point & points.back()).normalized();
     auto tip_point = end_point + (final_line ^ e0 * args.tip_size);
     points.push_back(tip_point);
-    if (M_path) {
+    if (M_path.get()) {
         M_path->recreate(points, false, args.thickness);
     }
     else {
-        M_path = std::make_unique<Path>(points, false, args.thickness);
-        add(*M_path);
+        M_path = make_path(points, false, args.thickness);
+        add(M_path);
     }
 
     auto r = Even(1);
@@ -75,7 +75,7 @@ void ArrowPath::recreate(
     const auto y2 = float(p2.blade_project<e2>());
     const auto x3 = float(p3.blade_project<e1>());
     const auto y3 = float(p3.blade_project<e2>());
-    if (M_tip) {
+    if (M_tip.get()) {
         M_tip->set_vertices(
             std::vector<Shape::Vertex>{
                 {x1, y1, 0, 0},
@@ -86,15 +86,15 @@ void ArrowPath::recreate(
         );
     }
     else {
-        M_tip = std::make_unique<Shape>(
-            std::vector<Shape::Vertex>{
+        M_tip = make_shape(
+            {
                 {x1, y1, 0, 0},
                 {x2, y2, 0, 0},
                 {x3, y3, 0, 1}
             },
-            std::vector<unsigned>{0, 1, 2}
+            {0, 1, 2}
         );
-        add(*M_tip);
+        add(M_tip);
     }
 }
 

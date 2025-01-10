@@ -10,16 +10,16 @@ TEST_CASE("texture_transform basics", "[animation]") {
     auto scene = TestScene(8, 8, 8, 8, 2);
     // {-3, -3} and {3, 3} are there to make their bounding boxes the same so
     // that no funky scaling happens
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
     scene.add(shape1, shape2);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape1, shape2);
     scene.wait(1);
@@ -49,16 +49,16 @@ TEST_CASE("texture_transform basics", "[animation]") {
 
 TEST_CASE("texture_transform changing bounding box", "[animation]") {
     auto scene = TestScene(24, 24, 24, 24, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-3,  9}, {-3, -9}, { 3,  9}, { 3, -9}, {-9, -9}, {9, 9}},
         {0, 1, 2, 2, 1, 3}
     );
     scene.add(shape1, shape2);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape1, shape2);
     scene.wait(1);
@@ -90,20 +90,20 @@ TEST_CASE("texture_transform changing bounding box", "[animation]") {
 
 TEST_CASE("texture_transform with a static color", "[animation]") {
     auto scene = TestScene(8, 8, 8, 8, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
     const auto black = Color("000000");
     const auto orange = Color("FF8000");
-    shape1.set_color(orange);
-    shape2.set_color(orange);
+    shape1->set_color(orange);
+    shape2->set_color(orange);
     scene.add(shape1, shape2);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape1, shape2);
     scene.wait(1);
@@ -131,11 +131,11 @@ TEST_CASE("texture_transform with a static color", "[animation]") {
 
 TEST_CASE("texture_transform with a changing color", "[animation]") {
     auto scene = TestScene(8, 8, 8, 8, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
@@ -143,10 +143,10 @@ TEST_CASE("texture_transform with a changing color", "[animation]") {
     const auto black = Color("000000");
     const auto dark_red = Color("800000");
     const auto redish = Color("C08080");
-    shape1.set_color(white);
-    shape2.set_color(dark_red);
+    shape1->set_color(white);
+    shape2->set_color(dark_red);
     scene.add(shape1, shape2);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape1, shape2);
     scene.wait(1);
@@ -178,18 +178,18 @@ TEST_CASE("texture_transform with a changing color", "[animation]") {
 
 TEST_CASE("texture_transform moving", "[animation]") {
     auto scene = TestScene(4, 4, 4, 4, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    shape1.shift(-vga2::e1);
-    shape2.shift(vga2::e1);
+    shape1->shift(-vga2::e1);
+    shape2->shift(vga2::e1);
     scene.add(shape1, shape2);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape1, shape2);
     scene.wait(1);
@@ -218,18 +218,18 @@ TEST_CASE("texture_transform moving", "[animation]") {
 
 TEST_CASE("texture_transform moving with direction", "[animation]") {
     auto scene = TestScene(4, 4, 4, 4, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    shape1.shift(-vga2::e1);
-    shape2.shift(vga2::e1);
+    shape1->shift(-vga2::e1);
+    shape2->shift(vga2::e1);
     scene.add(shape1, shape2);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape1, shape2, {.direction = vga3::e2});
     scene.wait(1);
@@ -259,23 +259,23 @@ TEST_CASE("texture_transform moving with direction", "[animation]") {
 TEST_CASE("texture_transform multiple times on the same object", "[animation]")
 {
     auto scene = TestScene(4, 6, 4, 6, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape3 = Shape(
+    auto shape3 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    shape1.shift(-vga2::e1);
-    shape2.shift(vga2::e1 + 2*vga2::e2);
-    shape3.shift(vga2::e1 - 2*vga2::e2);
+    shape1->shift(-vga2::e1);
+    shape2->shift(vga2::e1 + 2*vga2::e2);
+    shape3->shift(vga2::e1 - 2*vga2::e2);
     scene.add(shape1, shape2, shape3);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape1, shape2);
     texture_transform(scene, shape1, shape3);
@@ -307,24 +307,24 @@ TEST_CASE("texture_transform multiple times on the same object", "[animation]")
 TEST_CASE("texture_transform multiple times to the same object", "[animation]")
 {
     auto scene = TestScene(4, 6, 4, 6, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape3 = Shape(
+    auto shape3 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    shape1.shift(-vga2::e1);
-    shape2.shift(vga2::e1 + 2*vga2::e2);
-    shape3.shift(vga2::e1 - 2*vga2::e2);
+    shape1->shift(-vga2::e1);
+    shape2->shift(vga2::e1 + 2*vga2::e2);
+    shape3->shift(vga2::e1 - 2*vga2::e2);
     scene.add(shape1, shape2, shape3);
-    shape2.set_visible(true);
-    shape3.set_visible(true);
+    shape2->set_visible(true);
+    shape3->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, shape2, shape1);
     texture_transform(scene, shape3, shape1);
@@ -359,23 +359,23 @@ TEST_CASE(
 )
 {
     auto scene = TestScene(4, 4, 4, 4, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape3 = Shape(
+    auto shape3 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape4 = Shape(
+    auto shape4 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape5 = Shape(
+    auto shape5 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
@@ -389,15 +389,15 @@ TEST_CASE(
 
 TEST_CASE("texture_transform multiple times in a row", "[animation]") {
     auto scene = TestScene(4, 4, 4, 4, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape3 = Shape(
+    auto shape3 = make_shape(
         {{-1,  1}, {-1, -1}, { 1,  1}, { 1, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
@@ -410,20 +410,20 @@ TEST_CASE("texture_transform multiple times in a row", "[animation]") {
 
 TEST_CASE("texture_transform with groups", "[animation]") {
     auto scene = TestScene(8, 8, 8, 8, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}, {-3, -3}, {3, 3}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto group1 = Group(shape1);
-    auto group2 = Group(shape2);
-    group1.draw_together();
-    group2.draw_together();
+    auto group1 = make_group(shape1);
+    auto group2 = make_group(shape2);
+    group1->draw_together();
+    group2->draw_together();
     scene.add(group1, group2);
-    group1.set_visible(true);
+    group1->set_visible(true);
     scene.frame_advance();
     texture_transform(scene, group1, group2);
     scene.wait(1);
@@ -453,27 +453,27 @@ TEST_CASE("texture_transform with groups", "[animation]") {
 
 TEST_CASE("group_transform", "[animation]") {
     auto scene = TestScene(4, 8, 4, 8, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
         {0, 1, 2, 2, 0, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
         {0, 1, 2, 2, 0, 3}
     );
-    auto shape3 = Shape(
+    auto shape3 = make_shape(
         {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
         {0, 1, 2, 2, 0, 3}
     );
-    auto shape4 = Shape(
+    auto shape4 = make_shape(
         {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
         {0, 1, 2, 2, 0, 3}
     );
-    auto shape5 = Shape(
+    auto shape5 = make_shape(
         {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
         {0, 1, 2, 2, 0, 3}
     );
-    auto shape6 = Shape(
+    auto shape6 = make_shape(
         {{-0.1, -0.1}, {-0.1, 1.1}, {1.1, 1.1}, {1.1, -0.1}},
         {0, 1, 2, 2, 0, 3}
     );
@@ -485,16 +485,16 @@ TEST_CASE("group_transform", "[animation]") {
     const auto yellow = Color("FFFF00");
     const auto cyan = Color("00FFFF");
     using namespace vga2;
-    shape1.set_color(white).shift(-1*e1 + 1*e2);
-    shape2.set_color(red).shift(-1*e1 - 2*e2);
-    shape3.set_color(green).shift(1*e1 + 3*e2);
-    shape4.set_color(blue).shift(1*e1 - 1*e2);
-    shape5.set_color(yellow).shift(1*e1);
-    shape6.set_color(cyan).shift(1*e1 - 4*e2);
-    auto group1 = Group(shape1, shape2);
-    auto group2 = Group(shape3, shape4, shape5, shape6);
+    shape1->set_color(white).shift(-1*e1 + 1*e2);
+    shape2->set_color(red).shift(-1*e1 - 2*e2);
+    shape3->set_color(green).shift(1*e1 + 3*e2);
+    shape4->set_color(blue).shift(1*e1 - 1*e2);
+    shape5->set_color(yellow).shift(1*e1);
+    shape6->set_color(cyan).shift(1*e1 - 4*e2);
+    auto group1 = make_group(shape1, shape2);
+    auto group2 = make_group(shape3, shape4, shape5, shape6);
     scene.add(group1, group2);
-    group1.set_visible(true);
+    group1->set_visible(true);
     scene.frame_advance();
     group_transform(scene, group1, group2);
     scene.wait();
@@ -529,16 +529,16 @@ TEST_CASE("group_transform", "[animation]") {
 
 TEST_CASE("Global transform basic", "[animation]") {
     auto scene = TestScene(8, 8, 8, 8, 2);
-    auto shape1 = Shape(
+    auto shape1 = make_shape(
         {{-3,  1}, {-3, -1}, { 3,  1}, { 3, -1}},
         {0, 1, 2, 2, 1, 3}
     );
-    auto shape2 = Shape(
+    auto shape2 = make_shape(
         {{-1,  3}, {-1, -3}, { 1,  3}, { 1, -3}},
         {0, 1, 2, 2, 1, 3}
     );
     scene.add(shape1, shape2);
-    shape1.set_visible(true);
+    shape1->set_visible(true);
     scene.frame_advance();
     transform(scene, shape1, shape2);
     scene.wait(1);

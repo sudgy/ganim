@@ -7,7 +7,7 @@
 
 #include <functional>
 #include <map>
-#include <memory>
+#include "ganim/object/object_ptr.hpp"
 
 #include "updatable.hpp"
 
@@ -46,7 +46,7 @@ namespace ganim {
             virtual void set_animating(bool animating) {M_animating = animating;}
             virtual bool is_animating() const {return M_animating;}
 
-            std::unique_ptr<Animatable> polymorphic_copy() const;
+            ObjectPtr<Animatable> polymorphic_copy() const;
             virtual void interpolate(
                 const Animatable& start,
                 const Animatable& end,

@@ -15,7 +15,7 @@ struct IndicateAnimationArgs {
 
 void indicate(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     IndicateAnimationArgs args = IndicateAnimationArgs()
 );
 

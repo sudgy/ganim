@@ -7,7 +7,6 @@
  */
 
 #include <cmath>
-#include <memory>
 #include <concepts>
 #include <iostream>
 
@@ -16,7 +15,6 @@
 #include "ganim/scene/base.hpp"
 
 #include "ganim/rate_functions.hpp"
-#include "ganim/maybe_owning_ref.hpp"
 
 namespace ganim {
 
@@ -39,19 +37,6 @@ struct AnimationArgs {
     double duration = 1.0;
     /** @brief The rate function to use for this animation */
     std::function<double(double)> rate_function = rf::smoothererstep;
-};
-
-struct ObjectRemoverUpdater {
-    std::unique_ptr<Object> object;
-    std::unique_ptr<bool> finished;
-    bool operator()()
-    {
-        if (*finished) {
-            object.reset();
-            return false;
-        }
-        return true;
-    }
 };
 
 /** @brief The main animation class
@@ -85,13 +70,12 @@ class Animation {
          */
         explicit Animation(
             SceneBase& scene,
-            MaybeOwningRef<T> object,
+            ObjectPtr<T> object,
             AnimationArgs args = AnimationArgs()
         )
         :   M_rate_function(std::move(args.rate_function)),
-            M_object(*object),
-            M_scene(scene),
-            M_owning(object.is_owning())
+            M_object(object),
+            M_scene(scene)
         {
             if (object->is_animating()) {
                 throw std::invalid_argument(
@@ -102,9 +86,9 @@ class Animation {
             else {
                 object->set_animating(true);
             }
-            scene.add_for_animation(std::move(object));
+            scene.add(object);
             if constexpr (std::convertible_to<
-                    std::unique_ptr<Group>, std::unique_ptr<copy_type>>)
+                    ObjectPtr<Group>, ObjectPtr<copy_type>>)
             {
                 if (auto group = object->as_group()) {
                     M_starting_object = group->polymorphic_copy();
@@ -135,24 +119,19 @@ class Animation {
             ++M_animation_progress;
             auto t = static_cast<double>(M_animation_progress)
                 / M_animation_time;
-            M_object.interpolate(
+            M_object->interpolate(
                 *M_starting_object,
                 *M_ending_object,
                 M_rate_function(t)
             );
             if (M_animation_progress == M_animation_time) {
                 M_animation_time = 0;
-                M_scene.add_updater([&object = M_object, &scene = M_scene]{
-                    scene.remove_for_animation(object);
-                    return false;
-                });
                 if (M_at_end) M_at_end();
-                for (auto [object, finished] : M_animation_objects) {
+                for (auto& object : M_animation_objects) {
                     object->set_visible(false);
-                    M_scene.remove(*object);
-                    *finished = true;
+                    M_scene.remove(object);
                 }
-                M_object.set_animating(false);
+                M_object->set_animating(false);
                 return false;
             }
             return true;
@@ -174,37 +153,27 @@ class Animation {
         {
             M_at_end = std::move(func);
         }
-        void add_animation_object(std::unique_ptr<Object> object)
+        void add_animation_object(ObjectPtr<Object> object)
         {
-            if (!object) {
+            if (!object.get()) {
                 throw std::invalid_argument(
                         "Animation objects must be non-null.");
             }
             object->set_visible(true);
-            M_scene.remove_for_animation(*object);
-            M_scene.add(*object);
-            auto updater = ObjectRemoverUpdater(
-                std::move(object),
-                std::make_unique<bool>(false)
-            );
-            M_animation_objects.emplace_back(
-                updater.object.get(),
-                updater.finished.get()
-            );
-            M_scene.add_updater(std::move(updater));
+            M_scene.add(object);
+            M_animation_objects.emplace_back(object);
         }
 
     private:
         std::move_only_function<double(double)> M_rate_function;
         std::move_only_function<void()> M_at_end;
-        T& M_object;
+        ObjectPtr<T> M_object;
         SceneBase& M_scene;
-        std::unique_ptr<copy_type> M_starting_object;
-        std::unique_ptr<copy_type> M_ending_object;
-        std::vector<std::pair<Object*, bool*>> M_animation_objects;
+        ObjectPtr<copy_type> M_starting_object = nullptr;
+        ObjectPtr<copy_type> M_ending_object = nullptr;
+        std::vector<ObjectPtr<Object>> M_animation_objects;
         int M_animation_progress = 0;
         int M_animation_time = 0;
-        bool M_owning = false;
 };
 
 /** @brief A generic animation for changing an object from its initial state to
@@ -218,30 +187,14 @@ class Animation {
  */
 auto& animate(
     SceneBase& scene,
-    MaybeOwningRef<animatable auto> object,
+    ObjectPtr<animatable auto> object,
     AnimationArgs args = AnimationArgs()
 )
 {
-    auto anim = Animation(scene, std::move(object), args);
+    auto anim = Animation(scene, object, args);
     auto& result = anim.get_ending_object();
     object->add_updater(std::move(anim), true);
     return result;
-}
-auto& animate(
-    SceneBase& scene,
-    animatable auto& object,
-    AnimationArgs args = AnimationArgs()
-)
-{
-    return animate(scene, MaybeOwningRef(object), std::move(args));
-}
-auto& animate(
-    SceneBase& scene,
-    animatable auto&& object,
-    AnimationArgs args = AnimationArgs()
-)
-{
-    return animate(scene, MaybeOwningRef(std::move(object)), std::move(args));
 }
 
 }

@@ -132,7 +132,7 @@ class Transformable : public Animatable {
             const Animatable& end,
             double t
         ) override;
-        std::unique_ptr<Transformable> polymorphic_copy() const;
+        ObjectPtr<Transformable> polymorphic_copy() const;
 
     private:
         virtual Transformable* polymorphic_copy_impl() const override;

@@ -8,7 +8,7 @@ using namespace ganim;
 TEST_CASE("PolygonShape", "[object]") {
     auto scene = TestScene(4, 4, 4, 4, 1);
     using namespace vga2;
-    auto shape = PolygonShape({
+    auto shape = make_polygon_shape(std::vector{
         0*e1,
         e1,
         e1 + e2,
@@ -19,7 +19,7 @@ TEST_CASE("PolygonShape", "[object]") {
         -e2
     });
     scene.add(shape);
-    shape.set_visible(true);
+    shape->set_visible(true);
     scene.frame_advance();
     const auto white = Color("FFFFFF");
     const auto black = Color("000000");

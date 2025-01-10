@@ -10,6 +10,14 @@
 namespace ganim {
 
 class Group;
+
+template <typename T>
+concept normal_input_range =
+    std::ranges::input_range<T> and
+    !requires(T& group, ObjectPtr<Object> object) {
+        group->add(object);
+    };
+
 struct ArrangeArgs {
     double buff = 0.25;
     vga2::Vec align = 0*vga2::e1;
@@ -33,17 +41,13 @@ struct ArrangeArgs {
  */
 class Group : public Object {
     public:
-        template <typename... Ts>
-        explicit Group(Ts&... objects)
-        {
-            (add(objects), ...);
-        }
+        Group()=default;
         Group(const Group&)=default;
         Group(Group&&) noexcept=default;
         Group& operator=(const Group&)=default;
         Group& operator=(Group&&) noexcept=default;
         /*** @brief Add an object to this group */
-        virtual void add(Object& object);
+        virtual void add(ObjectPtr<Object> object);
         /** @brief Adds a range of objects to this group
          *
          * Even though groups are ranges, when adding groups to groups, we don't
@@ -52,8 +56,7 @@ class Group : public Object {
          *
          * @tparam R A range type that is not a Group of some kind
          */
-        template <std::ranges::input_range R>
-            requires(!std::convertible_to<R&, Group&>)
+        template <normal_input_range R>
         void add(R& range)
         {
             for (auto& object : range) {
@@ -89,7 +92,7 @@ class Group : public Object {
             const Animatable& end,
             double t
         ) override;
-        std::unique_ptr<Group> polymorphic_copy() const;
+        ObjectPtr<Group> polymorphic_copy() const;
 
         virtual void draw(const Camera& camera) override;
         virtual bool is_visible() const override;
@@ -170,11 +173,13 @@ class Group : public Object {
         auto cbegin() const {return M_subobjects.begin();}
         auto cend() const {return M_subobjects.end();}
         int size() const {return static_cast<int>(M_subobjects.size());}
-        Object& operator[](int index) {return *M_subobjects[index];}
-        const Object& operator[](int index) const {return *M_subobjects[index];}
+        ObjectPtr<Object> operator[](int index)
+            {return M_subobjects[index];}
+        ObjectPtr<const Object> operator[](int index) const
+            {return M_subobjects[index];}
 
-        Group range(int i1, int i2);
-        Group range(int i);
+        ObjectPtr<Group> range(int i1, int i2);
+        ObjectPtr<Group> range(int i);
 
         Group& align_by_subobject(
             int index,
@@ -242,13 +247,21 @@ class Group : public Object {
     private:
         virtual Group* polymorphic_copy_impl() const;
 
-        std::vector<Object*> M_subobjects;
+        std::vector<ObjectPtr<Object>> M_subobjects;
         double M_ratio = 1;
         double M_outline_thickness = 0;
         Color M_outline_color = Color("#000000");
         bool M_propogate = true;
         bool M_draw_together = false;
 };
+
+template <typename... Ts>
+ObjectPtr<Group> make_group(Ts&... objects)
+{
+    auto result = ObjectPtr<Group>();
+    (result->add(objects), ...);
+    return result;
+}
 
 }
 

@@ -62,9 +62,9 @@ double Object::get_scale() const
     return M_scale;
 }
 
-std::unique_ptr<Object> Object::polymorphic_copy() const
+ObjectPtr<Object> Object::polymorphic_copy() const
 {
-    return std::unique_ptr<Object>(polymorphic_copy_impl());
+    return ObjectPtr<Object>::from_new(polymorphic_copy_impl());
 }
 
 Object* Object::polymorphic_copy_impl() const

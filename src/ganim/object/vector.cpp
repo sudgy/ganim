@@ -320,9 +320,9 @@ gl::Shader* Vector::get_shader()
     return &ganim::get_shader(flags);
 }
 
-std::unique_ptr<Vector> Vector::polymorphic_copy() const
+ObjectPtr<Vector> Vector::polymorphic_copy() const
 {
-    return std::unique_ptr<Vector>(polymorphic_copy_impl());
+    return ObjectPtr<Vector>::from_new(polymorphic_copy_impl());
 }
 
 Vector* Vector::polymorphic_copy_impl() const

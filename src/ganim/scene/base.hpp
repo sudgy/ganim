@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ganim/color.hpp"
-#include "ganim/maybe_owning_ref.hpp"
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/texture.hpp"
 #include "ganim/gl/buffer.hpp"
@@ -46,7 +45,7 @@ namespace ganim {
                 double coord_height,
                 int fps
             );
-            virtual ~SceneBase()=default;
+            virtual ~SceneBase();
             /** @brief Process the scene for one frame.
              *
              * This will update all objects, draw them all onto the scene's
@@ -111,19 +110,20 @@ namespace ganim {
              * does that for you.
              */
             template <typename T>
-            void add(T& object)
+            void add(ObjectPtr<T>& object)
             {
                 if constexpr (std::convertible_to<T&, Animatable&>) {
                     add_animatable(object);
                 }
                 if constexpr (std::convertible_to<T&, Group&>) {
-                    if (!object.drawing_together()) {
-                        add_group(object);
+                    if (!object->drawing_together()) {
+                        add_group(*object);
                         return;
                     }
                 }
                 else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Group*>(&object)) {
+                    auto p = object.template dynamic_pointer_cast<Group>();
+                    if (p.get()) {
                         if (!p->drawing_together()) {
                             add_group(*p);
                             return;
@@ -135,15 +135,20 @@ namespace ganim {
                     return;
                 }
                 else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Object*>(&object)) {
-                        add_drawable(*p);
+                    auto p = object.template dynamic_pointer_cast<Object>();
+                    if (p.get()) {
+                        add_drawable(p);
                         return;
                     }
                 }
-                if constexpr (std::ranges::input_range<T>) {
-                    for (auto& obj : object) {
-                        add(obj);
-                    }
+            }
+            void add(normal_input_range auto& object)
+            {
+                static_assert(!std::convertible_to<decltype(object), Group&>,
+                    "Don't add objects directly to scenes.  They must be in an "
+                    "ObjectPtr.");
+                for (auto& obj : object) {
+                    add(obj);
                 }
             }
             template <typename... Ts> requires(sizeof...(Ts) > 1)
@@ -156,9 +161,8 @@ namespace ganim {
              * This will make the object not be updated or drawn anymore, and
              * the object will be non-animatable.  Note that animations that
              * "remove" objects from a scene don't actually call this function!
-             * They just set the objects visibility to false, to allow you to
-             * use a creating animation on it again later.  However, you need to
-             * call this function if an object's lifetime is about to end.
+             * They just set the object's visibility to false, to allow you to
+             * use a creating animation on it again later.
              */
             template <typename T>
             void remove(T& object)
@@ -186,7 +190,7 @@ namespace ganim {
                         return;
                     }
                 }
-                if constexpr (std::ranges::input_range<T>) {
+                if constexpr (normal_input_range<T>) {
                     for (auto& obj : object) {
                         remove(obj);
                     }
@@ -198,10 +202,7 @@ namespace ganim {
                 (remove(objects), ...);
             }
 
-            void add_for_animation(MaybeOwningRef<Animatable> object);
-            void remove_for_animation(Animatable& object);
-
-            Camera& get_camera() {return M_camera;}
+            ObjectPtr<Camera> get_camera() {return M_camera;}
 
             auto begin() {return M_drawables.begin();}
             auto end() {return M_drawables.end();}
@@ -220,8 +221,8 @@ namespace ganim {
             virtual void process_frame()=0;
             void draw_objects();
 
-            void add_animatable(Animatable& object);
-            void add_drawable(Object& object);
+            void add_animatable(ObjectPtr<Animatable> object);
+            void add_drawable(ObjectPtr<Object> object);
             void add_group(Group& object);
             void remove_animatable(Animatable& object);
             void remove_drawable(Object& object);
@@ -237,11 +238,10 @@ namespace ganim {
             int M_fps;
             int M_frame_count = 0;
             Color M_background_color;
-            Camera M_camera;
+            ObjectPtr<Camera> M_camera;
             Camera M_static_camera;
-            std::vector<Animatable*> M_objects;
-            std::vector<Object*> M_drawables;
-            std::vector<MaybeOwningRef<Animatable>> M_ghost_animating_objects;
+            std::vector<ObjectPtr<Animatable>> M_objects;
+            std::vector<ObjectPtr<Object>> M_drawables;
             std::unique_ptr<Object> M_background_object;
             gl::Texture M_background_texture = 0;
             bool M_animating = true;

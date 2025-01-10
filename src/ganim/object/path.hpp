@@ -34,6 +34,22 @@ namespace ganim {
             double M_dash_on_time = 0;
             double M_dash_off_time = 0;
     };
+    inline ObjectPtr<Path> make_path(
+        const std::vector<pga2::Bivec>& points,
+        bool closed = false,
+        double thickness = 0.04
+    )
+    {
+        return ObjectPtr<Path>(points, closed, thickness);
+    }
+    inline ObjectPtr<Path> make_path(
+        const std::vector<vga2::Vec>& points,
+        bool closed = false,
+        double thickness = 0.04
+    )
+    {
+        return ObjectPtr<Path>(points, closed, thickness);
+    }
 }
 
 #endif

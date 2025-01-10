@@ -48,8 +48,8 @@ class Value : public Animatable {
         operator T() const {return M_value;}
 
         /** @brief Copy the object for the sake of transformations */
-        std::unique_ptr<Value> polymorphic_copy() const
-            {return std::unique_ptr<Value>(polymorphic_copy_impl());}
+        ObjectPtr<Value> polymorphic_copy() const
+            {return ObjectPtr<Value>::from_new(polymorphic_copy_impl());}
         /** @brief Interpolate between two Values
          *
          * This requires the value type to be addable and scalable.
@@ -80,6 +80,17 @@ class Value : public Animatable {
         }
         T M_value;
 };
+
+template <typename T = double>
+ObjectPtr<Value<T>> make_value()
+{
+    return ObjectPtr<Value<T>>();
+}
+template <typename T = double>
+ObjectPtr<Value<T>> make_value(T value)
+{
+    return ObjectPtr<Value<T>>(value);
+}
 
 }
 

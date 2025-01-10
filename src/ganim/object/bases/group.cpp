@@ -8,33 +8,21 @@
 
 using namespace ganim;
 
-void Group::add(Object& object)
+void Group::add(ObjectPtr<Object> object)
 {
-    M_subobjects.push_back(&object);
+    M_subobjects.push_back(std::move(object));
 }
 
-std::unique_ptr<Group> Group::polymorphic_copy() const
+ObjectPtr<Group> Group::polymorphic_copy() const
 {
-    return std::unique_ptr<Group>(polymorphic_copy_impl());
+    return ObjectPtr<Group>::from_new(polymorphic_copy_impl());
 }
 
 Group* Group::polymorphic_copy_impl() const
 {
-    struct OwningGroup : public Group {
-        OwningGroup(const Group& other) : Group(other) {}
-        std::vector<std::unique_ptr<Object>> M_owned_subobjects;
-        virtual void draw(const Camera&) override {}
-        virtual void draw_outline(const Camera&) override {}
-        virtual void set_outline(const Color&, double) override {}
-        virtual void invalidate_outline() override {}
-        virtual Color get_outline_color() const override {return Color();}
-        virtual double get_outline_thickness() const override {return 0.0;}
-    };
-    auto result = std::make_unique<OwningGroup>(*this);
-    result->M_subobjects.clear();
-    for (auto obj : M_subobjects) {
-        result->M_owned_subobjects.emplace_back(obj->polymorphic_copy());
-        result->M_subobjects.push_back(result->M_owned_subobjects.back().get());
+    auto result = std::make_unique<Group>();
+    for (auto& obj : M_subobjects) {
+        result->add(obj->polymorphic_copy());
     }
     return result.release();
 }
@@ -64,7 +52,7 @@ void Group::interpolate(const Animatable& start, const Animatable& end, double t
         ));
     }
     for (auto i = 0; i < size(); ++i) {
-        M_subobjects[i]->interpolate((*start2)[i], (*end2)[i], t);
+        M_subobjects[i]->interpolate(*(*start2)[i], *(*end2)[i], t);
     }
     M_propogate = false;
     Object::interpolate(start, end, t);
@@ -321,9 +309,9 @@ double Group::get_draw_subobject_ratio() const
     return M_ratio;
 }
 
-Group Group::range(int i1, int i2)
+ObjectPtr<Group> Group::range(int i1, int i2)
 {
-    auto result = Group();
+    auto result = make_group();
     if (i1 < 0) i1 = size() + i1;
     if (i2 < 0) i2 = size() + i2;
     if (i1 < 0) {
@@ -335,16 +323,16 @@ Group Group::range(int i1, int i2)
                 "Ending index too high when finding a range of a group");
     }
     for (int i = i1; i < i2; ++i) {
-        result.add((*this)[i]);
+        result->add(M_subobjects[i]);
     }
-    result.set_draw_subobject_ratio(M_ratio);
-    if (M_draw_together) result.draw_together();
+    result->set_draw_subobject_ratio(M_ratio);
+    if (M_draw_together) result->draw_together();
     return result;
 }
 
-Group Group::range(int i)
+ObjectPtr<Group> Group::range(int i)
 {
-    auto result = Group();
+    auto result = make_group();
     if (i < 0) i = size() + i;
     if (i < 0) {
         throw std::out_of_range(
@@ -355,10 +343,10 @@ Group Group::range(int i)
                 "Starting index too high when finding a range of a group");
     }
     for (; i < size(); ++i) {
-        result.add((*this)[i]);
+        result->add(M_subobjects[i]);
     }
-    result.set_draw_subobject_ratio(M_ratio);
-    if (M_draw_together) result.draw_together();
+    result->set_draw_subobject_ratio(M_ratio);
+    if (M_draw_together) result->draw_together();
     return result;
 }
 
@@ -397,20 +385,20 @@ Group& Group::arrange_down(ArrangeArgs args)
     if (size() == 0) return *this;
     auto buff = args.buff;
     auto align = args.align;
-    auto* current = M_subobjects[0];
+    auto* current = M_subobjects[0].get();
     for (int i = 1; i < size(); ++i) {
-        auto* next = M_subobjects[i];
+        auto* next = M_subobjects[i].get();
         next->next_to(*current, -vga2::e2, buff);
         current = next;
     }
     if (align != 0) {
-        for (auto* obj : M_subobjects) {
+        for (auto& obj : M_subobjects) {
             obj->align_to(*this, align);
         }
     }
     auto fake_group = Group();
-    for (auto* obj : M_subobjects) {
-        fake_group.add(*obj);
+    for (auto& obj : M_subobjects) {
+        fake_group.add(obj);
     }
     auto fake_center = fake_group.get_center();
     auto this_center = pga3_to_pga2(get_origin());
@@ -423,20 +411,20 @@ Group& Group::arrange_right(ArrangeArgs args)
     if (size() == 0) return *this;
     auto buff = args.buff;
     auto align = args.align;
-    auto* current = M_subobjects[0];
+    auto* current = M_subobjects[0].get();
     for (int i = 1; i < size(); ++i) {
-        auto* next = M_subobjects[i];
+        auto* next = M_subobjects[i].get();
         next->next_to(*current, vga2::e1, buff);
         current = next;
     }
     if (align != 0) {
-        for (auto* obj : M_subobjects) {
+        for (auto& obj : M_subobjects) {
             obj->align_to(*this, align);
         }
     }
     auto fake_group = Group();
-    for (auto* obj : M_subobjects) {
-        fake_group.add(*obj);
+    for (auto& obj : M_subobjects) {
+        fake_group.add(obj);
     }
     auto fake_center = fake_group.get_center();
     auto this_center = pga3_to_pga2(get_origin());
@@ -458,8 +446,8 @@ Group& Group::arrange_in_grid(
     row_groups.resize(rows);
     col_groups.resize(columns);
     for (int i = 0; i < size; ++i) {
-        row_groups[i / columns].add(*M_subobjects[i]);
-        col_groups[i % columns].add(*M_subobjects[i]);
+        row_groups[i / columns].add(M_subobjects[i]);
+        col_groups[i % columns].add(M_subobjects[i]);
     }
 
     auto heights = std::vector<double>();

@@ -63,88 +63,88 @@ TEST_CASE("Scene waiting", "[scene]") {
 
 TEST_CASE("Scene objects", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto obj1 = TestDrawable();
-    auto obj2 = TestDrawable();
-    obj1.set_visible(true);
-    obj2.set_visible(true);
+    auto obj1 = ObjectPtr<TestDrawable>();
+    auto obj2 = ObjectPtr<TestDrawable>();
+    obj1->set_visible(true);
+    obj2->set_visible(true);
     scene.add(obj1);
-    REQUIRE(obj1.draw_count == 0);
-    REQUIRE(obj2.draw_count == 0);
+    REQUIRE(obj1->draw_count == 0);
+    REQUIRE(obj2->draw_count == 0);
     scene.frame_advance(2);
-    REQUIRE(obj1.draw_count == 2);
-    REQUIRE(obj2.draw_count == 0);
+    REQUIRE(obj1->draw_count == 2);
+    REQUIRE(obj2->draw_count == 0);
     scene.add(obj2);
-    REQUIRE(obj1.draw_count == 2);
-    REQUIRE(obj2.draw_count == 0);
+    REQUIRE(obj1->draw_count == 2);
+    REQUIRE(obj2->draw_count == 0);
     scene.frame_advance(2);
-    REQUIRE(obj1.draw_count == 4);
-    REQUIRE(obj2.draw_count == 2);
+    REQUIRE(obj1->draw_count == 4);
+    REQUIRE(obj2->draw_count == 2);
 }
 
 TEST_CASE("Scene animatable updates", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto obj = TestDrawable();
-    obj.set_visible(true);
-    scene.add(static_cast<Animatable&>(obj));
+    auto obj = ObjectPtr<TestDrawable>();
+    obj->set_visible(true);
+    scene.add(obj);
     int updated = 0;
-    obj.add_updater([&]{++updated;});
-    REQUIRE(obj.draw_count == 0);
+    obj->add_updater([&]{++updated;});
+    REQUIRE(obj->draw_count == 0);
     REQUIRE(updated == 0);
     scene.frame_advance(2);
-    REQUIRE(obj.draw_count == 2);
+    REQUIRE(obj->draw_count == 2);
     REQUIRE(updated == 2);
 }
 
 TEST_CASE("Scene drawing visible objects", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto obj = TestDrawable();
+    auto obj = ObjectPtr<TestDrawable>();
     scene.add(obj);
     scene.frame_advance();
-    REQUIRE(obj.draw_count == 0);
-    obj.set_visible(true);
+    REQUIRE(obj->draw_count == 0);
+    obj->set_visible(true);
     scene.frame_advance();
-    REQUIRE(obj.draw_count == 1);
-    obj.set_visible(false);
+    REQUIRE(obj->draw_count == 1);
+    obj->set_visible(false);
     scene.frame_advance();
-    REQUIRE(obj.draw_count == 1);
+    REQUIRE(obj->draw_count == 1);
 }
 
 TEST_CASE("Scene adding ranges", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
     auto objs = std::array{
-        TestDrawable(),
-        TestDrawable()
+        ObjectPtr<TestDrawable>(),
+        ObjectPtr<TestDrawable>()
     };
-    objs[0].set_visible(true);
-    objs[1].set_visible(true);
+    objs[0]->set_visible(true);
+    objs[1]->set_visible(true);
     scene.add(objs);
     int updated1 = 0;
     int updated2 = 0;
-    objs[0].add_updater([&]{++updated1;});
-    objs[1].add_updater([&]{++updated2;});
-    REQUIRE(objs[0].draw_count == 0);
+    objs[0]->add_updater([&]{++updated1;});
+    objs[1]->add_updater([&]{++updated2;});
+    REQUIRE(objs[0]->draw_count == 0);
     REQUIRE(updated1 == 0);
-    REQUIRE(objs[1].draw_count == 0);
+    REQUIRE(objs[1]->draw_count == 0);
     REQUIRE(updated2 == 0);
     scene.frame_advance(2);
-    REQUIRE(objs[0].draw_count == 2);
+    REQUIRE(objs[0]->draw_count == 2);
     REQUIRE(updated1 == 2);
-    REQUIRE(objs[1].draw_count == 2);
+    REQUIRE(objs[1]->draw_count == 2);
     REQUIRE(updated2 == 2);
 }
 
 TEST_CASE("Scene adding multiple times", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto obj = TestDrawable();
-    obj.set_visible(true);
+    auto obj = ObjectPtr<TestDrawable>();
+    obj->set_visible(true);
     scene.add(obj);
     scene.add(obj);
     int updated = 0;
-    obj.add_updater([&]{++updated;});
-    REQUIRE(obj.draw_count == 0);
+    obj->add_updater([&]{++updated;});
+    REQUIRE(obj->draw_count == 0);
     REQUIRE(updated == 0);
     scene.frame_advance(2);
-    REQUIRE(obj.draw_count == 2);
+    REQUIRE(obj->draw_count == 2);
     REQUIRE(updated == 2);
 }
 
@@ -162,33 +162,33 @@ TEST_CASE("Scene time", "[scene]") {
 
 TEST_CASE("Scene skipping", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto test = TestDrawable();
-    test.set_visible(true);
+    auto test = ObjectPtr<TestDrawable>();
+    test->set_visible(true);
     scene.add(test);
     scene.frame_advance();
     REQUIRE(scene.time_size() == 1);
-    REQUIRE(test.draw_count == 1);
+    REQUIRE(test->draw_count == 1);
     scene.stop_animating();
     scene.frame_advance();
     REQUIRE(scene.time_size() == 1);
-    REQUIRE(test.draw_count == 1);
+    REQUIRE(test->draw_count == 1);
     scene.start_animating();
     scene.frame_advance();
     REQUIRE(scene.time_size() == 2);
-    REQUIRE(test.draw_count == 2);
+    REQUIRE(test->draw_count == 2);
 }
 
 TEST_CASE("Scene object removing itself in its updater", "[scene]") {
     auto scene = TestScene(1, 1, 1, 1, 1);
-    auto test1 = Animatable();
-    auto test2 = Animatable();
-    auto test3 = Animatable();
+    auto test1 = ObjectPtr<Animatable>();
+    auto test2 = ObjectPtr<Animatable>();
+    auto test3 = ObjectPtr<Animatable>();
     scene.add(test1, test2, test3);
-    test1.add_updater([&]{
+    test1->add_updater([&]{
         scene.remove(test1);
     });
     bool updated = false;
-    test2.add_updater([&]{
+    test2->add_updater([&]{
         updated = true;
     });
     scene.frame_advance();
@@ -196,15 +196,15 @@ TEST_CASE("Scene object removing itself in its updater", "[scene]") {
 }
 
 TEST_CASE("Scene iterators", "[scene]") {
-    auto test1 = Animatable();
-    auto test2 = TestDrawable();
-    auto test3 = TestDrawable();
+    auto test1 = ObjectPtr<Animatable>();
+    auto test2 = ObjectPtr<TestDrawable>();
+    auto test3 = ObjectPtr<TestDrawable>();
     auto scene = TestScene(1, 1, 1, 1, 1);
     scene.add(test1, test2, test3);
     bool first = true;
     for (auto obj : scene) {
-        if (first) REQUIRE(obj == &test2);
-        else REQUIRE(obj == &test3);
+        if (first) REQUIRE(obj == test2);
+        else REQUIRE(obj == test3);
         first = false;
     }
 }

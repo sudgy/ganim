@@ -15,13 +15,13 @@ struct ScalingArgs {
 
 void grow_from_point(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     ScalingArgs args = ScalingArgs()
 );
 
 void shrink_to_point(
     SceneBase& scene,
-    MaybeOwningRef<Object> object,
+    ObjectPtr<Object> object,
     ScalingArgs args = ScalingArgs()
 );
 

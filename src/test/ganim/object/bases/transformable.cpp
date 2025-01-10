@@ -138,27 +138,27 @@ TEST_CASE("Transformable rotate", "[object]") {
 }
 
 TEST_CASE("Transformable animate", "[object]") {
-    auto test = TestTransformable();
-    const auto& r = test.get_rotor();
-    const auto& r2 = test.last_applied_rotor;
-    test.set_fps(4);
+    auto test = ObjectPtr<TestTransformable>();
+    const auto& r = test->get_rotor();
+    const auto& r2 = test->last_applied_rotor;
+    test->set_fps(4);
     auto scene = TestScene(1, 1, 1, 1, 4);
     animate(scene, test, {.rate_function = [](double x){return x*x;}})
         .rotate(τ/2, e12);
     REQUIRE_THAT(r, GAEquals(1));
-    test.update();
+    test->update();
     REQUIRE_THAT(r, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));
     REQUIRE_THAT(r2, GAEquals(std::cos(τ/64) + std::sin(τ/64)*e12, 1e-5));
-    test.update();
+    test->update();
     REQUIRE_THAT(r, GAEquals(std::cos(τ/16) + std::sin(τ/16)*e12, 1e-5));
     REQUIRE_THAT(r2, GAEquals(std::cos(3*τ/64) + std::sin(3*τ/64)*e12, 1e-5));
-    test.update();
+    test->update();
     REQUIRE_THAT(r, GAEquals(std::cos(9*τ/64) + std::sin(9*τ/64)*e12, 1e-5));
     REQUIRE_THAT(r2, GAEquals(std::cos(5*τ/64) + std::sin(5*τ/64)*e12, 1e-5));
-    test.update();
+    test->update();
     REQUIRE_THAT(r, GAEquals(e12, 1e-5));
     REQUIRE_THAT(r2, GAEquals(std::cos(7*τ/64) + std::sin(7*τ/64)*e12, 1e-5));
-    test.update();
+    test->update();
     REQUIRE_THAT(r, GAEquals(e12, 1e-5));
     REQUIRE_THAT(r2, GAEquals(std::cos(7*τ/64) + std::sin(7*τ/64)*e12, 1e-5));
 }
@@ -170,18 +170,18 @@ TEST_CASE("Transformable shift negative", "[object]") {
 }
 
 TEST_CASE("Transformable non-commuting rotors", "[object]") {
-    auto test = TestTransformable();
-    test.set_fps(2);
-    test.shift(e1);
+    auto test = ObjectPtr<TestTransformable>();
+    test->set_fps(2);
+    test->shift(e1);
     auto scene = TestScene(1, 1, 1, 1, 2);
     animate(scene, test).rotate(τ/2, e12);
-    REQUIRE_THAT(test.get_origin(), GAEquals((e1 + e0).dual(), 1e-5));
-    test.update();
-    REQUIRE_THAT(test.get_origin(), GAEquals((e2 + e0).dual(), 1e-5));
-    test.update();
-    REQUIRE_THAT(test.get_origin(), GAEquals((-e1 + e0).dual(), 1e-5));
-    test.update();
-    REQUIRE_THAT(test.get_origin(), GAEquals((-e1 + e0).dual(), 1e-5));
+    REQUIRE_THAT(test->get_origin(), GAEquals((e1 + e0).dual(), 1e-5));
+    test->update();
+    REQUIRE_THAT(test->get_origin(), GAEquals((e2 + e0).dual(), 1e-5));
+    test->update();
+    REQUIRE_THAT(test->get_origin(), GAEquals((-e1 + e0).dual(), 1e-5));
+    test->update();
+    REQUIRE_THAT(test->get_origin(), GAEquals((-e1 + e0).dual(), 1e-5));
 }
 
 TEST_CASE("Transformable interpolate", "[object]") {

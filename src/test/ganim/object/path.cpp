@@ -8,7 +8,7 @@ using namespace vga2;
 
 TEST_CASE("Path straight line", "[object]") {
     auto scene = TestScene(8, 8, 8, 8, 1);
-    auto path = Path(
+    auto path = make_path(
         {
             -2*e1,
             2*e1
@@ -16,7 +16,7 @@ TEST_CASE("Path straight line", "[object]") {
         false,
         2
     );
-    path.set_visible(true);
+    path->set_visible(true);
     scene.add(path);
     scene.frame_advance();
     for (int x = 0; x < 8; ++x) {
@@ -35,7 +35,7 @@ TEST_CASE("Path straight line", "[object]") {
 // test.
 TEST_CASE("Path single turn", "[object]") {
     auto scene = TestScene(8, 8, 8, 8, 1);
-    auto path1 = Path(
+    auto path1 = make_path(
         {
             -2*e1,
             0*e1,
@@ -44,7 +44,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         2
     );
-    path1.set_visible(true);
+    path1->set_visible(true);
     scene.add(path1);
     scene.frame_advance();
     for (int x = 0; x < 8; ++x) {
@@ -55,7 +55,7 @@ TEST_CASE("Path single turn", "[object]") {
             REQUIRE(scene.get_pixel(0, x, y) == color);
         }
     }
-    auto path2 = Path(
+    auto path2 = make_path(
         {
             -2*e1,
             2*e1,
@@ -64,7 +64,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         2
     );
-    path2.set_visible(true);
+    path2->set_visible(true);
     scene.remove(path1);
     scene.add(path2);
     scene.frame_advance();
@@ -76,7 +76,7 @@ TEST_CASE("Path single turn", "[object]") {
             REQUIRE(scene.get_pixel(1, x, y) == color);
         }
     }
-    auto path3 = Path(
+    auto path3 = make_path(
         {
             -4*e1,
             2*e1,
@@ -85,7 +85,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         4
     );
-    path3.set_visible(true);
+    path3->set_visible(true);
     scene.remove(path2);
     scene.add(path3);
     scene.frame_advance();
@@ -103,7 +103,7 @@ TEST_CASE("Path single turn", "[object]") {
     REQUIRE(scene.get_pixel(2, 5, 1) == white);
     REQUIRE(scene.get_pixel(2, 3, 0) == white);
     REQUIRE(scene.get_pixel(2, 4, 0) == white);
-    auto path4 = Path(
+    auto path4 = make_path(
         {
             -4*e1,
             0*e1,
@@ -112,7 +112,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         4
     );
-    path4.set_visible(true);
+    path4->set_visible(true);
     scene.remove(path3);
     scene.add(path4);
     scene.frame_advance();
@@ -125,7 +125,7 @@ TEST_CASE("Path single turn", "[object]") {
             REQUIRE(scene.get_pixel(3, x, y) == color);
         }
     }
-    auto path5 = Path(
+    auto path5 = make_path(
         {
             -4*e1,
             -2*e1,
@@ -134,7 +134,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         4
     );
-    path5.set_visible(true);
+    path5->set_visible(true);
     scene.remove(path4);
     scene.add(path5);
     scene.frame_advance();
@@ -150,7 +150,7 @@ TEST_CASE("Path single turn", "[object]") {
     REQUIRE(scene.get_pixel(4, 3, 2) == white);
     REQUIRE(scene.get_pixel(4, 3, 0) == white);
     REQUIRE(scene.get_pixel(4, 4, 0) == white);
-    auto path6 = Path(
+    auto path6 = make_path(
         {
             -4*e1,
             2*e1,
@@ -159,7 +159,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         4
     );
-    path6.set_visible(true);
+    path6->set_visible(true);
     scene.remove(path5);
     scene.add(path6);
     scene.frame_advance();
@@ -176,7 +176,7 @@ TEST_CASE("Path single turn", "[object]") {
     REQUIRE(scene.get_pixel(5, 5, 6) == white);
     REQUIRE(scene.get_pixel(5, 3, 7) == white);
     REQUIRE(scene.get_pixel(5, 4, 7) == white);
-    auto path7 = Path(
+    auto path7 = make_path(
         {
             -4*e1,
             0*e1,
@@ -185,7 +185,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         4
     );
-    path7.set_visible(true);
+    path7->set_visible(true);
     scene.remove(path6);
     scene.add(path7);
     scene.frame_advance();
@@ -198,7 +198,7 @@ TEST_CASE("Path single turn", "[object]") {
             REQUIRE(scene.get_pixel(6, x, y) == color);
         }
     }
-    auto path8 = Path(
+    auto path8 = make_path(
         {
             -4*e1,
             -2*e1,
@@ -207,7 +207,7 @@ TEST_CASE("Path single turn", "[object]") {
         false,
         4
     );
-    path8.set_visible(true);
+    path8->set_visible(true);
     scene.remove(path7);
     scene.add(path8);
     scene.frame_advance();
@@ -227,7 +227,7 @@ TEST_CASE("Path single turn", "[object]") {
 
 TEST_CASE("Path elbows", "[object]") {
     auto scene = TestScene(10, 10, 10, 10, 1);
-    auto path = Path(
+    auto path = make_path(
         {
             -4*e1,
             0*e1,
@@ -236,7 +236,7 @@ TEST_CASE("Path elbows", "[object]") {
         false,
         8
     );
-    path.set_visible(true);
+    path->set_visible(true);
     scene.add(path);
     scene.frame_advance();
     for (int x = 0; x < 10; ++x) {
@@ -263,7 +263,7 @@ TEST_CASE("Path elbows", "[object]") {
 
 TEST_CASE("Closed paths", "[object]") {
     auto scene = TestScene(8, 8, 8, 8, 1);
-    auto path = Path(
+    auto path = make_path(
         {
             -2*e1 - 2*e2,
             +2*e1 - 2*e2,
@@ -273,7 +273,7 @@ TEST_CASE("Closed paths", "[object]") {
         true,
         2
     );
-    path.set_visible(true);
+    path->set_visible(true);
     scene.add(path);
     scene.frame_advance();
     for (int x = 0; x < 8; ++x) {
@@ -290,7 +290,7 @@ TEST_CASE("Closed paths", "[object]") {
 
 TEST_CASE("Dashed paths", "[object]") {
     auto scene = TestScene(8, 8, 8, 8, 1);
-    auto path = Path(
+    auto path = make_path(
         {
             -2*e1,
             2*e1
@@ -298,11 +298,11 @@ TEST_CASE("Dashed paths", "[object]") {
         false,
         2
     );
-    path.set_visible(true);
-    path.set_dash(0.25, 0.25);
+    path->set_visible(true);
+    path->set_dash(0.25, 0.25);
     scene.add(path);
     scene.frame_advance();
-    path.set_dash(0, 0);
+    path->set_dash(0, 0);
     scene.frame_advance();
     for (int x = 0; x < 8; ++x) {
         for (int y = 0; y < 8; ++y) {
