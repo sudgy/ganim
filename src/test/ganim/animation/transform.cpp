@@ -451,6 +451,28 @@ TEST_CASE("texture_transform with groups", "[animation]") {
     }
 }
 
+// This was a bug where texture_transform was sometimes only drawing the outline
+TEST_CASE("texture_transform with outline", "[animation]") {
+    auto scene = TestScene(8, 8, 8, 8, 2);
+    auto shape1 = make_shape(
+        {{-2,  2}, {-2, -2}, { 2,  2}, { 2, -2}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = make_shape(
+        {{-2,  2}, {-2, -2}, { 2,  2}, { 2, -2}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    const auto red = Color("FF0000");
+    const auto white = Color("FFFFFF");
+    shape1->set_outline(red, 2);
+    shape2->set_outline(red, 2);
+    scene.add(shape1, shape2);
+    shape1->set_visible(true);
+    texture_transform(scene, shape1, shape2);
+    scene.wait(1);
+    REQUIRE(scene.get_pixel(0, 4, 4) == white);
+}
+
 TEST_CASE("group_transform", "[animation]") {
     auto scene = TestScene(4, 8, 4, 8, 2);
     auto shape1 = make_shape(

@@ -27,6 +27,7 @@ layout (location = 1) in vec2 in_tex_coord1;
 layout (location = 2) in vec2 in_tex_coord2;
 out vec2 out_tex_coord1;
 out vec2 out_tex_coord2;
+out vec3 window_pos;
 
 uniform vec2 camera_scale;
 uniform vec4 view[2];
@@ -71,10 +72,11 @@ void main()
     pos.w = -pos.z;
     pos.x *= camera_scale.x;
     pos.y *= -camera_scale.y;
-    pos.z *= pos.z / 1024;
+    pos.z *= pos.z / 4096;
     gl_Position = pos;
     out_tex_coord1 = in_tex_coord1;
     out_tex_coord2 = in_tex_coord2;
+    window_pos = gl_Position.xyz / gl_Position.w;
 }
 )"      );
         auto fragment = gl::Shader::Source();
@@ -84,6 +86,7 @@ R"(
 
 in vec2 out_tex_coord1;
 in vec2 out_tex_coord2;
+in vec3 window_pos;
 
 uniform sampler2D object1;
 uniform sampler2D distance_transform1;
@@ -122,6 +125,7 @@ void main()
     else {
         out_color = vec4(0, 0, 0, 0);
     }
+    gl_FragDepth = window_pos.z;
 }
 )"
         );
