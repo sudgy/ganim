@@ -185,7 +185,7 @@ TEST_CASE("Scene object removing itself in its updater", "[scene]") {
     auto test3 = ObjectPtr<Animatable>();
     scene.add(test1, test2, test3);
     test1->add_updater([&]{
-        scene.remove(test1);
+        test1.reset();
     });
     bool updated = false;
     test2->add_updater([&]{

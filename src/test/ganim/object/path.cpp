@@ -65,7 +65,7 @@ TEST_CASE("Path single turn", "[object]") {
         2
     );
     path2->set_visible(true);
-    scene.remove(path1);
+    path1.reset();
     scene.add(path2);
     scene.frame_advance();
     for (int x = 0; x < 8; ++x) {
@@ -86,7 +86,7 @@ TEST_CASE("Path single turn", "[object]") {
         4
     );
     path3->set_visible(true);
-    scene.remove(path2);
+    path2.reset();
     scene.add(path3);
     scene.frame_advance();
     auto white = Color("FFFFFF");
@@ -113,7 +113,7 @@ TEST_CASE("Path single turn", "[object]") {
         4
     );
     path4->set_visible(true);
-    scene.remove(path3);
+    path3.reset();
     scene.add(path4);
     scene.frame_advance();
     for (int x = 0; x < 5; ++x) {
@@ -135,7 +135,7 @@ TEST_CASE("Path single turn", "[object]") {
         4
     );
     path5->set_visible(true);
-    scene.remove(path4);
+    path4.reset();
     scene.add(path5);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(4, 0, 3) == white);
@@ -160,7 +160,7 @@ TEST_CASE("Path single turn", "[object]") {
         4
     );
     path6->set_visible(true);
-    scene.remove(path5);
+    path5.reset();
     scene.add(path6);
     scene.frame_advance();
     for (int x = 0; x < 7; ++x) {
@@ -186,7 +186,7 @@ TEST_CASE("Path single turn", "[object]") {
         4
     );
     path7->set_visible(true);
-    scene.remove(path6);
+    path6.reset();
     scene.add(path7);
     scene.frame_advance();
     for (int x = 0; x < 5; ++x) {
@@ -208,7 +208,7 @@ TEST_CASE("Path single turn", "[object]") {
         4
     );
     path8->set_visible(true);
-    scene.remove(path7);
+    path7.reset();
     scene.add(path8);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(7, 0, 3) == white);

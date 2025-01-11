@@ -112,6 +112,21 @@ namespace ganim {
             template <typename T>
             void add(ObjectPtr<T>& object)
             {
+                if constexpr (std::convertible_to<T&, Group&>) {
+                    add_group(object);
+                }
+                else if constexpr (std::convertible_to<T&, Object&>) {
+                    add_object(object);
+                }
+                else {
+                    add_animatable(object);
+                }
+            }
+            //void add(ObjectPtr<Animatable> object);
+            //void add(ObjectPtr<Object> object);
+            //void add(ObjectPtr<Group> object);
+            /*
+            {
                 if constexpr (std::convertible_to<T&, Animatable&>) {
                     add_animatable(object);
                 }
@@ -142,11 +157,9 @@ namespace ganim {
                     }
                 }
             }
+            */
             void add(normal_input_range auto& object)
             {
-                static_assert(!std::convertible_to<decltype(object), Group&>,
-                    "Don't add objects directly to scenes.  They must be in an "
-                    "ObjectPtr.");
                 for (auto& obj : object) {
                     add(obj);
                 }
@@ -156,61 +169,16 @@ namespace ganim {
             {
                 (add(objects), ...);
             }
-            /** @brief Remove an object from a scene
-             *
-             * This will make the object not be updated or drawn anymore, and
-             * the object will be non-animatable.  Note that animations that
-             * "remove" objects from a scene don't actually call this function!
-             * They just set the object's visibility to false, to allow you to
-             * use a creating animation on it again later.
-             */
-            template <typename T>
-            void remove(T& object)
-            {
-                if constexpr (std::convertible_to<T&, Animatable&>) {
-                    remove_animatable(object);
-                }
-                if constexpr (std::convertible_to<T&, Group&>) {
-                    remove_group(object);
-                    return;
-                }
-                else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Group*>(&object)) {
-                        remove(*p);
-                        return;
-                    }
-                }
-                if constexpr (std::convertible_to<T&, Object&>) {
-                    remove_drawable(object);
-                    return;
-                }
-                else if constexpr (std::is_polymorphic_v<T>) {
-                    if (auto* p = dynamic_cast<Object*>(&object)) {
-                        remove_drawable(*p);
-                        return;
-                    }
-                }
-                if constexpr (normal_input_range<T>) {
-                    for (auto& obj : object) {
-                        remove(obj);
-                    }
-                }
-            }
-            template <typename... Ts> requires(sizeof...(Ts) > 1)
-            void remove(Ts&... objects)
-            {
-                (remove(objects), ...);
-            }
 
             ObjectPtr<Camera> get_camera() {return M_camera;}
 
-            auto begin() {return M_drawables.begin();}
-            auto end() {return M_drawables.end();}
-            auto begin() const {return M_drawables.begin();}
-            auto end() const {return M_drawables.end();}
-            auto cbegin() const {return M_drawables.cbegin();}
-            auto cend() const {return M_drawables.cend();}
-            int size() const {return static_cast<int>(M_drawables.size());}
+            auto begin() {return M_objects.begin();}
+            auto end() {return M_objects.end();}
+            auto begin() const {return M_objects.begin();}
+            auto end() const {return M_objects.end();}
+            auto cbegin() const {return M_objects.cbegin();}
+            auto cend() const {return M_objects.cend();}
+            int size() const {return static_cast<int>(M_objects.size());}
 
         private:
             /** @brief Used for subclasses to process the frames.
@@ -221,12 +189,13 @@ namespace ganim {
             virtual void process_frame()=0;
             void draw_objects();
 
+            void add_animatable_base(ObjectPtr<Animatable> object);
+            void add_object_base(ObjectPtr<Object> object);
+            void add_group_base(ObjectPtr<Group> object, bool together);
             void add_animatable(ObjectPtr<Animatable> object);
-            void add_drawable(ObjectPtr<Object> object);
-            void add_group(Group& object);
-            void remove_animatable(Animatable& object);
-            void remove_drawable(Object& object);
-            void remove_group(Group& object);
+            void add_object(ObjectPtr<Object> object);
+            void add_group(ObjectPtr<Group> object);
+            void clean_up();
 
             gl::Framebuffer M_framebuffer;
             gl::Framebuffer M_downsampled_framebuffer;
@@ -240,8 +209,8 @@ namespace ganim {
             Color M_background_color;
             ObjectPtr<Camera> M_camera;
             Camera M_static_camera;
-            std::vector<ObjectPtr<Animatable>> M_objects;
-            std::vector<ObjectPtr<Object>> M_drawables;
+            std::vector<ObjectPtr<Animatable>> M_animatables;
+            std::vector<ObjectPtr<Object>> M_objects;
             std::unique_ptr<Object> M_background_object;
             gl::Texture M_background_texture = 0;
             bool M_animating = true;

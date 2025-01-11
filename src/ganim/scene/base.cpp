@@ -151,7 +151,7 @@ SceneBase::~SceneBase()
 {
     // Some updaters hold ObjectPtrs to the object they're updating, meaning
     // that there will be a memory leak unless we break these loops here.
-    for (auto& object : M_objects) {
+    for (auto& object : M_animatables) {
         object->clear_all_updaters();
     }
 }
@@ -159,22 +159,13 @@ SceneBase::~SceneBase()
 void SceneBase::frame_advance()
 {
     update();
-    auto objects_copy = M_objects;
-    for (auto& object : objects_copy) {
-        object->update();
-    }
-    for (auto& object : objects_copy) {
-        if (object.use_count() == 2) {
-            remove_animatable(*object);
+    {
+        auto objects_copy = M_animatables;
+        for (auto& object : objects_copy) {
+            object->update();
         }
     }
-    for (auto it = M_drawables.begin(); it != M_drawables.end();) {
-        if (it->use_count() == 3) {
-            remove_animatable(**it);
-            it = M_drawables.erase(it);
-        }
-        else ++it;
-    }
+    clean_up();
     if (M_animating) {
         glViewport(0, 0, M_pixel_width, M_pixel_height);
         if (!M_depth_layers.empty()) {
@@ -184,7 +175,7 @@ void SceneBase::frame_advance()
                 glBindFramebuffer(GL_FRAMEBUFFER, l.framebuffer);
                 glClearColor(0, 0, 0, 0);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                for (auto object : M_drawables) {
+                for (auto object : M_objects) {
                     if (object->is_visible()) {
                         if (!object->is_fixed_in_frame()) {
                             if (i == 0) {
@@ -227,7 +218,7 @@ void SceneBase::frame_advance()
             }
         }
         else {
-            for (auto object : M_drawables) {
+            for (auto object : M_objects) {
                 object->set_peeling_depth_buffer(nullptr);
                 if (object->is_visible()) {
                     if (!object->is_fixed_in_frame()) {
@@ -238,7 +229,7 @@ void SceneBase::frame_advance()
             }
         }
         glClear(GL_DEPTH_BUFFER_BIT);
-        for (auto object : M_drawables) {
+        for (auto object : M_objects) {
             if (object->is_visible()) {
                 if (object->is_fixed_in_frame()) {
                     object->draw_outline(M_static_camera);
@@ -298,53 +289,89 @@ void SceneBase::start_animating()
     M_animating = true;
 }
 
+void SceneBase::add_animatable_base(ObjectPtr<Animatable> object)
+{
+    if (std::ranges::find(M_animatables, object) == M_animatables.end()) {
+        object->set_fps(M_fps);
+        M_animatables.emplace_back(object);
+    }
+}
+
+void SceneBase::add_object_base(ObjectPtr<Object> object)
+{
+    auto anim = ObjectPtr<Animatable>(object);
+    if (std::ranges::find(M_animatables, anim) == M_animatables.end()) {
+        if (std::ranges::find(M_objects, object) == M_objects.end()) {
+            M_objects.emplace_back(object);
+        }
+    }
+}
+
+void SceneBase::add_group_base(ObjectPtr<Group> object, bool together)
+{
+    if (!together) add_object_base(object);
+    add_animatable_base(object);
+    together |= object->drawing_together();
+    for (auto& obj : object) {
+        auto group = obj.dynamic_pointer_cast<Group>();
+        if (group.get()) {
+            add_group_base(group, together);
+        }
+        else {
+            if (!together) add_object_base(obj);
+            add_animatable_base(obj);
+        }
+    }
+}
+
 void SceneBase::add_animatable(ObjectPtr<Animatable> object)
 {
-    if (std::ranges::find(M_objects, object) == M_objects.end()) {
-        object->set_fps(M_fps);
-        M_objects.emplace_back(std::move(object));
+    add_animatable_base(object);
+    auto p1 = object.dynamic_pointer_cast<Group>();
+    if (p1.get()) {
+        add_group(p1);
+        return;
+    }
+    auto p2 = object.dynamic_pointer_cast<Object>();
+    if (p2.get()) {
+        add_object(p2);
     }
 }
 
-void SceneBase::add_drawable(ObjectPtr<Object> object)
+void SceneBase::add_object(ObjectPtr<Object> object)
 {
-    if (std::ranges::find(M_drawables, object) == M_drawables.end()) {
-        M_drawables.emplace_back(std::move(object));
+    auto p = object.dynamic_pointer_cast<Group>();
+    if (p.get()) {
+        add_group(p);
+        return;
     }
+    add_object_base(object);
+    add_animatable_base(object);
 }
 
-void SceneBase::add_group(Group& object)
+void SceneBase::add_group(ObjectPtr<Group> object)
 {
-    for (auto& obj : object) {
-        add(obj);
-    }
+    add_group_base(object, false);
 }
 
-void SceneBase::remove_animatable(Animatable& object)
+void SceneBase::clean_up()
 {
-    for (auto it = M_objects.begin(); it != M_objects.end(); ++it) {
-        if (&**it == &object) {
-            M_objects.erase(it);
-            return;
+    bool something_happened = false;
+    for (auto it = M_objects.begin(); it != M_objects.end(); ) {
+        if (it->use_count() == 2) {
+            it = M_objects.erase(it);
+            something_happened = true;
         }
+        else ++it;
     }
-}
-
-void SceneBase::remove_drawable(Object& object)
-{
-    for (auto it = M_drawables.begin(); it != M_drawables.end(); ++it) {
-        if (&**it == &object) {
-            M_drawables.erase(it);
-            return;
+    for (auto it = M_animatables.begin(); it != M_animatables.end(); ) {
+        if (it->use_count() == 1) {
+            it = M_animatables.erase(it);
+            something_happened = true;
         }
+        else ++it;
     }
-}
-
-void SceneBase::remove_group(Group& object)
-{
-    for (auto& obj : object) {
-        remove(*obj);
-    }
+    if (something_happened) clean_up();
 }
 
 void SceneBase::set_transparency_layers(int layers)

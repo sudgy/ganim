@@ -42,12 +42,14 @@ void TestScene::check_draw_equivalent(
         return;
     }
     int t = M_data.size();
-    add(o1);
+    add(o1, o2);
+    o1->set_visible(true);
+    o2->set_visible(false);
     frame_advance();
-    remove(*o1);
-    add(o2);
+    o1->set_visible(false);
+    o2->set_visible(true);
     frame_advance();
-    remove(*o2);
+    o2->set_visible(false);
     if (write_to_file_filename != "") {
         auto object_filename = std::format(
             "{}_object.png",

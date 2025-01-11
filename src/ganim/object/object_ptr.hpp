@@ -59,6 +59,11 @@ namespace ganim {
             bool operator==(const ObjectPtr&) const noexcept=default;
             bool operator!=(const ObjectPtr&) const noexcept=default;
 
+            void reset()
+            {
+                M_ptr.reset();
+            }
+
             ObjectPtr copy_object() const
             {
                 return ObjectPtr(T(*M_ptr));

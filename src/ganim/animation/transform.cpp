@@ -632,7 +632,6 @@ struct TransformAnimation {
         if (M_animation_progress == M_animation_time) {
             M_animation_time = 0;
             M_object->set_visible(false);
-            M_scene.remove(*M_object);
             M_to->set_visible(true);
             M_to->set_animating(false);
             return false;

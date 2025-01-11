@@ -61,9 +61,9 @@ void Group::interpolate(const Animatable& start, const Animatable& end, double t
 
 void Group::draw(const Camera& camera)
 {
+    if (!M_draw_together) return;
     for (auto drawable : M_subobjects) {
         if (drawable->is_visible()) {
-            if (!M_draw_together) drawable->draw_outline(camera);
             drawable->draw(camera);
         }
     }

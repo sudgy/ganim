@@ -129,7 +129,6 @@ class Animation {
                 if (M_at_end) M_at_end();
                 for (auto& object : M_animation_objects) {
                     object->set_visible(false);
-                    M_scene.remove(object);
                 }
                 M_object->set_animating(false);
                 return false;

@@ -455,6 +455,7 @@ TEST_CASE("Group subobject visibility", "[object]") {
     auto obj2 = ObjectPtr<TestObject>();
     auto test = make_group(obj1, obj2);
     test->set_visible(true);
+    test->draw_together();
     auto camera = Camera(1, 1, 1);
 
     test->draw(camera);
@@ -486,17 +487,13 @@ TEST_CASE("Group outlines", "[object]") {
     auto obj2 = ObjectPtr<TestObject>();
     auto test = make_group(obj1, obj2);
     test->set_visible(true);
-    auto camera = Camera(1, 1, 1);
     auto draws = std::vector<std::pair<TestObject*, bool>>();
     obj1->draws = &draws;
     obj2->draws = &draws;
-    test->draw_outline(camera);
-    test->draw(camera);
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    scene.add(test);
+    scene.frame_advance();
     REQUIRE(draws.size() == 4);
-    test->draw_together();
-    test->draw_outline(camera);
-    test->draw(camera);
-    REQUIRE(draws.size() == 8);
 
     REQUIRE(draws[0].first == obj1.get());
     REQUIRE(draws[0].second);
@@ -507,6 +504,16 @@ TEST_CASE("Group outlines", "[object]") {
     REQUIRE(draws[3].first == obj2.get());
     REQUIRE(!draws[3].second);
 
+    obj1 = ObjectPtr<TestObject>();
+    obj2 = ObjectPtr<TestObject>();
+    test = make_group(obj1, obj2);
+    test->set_visible(true);
+    test->draw_together();
+    obj1->draws = &draws;
+    obj2->draws = &draws;
+    scene.add(test);
+    scene.frame_advance();
+    REQUIRE(draws.size() == 8);
     REQUIRE(draws[4].first == obj1.get());
     REQUIRE(draws[4].second);
     REQUIRE(draws[5].first == obj2.get());

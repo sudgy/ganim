@@ -562,9 +562,9 @@ TEST_CASE("Shape copying", "[object]") {
          {-2,  2}},
          {0, 1, 2, 0, 2, 3}
     );
-    auto square2 = square1;
+    auto square2 = square1.copy_object();
     scene.check_draw_equivalent(square1, square2);
-    auto square3 = square1;
+    auto square3 = square1.copy_object();
     square3->set_vertices(
         {{ 3,  2},
          { 3, -2},
@@ -613,23 +613,23 @@ TEST_CASE("Shape interpolating", "[object]") {
          {-5,  5}},
          {0, 1, 2, 0, 2, 3}
     );
-    auto test = shape1;
+    auto test = shape1.copy_object();
     auto scene = TestScene(12, 12, 12, 12, 1);
 
     test->interpolate(*shape1, *shape5, 0);
-    scene.check_draw_equivalent(test, shape1);
+    scene.check_draw_equivalent(test, shape1, "0");
 
     test->interpolate(*shape1, *shape5, 0.25);
-    scene.check_draw_equivalent(test, shape2);
+    scene.check_draw_equivalent(test, shape2, "0.25");
 
     test->interpolate(*shape1, *shape5, 0.5);
-    scene.check_draw_equivalent(test, shape3);
+    scene.check_draw_equivalent(test, shape3, "0.5");
 
     test->interpolate(*shape1, *shape5, 0.75);
-    scene.check_draw_equivalent(test, shape4);
+    scene.check_draw_equivalent(test, shape4, "0.75");
 
     test->interpolate(*shape1, *shape5, 1);
-    scene.check_draw_equivalent(test, shape5);
+    scene.check_draw_equivalent(test, shape5, "1");
 }
 
 TEST_CASE("Shape outline over other object", "[object]") {
