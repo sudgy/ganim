@@ -662,3 +662,12 @@ TEST_CASE("Group arranging", "[object]") {
     REQUIRE_THAT(pga2_to_vga2(obj3->get_center()), GAEquals(3*e1 + 0.75*e2));
     REQUIRE_THAT(pga2_to_vga2(obj4->get_center()), GAEquals(-0.5*e1 - 1.25*e2));
 }
+
+TEST_CASE("Group copy rotor", "[object]") {
+    auto obj1 = ObjectPtr<TestObject>();
+    auto obj2 = ObjectPtr<TestObject>();
+    auto group = make_group(obj1, obj2);
+    group->shift(vga2::e1);
+    auto group2 = group->polymorphic_copy();
+    REQUIRE_THAT(group->get_rotor(), GAEquals(group2->get_rotor()));
+}

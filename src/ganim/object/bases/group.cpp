@@ -20,7 +20,8 @@ ObjectPtr<Group> Group::polymorphic_copy() const
 
 Group* Group::polymorphic_copy_impl() const
 {
-    auto result = std::make_unique<Group>();
+    auto result = std::make_unique<Group>(*this);
+    result->M_subobjects.clear();
     for (auto& obj : M_subobjects) {
         result->add(obj->polymorphic_copy());
     }

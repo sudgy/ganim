@@ -87,22 +87,8 @@ class Animation {
                 object->set_animating(true);
             }
             scene.add(object);
-            if constexpr (std::convertible_to<
-                    ObjectPtr<Group>, ObjectPtr<copy_type>>)
-            {
-                if (auto group = object->as_group()) {
-                    M_starting_object = group->polymorphic_copy();
-                    M_ending_object = group->polymorphic_copy();
-                }
-                else {
-                    M_starting_object = object->polymorphic_copy();
-                    M_ending_object = object->polymorphic_copy();
-                }
-            }
-            else {
-                M_starting_object = object->polymorphic_copy();
-                M_ending_object = object->polymorphic_copy();
-            }
+            M_starting_object = object->polymorphic_copy();
+            M_ending_object = object->polymorphic_copy();
             auto fps = object->get_fps();
             if (fps == -1) {
                 throw std::logic_error("An animation was run without setting "
