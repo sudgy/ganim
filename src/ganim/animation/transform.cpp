@@ -125,6 +125,9 @@ void main()
     else {
         out_color = vec4(0, 0, 0, 0);
     }
+    // A lot of things like outlines use big textures with lots of empty space
+    // and without this they cover up objects behind them
+    if (out_color.a <= 0) discard;
     gl_FragDepth = window_pos.z;
 }
 )"

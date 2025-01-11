@@ -88,6 +88,9 @@ void main()
 {
     float distance = texture(distance_transform, out_tex_coord).r;
     out_color = vec4(color.xyz, clamp(thickness + 0.5 - distance, 0, 1));
+    // A lot of things like outlines use big textures with lots of empty space
+    // and without this they cover up objects behind them
+    if (out_color.a <= 0) discard;
     gl_FragDepth = window_pos.z;
 }
 )"

@@ -133,6 +133,9 @@ void main()
 #ifdef FACE_SHADING
     color.xyz *= fs_in.lighting;
 #endif
+    // A lot of things like outlines use big textures with lots of empty space
+    // and without this they cover up objects behind them
+    if (color.a <= 0) discard;
     gl_FragDepth = fs_in.window_pos.z;
 }
 )"
