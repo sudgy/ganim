@@ -87,7 +87,8 @@ out vec4 out_color;
 void main()
 {
     float distance = texture(distance_transform, out_tex_coord).r;
-    out_color = vec4(color.xyz, clamp(thickness + 0.5 - distance, 0, 1));
+    out_color = color;
+    out_color.a *= clamp(thickness + 0.5 - distance, 0, 1);
     // A lot of things like outlines use big textures with lots of empty space
     // and without this they cover up objects behind them
     if (out_color.a <= 0) discard;
@@ -133,9 +134,10 @@ void SingleObject::draw_outline(const Camera& camera)
     shader.set_rotor_uniform("view", ~camera.get_rotor());
     shader.set_rotor_uniform("model", get_rotor());
     glUniform1f(shader.get_uniform("scale"), get_scale());
+    auto color = M_outline_color;
+    color.a = get_color().a;
     glUniform4f(shader.get_uniform("color"),
-            M_outline_color.r / 255.0, M_outline_color.g / 255.0,
-            M_outline_color.b / 255.0, M_outline_color.a / 255.0);
+            color.r / 255.0, color.g / 255.0, color.b / 255.0, color.a / 255.0);
     glUniform1f(shader.get_uniform("thickness"), thickness);
     glBindVertexArray(M_outline_vertex_array);
     glActiveTexture(GL_TEXTURE0);
@@ -242,7 +244,7 @@ void SingleObject::create_outline(const Camera& camera)
     M_outline_texture = distance_transform(
         alpha_threshold(
             framebuffer_texture,
-            0.1,
+            0.03,
             texture_size,
             texture_size
         ),
