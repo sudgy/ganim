@@ -671,3 +671,38 @@ TEST_CASE("Group copy rotor", "[object]") {
     auto group2 = group->polymorphic_copy();
     REQUIRE_THAT(group->get_rotor(), GAEquals(group2->get_rotor()));
 }
+
+TEST_CASE("Group adding/removing after construction", "[object]") {
+    auto obj1 = ObjectPtr<TestObject>();
+    auto obj2 = ObjectPtr<TestObject>();
+    auto group = make_group();
+    group->add(obj1);
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    scene.add(group);
+
+    auto updated1 = 0;
+    auto updated2 = 0;
+    obj1->add_updater([&]{++updated1;});
+    obj2->add_updater([&]{++updated2;});
+
+    scene.frame_advance();
+    REQUIRE(updated1 == 1);
+    REQUIRE(updated2 == 0);
+
+    group->add(obj2);
+    scene.frame_advance();
+    REQUIRE(updated1 == 2);
+    REQUIRE(updated2 == 1);
+
+    group->remove(obj1);
+    obj1.reset();
+    scene.frame_advance();
+    REQUIRE(updated1 == 2);
+    REQUIRE(updated2 == 2);
+
+    group->remove(obj2);
+    obj2.reset();
+    scene.frame_advance();
+    REQUIRE(updated1 == 2);
+    REQUIRE(updated2 == 2);
+}

@@ -158,6 +158,10 @@ SceneBase::~SceneBase()
 
 void SceneBase::frame_advance()
 {
+    for (auto& [group, together] : M_groups) {
+        add_group_subobjects(group, together);
+    }
+    clean_up();
     update();
     {
         auto objects_copy = M_animatables;
@@ -309,10 +313,19 @@ void SceneBase::add_object_base(ObjectPtr<Object> object)
 
 void SceneBase::add_group_base(ObjectPtr<Group> object, bool together)
 {
+    for (auto& group : M_groups) {
+        if (group.first == object) return;
+    }
+    M_groups.emplace_back(object, together);
     if (!together) add_object_base(object);
     add_animatable_base(object);
     together |= object->drawing_together();
-    for (auto& obj : object) {
+    add_group_subobjects(object, together);
+}
+
+void SceneBase::add_group_subobjects(ObjectPtr<Group>& object, bool together)
+{
+    for (auto& obj : object->take_new_subobjects()) {
         auto group = obj.dynamic_pointer_cast<Group>();
         if (group.get()) {
             add_group_base(group, together);
@@ -357,6 +370,13 @@ void SceneBase::add_group(ObjectPtr<Group> object)
 void SceneBase::clean_up()
 {
     bool something_happened = false;
+    for (auto it = M_groups.begin(); it != M_groups.end(); ) {
+        if (it->first.use_count() == 3) {
+            it = M_groups.erase(it);
+            something_happened = true;
+        }
+        else ++it;
+    }
     for (auto it = M_objects.begin(); it != M_objects.end(); ) {
         if (it->use_count() == 2) {
             it = M_objects.erase(it);

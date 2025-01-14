@@ -10,7 +10,24 @@ using namespace ganim;
 
 void Group::add(ObjectPtr<Object> object)
 {
+    M_new_subobjects.push_back(object);
     M_subobjects.push_back(std::move(object));
+}
+
+void Group::remove(Object& object)
+{
+    for (auto it = M_subobjects.begin(); it != M_subobjects.end(); ++it) {
+        if (&**it == &object) {
+            M_subobjects.erase(it);
+            break;
+        }
+    }
+    for (auto it = M_new_subobjects.begin(); it != M_new_subobjects.end();++it){
+        if (&**it == &object) {
+            M_new_subobjects.erase(it);
+            break;
+        }
+    }
 }
 
 ObjectPtr<Group> Group::polymorphic_copy() const
@@ -22,6 +39,7 @@ Group* Group::polymorphic_copy_impl() const
 {
     auto result = std::make_unique<Group>(*this);
     result->M_subobjects.clear();
+    result->M_new_subobjects.clear();
     for (auto& obj : M_subobjects) {
         result->add(obj->polymorphic_copy());
     }

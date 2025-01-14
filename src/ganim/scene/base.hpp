@@ -122,42 +122,6 @@ namespace ganim {
                     add_animatable(object);
                 }
             }
-            //void add(ObjectPtr<Animatable> object);
-            //void add(ObjectPtr<Object> object);
-            //void add(ObjectPtr<Group> object);
-            /*
-            {
-                if constexpr (std::convertible_to<T&, Animatable&>) {
-                    add_animatable(object);
-                }
-                if constexpr (std::convertible_to<T&, Group&>) {
-                    if (!object->drawing_together()) {
-                        add_group(*object);
-                        return;
-                    }
-                }
-                else if constexpr (std::is_polymorphic_v<T>) {
-                    auto p = object.template dynamic_pointer_cast<Group>();
-                    if (p.get()) {
-                        if (!p->drawing_together()) {
-                            add_group(*p);
-                            return;
-                        }
-                    }
-                }
-                if constexpr (std::convertible_to<T&, Object&>) {
-                    add_drawable(object);
-                    return;
-                }
-                else if constexpr (std::is_polymorphic_v<T>) {
-                    auto p = object.template dynamic_pointer_cast<Object>();
-                    if (p.get()) {
-                        add_drawable(p);
-                        return;
-                    }
-                }
-            }
-            */
             void add(normal_input_range auto& object)
             {
                 for (auto& obj : object) {
@@ -192,6 +156,7 @@ namespace ganim {
             void add_animatable_base(ObjectPtr<Animatable> object);
             void add_object_base(ObjectPtr<Object> object);
             void add_group_base(ObjectPtr<Group> object, bool together);
+            void add_group_subobjects(ObjectPtr<Group>& object, bool together);
             void add_animatable(ObjectPtr<Animatable> object);
             void add_object(ObjectPtr<Object> object);
             void add_group(ObjectPtr<Group> object);
@@ -211,6 +176,7 @@ namespace ganim {
             Camera M_static_camera;
             std::vector<ObjectPtr<Animatable>> M_animatables;
             std::vector<ObjectPtr<Object>> M_objects;
+            std::vector<std::pair<ObjectPtr<Group>, bool>> M_groups;
             std::unique_ptr<Object> M_background_object;
             gl::Texture M_background_texture = 0;
             bool M_animating = true;

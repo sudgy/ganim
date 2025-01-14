@@ -47,7 +47,7 @@ class Group : public Object {
         Group& operator=(const Group&)=default;
         Group& operator=(Group&&) noexcept=default;
         /*** @brief Add an object to this group */
-        virtual void add(ObjectPtr<Object> object);
+        void add(ObjectPtr<Object> object);
         /** @brief Adds a range of objects to this group
          *
          * Even though groups are ranges, when adding groups to groups, we don't
@@ -71,6 +71,20 @@ class Group : public Object {
         void add(Ts&... objects)
         {
             (add(objects), ...);
+        }
+        void remove(Object& object);
+        inline void remove(ObjectPtr<Object> object) {remove(*object);}
+        template <normal_input_range R>
+        void remove(R& range)
+        {
+            for (auto& object : range) {
+                remove(object);
+            }
+        }
+        template <typename... Ts> requires(sizeof...(Ts) > 1)
+        void remove(Ts&... objects)
+        {
+            (remove(objects), ...);
         }
 
         /** @brief Returns this. */
@@ -244,10 +258,16 @@ class Group : public Object {
             ArrangeArgs ver_args = {}
         );
 
+        std::vector<ObjectPtr<Object>> take_new_subobjects()
+        {
+            return std::move(M_new_subobjects);
+        }
+
     private:
         virtual Group* polymorphic_copy_impl() const;
 
         std::vector<ObjectPtr<Object>> M_subobjects;
+        std::vector<ObjectPtr<Object>> M_new_subobjects;
         double M_ratio = 1;
         double M_outline_thickness = 0;
         Color M_outline_color = Color("#000000");
