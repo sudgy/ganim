@@ -148,7 +148,7 @@ class Group : public Object {
             {Transformable::rotate(angle, about_line); return *this;}
         Group& scale(double amount)
             {Object::scale(amount); return *this;}
-        Group& scale(const pointlike auto& about_point, double amount)
+        Group& scale(double amount, const pointlike auto& about_point)
             {Object::scale(amount, about_point); return *this;}
         virtual void set_fps(int fps) override;
         virtual Group& apply_rotor(const pga3::Even& rotor) override;

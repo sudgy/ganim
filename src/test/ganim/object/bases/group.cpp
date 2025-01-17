@@ -168,7 +168,7 @@ TEST_CASE("Group scaling", "[object]") {
     auto test = make_group(group, obj2);
     obj1->shift(e1);
     obj2->shift(2*e2);
-    test->scale(-e1, 2);
+    test->scale(2, -e1);
     REQUIRE(test->get_scale() == 2);
     REQUIRE_THAT(test->get_origin(), GAEquals((e1 + e0).dual()));
     REQUIRE(obj1->get_scale() == 2);
