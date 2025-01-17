@@ -181,8 +181,10 @@ void SingleObject::create_outline(const Camera& camera)
 {
     auto rotor = get_rotor();
     auto scale = get_scale();
+    auto opacity = get_color().a / 255.0;
     apply_rotor(~rotor);
     this->scale(1/scale);
+    set_opacity(1);
     auto bounding_box = get_true_bounding_box();
     using namespace pga3;
     auto p1 = bounding_box.get_inner_lower_left_vertex().undual();
@@ -319,4 +321,5 @@ void SingleObject::create_outline(const Camera& camera)
     );
     this->scale(scale);
     apply_rotor(rotor);
+    set_opacity(opacity);
 }

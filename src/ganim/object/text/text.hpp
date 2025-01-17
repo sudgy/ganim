@@ -13,7 +13,8 @@ namespace ganim {
         public:
             template <typename... Ts>
             explicit Text(Ts&&... strings)
-                requires(std::convertible_to<Ts, std::string_view> and ...)
+                requires((std::convertible_to<Ts, std::string_view> and ...) and
+                        sizeof...(strings) > 0)
             : Text(static_cast<const std::vector<std::string_view>&>(
                 std::vector<std::string_view>{std::forward<Ts>(strings)...})) {}
             explicit Text(const std::vector<std::string_view>& strings);

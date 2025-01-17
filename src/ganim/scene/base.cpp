@@ -158,9 +158,6 @@ SceneBase::~SceneBase()
 
 void SceneBase::frame_advance()
 {
-    for (auto& [group, together] : M_groups) {
-        add_group_subobjects(group, together);
-    }
     clean_up();
     update();
     {
@@ -369,6 +366,11 @@ void SceneBase::add_group(ObjectPtr<Group> object)
 
 void SceneBase::clean_up()
 {
+    auto groups_copy = M_groups;
+    for (auto& [group, together] : groups_copy) {
+        add_group_subobjects(group, together);
+    }
+    groups_copy.clear();
     bool something_happened = false;
     for (auto it = M_groups.begin(); it != M_groups.end(); ) {
         if (it->first.use_count() == 3) {

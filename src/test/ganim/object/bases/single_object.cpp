@@ -111,3 +111,34 @@ TEST_CASE("Empty part of outlines textures covering up", "[object]") {
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 3, 0) == Color("0000FF"));
 }
+
+TEST_CASE("Outlines and opacity", "[object]") {
+    auto scene = TestScene(8, 8, 8, 8, 1);
+    auto shape1 = make_shape(
+        {{-2, -2},
+         { 2, -2},
+         { 2,  2},
+         {-2,  2}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape1->set_opacity(0);
+    shape1->set_color("FF0000");
+    shape1->set_outline("0000FF", 5);
+    shape1->set_visible(true);
+
+    scene.add(shape1);
+    scene.frame_advance();
+    shape1->set_opacity(1);
+    scene.frame_advance();
+    shape1->set_opacity(0.5);
+    scene.frame_advance();
+    shape1->set_opacity(0);
+    scene.frame_advance();
+    shape1->set_opacity(1);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
+    REQUIRE(scene.get_pixel(1, 0, 0) == Color("0000FF"));
+    REQUIRE(scene.get_pixel(2, 0, 0) == Color("00007F"));
+    REQUIRE(scene.get_pixel(3, 0, 0) == Color("000000"));
+    REQUIRE(scene.get_pixel(4, 0, 0) == Color("0000FF"));
+}

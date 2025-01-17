@@ -16,6 +16,9 @@ concept normal_input_range =
     std::ranges::input_range<T> and
     !requires(T& group, ObjectPtr<Object> object) {
         group->add(object);
+    } and
+    !requires(T& group, ObjectPtr<Object> object) {
+        group.add(object);
     };
 
 struct ArrangeArgs {
@@ -191,6 +194,7 @@ class Group : public Object {
             {return M_subobjects[index];}
         ObjectPtr<const Object> operator[](int index) const
             {return M_subobjects[index];}
+        void clear() {M_subobjects.clear(); M_new_subobjects.clear();}
 
         ObjectPtr<Group> range(int i1, int i2);
         ObjectPtr<Group> range(int i);

@@ -13,7 +13,7 @@ class Tex : public Group, public DVIConsumer {
     public:
         explicit Tex(std::filesystem::path dvi_filename);
         template <typename... Ts>
-        explicit Tex(Ts&&... tex_strings)
+        explicit Tex(Ts&&... tex_strings) requires(sizeof...(tex_strings) > 0)
         : Tex(static_cast<const std::vector<std::string>&>(
                     std::vector<std::string>{tex_strings...})) {}
         Tex(const std::vector<std::string>& tex_strings);
