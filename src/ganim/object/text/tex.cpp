@@ -59,6 +59,12 @@ R"(\documentclass[preview]{standalone}
 
 \ExplSyntaxOff
 
+\def\bvec#1{\def\useanchorwidth{T}\stackon[1.2pt]{#1}{\text{\scriptsize$\,\Rightarrow$}}}
+\def\tvec#1{\def\useanchorwidth{T}\stackon[1.2pt]{#1}{\text{\scriptsize$\,\Rrightarrow$}}}
+
+\usepackage{stackengine}
+\stackMath
+
 \begin{document}
 \special{ganimt)";
         tex_file << tex_strings.size();
