@@ -14,6 +14,10 @@ namespace ganim {
         public:
             using element_type = T;
 
+            ObjectPtr(ObjectPtr&& other) noexcept=default;
+            ObjectPtr(const ObjectPtr& other)=default;
+            ObjectPtr& operator=(ObjectPtr&& other) noexcept=default;
+            ObjectPtr& operator=(const ObjectPtr& other)=default;
             ObjectPtr(std::nullptr_t) {}
             explicit ObjectPtr(T&& object)
                 : M_ptr(std::make_shared<T>(std::move(object))) {}

@@ -76,7 +76,7 @@ void fade_out(
     Ts&&... objects
 )
 {
-    (fade_out(scene, std::forward<Ts>(objects)), ...);
+    (fade_out(scene, std::forward<Ts>(objects), args), ...);
 }
 
 }
