@@ -173,8 +173,9 @@ double SingleObject::get_outline_thickness() const
 
 void SingleObject::set_draw_fraction(double value)
 {
+    auto different = value != get_draw_fraction();
     Object::set_draw_fraction(value);
-    invalidate_outline();
+    if (different) invalidate_outline();
 }
 
 void SingleObject::create_outline(const Camera& camera)
