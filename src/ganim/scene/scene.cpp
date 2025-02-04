@@ -1,6 +1,7 @@
 #include "scene.hpp"
 
 #include "ganim/gl/gl.hpp"
+#include "ganim/util/stb_image_write.h"
 
 using namespace ganim;
 
@@ -24,4 +25,15 @@ void Scene::process_frame()
     auto data = std::span<uint8_t>(
             M_data.get(), pixel_width()*pixel_height()*3);
     M_writer.write_frame(data);
+    M_processed = true;
+}
+
+void Scene::write_to_image(std::string filename)
+{
+    if (!M_processed) frame_advance();
+    auto real_filename = std::format("{}.png", filename);
+    stbi_write_png(
+        real_filename.c_str(), pixel_width(), pixel_height(), 3,
+        M_data.get(), pixel_width() * 3
+    );
 }

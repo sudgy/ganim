@@ -18,6 +18,8 @@ namespace ganim {
      *
      * @param input The texture.  Its format must be GL_R8UI.
      * @param size The width and height of the texture, in pixels.
+     * @param scale An amount to multiply all distances by.  The final values
+     * will be the pixel distance times this scale factor.
      *
      * @return The distance transform.  Its format will be GL_R32F.
      */

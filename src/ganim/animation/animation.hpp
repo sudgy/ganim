@@ -21,6 +21,10 @@ namespace ganim {
 class SceneBase;
 
 /** @brief A concept specifying what types of objects can be animated
+ *
+ * It used to have more stuff but now it's just a superclass check.  I'll keep
+ * it around for backwards compatibility and in case I want to add something to
+ * it later.
  */
 template <typename T>
 concept animatable = std::derived_from<T, Animatable>;
@@ -52,7 +56,8 @@ struct AnimationArgs {
  * The object will then interpolate between those two states.  If you want
  * something to run at the end of the animation (such as making the object not
  * visible for animations that conceptually make an object disappear), use @ref
- * at_end.
+ * at_end.  If an animation involves a temporary object, use @ref
+ * add_animation_object.
  *
  * @tparam T The type of object getting animated.  See @ref ganim::animatable
  * "animatable".
@@ -138,6 +143,7 @@ class Animation {
         {
             M_at_end = std::move(func);
         }
+        /** @brief Add an object that the animation temporarily uses. */
         void add_animation_object(ObjectPtr<Object> object)
         {
             if (!object.get()) {

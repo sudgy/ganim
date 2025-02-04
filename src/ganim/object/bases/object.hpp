@@ -14,7 +14,8 @@
 #include "ganim/gl/texture.hpp"
 
 namespace ganim {
-    /** @brief The base class for objects that have some kind of extent
+    /** @brief The base class for objects that can be drawn and have some kind
+     * of extent
      *
      * Most of the functions in this class return `*this` to allow for chaining.
      * If you want the chaining to work on subclasses, use the @ref
@@ -49,12 +50,23 @@ namespace ganim {
              * @param thickness The width, in ganim units, of the outline.
              */
             virtual void set_outline(const Color& color, double thickness)=0;
+            /** @brief Set the outline to be invalid
+             *
+             * The usual outline algorithm is expensive, so it is only ever done
+             * once when the object is first drawn.  Call this function when the
+             * outline needs to be calculated again, such as when the shape of
+             * the object has changed.
+             */
             virtual void invalidate_outline()=0;
+            /** @brief Get the outline color. */
             virtual Color get_outline_color() const=0;
+            /** @brief Get the outline thickness. */
             virtual double get_outline_thickness() const=0;
 
+            /** @brief Used internally for order-independent transparency. */
             virtual void set_peeling_depth_buffer(gl::Texture* texture)
                 {M_peeling_depth_buffer = texture;}
+            /** @brief Used internally for order-independent transparency. */
             gl::Texture* peeling_depth_buffer() const
                 {return M_peeling_depth_buffer;}
 
@@ -136,8 +148,14 @@ namespace ganim {
              */
             virtual void set_noise_creating(double noise_creating)
                 {M_noise_creating = noise_creating;}
+            /** @brief Set whether or not this object is fixed in frame, i.e. is
+             * not affected by the motion of the camera.
+             */
             virtual void set_fixed_in_frame(bool fixed_in_frame)
                 {M_fixed_in_frame = fixed_in_frame;}
+            /** @brief See whether or not this object is fixed in frame, i.e. is
+             * not affected by the motion of the camera.
+             */
             bool is_fixed_in_frame() const {return M_fixed_in_frame;}
             /** @brief Determine whether or not this object is being created.
              *
@@ -187,33 +205,89 @@ namespace ganim {
              */
             virtual Box get_original_logical_bounding_box() const
                 {return get_original_true_bounding_box();}
+            /** @brief Get the center of the object's logical bounding box. */
             pga2::Bivec get_center() const;
+            /** @brief Get the center of the left side of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_left() const;
+            /** @brief Get the center of the right side of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_right() const;
+            /** @brief Get the center of the top side of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_up() const;
+            /** @brief Get the center of the bottom side of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_down() const;
+            /** @brief Get the upper left corner of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_upper_left() const;
+            /** @brief Get the upper right corner of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_upper_right() const;
+            /** @brief Get the lower left corner of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_lower_left() const;
+            /** @brief Get the lower right corner of the object's logical
+             * bounding box.
+             */
             pga2::Bivec get_lower_right() const;
 
+            /** @brief Set the x coordinate of the center of this object. */
             void set_x(double x);
+            /** @brief Set the y coordinate of the center of this object. */
             void set_y(double y);
+            /** @brief Set the z coordinate of the center of this object. */
             void set_z(double z);
+            /** @brief Get the x coordinate of the center of this object. */
             double get_x() const;
+            /** @brief Get the y coordinate of the center of this object. */
             double get_y() const;
+            /** @brief Get the z coordinate of the center of this object. */
             double get_z() const;
 
+            /** @brief Place the object next to another point in a certain
+             * direction.
+             *
+             * @param point The point to be next to.
+             * @param direction the direction relative to the point to place the
+             * object.
+             * @param buff The distance between the point and the object.
+             */
             Object& next_to(
                 const pga3::Trivec& point,
                 const pga3::Trivec& direction,
                 double buff = 0.25
             );
+            /** @brief Place the object next to another object in a certain
+             * direction.
+             *
+             * @param object The object to be next to.
+             * @param direction the direction relative to the target object to
+             * place this object.
+             * @param buff The distance between the bounding boxes of the two
+             * objects.
+             */
             Object& next_to(
                 const Object& object,
                 const pga3::Trivec& direction,
                 double buff = 0.25
             );
+            /** @brief Place the object next to another point in a certain
+             * direction.
+             *
+             * @param point The point to be next to.
+             * @param direction the direction relative to the point to place the
+             * object.
+             * @param buff The distance between the point and the object.
+             */
             Object& next_to(
                 const pointlike auto& point,
                 const pointlike auto& direction,
@@ -226,6 +300,15 @@ namespace ganim {
                     buff
                 );
             }
+            /** @brief Place the object next to another object in a certain
+             * direction.
+             *
+             * @param object The object to be next to.
+             * @param direction the direction relative to the target object to
+             * place this object.
+             * @param buff The distance between the bounding boxes of the two
+             * objects.
+             */
             Object& next_to(
                 const Object& object,
                 const pointlike auto& direction,
@@ -235,14 +318,31 @@ namespace ganim {
                 return next_to(object, pointlike_to_pga3(direction), buff);
             }
 
+            /** @brief Align an object to a particular point
+             *
+             * @param point The point to align to
+             * @param direction The side of the object to be aligned to the
+             * point
+             */
             Object& align_to(
                 const pga3::Trivec& point,
                 const pga3::Trivec& direction
             );
+            /** @brief Align an object to another object
+             *
+             * @param object The object to align to
+             * @param direction The side of the objects to be aligned
+             */
             Object& align_to(
                 const Object& object,
                 const pga3::Trivec& direction
             );
+            /** @brief Align an object to a particular point
+             *
+             * @param point The point to align to
+             * @param direction The side of the object to be aligned to the
+             * point
+             */
             Object& align_to(
                 const pointlike auto& point,
                 const pointlike auto& direction
@@ -253,6 +353,11 @@ namespace ganim {
                     pointlike_to_pga3(direction)
                 );
             }
+            /** @brief Align an object to another object
+             *
+             * @param object The object to align to
+             * @param direction The side of the objects to be aligned
+             */
             Object& align_to(
                 const Object& object,
                 const pointlike auto& direction
@@ -260,6 +365,17 @@ namespace ganim {
             {
                 return align_to(object, pointlike_to_pga3(direction));
             }
+            /** @brief Align an object to a particular object in two directions
+             *
+             * Aligning with a direction like e1 + e2 will not do what you might
+             * expect, so call this function instead, which will align along two
+             * different directions simultaneously.  Equivalent to calling align
+             * with each direction separately.
+             *
+             * @param object The object to align to
+             * @param direction1 The first direction to align to
+             * @param direction2 The second direction to align to
+             */
             Object& align_to(
                 const Object& object,
                 const pointlike auto& direction1,
@@ -269,6 +385,17 @@ namespace ganim {
                 align_to(object, direction1);
                 return align_to(object, direction2);
             }
+            /** @brief Align an object to a particular point in two directions
+             *
+             * Aligning with a direction like e1 + e2 will not do what you might
+             * expect, so call this function instead, which will align along two
+             * different directions simultaneously.  Equivalent to calling align
+             * with each direction separately.
+             *
+             * @param point The point to align to
+             * @param direction1 The first direction to align to
+             * @param direction2 The second direction to align to
+             */
             Object& align_to(
                 const pointlike auto& point,
                 const pointlike auto& direction1,
@@ -278,11 +405,33 @@ namespace ganim {
                 align_to(point, direction1);
                 return align_to(point, direction2);
             }
+            /** @brief Move an object to the edge of the screen.
+             *
+             * Since what defines "the screen" is given by the camera, you must
+             * pass a camera to this function as well.
+             *
+             * @param camera The camera that will define the screen.  You should
+             * probably just pull this directly from the scene.
+             * @param direction the side of the screen to go to
+             * @param buff The distance between the actual edge of the screen
+             * and the edge of the object.
+             */
             Object& to_edge(
                 const Camera& camera,
                 const pga3::Trivec& direction,
                 double buff = 0.5
             );
+            /** @brief Move an object to the edge of the screen.
+             *
+             * Since what defines "the screen" is given by the camera, you must
+             * pass a camera to this function as well.
+             *
+             * @param camera The camera that will define the screen.  You should
+             * probably just pull this directly from the scene.
+             * @param direction the side of the screen to go to
+             * @param buff The distance between the actual edge of the screen
+             * and the edge of the object.
+             */
             Object& to_edge(
                 const Camera& camera,
                 const pointlike auto& direction,
@@ -292,6 +441,13 @@ namespace ganim {
                 return to_edge(camera, pointlike_to_pga3(direction), buff);
             }
 
+            /** @brief Get an object visually representing the object's bounding
+             * box for debug purposes.
+             *
+             * @param color The color to make the resulting object be.  It
+             * defaults to a transparent gray.  You probably want transparent
+             * colors in general to make debugging easier.
+             */
             std::unique_ptr<Object>
                 get_bounding_box_object(Color color = "80808080") const;
 

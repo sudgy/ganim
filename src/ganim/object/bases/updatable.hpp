@@ -75,6 +75,14 @@ namespace ganim {
              * @ref add_updater was called.
              */
             void clear_updaters();
+            /** @brief Clear all updaters, including persistent ones.
+             *
+             * Given that persistent updaters are designed to, well, persist,
+             * you probably shouldn't call this.  It's mainly intended to be
+             * called right before the end of the object's lifetime to handle
+             * weird cases like an updater owning the object it's updating
+             * causing memory leaks.
+             */
             void clear_all_updaters();
             /** @brief Update the object
              *

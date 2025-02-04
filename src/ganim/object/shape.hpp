@@ -25,6 +25,9 @@ namespace ganim {
      * Note that while you can directly create instances of this class, you are
      * not intended to do so.  Instead, you should use a subclass either
      * provided by the library or that you created yourself.
+     *
+     * To make lighting work correctly, you must have the coordinates in
+     * counterclockwise order when view from above/outside.
      */
     class Shape : public SingleObject {
         public:
@@ -66,15 +69,42 @@ namespace ganim {
                 std::vector<Vertex> vertices,
                 std::vector<unsigned> indices
             );
+            /** @brief Set whether or not 3D lighting calculations should be
+             * done.
+             */
             void do_shading(bool shading) {M_do_shading = shading;}
+            /** @brief Get the vertices that are being used to draw this shape
+             */
             const std::vector<Vertex>& get_vertices() const {return M_vertices;}
+            /** @brief Get the indices that are being used to draw this shape */
             const std::vector<unsigned>& get_indices() const {return M_indices;}
             virtual void draw(const Camera& camera) override;
+            /** @brief Force the shape to reinitialize all OpenGL objects
+             *
+             * As should be obvious, it's expensive to call this function every
+             * frame.  Only call it when you have to.
+             */
             void make_invalid() {M_opengl_valid = false;}
+            /** @brief Get the @ref ShaderFeature flags to use when making a
+             * shader
+             *
+             * Subclasses should override this if they have extra features they
+             * want to add.
+             */
             virtual ShaderFeature get_shader_flags();
+            /** @brief Set the uniforms used by this object when drawing.
+             *
+             * Subclasses should override this if they have extra uniforms they
+             * need to set.
+             */
             virtual void set_subclass_uniforms(gl::Shader&) {}
             virtual Box get_original_true_bounding_box() const override;
 
+            /** @brief Interpolates two shapes.
+             *
+             * For now, it only works between shapes that have the same number
+             * of vertices and indices.
+             */
             virtual void interpolate(
                 const Animatable& start,
                 const Animatable& end,
@@ -112,6 +142,10 @@ namespace ganim {
             bool M_changed_after_construction = false;
             bool M_do_shading = false;
     };
+    /** @brief Make a Shape in an ObjectPtr.
+     *
+     * @see Shape::Shape
+     */
     inline ObjectPtr<Shape> make_shape(
         std::vector<Shape::Vertex> vertices,
         std::vector<unsigned> indices

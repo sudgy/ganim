@@ -5,8 +5,16 @@
 
 namespace ganim {
 
+/** @brief Represents a box in 3D space.
+ *
+ * It's constructed with two points, the point with the smallest x, y, and z
+ * coordinates, and the point with the largest x, y, and z coordinates.  This
+ * class has tons of functions that are hopefully self-explanatory so I'm not
+ * going to bother documenting most of it.
+ */
 class Box {
     public:
+        /** @brief Creates a box at the origin with no size. */
         Box();
         Box(const pointlike auto& p1, const pointlike auto& p2)
             : Box(pointlike_to_pga3(p1), pointlike_to_pga3(p2)) {}
@@ -60,10 +68,34 @@ class Box {
         pga2::Bivec get_lower_left() const;
         pga2::Bivec get_lower_right() const;
 
+        /** @brief Get the point on the boundary of the box in a certain
+         * direction, assuming a "2D Box".
+         *
+         * Both ideal and non-ideal points are supported.  Non-ideal points will
+         * be considered to be ideal points from the perspective of the origin.
+         */
         pga2::Bivec get_outside_point(const pga2::Bivec& point) const;
+        /** @brief Get the point on the boundary of the box in a certain
+         * direction, assuming a "2D Box".
+         *
+         * Both ideal and non-ideal points are supported.  Non-ideal points will
+         * be considered to be ideal points from the perspective of the origin.
+         */
         pga2::Bivec get_outside_point(const pointlike auto& point)const
             {return get_outside_point(pga3_to_pga2(pointlike_to_pga3(point)));}
+        /** @brief Get the point on the boundary of the box in a certain
+         * direction
+         *
+         * Both ideal and non-ideal points are supported.  Non-ideal points will
+         * be considered to be ideal points from the perspective of the origin.
+         */
         pga3::Trivec get_outside_point_3d(const pga3::Trivec& point)const;
+        /** @brief Get the point on the boundary of the box in a certain
+         * direction
+         *
+         * Both ideal and non-ideal points are supported.  Non-ideal points will
+         * be considered to be ideal points from the perspective of the origin.
+         */
         pga3::Trivec get_outside_point_3d(const pointlike auto& point)const
             {return get_outside_point_3d(pointlike_to_pga3(point));}
 

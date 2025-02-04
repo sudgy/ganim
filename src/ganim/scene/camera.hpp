@@ -65,6 +65,7 @@ class Camera : public Transformable {
         /** @brief Get the starting width passed to the constructor
          */
         double get_starting_height() const {return M_starting_height;}
+        /** @brief Reset the camera back to its starting position */
         void reset();
 
     private:

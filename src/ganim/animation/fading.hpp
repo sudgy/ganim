@@ -18,6 +18,12 @@ void fade_in(
     ObjectPtr<Object> object,
     AnimationArgs args = AnimationArgs()
 );
+/** @brief Fade in several objects.
+ *
+ * Note that because I don't want to write a billion lines of template
+ * metaprogramming, you must pass the arguments in as the second parameter,
+ * right after the scene, not the last paremeter.
+ */
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
     (std::is_base_of_v<
@@ -30,6 +36,12 @@ void fade_in(
 {
     (fade_in(scene, std::forward<Ts>(objects)), ...);
 }
+/** @brief Fade in several objects.
+ *
+ * Note that because I don't want to write a billion lines of template
+ * metaprogramming, you must pass the arguments in as the second parameter,
+ * right after the scene, not the last paremeter.
+ */
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
     (std::is_base_of_v<
@@ -53,6 +65,12 @@ void fade_out(
     ObjectPtr<Object> object,
     AnimationArgs args = AnimationArgs()
 );
+/** @brief Fade out several objects.
+ *
+ * Note that because I don't want to write a billion lines of template
+ * metaprogramming, you must pass the arguments in as the second parameter,
+ * right after the scene, not the last paremeter.
+ */
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
     (std::is_base_of_v<
@@ -65,6 +83,12 @@ void fade_out(
 {
     (fade_out(scene, std::forward<Ts>(objects)), ...);
 }
+/** @brief Fade out several objects.
+ *
+ * Note that because I don't want to write a billion lines of template
+ * metaprogramming, you must pass the arguments in as the second parameter,
+ * right after the scene, not the last paremeter.
+ */
 template <typename... Ts> requires(
     sizeof...(Ts) > 1 and
     (std::is_base_of_v<

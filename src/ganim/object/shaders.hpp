@@ -1,16 +1,12 @@
 #ifndef GANIM_OBJECT_SHADERS_HPP
 #define GANIM_OBJECT_SHADERS_HPP
 
-/** @file
- * @brief Contains global references to all of the shaders used in ganim.
- *
- * I'm still not sure if this is the best way to use shaders, but it's what I'm
- * going with for now.
- */
-
 #include "ganim/gl/shader.hpp"
 
 namespace ganim {
+    /** @brief A bitmask enum type that can represent various features that you
+     * want in shaders
+     */
     enum class ShaderFeature : std::uint64_t {
         Time = 1 << 0,
         VertexColors = 1 << 1,
@@ -43,6 +39,12 @@ namespace ganim {
         {f1 = f1 ^ f2; return f1;}
 
 
+    /** @brief Get a shader with particular features
+     *
+     * To use this, make a set of features using @ref ShaderFeature using
+     * bitwise operations, then call this function with it.  The returned shader
+     * will have all of those features.
+     */
     gl::Shader& get_shader(ShaderFeature features);
 }
 

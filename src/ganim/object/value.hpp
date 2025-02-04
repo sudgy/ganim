@@ -81,11 +81,19 @@ class Value : public Animatable {
         T M_value;
 };
 
+/** Make a @ref Value in an ObjectPtr.
+ *
+ * @see Value::Value
+ */
 template <typename T = double>
 ObjectPtr<Value<T>> make_value()
 {
     return ObjectPtr<Value<T>>();
 }
+/** Make a @ref Value in an ObjectPtr.
+ *
+ * @see Value::Value
+ */
 template <typename T = double>
 ObjectPtr<Value<T>> make_value(T value)
 {

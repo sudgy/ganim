@@ -46,12 +46,22 @@ void noise_create(
     AnimationArgs args = AnimationArgs()
 );
 
+/** @brief An animation to "write" text.
+ *
+ * It is just a wrapper for noise_create with a noise scale of 0.25 and a linear
+ * rate function.
+ */
 void write(
     SceneBase& scene,
     ObjectPtr<Object> object,
     AnimationArgs args = AnimationArgs()
 );
 
+/** @brief An animation to create a bivector.
+ *
+ * Creating the inside of a bivector isn't always what you want, so this
+ * animation creates the outside while fading in the inside.
+ */
 void create_bivector(
     SceneBase& scene,
     ObjectPtr<Bivector> bivector,

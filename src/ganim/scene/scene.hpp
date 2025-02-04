@@ -37,12 +37,19 @@ namespace ganim {
                 double coord_height,
                 int fps
             );
+            /** @brief Write the current frame to a file
+             *
+             * If the scene hasn't rendered anything yet, it will advance one
+             * frame first.  It will always make a .png file.
+             */
+            void write_to_image(std::string filename);
 
         private:
             virtual void process_frame() override;
 
             VideoWriter M_writer;
             std::unique_ptr<std::uint8_t[]> M_data;
+            bool M_processed = false;
     };
 }
 

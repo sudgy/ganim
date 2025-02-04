@@ -103,6 +103,10 @@ namespace ganim {
             std::vector<TextureVertex> M_texture_vertices;
             unsigned M_texture;
     };
+    /** @brief Make a TextureShape in an ObjectPtr.
+     *
+     * @see TextureShape::TextureShape
+     */
     inline ObjectPtr<TextureShape<Shape>> make_shape_texture_shape(
         std::vector<Shape::Vertex> vertices,
         std::vector<unsigned> indices
@@ -110,6 +114,10 @@ namespace ganim {
     {
         return ObjectPtr<TextureShape<Shape>>(vertices, indices);
     }
+    /** @brief Make a TextureShape in an ObjectPtr.
+     *
+     * @see TextureShape::TextureShape
+     */
     inline ObjectPtr<TextureShape<Shape>> make_shape_texture_shape()
     {
         return ObjectPtr<TextureShape<Shape>>();

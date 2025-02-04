@@ -27,16 +27,14 @@ struct ArrangeArgs {
 };
 /** @brief The class for objects that contains other objects
  *
- * Note that this class does not own its subobjects!  You need to make sure to
- * own them elsewhere (such as in a subclass).  This means that you can put the
- * same object in multiple Groups and nothing will go wrong.  However, putting
- * the same object in multiple Groups with draw_together can go wrong because
- * they'll get drawn multiple times.  You can put an object in multiple Groups
- * as long as draw_together is only true for one of them.
+ * You can put the same object in multiple Groups and nothing will go wrong.
+ * However, putting the same object in multiple Groups with draw_together can go
+ * wrong because they'll get drawn multiple times.  You can put an object in
+ * multiple Groups as long as draw_together is only true for one of them.
  *
  * This class is kind of like a container.  You can iterate in a range-based for
  * loop (although you'll be iterating over pointers, not references), you can
- * query its size, and you can get object references with the index operator.
+ * query its size, and you can get ObjectPtrs with the index operator.
  *
  * It is up to you to ensure that you don't add the same object to the same
  * group of any kind multiple times, even transitively.  Things might get weird
@@ -75,8 +73,11 @@ class Group : public Object {
         {
             (add(objects), ...);
         }
+        /** @brief Remove an object from a group */
         void remove(Object& object);
+        /** @brief Remove an object from a group */
         inline void remove(ObjectPtr<Object> object) {remove(*object);}
+        /** @brief Remove a range of objects from a group */
         template <normal_input_range R>
         void remove(R& range)
         {
@@ -84,6 +85,7 @@ class Group : public Object {
                 remove(object);
             }
         }
+        /** @brief Remove several objects from a group */
         template <typename... Ts> requires(sizeof...(Ts) > 1)
         void remove(Ts&... objects)
         {
@@ -178,9 +180,37 @@ class Group : public Object {
          * exception will be thrown.
          */
         void set_draw_subobject_ratio(double ratio);
+        /** @brief See how far into one subobject to draw before starting to
+         * draw the next one
+         *
+         * @see set_draw_subobject_ratio
+         */
         double get_draw_subobject_ratio() const;
+        /** @brief Make the subobjects of this object be drawn at the same time
+         * for the sake of outlines
+         *
+         * This affects when outlines are drawn.  After calling this function,
+         * all outlines of the objects will be drawn before the objects
+         * themselves.  This is good for things like text where you don't want
+         * the outline of one letter to cover up another letter.
+         */
         void draw_together() {M_draw_together = true;}
+        /** @brief Make the subobjects of this object not be drawn at the same
+         * time for the sake of outlines
+         *
+         * This affects when outlines are drawn.  After calling this function,
+         * the outline of each object will be drawn immediately before the
+         * object itself, causing the outline of one subobject to cover up other
+         * objects.  This is good for situations where the subobjects are
+         * visibly distinct.
+         */
         void draw_separately() {M_draw_together = false;}
+        /** @brief Check whether or not the subobjects will be drawn at the same
+         * time for the sake of outlines
+         *
+         * @see draw_together
+         * @see draw_separately
+         */
         bool drawing_together() const {return M_draw_together;}
 
         auto begin() {return M_subobjects.begin();}
@@ -194,21 +224,56 @@ class Group : public Object {
             {return M_subobjects[index];}
         ObjectPtr<const Object> operator[](int index) const
             {return M_subobjects[index];}
+        /** @brief Remove all subobjects from this object */
         void clear() {M_subobjects.clear(); M_new_subobjects.clear();}
 
+        /** @brief Get a range of subobjects
+         *
+         * This will produce a new group consisting of subobjects in the range
+         * [i1, i2).
+         */
         ObjectPtr<Group> range(int i1, int i2);
+        /** @brief Get a range of subobjects
+         *
+         * This will produce a new group consisting of subobjects starting at i
+         * and going to the end.
+         */
         ObjectPtr<Group> range(int i);
 
+        /** @brief Align this group to a point, but using a subobject to do the
+         * aligning rather than the whole group
+         *
+         * @param index The index of the subobject to do the aligning
+         * @param point The point to align the subobject to
+         * @param direction The direction on the bounding box of the
+         * subobject to align to the point
+         */
         Group& align_by_subobject(
             int index,
             const pga3::Trivec& point,
             const pga3::Trivec& direction
         );
+        /** @brief Align this group to an object, but using a subobject to do
+         * the aligning rather than the whole group
+         *
+         * @param index The index of the subobject to do the aligning
+         * @param object The object to align the subobject to
+         * @param direction The direction on the bounding box of the
+         * subobject to align to the point
+         */
         Group& align_by_subobject(
             int index,
             const Object& object,
             const pga3::Trivec& direction
         );
+        /** @brief Align this group to a point, but using a subobject to do the
+         * aligning rather than the whole group
+         *
+         * @param index The index of the subobject to do the aligning
+         * @param point The point to align the subobject to
+         * @param direction The direction on the bounding box of the
+         * subobject to align to the point
+         */
         Group& align_by_subobject(
             int index,
             const pointlike auto& point,
@@ -221,6 +286,14 @@ class Group : public Object {
                 pointlike_to_pga3(direction)
             );
         }
+        /** @brief Align this group to an object, but using a subobject to do
+         * the aligning rather than the whole group
+         *
+         * @param index The index of the subobject to do the aligning
+         * @param object The object to align the subobject to
+         * @param direction The direction on the bounding box of the
+         * subobject to align to the point
+         */
         Group& align_by_subobject(
             int index,
             const Object& object,
@@ -233,6 +306,12 @@ class Group : public Object {
                 pointlike_to_pga3(direction)
             );
         }
+        /** @brief Align this group to an object, but using a subobject to do
+         * the aligning rather than the whole group
+         *
+         * These two-direction overloads work the same way as @ref
+         * Object::align_to.
+         */
         Group& align_by_subobject(
             int index,
             const Object& object,
@@ -243,6 +322,12 @@ class Group : public Object {
             align_by_subobject(index, object, direction1);
             return align_by_subobject(index, object, direction2);
         }
+        /** @brief Align this group to a point, but using a subobject to do the
+         * aligning rather than the whole group
+         *
+         * These two-direction overloads work the same way as @ref
+         * Object::align_to.
+         */
         Group& align_by_subobject(
             int index,
             const pointlike auto& point,
@@ -254,14 +339,18 @@ class Group : public Object {
             return align_by_subobject(index, point, direction2);
         }
 
+        /** @brief Arrange the subobjects in this group in a vertical stack */
         Group& arrange_down(ArrangeArgs args = {});
+        /** @brief Arrange the subobjects in this group in a horizontal stack */
         Group& arrange_right(ArrangeArgs args = {});
+        /** @brief Arrange the subobjects in this group in a grid */
         Group& arrange_in_grid(
             int columns,
             ArrangeArgs hor_args = {},
             ArrangeArgs ver_args = {}
         );
 
+        /** @private */
         std::vector<ObjectPtr<Object>> take_new_subobjects()
         {
             return std::move(M_new_subobjects);
@@ -279,6 +368,11 @@ class Group : public Object {
         bool M_draw_together = false;
 };
 
+/** @brief Make a group in an ObjectPtr.
+ *
+ * You can pass any number of objects in to this function and they will all be
+ * added to the newly-created group.
+ */
 template <typename... Ts>
 ObjectPtr<Group> make_group(Ts&... objects)
 {

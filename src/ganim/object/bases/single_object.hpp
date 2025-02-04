@@ -9,6 +9,12 @@
 
 namespace ganim {
 
+/** @brief The base class for all objects that represent a single drawable unit,
+ * in contrast with @ref ganim::Group "Group"s.
+ *
+ * It actually isn't much.  The main thing it does is define the default outline
+ * drawing algorithm.
+ */
 class SingleObject : public Object {
     public:
         SingleObject()=default;

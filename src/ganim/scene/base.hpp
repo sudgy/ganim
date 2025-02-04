@@ -23,6 +23,10 @@ namespace ganim {
      * This class has all of the scene logic except for what to actually do with
      * the final result.  Look at the subclasses to see how to actually make a
      * scene.
+     *
+     * This class also represents a collection of objects, with it supporting
+     * iterators and having a size function.  However, this will only iterate
+     * over all visible objects, and not all objects.
      */
     class SceneBase : public Updatable {
         public:
@@ -81,9 +85,9 @@ namespace ganim {
             double get_time() const;
             /** @brief Stop animating the scene
              *
-             * This is used to save on time when you only want to see certain
-             * parts of a scene.  All objects will still be updated and the
-             * scene will run like normal, but the scene won't be rendered.
+             * This is used to save on rendering time when you only want to see
+             * certain parts of a scene.  All objects will still be updated and
+             * the scene will run like normal, but the scene won't be rendered.
              */
             void stop_animating();
             /** @brief Start animating the scene
@@ -99,9 +103,21 @@ namespace ganim {
             /** @brief Set the background color of this scene. */
             constexpr void set_background_color(const Color& color)
                 {M_background_color = color;}
+            /** @brief Set how many layers of transparency to draw.
+             *
+             * By default, ganim won't do anything to try to draw transparent
+             * objects in the correct order, which can often produce incorrect
+             * results.  If you want to draw multiple overlapping transparent
+             * objects, call this function with the maximum number of
+             * overlapping transparent objects.  Note that the use of this
+             * feature is pretty expensive, so it should be avoided when
+             * possible.
+             */
             void set_transparency_layers(int layers);
 
 
+            /** @brief Set an image to be drawn in the background of the scene
+             */
             void set_background_image(const std::string& filename);
             /** @brief Add an object to a scene
              *
@@ -122,18 +138,21 @@ namespace ganim {
                     add_animatable(object);
                 }
             }
+            /** @brief Add a range of objects to the scene */
             void add(normal_input_range auto& object)
             {
                 for (auto& obj : object) {
                     add(obj);
                 }
             }
+            /** @brief Add several objects to the scene */
             template <typename... Ts> requires(sizeof...(Ts) > 1)
             void add(Ts&... objects)
             {
                 (add(objects), ...);
             }
 
+            /** @brief Get the camera used for drawing */
             ObjectPtr<Camera> get_camera() {return M_camera;}
 
             auto begin() {return M_objects.begin();}

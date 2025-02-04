@@ -11,6 +11,8 @@ Currently, Ganim has the following pieces:
 - @ref src/ganim/animation "animation", which contains animations for objects.
 - @ref src/ganim/gl "gl", which contains files for working with
   OpenGL.
+- @ref src/ganim/util "util", which contains various extra utilities such as
+  computational geometry operations.
 - @ref src/ganim/video_writer/video_writer.hpp "video_writer", which contains
   the file that streams images into a video file.
 

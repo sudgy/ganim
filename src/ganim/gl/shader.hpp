@@ -13,12 +13,12 @@ namespace ganim::gl {
     /** @brief An RAII wrapper around OpenGL shaders.
      *
      * Unlike the other OpenGL wrappers, this one actually does a bit more.  To
-     * construct it, you need to pass two instances of @ref Shader::Source that
-     * represent the vertex shader and the fragment shader.  Then it will do all
-     * of the compiling and linking itself.  This type is implicitly convertible
-     * to an unsigned integer, which is the shader program id, so you can pass
-     * this type to OpenGL functions that expect a shader id.  You can also get
-     * uniform indices with @ref get_uniform.
+     * construct it, you need to pass several instances of @ref Shader::Source
+     * that represent the different parts of the full program.  Then it will do
+     * all of the compiling and linking itself.  This type is implicitly
+     * convertible to an unsigned integer, which is the shader program id, so
+     * you can pass this type to OpenGL functions that expect a shader id.  You
+     * can also get uniform indices with @ref get_uniform.
      */
     class Shader {
         public:
@@ -67,6 +67,11 @@ namespace ganim::gl {
              * there's also some error checking.
              */
             int get_uniform(const char* name) const;
+            /** @brief Set a rotor uniform.
+             *
+             * Setting vec4[2] uniforms is annoying, so this is a shortcut to
+             * setting a 3D PGA rotor uniform.
+             */
             void set_rotor_uniform(const char* name, const pga3::Even& rotor);
 
         private:

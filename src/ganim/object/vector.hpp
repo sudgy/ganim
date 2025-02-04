@@ -6,30 +6,59 @@
 #include "ganim/gl/shader.hpp"
 
 namespace ganim {
+    /** @brief A struct for the arguments to construct a @ref Vector. */
     struct VectorArgs {
+        /** @brief The maximum size of the tip of the arrow relative to its
+         * total length
+         *
+         * If the vector gets smaller than this, the tip will get smaller as
+         * well.
+         */
         double max_tip_to_length_ratio = 0.5;
+        /** @brief The default size of the tip of the arrow
+         *
+         * This size is measured as the height of the triangle making up the
+         * tip.
+         */
         double tip_size = 0.4;
+        /** @brief The thickness of the long part of the arrow
+         */
         double thickness = 0.06;
+        /** @brief Whether this vector should be drawn three-dimensionally.
+         *
+         * 3D vectors have a bit of added thickness to make them look better in
+         * 3D.
+         */
         bool three_d = false;
     };
     class Vector : public SingleObject {
         public:
+            /** @brief Create a vector starting at the origin pointing to a
+             * particular point.
+             */
             explicit Vector(pointlike auto p2, VectorArgs args = {})
                 : Vector(pga3::e123, pointlike_to_pga3(p2), args) {}
+            /** @brief Create a vector going between two points. */
             Vector(pointlike auto p1, pointlike auto p2, VectorArgs args = {})
                 : Vector(pointlike_to_pga3(p1), pointlike_to_pga3(p2), args) {}
+            /** @brief Create a vector going between two points. */
             Vector(pga3::Trivec p1, pga3::Trivec p2, VectorArgs args={});
 
+            /** @brief Get the starting point of the vector. */
             Vector& set_start(pointlike auto p)
             {
                 return set_start(pointlike_to_pga3(p));
             }
+            /** @brief Set the starting point of the vector. */
             Vector& set_start(pga3::Trivec p);
+            /** @brief Get the ending point of the vector. */
             Vector& set_end(pointlike auto p)
             {
                 return set_end(pointlike_to_pga3(p));
             }
+            /** @brief Set the ending point of the vector. */
             Vector& set_end(pga3::Trivec p);
+            /** @brief Set both the starting and ending points of the vector. */
             Vector& set_start_and_end(pointlike auto p1, pointlike auto p2)
             {
                 return set_start_and_end(
@@ -37,6 +66,7 @@ namespace ganim {
                     pointlike_to_pga3(p2)
                 );
             }
+            /** @brief Set both the starting and ending points of the vector. */
             Vector& set_start_and_end(
                     pga3::Trivec p1, pga3::Trivec p2);
 
@@ -49,6 +79,14 @@ namespace ganim {
             vga2::Vec get_end_vga2() const;
             vga3::Vec get_end_vga3() const;
 
+            /** @brief Set whether to try to keep the vector facing the xy plane
+             *
+             * When moving a vector around in 3D, there are two main strategies
+             * that can be used for orientation: Let it do whatever it wants, or
+             * try to keep it facing a certain direction, like the xy plane.
+             * The default here is to face the xy plane, but if you don't want
+             * this to happen, pass false to this function.
+             */
             void lock_orientation(bool lock);
 
             virtual Vector& scale(
@@ -88,15 +126,27 @@ namespace ganim {
             bool M_lock_orientation = true;
     };
 
+    /** @brief Make a Vector in an ObjectPtr.
+     *
+     * @see Vector::Vector
+     */
     inline ObjectPtr<Vector> make_vector(pointlike auto p2, VectorArgs args = {})
     {
         return ObjectPtr<Vector>(p2, args);
     }
+    /** @brief Make a Vector in an ObjectPtr.
+     *
+     * @see Vector::Vector
+     */
     inline ObjectPtr<Vector> make_vector(
             pointlike auto p1, pointlike auto p2, VectorArgs args = {})
     {
         return ObjectPtr<Vector>(p1, p2, args);
     }
+    /** @brief Make a Vector in an ObjectPtr.
+     *
+     * @see Vector::Vector
+     */
     inline ObjectPtr<Vector> make_vector(
             pga3::Trivec p1, pga3::Trivec p2, VectorArgs args = {})
     {
