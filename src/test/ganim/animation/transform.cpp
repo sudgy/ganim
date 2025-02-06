@@ -473,6 +473,36 @@ TEST_CASE("texture_transform with outline", "[animation]") {
     REQUIRE(scene.get_pixel(0, 4, 4) == white);
 }
 
+TEST_CASE("texture_transform with moving outline", "[animation]") {
+    auto scene = TestScene(8, 8, 8, 8, 3);
+    auto shape1 = make_shape(
+        {{-9,  1}, {-9, -1}, {-7,  1}, {-7, -1}, {5, 0}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    auto shape2 = make_shape(
+        {{-9,  1}, {-9, -1}, { 5,  1}, { 5, -1}},
+        {0, 1, 2, 2, 1, 3}
+    );
+    const auto red = Color("FF0000");
+    const auto black = Color("000000");
+    shape1->set_outline(red, 2);
+    shape2->set_outline(red, 2);
+    scene.add(shape1, shape2);
+    shape1->set_visible(true);
+    texture_transform(scene, shape1, shape2,
+            {.rate_function = [](double x) {return x;}});
+    scene.wait(1);
+    REQUIRE(scene.get_pixel(0, 0, 2) == red);
+    REQUIRE(scene.get_pixel(0, 3, 2) == black);
+    REQUIRE(scene.get_pixel(0, 7, 2) == black);
+    REQUIRE(scene.get_pixel(1, 0, 2) == red);
+    REQUIRE(scene.get_pixel(1, 3, 2) == red);
+    REQUIRE(scene.get_pixel(1, 7, 2) == black);
+    REQUIRE(scene.get_pixel(2, 0, 2) == red);
+    REQUIRE(scene.get_pixel(2, 3, 2) == red);
+    REQUIRE(scene.get_pixel(2, 7, 2) == red);
+}
+
 TEST_CASE("group_transform", "[animation]") {
     auto scene = TestScene(4, 8, 4, 8, 2);
     auto shape1 = make_shape(

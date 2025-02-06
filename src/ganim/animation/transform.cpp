@@ -294,6 +294,7 @@ void main()
                 static_cast<unsigned char>(c1.a * (1 - t) + c2.a * t)
             );
             set_outline(outline_color, t1 * (1 - t) + t2 * t);
+            invalidate_outline();
         }
 
         virtual void draw(const Camera& camera) override
