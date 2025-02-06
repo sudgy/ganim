@@ -374,10 +374,10 @@ class Group : public Object {
  * added to the newly-created group.
  */
 template <typename... Ts>
-ObjectPtr<Group> make_group(Ts&... objects)
+ObjectPtr<Group> make_group(Ts&&... objects)
 {
     auto result = ObjectPtr<Group>();
-    (result->add(objects), ...);
+    (result->add(std::forward<Ts>(objects)), ...);
     return result;
 }
 
