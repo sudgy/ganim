@@ -124,6 +124,7 @@ namespace ganim {
             bool M_animating = false;
             bool M_do_shading = false;
             bool M_lock_orientation = true;
+            bool M_3d = false;
     };
 
     /** @brief Make a Vector in an ObjectPtr.

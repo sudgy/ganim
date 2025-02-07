@@ -9,11 +9,18 @@
 
 using namespace ganim;
 
+namespace {
+    constexpr int vertex_size = 14*4;
+    constexpr int index_size_3d = 60;
+    constexpr int index_size_2d = 9;
+}
+
 Vector::Vector(
         pga3::Trivec p1, pga3::Trivec p2, VectorArgs args)
 :   M_max_tip_to_length_ratio(args.max_tip_to_length_ratio),
     M_tip_size(args.tip_size),
-    M_do_shading(args.three_d)
+    M_do_shading(args.three_d),
+    M_3d(args.three_d)
 {
     set_start_and_end(p1, p2);
     glBindVertexArray(M_vertex_array);
@@ -38,6 +45,7 @@ Vector::Vector(
         0.5f,  -y, -z, 0.5f,
         1.0f, 0.f, -z, 1.0f
     };
+    static_assert(ssize(vertices) == vertex_size);
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(vertices),
@@ -79,6 +87,7 @@ Vector::Vector(
          9, 10,  8,
         11, 13, 12
     };
+    static_assert(ssize(indices) == index_size_3d);
     if (args.three_d) {
         glBufferData(
             GL_ELEMENT_ARRAY_BUFFER,
@@ -90,7 +99,7 @@ Vector::Vector(
     else {
         glBufferData(
             GL_ELEMENT_ARRAY_BUFFER,
-            sizeof(unsigned)*9,
+            sizeof(unsigned)*index_size_2d,
             indices.data(),
             GL_STATIC_DRAW
         );
@@ -305,7 +314,12 @@ void Vector::draw(const Camera& camera)
     glUniform1f(shader.get_uniform("tip_size"), M_tip_size / 2);
 
     glBindVertexArray(M_vertex_array);
-    glDrawElements(GL_TRIANGLES, 60, GL_UNSIGNED_INT, nullptr);
+    if (M_3d) {
+        glDrawElements(GL_TRIANGLES, index_size_3d, GL_UNSIGNED_INT, nullptr);
+    }
+    else {
+        glDrawElements(GL_TRIANGLES, index_size_2d, GL_UNSIGNED_INT, nullptr);
+    }
     glBindVertexArray(0);
 }
 
@@ -332,14 +346,47 @@ Vector* Vector::polymorphic_copy_impl() const
 
 Vector::Vector(const Vector& other)
 :   SingleObject(other),
-    M_vertex_array(0),
-    M_vertex_buffer(0),
-    M_element_buffer(0),
     M_max_tip_to_length_ratio(other.M_max_tip_to_length_ratio),
     M_tip_size(other.M_tip_size),
     M_manual_transform(other.M_manual_transform),
-    M_animating(true)
+    M_animating(true),
+    M_3d(other.M_3d)
 {
+    glBindVertexArray(M_vertex_array);
+    glBindBuffer(GL_ARRAY_BUFFER, M_vertex_buffer);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        vertex_size*sizeof(float),
+        nullptr,
+        GL_STATIC_DRAW
+    );
+    glCopyNamedBufferSubData(
+        other.M_vertex_buffer, M_vertex_buffer,
+        0, 0, vertex_size*sizeof(float)
+    );
+    glVertexAttribPointer(
+        0, 3, GL_FLOAT, GL_FALSE, 4*sizeof(float),
+        reinterpret_cast<void*>(0)
+    );
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(
+        1, 1, GL_FLOAT, GL_FALSE, 4*sizeof(float),
+        reinterpret_cast<void*>(3*sizeof(float))
+    );
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, M_element_buffer);
+    auto buffer_size = (M_3d ? index_size_3d:index_size_2d) * sizeof(unsigned);
+    glBufferData(
+        GL_ELEMENT_ARRAY_BUFFER,
+        buffer_size,
+        nullptr,
+        GL_STATIC_DRAW
+    );
+    glCopyNamedBufferSubData(
+        other.M_element_buffer, M_element_buffer,
+        0, 0, buffer_size
+    );
+    glBindVertexArray(0);
     interpolate(other, other, 0.0);
 }
 

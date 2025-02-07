@@ -7,6 +7,8 @@
 
 #include "ganim/math.hpp"
 
+#include "ganim/animation/transform.hpp"
+
 using namespace ganim;
 
 TEST_CASE("Vector object construction", "[object]") {
@@ -262,4 +264,16 @@ TEST_CASE("Vector bounding box", "[object]") {
     auto box = test.get_logical_bounding_box();
     REQUIRE_THAT(pga2_to_vga2(box.get_lower_left()), GAEquals(-e2));
     REQUIRE_THAT(pga2_to_vga2(box.get_upper_right()), GAEquals(4*e1 + e2));
+}
+
+// There was a bug where transforming vectors would crash, that's why this test
+// doesn't check anything
+TEST_CASE("Vector transform", "[object]") {
+    using namespace vga2;
+    auto v1 = make_vector(e1);
+    auto v2 = make_vector(e1);
+    auto scene = TestScene(1, 1, 1, 1, 4);
+    scene.add(v1, v2);
+    transform(scene, v1, v2);
+    scene.wait(2);
 }
