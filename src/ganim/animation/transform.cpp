@@ -611,6 +611,8 @@ struct TransformAnimation {
         if (!args.copy) M_from->set_visible(false);
         M_object = M_from->polymorphic_copy();
         scene.add(M_object);
+        scene.add(M_to);
+        M_to->set_visible(false);
         M_object->set_visible(true);
         auto fps = M_object->get_fps();
         if (fps == -1) {
