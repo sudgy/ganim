@@ -46,7 +46,7 @@ find_library(AVCODEC avcodec)
 find_library(AVUTIL avutil)
 find_library(AVFORMAT avformat)
 find_library(SWSCALE swscale)
-find_library(SFML sfml-window)
+find_library(SFML SFML::Window)
 find_library(OPENGL GL)
 
 file(GLOB_RECURSE GANIM_FILES CONFIGURE_DEPENDS src/ganim/*.cpp)

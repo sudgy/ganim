@@ -17,7 +17,7 @@ using namespace ganim;
 // valid context
 namespace {
     auto settings = sf::ContextSettings(24, 0, 4, 4, 3, sf::ContextSettings::Debug);
-    auto context = sf::Context(settings, 1, 1);
+    auto context = sf::Context(settings, {1, 1});
     void debug_callback(
         GLenum source,
         GLenum type,
