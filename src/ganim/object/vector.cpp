@@ -141,6 +141,7 @@ Vector& Vector::set_end(pga3::Trivec p)
             if (axis.norm2() < 1e-10) {
                 axis = (e13 | axis_plane) ^ axis_plane;
             }
+            axis = (axis | current_start) | current_start;
             axis = axis.normalized();
             apply_rotor(ga_exp(axis * τ/4));
         }

@@ -277,3 +277,10 @@ TEST_CASE("Vector transform", "[object]") {
     transform(scene, v1, v2);
     scene.wait(2);
 }
+
+TEST_CASE("Vector off-center flip", "[object]") {
+    using namespace vga2;
+    auto test = Vector(-e2, -e2 + e1);
+    test.set_start_and_end(-e2, -e2 - e1);
+    REQUIRE_THAT(test.get_start_vga2(), GAEquals(-e2, 1e-5));
+}
