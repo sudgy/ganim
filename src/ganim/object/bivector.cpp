@@ -1,6 +1,7 @@
 #include "bivector.hpp"
 
 #include "vector.hpp"
+#include "ganim/math.hpp"
 
 using namespace ganim;
 
@@ -66,10 +67,17 @@ Bivector::Bivector(
 
 Bivector::Bivector(vga2::Bivec b, BivectorArgs args)
 : Bivector(
-    std::sqrt(b.norm())*vga3::e1,
-    std::sqrt(b.norm())*vga3::e2,
+    b.blade_project<vga2::e12>() >= 0 ?
+        std::sqrt(b.norm())*vga3::e1 : std::sqrt(b.norm())*vga3::e2,
+    b.blade_project<vga2::e12>() >= 0 ?
+        std::sqrt(b.norm())*vga3::e2 : std::sqrt(b.norm())*vga3::e1,
     args
-) {}
+)
+{
+    if (b.blade_project<vga2::e12>() < 0) {
+
+    }
+}
 
 Bivector::Bivector(vga3::Bivec b, BivectorArgs args)
 : Bivector(
@@ -79,7 +87,13 @@ Bivector::Bivector(vga3::Bivec b, BivectorArgs args)
 )
 {
     using namespace vga3;
-    apply_rotor(e21 * (e12 + b.normalized()).normalized());
+    auto mid = e12 + b.normalized();
+    if (mid.norm2() < 1e-10) {
+        rotate(τ/2, (e1 + e2).normalized().dual());
+    }
+    else {
+        apply_rotor(e21 * (e12 + b.normalized()).normalized());
+    }
 }
 
 void Bivector::common_construct(

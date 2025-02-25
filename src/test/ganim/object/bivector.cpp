@@ -260,3 +260,19 @@ TEST_CASE("Bivector small change in the middle", "[object]") {
     auto scene = TestScene(6, 6, 6, 6, 1);
     scene.check_draw_equivalent(bivector, group);
 }
+
+TEST_CASE("Bivector 2D negative orientation", "[object]") {
+    using namespace vga2;
+    auto b1 = make_bivector(-e12);
+    auto b2 = make_bivector(e2, e1);
+    auto scene = TestScene(32, 32, 4, 4, 1);
+    scene.check_draw_equivalent(b1, b2);
+}
+
+TEST_CASE("Bivector e21 in 3D", "[object]") {
+    using namespace vga3;
+    auto b1 = make_bivector(-e12);
+    auto b2 = make_bivector(e2, e1);
+    auto scene = TestScene(32, 32, 4, 4, 1);
+    scene.check_draw_equivalent(b1, b2);
+}
