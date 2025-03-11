@@ -37,6 +37,11 @@ void SingleObject::draw_outline(const Camera& camera)
     if (peeling_depth_buffer()) features |= ShaderFeature::DepthPeeling;
     auto& shader = get_shader(features);
     glUseProgram(shader);
+    if (auto buffer = peeling_depth_buffer()) {
+        glUniform1i(shader.get_uniform("layer_depth_buffer"), 15);
+        glActiveTexture(GL_TEXTURE15);
+        glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, *buffer);
+    }
     glUniform2f(shader.get_uniform("camera_scale"),
                 camera.get_x_scale(), camera.get_y_scale());
     shader.set_rotor_uniform("view", ~camera.get_rotor());

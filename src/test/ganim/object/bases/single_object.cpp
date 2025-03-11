@@ -142,3 +142,23 @@ TEST_CASE("Outlines and opacity", "[object]") {
     REQUIRE(scene.get_pixel(3, 0, 0) == Color("000000"));
     REQUIRE(scene.get_pixel(4, 0, 0) == Color("0000FF"));
 }
+
+TEST_CASE("Outlines and depth peeling", "[object]") {
+    auto scene = TestScene(8, 8, 8, 8, 1);
+    scene.set_transparency_layers(2);
+    auto shape1 = make_shape(
+        {{-2, -2},
+         { 2, -2},
+         { 2,  2},
+         {-2,  2}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape1->set_color("FF0000");
+    shape1->set_outline("0000FF", 5);
+    shape1->set_visible(true);
+
+    scene.add(shape1);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 3, 3) == Color("FF0000"));
+    REQUIRE(scene.get_pixel(0, 0, 0) == Color("0000FF"));
+}
