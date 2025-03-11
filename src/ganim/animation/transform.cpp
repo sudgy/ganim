@@ -16,10 +16,7 @@
 using namespace ganim;
 
 namespace {
-    gl::Shader make_shader()
-    {
-        auto vertex = gl::Shader::Source();
-        vertex.add_source(
+    constexpr const char* vertex_source =
 R"(
 #version 330 core
 layout (location = 0) in vec2 in_pos;
@@ -78,9 +75,8 @@ void main()
     out_tex_coord2 = in_tex_coord2;
     window_pos = gl_Position.xyz / gl_Position.w;
 }
-)"      );
-        auto fragment = gl::Shader::Source();
-        fragment.add_source(
+)";
+    constexpr const char* fragment_source1 =
 R"(
 #version 330 core
 
@@ -95,11 +91,15 @@ uniform sampler2D distance_transform2;
 uniform float t;
 uniform float scale1;
 uniform float scale2;
+uniform sampler2DMS layer_depth_buffer;
 
 out vec4 out_color;
 
 void main()
 {
+)";
+    constexpr const char* fragment_source2 =
+R"(
     vec4 color1 = texture(object1, out_tex_coord1);
     vec4 color2 = texture(object2, out_tex_coord2);
     float distance1 = texture(distance_transform1, out_tex_coord1).r;
@@ -130,13 +130,47 @@ void main()
     if (out_color.a <= 0) discard;
     gl_FragDepth = window_pos.z;
 }
-)"
-        );
+)";
+    constexpr const char* fragment_source_depth =
+R"(
+    ivec2 depth_pos = ivec2(
+        round(gl_FragCoord.x - 0.5),
+        round(gl_FragCoord.y - 0.5)
+    );
+    float depth = 0;
+    for (int i = 0; i < 4; ++i) {
+        depth += texelFetch(layer_depth_buffer, depth_pos, i).r;
+    }
+    depth /= 4;
+    if (depth >= window_pos.z) discard;
+)";
+    gl::Shader make_shader()
+    {
+        auto vertex = gl::Shader::Source();
+        vertex.add_source(vertex_source);
+        auto fragment = gl::Shader::Source();
+        fragment.add_source(fragment_source1);
+        fragment.add_source(fragment_source2);
         return gl::Shader(vertex, fragment);
     }
     gl::Shader& get_shader()
     {
         static auto result = make_shader();
+        return result;
+    }
+    gl::Shader make_shader_depth()
+    {
+        auto vertex = gl::Shader::Source();
+        vertex.add_source(vertex_source);
+        auto fragment = gl::Shader::Source();
+        fragment.add_source(fragment_source1);
+        fragment.add_source(fragment_source_depth);
+        fragment.add_source(fragment_source2);
+        return gl::Shader(vertex, fragment);
+    }
+    gl::Shader& get_shader_depth()
+    {
+        static auto result = make_shader_depth();
         return result;
     }
     struct StaticPart : public Animatable {
@@ -180,9 +214,12 @@ void main()
             auto current_draw_framebuffer = 0;
             auto current_read_framebuffer = 0;
             auto current_viewport = std::array<int, 4>{0};
+            auto current_blend = (unsigned char)false;
             glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &current_draw_framebuffer);
             glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &current_read_framebuffer);
             glGetIntegerv(GL_VIEWPORT, current_viewport.data());
+            glGetBooleanv(GL_BLEND, &current_blend);
+            glEnable(GL_BLEND);
             const auto camera_width = camera.get_starting_width();
             const auto gtp = current_viewport[2] / camera_width;
             M_texture_size = std::max(
@@ -216,7 +253,10 @@ void main()
 
             bool is_visible = tracked_object().is_visible();
             if (!is_visible) tracked_object().set_visible(true);
+            auto old_peeling_depth_buffer = tracked_object().peeling_depth_buffer();
+            tracked_object().set_peeling_depth_buffer(nullptr);
             tracked_object().draw(fake_camera);
+            tracked_object().set_peeling_depth_buffer(old_peeling_depth_buffer);
             if (!is_visible) tracked_object().set_visible(false);
 
             M_distance_transform = distance_transform(
@@ -250,6 +290,8 @@ void main()
                 current_viewport[0], current_viewport[1],
                 current_viewport[2], current_viewport[3]
             );
+            if (current_blend) glEnable(GL_BLEND);
+            else glDisable(GL_BLEND);
         }
     };
     struct TransformingPart : public SingleObject {
@@ -335,8 +377,18 @@ void main()
                 {x2, y1, t1x2, t1y1, t2x2, t2y1}
             }};
 
-            auto& shader = get_shader();
-            glUseProgram(shader);
+            auto* shader_pointer = &get_shader();
+            if (auto buffer = peeling_depth_buffer()) {
+                shader_pointer = &get_shader_depth();
+                glUseProgram(*shader_pointer);
+                glUniform1i(shader_pointer->get_uniform("layer_depth_buffer"), 15);
+                glActiveTexture(GL_TEXTURE15);
+                glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, *buffer);
+            }
+            else {
+                glUseProgram(*shader_pointer);
+            }
+            auto& shader = *shader_pointer;
             glUniform2f(shader.get_uniform("camera_scale"),
                         camera.get_x_scale(), camera.get_y_scale());
             shader.set_rotor_uniform("view", ~camera.get_rotor());
@@ -544,6 +596,7 @@ void ganim::texture_transform(
         );
     }
     to->set_animating(true);
+    scene.add(to);
     if (!args.copy) from->set_visible(false);
     auto temp_object = ObjectPtr<TransformingPart>();
 

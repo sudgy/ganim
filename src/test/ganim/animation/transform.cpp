@@ -2,6 +2,7 @@
 
 #include "ganim/animation/transform.hpp"
 #include "ganim/object/shape.hpp"
+#include "ganim/object/polygon_shape.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 
 using namespace ganim;
@@ -615,4 +616,27 @@ TEST_CASE("Global transform basic", "[animation]") {
             REQUIRE(scene.get_pixel(3, x, y) == color);
         }
     }
+}
+
+TEST_CASE("texture_transform during depth peeling", "[animation]") {
+    auto scene = TestScene(8, 8, 8, 8, 2);
+    scene.set_transparency_layers(1);
+    using namespace vga2;
+    auto shape1 = make_polygon_shape({
+        -10*e1 - 10*e2,
+         10*e1 - 10*e2,
+         10*e1 + 10*e2,
+        -10*e1 + 10*e2
+    });
+    shape1->set_opacity(0.5);
+    auto shape2 = shape1.copy_object();
+    shape1->set_visible(true);
+    scene.add(shape1);
+    scene.frame_advance();
+    texture_transform(scene, shape1, shape2);
+    scene.wait(1);
+    const auto color = Color("7F7F7F");
+    REQUIRE(scene.get_pixel(0, 3, 3) == color);
+    REQUIRE(scene.get_pixel(1, 3, 3) == color);
+    REQUIRE(scene.get_pixel(2, 3, 3) == color);
 }
