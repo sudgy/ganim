@@ -53,6 +53,7 @@ uniform vec2 camera_scale;
 uniform vec4 view[2];
 uniform vec4 model[2];
 uniform float scale;
+uniform float depth_z;
 
 // Various helper functions
 
@@ -107,7 +108,7 @@ void main()
     pos.w = -pos.z;
     pos.x *= camera_scale.x;
     pos.y *= -camera_scale.y; // ffmpeg has the y axis swapped
-    pos.z *= pos.z / 4096;
+    pos.z *= (pos.z + depth_z) / 4096;
     gl_Position = pos;
 
 #ifdef TIME

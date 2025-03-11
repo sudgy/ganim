@@ -234,6 +234,7 @@ namespace {
             shader.set_rotor_uniform("view", ~camera.get_rotor());
             shader.set_rotor_uniform("model", get_rotor());
             glUniform1f(shader.get_uniform("scale"), 1.0);
+            glUniform1f(shader.get_uniform("depth_z"), get_depth_z());
 
             glBindVertexArray(M_vertex_array);
 

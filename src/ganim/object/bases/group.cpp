@@ -218,6 +218,17 @@ void Group::set_draw_fraction(double value)
     }
 }
 
+Group& Group::set_depth_z(double depth_z)
+{
+    Object::set_depth_z(depth_z);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->set_depth_z(depth_z);
+        }
+    }
+    return *this;
+}
+
 void Group::set_creating(bool creating)
 {
     Object::set_creating(creating);

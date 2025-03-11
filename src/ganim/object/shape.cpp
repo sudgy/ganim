@@ -91,6 +91,7 @@ void Shape::draw(const Camera& camera)
             color.r / 255.0, color.g / 255.0,
             color.b / 255.0, color.a / 255.0);
     glUniform1f(shader.get_uniform("scale"), get_scale());
+    glUniform1f(shader.get_uniform("depth_z"), get_depth_z());
     if (is_creating()) {
         auto actual_draw_fraction = M_min_draw_fraction
             + (M_max_draw_fraction - M_min_draw_fraction) * get_draw_fraction();

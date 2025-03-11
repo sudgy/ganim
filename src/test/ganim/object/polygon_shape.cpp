@@ -40,3 +40,23 @@ TEST_CASE("PolygonShape", "[object]") {
     REQUIRE(scene.get_pixel(0, 2, 3) == white);
     REQUIRE(scene.get_pixel(0, 3, 3) == white);
 }
+
+TEST_CASE("depth_z", "[object]") {
+    auto scene = TestScene(8, 8, 8, 8, 1);
+    using namespace vga2;
+    auto shape1 = make_polygon_shape({
+        -10*e1 - 10*e2,
+         10*e1 - 10*e2,
+         10*e1 + 10*e2,
+        -10*e1 + 10*e2
+    });
+    auto shape2 = shape1.copy_object();
+    shape2->set_color("FF0000");
+    shape2->shift(-0.5*vga3::e3);
+    shape2->set_depth_z(1);
+    shape1->set_visible(true);
+    shape2->set_visible(true);
+    scene.add(shape1, shape2);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 3, 3) == "FF0000");
+}

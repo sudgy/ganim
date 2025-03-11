@@ -119,6 +119,7 @@ void Object::interpolate(
     }
     set_draw_fraction(start2->M_draw_fraction
             + (end2->M_draw_fraction - start2->M_draw_fraction) * t);
+    set_depth_z(start2->M_depth_z + (end2->M_depth_z - start2->M_depth_z) * t);
 }
 
 Box Object::get_true_bounding_box() const

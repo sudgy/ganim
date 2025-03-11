@@ -291,6 +291,7 @@ void Vector::draw(const Camera& camera)
             color.r / 255.0, color.g / 255.0,
             color.b / 255.0, color.a / 255.0);
     glUniform1f(shader.get_uniform("scale"), 1);
+    glUniform1f(shader.get_uniform("depth_z"), get_depth_z());
     if (is_creating()) {
         glUniform1f(shader.get_uniform("this_t"), get_draw_fraction());
     }

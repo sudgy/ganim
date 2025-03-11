@@ -129,6 +129,26 @@ namespace ganim {
              */
             double get_draw_fraction() const {return M_draw_fraction;}
 
+            /** @brief Set what value to add to the z value when writing to the
+             * depth buffer
+             *
+             * This is mainly used for overlapping objects in 2D scenes.  The
+             * depth z value will be added to the z value when writing to the
+             * depth buffer, but it will not be used when positioning the object
+             * in 3D space.
+             */
+            virtual Object& set_depth_z(double depth_z)
+                {M_depth_z = depth_z; return *this;}
+            /** @brief Get what value to add to the z value when writing to the
+             * depth buffer
+             *
+             * This is mainly used for overlapping objects in 2D scenes.  The
+             * depth z value will be added to the z value when writing to the
+             * depth buffer, but it will not be used when positioning the object
+             * in 3D space.
+             */
+            double get_depth_z() const {return M_depth_z;}
+
             /** @brief Interpolate between two Objects */
             virtual void interpolate(
                 const Animatable& start,
@@ -460,6 +480,7 @@ namespace ganim {
             double M_scale = 1;
             double M_draw_fraction = 1;
             double M_noise_creating = 0.0;
+            double M_depth_z = 0.0;
             Color M_color = {255, 255, 255, 255};
             double M_opacity = 1;
             bool M_visible = false;
