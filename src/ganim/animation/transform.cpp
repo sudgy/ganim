@@ -16,163 +16,6 @@
 using namespace ganim;
 
 namespace {
-    constexpr const char* vertex_source =
-R"(
-#version 330 core
-layout (location = 0) in vec2 in_pos;
-layout (location = 1) in vec2 in_tex_coord1;
-layout (location = 2) in vec2 in_tex_coord2;
-out vec2 out_tex_coord1;
-out vec2 out_tex_coord2;
-out vec3 window_pos;
-
-uniform vec2 camera_scale;
-uniform vec4 view[2];
-uniform vec4 model[2];
-uniform float scale;
-
-// This calculates the sandwich product of a 3D PGA rotor r and a trivector p
-// (~r * p * r).  p corresponds to the trivector (p + e0).dual(), and r
-// represents a rotor under the correspondence {{a, b, c, d}, {x, y, z, w}} <->
-// a + b e23 + c e31 + d e12 + x e01 + y e02 + z e03 + w e0123.
-//
-// This way of calculating it is due to Steven De Keninck in his upcoming paper
-// "FPGA".
-vec3 rotor_trivector_sandwich(vec4 r[2], vec3 p)
-{
-    vec3 t = cross(r[0].yzw, p) + r[1].xyz;
-    return 2 * (r[0].x * t + cross(r[0].yzw, t) + r[0].yzw * r[1].w) + p;
-}
-
-// Calculates a rotor product.  The format of the rotors is the same as above.
-vec4[2] rotor_mult(vec4 m[2], vec4 n[2])
-{
-    float a = m[0].x;
-    vec3 b = m[0].yzw;
-    vec3 c = m[1].xyz;
-    float d = m[1].w;
-    float x = n[0].x;
-    vec3 y = n[0].yzw;
-    vec3 z = n[1].xyz;
-    float w = n[1].w;
-    return vec4[2](
-        vec4(a*x - dot(b, y), a*y + x*b + cross(y, b)),
-        vec4(a*z - w*b + x*c - d*y + cross(z, b) + cross(y, c),
-             a*w + d*x + dot(b, z) + dot(c, y))
-    );
-}
-
-void main()
-{
-    vec4[2] r = rotor_mult(model, view);
-    vec4 pos = vec4(rotor_trivector_sandwich(r, vec3(in_pos, 0)), 1.0);
-    pos.w = -pos.z;
-    pos.x *= camera_scale.x;
-    pos.y *= -camera_scale.y;
-    pos.z *= pos.z / 4096;
-    gl_Position = pos;
-    out_tex_coord1 = in_tex_coord1;
-    out_tex_coord2 = in_tex_coord2;
-    window_pos = gl_Position.xyz / gl_Position.w;
-}
-)";
-    constexpr const char* fragment_source1 =
-R"(
-#version 330 core
-
-in vec2 out_tex_coord1;
-in vec2 out_tex_coord2;
-in vec3 window_pos;
-
-uniform sampler2D object1;
-uniform sampler2D distance_transform1;
-uniform sampler2D object2;
-uniform sampler2D distance_transform2;
-uniform float t;
-uniform float scale1;
-uniform float scale2;
-uniform sampler2DMS layer_depth_buffer;
-
-out vec4 out_color;
-
-void main()
-{
-)";
-    constexpr const char* fragment_source2 =
-R"(
-    vec4 color1 = texture(object1, out_tex_coord1);
-    vec4 color2 = texture(object2, out_tex_coord2);
-    float distance1 = texture(distance_transform1, out_tex_coord1).r;
-    float distance2 = texture(distance_transform2, out_tex_coord2).r;
-    if (distance2 > scale1 * (1 - t)) color1.a = 0;
-    if (distance1 > scale2 * t) color2.a = 0;
-    if (color1.a > 0 && color2.a > 0) {
-        color1 /= sqrt(color1.a);
-        color2 /= sqrt(color2.a);
-        out_color = vec4(
-            mix(color1.rgb, color2.rgb, t),
-            max(color1.a, color2.a)
-        );
-    }
-    else if (color1.a > 0) {
-        color1 /= sqrt(color1.a);
-        out_color = color1;
-    }
-    else if (color2.a > 0) {
-        color2 /= sqrt(color2.a);
-        out_color = color2;
-    }
-    else {
-        out_color = vec4(0, 0, 0, 0);
-    }
-    // A lot of things like outlines use big textures with lots of empty space
-    // and without this they cover up objects behind them
-    if (out_color.a <= 0) discard;
-    gl_FragDepth = window_pos.z;
-}
-)";
-    constexpr const char* fragment_source_depth =
-R"(
-    ivec2 depth_pos = ivec2(
-        round(gl_FragCoord.x - 0.5),
-        round(gl_FragCoord.y - 0.5)
-    );
-    float depth = 0;
-    for (int i = 0; i < 4; ++i) {
-        depth += texelFetch(layer_depth_buffer, depth_pos, i).r;
-    }
-    depth /= 4;
-    if (depth >= window_pos.z) discard;
-)";
-    gl::Shader make_shader()
-    {
-        auto vertex = gl::Shader::Source();
-        vertex.add_source(vertex_source);
-        auto fragment = gl::Shader::Source();
-        fragment.add_source(fragment_source1);
-        fragment.add_source(fragment_source2);
-        return gl::Shader(vertex, fragment);
-    }
-    gl::Shader& get_shader()
-    {
-        static auto result = make_shader();
-        return result;
-    }
-    gl::Shader make_shader_depth()
-    {
-        auto vertex = gl::Shader::Source();
-        vertex.add_source(vertex_source);
-        auto fragment = gl::Shader::Source();
-        fragment.add_source(fragment_source1);
-        fragment.add_source(fragment_source_depth);
-        fragment.add_source(fragment_source2);
-        return gl::Shader(vertex, fragment);
-    }
-    gl::Shader& get_shader_depth()
-    {
-        static auto result = make_shader_depth();
-        return result;
-    }
     struct StaticPart : public Animatable {
         std::optional<ObjectPtr<Object>> M_tracked_object;
         Object& tracked_object() {return **M_tracked_object;}
@@ -377,22 +220,20 @@ R"(
                 {x2, y1, t1x2, t1y1, t2x2, t2y1}
             }};
 
-            auto* shader_pointer = &get_shader();
+            auto features = ShaderFeature::TextureTransform;
+            if (peeling_depth_buffer()) features |= ShaderFeature::DepthPeeling;
+            auto& shader = get_shader(features);
+            glUseProgram(shader);
             if (auto buffer = peeling_depth_buffer()) {
-                shader_pointer = &get_shader_depth();
-                glUseProgram(*shader_pointer);
-                glUniform1i(shader_pointer->get_uniform("layer_depth_buffer"), 15);
+                glUniform1i(shader.get_uniform("layer_depth_buffer"), 15);
                 glActiveTexture(GL_TEXTURE15);
                 glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, *buffer);
             }
-            else {
-                glUseProgram(*shader_pointer);
-            }
-            auto& shader = *shader_pointer;
             glUniform2f(shader.get_uniform("camera_scale"),
                         camera.get_x_scale(), camera.get_y_scale());
             shader.set_rotor_uniform("view", ~camera.get_rotor());
             shader.set_rotor_uniform("model", get_rotor());
+            glUniform1f(shader.get_uniform("scale"), 1.0);
 
             glBindVertexArray(M_vertex_array);
 

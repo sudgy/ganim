@@ -4,106 +4,12 @@
 #include "ganim/gl/framebuffer.hpp"
 #include "ganim/gl/shader.hpp"
 
+#include "ganim/object/shaders.hpp"
+
 #include "ganim/util/alpha_threshold.hpp"
 #include "ganim/util/distance_transform.hpp"
 
 using namespace ganim;
-
-namespace {
-    gl::Shader make_shader()
-    {
-        auto vertex = gl::Shader::Source();
-        vertex.add_source(
-R"(
-#version 330 core
-layout (location = 0) in vec2 in_pos;
-layout (location = 1) in vec2 in_tex_coord;
-out vec2 out_tex_coord;
-out vec3 window_pos;
-
-uniform vec2 camera_scale;
-uniform vec4 view[2];
-uniform vec4 model[2];
-uniform float scale;
-
-// This calculates the sandwich product of a 3D PGA rotor r and a trivector p
-// (~r * p * r).  p corresponds to the trivector (p + e0).dual(), and r
-// represents a rotor under the correspondence {{a, b, c, d}, {x, y, z, w}} <->
-// a + b e23 + c e31 + d e12 + x e01 + y e02 + z e03 + w e0123.
-//
-// This way of calculating it is due to Steven De Keninck in his upcoming paper
-// "FPGA".
-vec3 rotor_trivector_sandwich(vec4 r[2], vec3 p)
-{
-    vec3 t = cross(r[0].yzw, p) + r[1].xyz;
-    return 2 * (r[0].x * t + cross(r[0].yzw, t) + r[0].yzw * r[1].w) + p;
-}
-
-// Calculates a rotor product.  The format of the rotors is the same as above.
-vec4[2] rotor_mult(vec4 m[2], vec4 n[2])
-{
-    float a = m[0].x;
-    vec3 b = m[0].yzw;
-    vec3 c = m[1].xyz;
-    float d = m[1].w;
-    float x = n[0].x;
-    vec3 y = n[0].yzw;
-    vec3 z = n[1].xyz;
-    float w = n[1].w;
-    return vec4[2](
-        vec4(a*x - dot(b, y), a*y + x*b + cross(y, b)),
-        vec4(a*z - w*b + x*c - d*y + cross(z, b) + cross(y, c),
-             a*w + d*x + dot(b, z) + dot(c, y))
-    );
-}
-
-void main()
-{
-    vec4[2] r = rotor_mult(model, view);
-    vec4 pos = vec4(rotor_trivector_sandwich(r, vec3(in_pos, 0) *scale), 1.0);
-    pos.w = -pos.z;
-    pos.x *= camera_scale.x;
-    pos.y *= -camera_scale.y;
-    pos.z *= pos.z / 4096;
-    gl_Position = pos;
-    out_tex_coord = in_tex_coord;
-    window_pos = gl_Position.xyz / gl_Position.w;
-}
-)"      );
-        auto fragment = gl::Shader::Source();
-        fragment.add_source(
-R"(
-#version 330 core
-
-in vec2 out_tex_coord;
-in vec3 window_pos;
-
-uniform float thickness;
-uniform vec4 color;
-uniform sampler2D distance_transform;
-
-out vec4 out_color;
-
-void main()
-{
-    float distance = texture(distance_transform, out_tex_coord).r;
-    out_color = color;
-    out_color.a *= clamp(thickness + 0.5 - distance, 0, 1);
-    // A lot of things like outlines use big textures with lots of empty space
-    // and without this they cover up objects behind them
-    if (out_color.a <= 0) discard;
-    gl_FragDepth = window_pos.z;
-}
-)"
-        );
-        return gl::Shader(vertex, fragment);
-    }
-    gl::Shader& get_shader()
-    {
-        static auto result = make_shader();
-        return result;
-    }
-}
 
 SingleObject::SingleObject(const SingleObject& other)
     : Object(other),
@@ -127,7 +33,9 @@ void SingleObject::draw_outline(const Camera& camera)
     const auto gtp = current_viewport[2] / camera_width;
     const auto thickness = gtp * M_outline_thickness;
 
-    auto& shader = get_shader();
+    auto features = ShaderFeature::Outline;
+    if (peeling_depth_buffer()) features |= ShaderFeature::DepthPeeling;
+    auto& shader = get_shader(features);
     glUseProgram(shader);
     glUniform2f(shader.get_uniform("camera_scale"),
                 camera.get_x_scale(), camera.get_y_scale());
@@ -136,7 +44,7 @@ void SingleObject::draw_outline(const Camera& camera)
     glUniform1f(shader.get_uniform("scale"), get_scale());
     auto color = M_outline_color;
     color.a = get_color().a * get_opacity();
-    glUniform4f(shader.get_uniform("color"),
+    glUniform4f(shader.get_uniform("object_color"),
             color.r / 255.0, color.g / 255.0, color.b / 255.0, color.a / 255.0);
     glUniform1f(shader.get_uniform("thickness"), thickness);
     glBindVertexArray(M_outline_vertex_array);

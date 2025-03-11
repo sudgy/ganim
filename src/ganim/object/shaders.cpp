@@ -73,6 +73,16 @@ gl::Shader& get_shader(ShaderFeature features)
         geometry.add_source("#define DASH\n");
         fragment.add_source("#define DASH\n");
     }
+    if (features & TextureTransform) {
+        vertex.add_source("#define TEXTURE_TRANSFORM\n");
+        geometry.add_source("#define TEXTURE_TRANSFORM\n");
+        fragment.add_source("#define TEXTURE_TRANSFORM\n");
+    }
+    if (features & Outline) {
+        vertex.add_source("#define OUTLINE\n");
+        geometry.add_source("#define OUTLINE\n");
+        fragment.add_source("#define OUTLINE\n");
+    }
 
     vertex.add_source(
 #include "ganim/shaders/vertex.glsl"

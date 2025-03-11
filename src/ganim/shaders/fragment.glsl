@@ -19,6 +19,13 @@ in VertexData {
 #ifdef FACE_SHADING
     float lighting;
 #endif
+#ifdef TEXTURE_TRANSFORM
+    vec2 out_tex_coord1;
+    vec2 out_tex_coord2;
+#endif
+#ifdef OUTLINE
+    vec2 out_tex_coord;
+#endif
     vec3 window_pos;
 } fs_in;
 
@@ -38,6 +45,19 @@ uniform sampler2DMS layer_depth_buffer;
 #ifdef DASH
 uniform float dash_on_time;
 uniform float dash_off_time;
+#endif
+#ifdef TEXTURE_TRANSFORM
+uniform sampler2D object1;
+uniform sampler2D distance_transform1;
+uniform sampler2D object2;
+uniform sampler2D distance_transform2;
+uniform float t;
+uniform float scale1;
+uniform float scale2;
+#endif
+#ifdef OUTLINE
+uniform float thickness;
+uniform sampler2D distance_transform;
 #endif
 
 out vec4 color;
@@ -132,6 +152,38 @@ void main()
 #endif
 #ifdef FACE_SHADING
     color.xyz *= fs_in.lighting;
+#endif
+#ifdef TEXTURE_TRANSFORM
+    vec4 color1 = texture(object1, fs_in.out_tex_coord1);
+    vec4 color2 = texture(object2, fs_in.out_tex_coord2);
+    float distance1 = texture(distance_transform1, fs_in.out_tex_coord1).r;
+    float distance2 = texture(distance_transform2, fs_in.out_tex_coord2).r;
+    if (distance2 > scale1 * (1 - t)) color1.a = 0;
+    if (distance1 > scale2 * t) color2.a = 0;
+    if (color1.a > 0 && color2.a > 0) {
+        color1 /= sqrt(color1.a);
+        color2 /= sqrt(color2.a);
+        color = vec4(
+            mix(color1.rgb, color2.rgb, t),
+            max(color1.a, color2.a)
+        );
+    }
+    else if (color1.a > 0) {
+        color1 /= sqrt(color1.a);
+        color = color1;
+    }
+    else if (color2.a > 0) {
+        color2 /= sqrt(color2.a);
+        color = color2;
+    }
+    else {
+        color = vec4(0, 0, 0, 0);
+    }
+#endif
+#ifdef OUTLINE
+    float distance = texture(distance_transform, fs_in.out_tex_coord).r;
+    color = object_color;
+    color.a *= clamp(thickness + 0.5 - distance, 0, 1);
 #endif
     // A lot of things like outlines use big textures with lots of empty space
     // and without this they cover up objects behind them

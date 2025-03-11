@@ -9,6 +9,13 @@ layout (location = 2) in vec4 in_color;
 #ifdef TEXTURE
 layout (location = 3) in vec2 in_tex_coord;
 #endif
+#ifdef TEXTURE_TRANSFORM
+layout (location = 1) in vec2 in_tex_coord1;
+layout (location = 2) in vec2 in_tex_coord2;
+#endif
+#ifdef OUTLINE
+layout (location = 1) in vec2 in_tex_coord;
+#endif
 
 out VertexData {
 #ifdef TIME
@@ -26,7 +33,14 @@ out VertexData {
 #ifdef FACE_SHADING
     vec3 true_position;
 #endif
-    out vec3 window_pos;
+#ifdef TEXTURE_TRANSFORM
+    vec2 out_tex_coord1;
+    vec2 out_tex_coord2;
+#endif
+#ifdef OUTLINE
+    vec2 out_tex_coord;
+#endif
+    vec3 window_pos;
 } vs_out;
 
 #ifdef VECTOR
@@ -108,8 +122,14 @@ void main()
 #ifdef TEXTURE
     vs_out.tex_coord = in_tex_coord;
 #endif
+#ifdef TEXTURE_TRANSFORM
+    vs_out.out_tex_coord1 = in_tex_coord1;
+    vs_out.out_tex_coord2 = in_tex_coord2;
+#endif
+#ifdef OUTLINE
+    vs_out.out_tex_coord = in_tex_coord;
+#endif
 
-    //vs_out.confusing_z = 0.5*(gl_Position.z / gl_Position.w) + 0.5;
     vs_out.window_pos = gl_Position.xyz / gl_Position.w;
 }
 )"
