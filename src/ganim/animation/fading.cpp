@@ -7,6 +7,7 @@ namespace ganim {
 void fade_in(SceneBase& scene, ObjectPtr<Object> object, AnimationArgs args)
 {
     args.rate_function = rf::linear;
+    object->set_opacity(1);
     auto anim = Animation(scene, object, args);
     anim.get_starting_object().set_opacity(0);
     object->set_visible(true);
@@ -17,11 +18,11 @@ void fade_in(SceneBase& scene, ObjectPtr<Object> object, AnimationArgs args)
 void fade_out(SceneBase& scene, ObjectPtr<Object> object, AnimationArgs args)
 {
     args.rate_function = rf::linear;
-    auto orig_opacity = object->get_color().a / 255.0;
+    object->set_opacity(1);
     auto anim = Animation(scene, object, args);
     anim.get_ending_object().set_opacity(0);
-    anim.at_end([&object = *object, orig_opacity]{
-        object.set_opacity(orig_opacity);
+    anim.at_end([&object = *object]{
+        object.set_opacity(1);
         object.set_visible(false);
     });
     object->add_updater(std::move(anim), true);

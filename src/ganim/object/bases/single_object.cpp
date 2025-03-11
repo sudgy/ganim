@@ -135,7 +135,7 @@ void SingleObject::draw_outline(const Camera& camera)
     shader.set_rotor_uniform("model", get_rotor());
     glUniform1f(shader.get_uniform("scale"), get_scale());
     auto color = M_outline_color;
-    color.a = get_color().a;
+    color.a = get_color().a * get_opacity();
     glUniform4f(shader.get_uniform("color"),
             color.r / 255.0, color.g / 255.0, color.b / 255.0, color.a / 255.0);
     glUniform1f(shader.get_uniform("thickness"), thickness);
@@ -182,7 +182,7 @@ void SingleObject::create_outline(const Camera& camera)
 {
     auto rotor = get_rotor();
     auto scale = get_scale();
-    auto opacity = get_color().a / 255.0;
+    auto opacity = get_opacity();
     apply_rotor(~rotor);
     this->scale(1/scale);
     set_opacity(1);

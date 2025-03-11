@@ -23,9 +23,9 @@ namespace {
                 last_visible = visible;
                 return *this;
             }
-            virtual TestObject& set_color_with_alpha(Color new_color) override
+            virtual TestObject& set_color(Color new_color) override
             {
-                Object::set_color_with_alpha(new_color);
+                Object::set_color(new_color);
                 last_change = new_color;
                 return *this;
             }
@@ -53,18 +53,22 @@ namespace {
     };
 }
 
-TEST_CASE("Object color", "[object]") {
+TEST_CASE("Object color/opacity", "[object]") {
     auto test = TestObject();
     REQUIRE(test.get_color() == Color("FFFFFF"));
-    test.set_color(Color("AAAAAAAA"));
+    REQUIRE(test.get_opacity() == 1);
+    test.set_color(Color("AAAAAA"));
     REQUIRE(test.get_color() == Color("AAAAAAFF"));
     REQUIRE(test.last_change == Color("AAAAAAFF"));
-    test.set_color_with_alpha(Color("BBBBBBBB"));
+    REQUIRE(test.get_opacity() == 1);
+    test.set_color(Color("BBBBBBBB"));
     REQUIRE(test.get_color() == Color("BBBBBBBB"));
     REQUIRE(test.last_change == Color("BBBBBBBB"));
+    REQUIRE(test.get_opacity() == 1);
     test.set_opacity(0.5);
-    REQUIRE(test.get_color() == Color("BBBBBB7F"));
-    REQUIRE(test.last_change == Color("BBBBBB7F"));
+    REQUIRE(test.get_color() == Color("BBBBBBBB"));
+    REQUIRE(test.last_change == Color("BBBBBBBB"));
+    REQUIRE(test.get_opacity() == 0.5);
 }
 
 TEST_CASE("Object animating color", "[object]") {
@@ -87,7 +91,7 @@ TEST_CASE("Object animating color", "[object]") {
     REQUIRE(test->get_color() == Color("000000"));
     REQUIRE(test->last_change == Color("000000"));
     animate(scene, test, {.rate_function = [](double t){return t;}})
-        .set_opacity(0.5);
+        .set_color("0000007F");
     REQUIRE(test->get_color() == Color("000000FF"));
     test->update();
     REQUIRE(test->get_color() == Color("000000DF"));
@@ -207,10 +211,10 @@ TEST_CASE("Object interpolate", "[object]") {
     auto test1 = TestObject();
     auto test2 = TestObject();
     auto test3 = TestObject();
-    test2.set_color_with_alpha("00000000");
+    test2.set_color("00000000");
     test2.scale(2);
     test2.set_draw_fraction(0.25);
-    test3.set_color_with_alpha("FFFFFFFF");
+    test3.set_color("FFFFFFFF");
     test3.scale(6);
     test3.set_draw_fraction(0.75);
     test1.interpolate(test2, test3, 0.25);

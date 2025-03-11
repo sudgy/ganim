@@ -161,23 +161,10 @@ Group& Group::apply_rotor(const pga3::Even& rotor)
 
 Group& Group::set_color(Color color)
 {
-    auto new_color = color;
-    new_color.a = get_color().a;
-    Object::set_color_with_alpha(new_color);
+    Object::set_color(color);
     if (M_propogate) {
         for (auto obj : M_subobjects) {
             obj->set_color(color);
-        }
-    }
-    return *this;
-}
-
-Group& Group::set_color_with_alpha(Color color)
-{
-    Object::set_color_with_alpha(color);
-    if (M_propogate) {
-        for (auto obj : M_subobjects) {
-            obj->set_color_with_alpha(color);
         }
     }
     return *this;

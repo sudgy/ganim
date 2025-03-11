@@ -91,6 +91,7 @@ namespace ganim {
             ObjectPtr<Group> get_outside() {return M_outside;}
             /** @brief Get the polygon making up the inside of the bivector */
             ObjectPtr<PolygonShape> get_inside() {return M_inside;}
+            virtual Bivector& set_color(Color color) override;
 
         private:
             void common_construct(

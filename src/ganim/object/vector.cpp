@@ -285,9 +285,11 @@ void Vector::draw(const Camera& camera)
                 camera.get_x_scale(), camera.get_y_scale());
     shader.set_rotor_uniform("view", ~camera.get_rotor());
     shader.set_rotor_uniform("model", get_rotor());
+    auto color = get_color();
+    color.a *= get_opacity();
     glUniform4f(shader.get_uniform("object_color"),
-            get_color().r / 255.0, get_color().g / 255.0,
-            get_color().b / 255.0, get_color().a / 255.0);
+            color.r / 255.0, color.g / 255.0,
+            color.b / 255.0, color.a / 255.0);
     glUniform1f(shader.get_uniform("scale"), 1);
     if (is_creating()) {
         glUniform1f(shader.get_uniform("this_t"), get_draw_fraction());

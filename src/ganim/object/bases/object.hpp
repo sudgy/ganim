@@ -70,21 +70,22 @@ namespace ganim {
             gl::Texture* peeling_depth_buffer() const
                 {return M_peeling_depth_buffer;}
 
-            /** @brief Set the color of this object, ignoring alpha. */
+            /** @brief Set the color of this object. */
             virtual Object& set_color(Color color);
-            /** @brief Set the color of this object, including alpha. */
-            virtual Object& set_color_with_alpha(Color color);
+            /** @brief Get the color of this object. */
+            Color get_color() const {return M_color;}
             /** @brief Set the opacity of this object
-             *
-             * Note that this class doesn't actually keep track of an opacity
-             * value separately from the opacity in the color.
              *
              * @param opacity The opacity to change to, from 0 to 1.  0 is fully
              * transparent, while 1 is fully opaque.
              */
             virtual Object& set_opacity(double opacity);
-            /** @brief Get the color of this object, including alpha. */
-            Color get_color() const {return M_color;}
+            /** @brief Get the opacity of this object
+             *
+             * @param opacity The opacity from 0 to 1.  0 is fully transparent,
+             * while 1 is fully opaque.
+             */
+            double get_opacity() const {return M_opacity;}
 
             /** @brief Scale the object about its origin */
             Object& scale(double amount);
@@ -460,6 +461,7 @@ namespace ganim {
             double M_draw_fraction = 1;
             double M_noise_creating = 0.0;
             Color M_color = {255, 255, 255, 255};
+            double M_opacity = 1;
             bool M_visible = false;
             bool M_creating = false;
             bool M_fixed_in_frame = false;
@@ -482,8 +484,6 @@ namespace ganim {
         {Object::set_visible(visible); return *this;} \
     Type& set_color(Color color) \
         {Object::set_color(color); return *this;} \
-    Type& set_color_with_alpha(Color color) \
-        {Object::set_color_with_alpha(color); return *this;} \
     Type& set_opacity(double opacity) \
         {Object::set_opacity(opacity); return *this;} \
     Type& scale(double amount) \

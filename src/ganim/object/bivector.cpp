@@ -107,7 +107,7 @@ void Bivector::common_construct(
                 "Bivectors must have at least three vertices.");
     }
     M_inside = make_polygon_shape(pga_points);
-    M_inside->set_opacity(0.5);
+    M_inside->set_color("FFFFFF7F");
     M_outside = make_group();
     auto path_args = ArrowPathArgs{
         .tip_size = args.tip_size,
@@ -155,4 +155,13 @@ void Bivector::common_construct(
     }
     add(M_inside);
     add(M_outside);
+}
+
+Bivector& Bivector::set_color(Color color)
+{
+    Object::set_color(color);
+    M_outside->set_color(color);
+    color.a /= 2;
+    M_inside->set_color(color);
+    return *this;
 }

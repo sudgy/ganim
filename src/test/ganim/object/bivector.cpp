@@ -276,3 +276,13 @@ TEST_CASE("Bivector e21 in 3D", "[object]") {
     auto scene = TestScene(32, 32, 4, 4, 1);
     scene.check_draw_equivalent(b1, b2);
 }
+
+TEST_CASE("Bivector color alpha", "[object]") {
+    using namespace vga2;
+    auto b = make_bivector(e1, e2);
+    REQUIRE(b->get_outside()->get_color() == "FFFFFF");
+    REQUIRE(b->get_inside()->get_color() == "FFFFFF7F");
+    b->set_color("FF0000");
+    REQUIRE(b->get_outside()->get_color() == "FF0000");
+    REQUIRE(b->get_inside()->get_color() == "FF00007F");
+}

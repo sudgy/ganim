@@ -18,22 +18,14 @@ Object& Object::set_visible(bool visible)
 
 Object& Object::set_color(Color color)
 {
-    color.a = M_color.a;
-    return set_color_with_alpha(color);
-}
-
-Object& Object::set_color_with_alpha(Color color)
-{
     M_color = color;
     return *this;
 }
 
 Object& Object::set_opacity(double opacity)
 {
-    auto color = M_color;
-    opacity = std::clamp(opacity, 0.0, 1.0);
-    color.a = static_cast<std::uint8_t>(opacity * 255.0);
-    return set_color_with_alpha(color);
+    M_opacity = opacity;
+    return *this;
 }
 
 Object& Object::scale(double amount)
@@ -114,7 +106,8 @@ void Object::interpolate(
     new_color.g = interp(start2->M_color.g, end2->M_color.g);
     new_color.b = interp(start2->M_color.b, end2->M_color.b);
     new_color.a = interp(start2->M_color.a, end2->M_color.a);
-    set_color_with_alpha(new_color);
+    set_color(new_color);
+    set_opacity(start2->M_opacity + (end2->M_opacity - start2->M_opacity) * t);
     auto current_scale
         = start2->M_scale + (end2->M_scale - start2->M_scale) * t;
     if (M_scale == 0.0) {
@@ -341,7 +334,7 @@ std::unique_ptr<Object> Object::get_bounding_box_object(Color color) const
         },
         std::vector<unsigned>{0, 1, 2, 2, 1, 3}
     );
+    color.a = 127;
     result->set_color(color);
-    result->set_opacity(0.5);
     return result;
 }

@@ -144,20 +144,30 @@ TEST_CASE("Group color/opacity", "[object]") {
     auto group = make_group(obj1);
     auto test = make_group(group, obj2);
     obj1->set_color("00FF00");
-    obj2->set_color_with_alpha("0000FF7F");
+    obj2->set_color("0000FF7F");
     test->set_color("FF0000");
     REQUIRE(obj1->get_color() == "FF0000");
-    REQUIRE(obj2->get_color() == "FF00007F");
+    REQUIRE(obj2->get_color() == "FF0000");
     REQUIRE(test->get_color() == "FF0000");
-    test->set_color_with_alpha("00FF007F");
+    REQUIRE(obj1->get_opacity() == 1);
+    REQUIRE(obj2->get_opacity() == 1);
+    REQUIRE(test->get_opacity() == 1);
+    test->set_color("00FF007F");
+    obj2->set_opacity(0.5);
     REQUIRE(obj1->get_color() == "00FF007F");
     REQUIRE(obj2->get_color() == "00FF007F");
     REQUIRE(test->get_color() == "00FF007F");
-    obj1->set_color_with_alpha("00FF00");
+    REQUIRE(obj1->get_opacity() == 1);
+    REQUIRE(obj2->get_opacity() == 0.5);
+    REQUIRE(test->get_opacity() == 1);
+    obj1->set_color("00FF00");
     test->set_opacity(0.25);
-    REQUIRE(obj1->get_color() == "00FF003F");
-    REQUIRE(obj2->get_color() == "00FF003F");
-    REQUIRE(test->get_color() == "00FF003F");
+    REQUIRE(obj1->get_color() == "00FF00");
+    REQUIRE(obj2->get_color() == "00FF007F");
+    REQUIRE(test->get_color() == "00FF007F");
+    REQUIRE(obj1->get_opacity() == 0.25);
+    REQUIRE(obj2->get_opacity() == 0.25);
+    REQUIRE(test->get_opacity() == 0.25);
 }
 
 TEST_CASE("Group scaling", "[object]") {
