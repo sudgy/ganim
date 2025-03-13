@@ -43,3 +43,40 @@ TEST_CASE("Indicate", "[animation]") {
         }
     }
 }
+
+TEST_CASE("Indicate custom color", "[animation]") {
+    auto scene = TestScene(8, 8, 8, 8, 4);
+    auto shape = make_shape(
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape->set_visible(true);
+    scene.add(shape);
+    scene.frame_advance();
+    auto red = Color("FF0000");
+    indicate(scene, shape, {1, rf::linear, 2, red});
+    scene.wait(1);
+    auto black = Color("000000");
+    auto white = Color("FFFFFF");
+    auto reddish = Color("FF7F7F");
+    for (int x = 0; x < 8; ++x) {
+        for (int y = 0; y < 8; ++y) {
+            INFO("x = " << x << ", y = " << y);
+
+            auto color = black;
+            if (x > 1 and x < 6 and y > 1 and y < 6) color = white;
+            REQUIRE(scene.get_pixel(0, x, y) == color);
+            REQUIRE(scene.get_pixel(4, x, y) == color);
+
+            color = black;
+            if (x > 0 and x < 7 and y > 0 and y < 7) color = reddish;
+            REQUIRE(scene.get_pixel(1, x, y) == color);
+            REQUIRE(scene.get_pixel(3, x, y) == color);
+
+            REQUIRE(scene.get_pixel(2, x, y) == red);
+        }
+    }
+}

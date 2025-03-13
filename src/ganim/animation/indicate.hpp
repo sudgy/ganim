@@ -13,6 +13,9 @@ struct IndicateAnimationArgs {
     std::function<double(double)> rate_function = rf::smoothererstep;
     /** @brief How much to scale the object when indicating */
     double scale_factor = 1.15;
+    /** @brief What color the object should take on while indicating (default is
+     * yellow) */
+    Color color = Color("FFFF00");
 };
 
 /** @brief An animation to indicate an object.
