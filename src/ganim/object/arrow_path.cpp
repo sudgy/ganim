@@ -110,3 +110,19 @@ void ArrowPath::recreate(
     }
     recreate(pga_points, args);
 }
+
+ObjectPtr<ArrowPath> ArrowPath::polymorphic_copy() const
+{
+    return ObjectPtr<ArrowPath>::from_new(polymorphic_copy_impl());
+}
+
+ArrowPath* ArrowPath::polymorphic_copy_impl() const
+{
+    auto result = std::make_unique<ArrowPath>(*this);
+    result->clear();
+    result->M_path = M_path->polymorphic_copy();
+    result->M_tip = M_tip->polymorphic_copy();
+    result->add(result->M_path);
+    result->add(result->M_tip);
+    return result.release();
+}

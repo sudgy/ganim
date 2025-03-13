@@ -165,3 +165,25 @@ Bivector& Bivector::set_color(Color color)
     M_inside->set_color(color);
     return *this;
 }
+
+ObjectPtr<Bivector> Bivector::polymorphic_copy() const
+{
+    return ObjectPtr<Bivector>::from_new(polymorphic_copy_impl());
+}
+
+Bivector* Bivector::polymorphic_copy_impl() const
+{
+    auto result = std::make_unique<Bivector>(*this);
+    result->clear();
+    result->M_outside_paths.clear();
+    result->M_outside = make_group();
+    result->M_inside = M_inside->polymorphic_copy();
+    for (auto& path : M_outside_paths) {
+        auto new_path = path->polymorphic_copy();
+        result->M_outside_paths.push_back(new_path);
+        result->M_outside->add(new_path);
+    }
+    result->add(result->M_inside);
+    result->add(result->M_outside);
+    return result.release();
+}

@@ -274,3 +274,13 @@ void Path::set_subclass_uniforms(gl::Shader& shader)
         glUniform1f(shader.get_uniform("dash_off_time"), M_dash_off_time);
     }
 }
+
+ObjectPtr<Path> Path::polymorphic_copy() const
+{
+    return ObjectPtr<Path>::from_new(polymorphic_copy_impl());
+}
+
+Path* Path::polymorphic_copy_impl() const
+{
+    return new Path(*this);
+}

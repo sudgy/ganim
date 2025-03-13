@@ -12,6 +12,11 @@ namespace ganim {
             explicit PolygonShape(const std::vector<vga2::Vec>& vertices);
             /** @brief Create a polygon with the given vertices. */
             explicit PolygonShape(const std::vector<pga2::Bivec>& vertices);
+
+            ObjectPtr<PolygonShape> polymorphic_copy() const;
+
+        private:
+            virtual PolygonShape* polymorphic_copy_impl() const;
     };
     /** @brief Make a PolygonShape in an ObjectPtr.
      *

@@ -55,7 +55,11 @@ namespace ganim {
                 ArrowPathArgs args = {}
             );
 
+            ObjectPtr<ArrowPath> polymorphic_copy() const;
+
         private:
+            virtual ArrowPath* polymorphic_copy_impl() const;
+
             ObjectPtr<Path> M_path = nullptr;
             ObjectPtr<Shape> M_tip = nullptr;
     };

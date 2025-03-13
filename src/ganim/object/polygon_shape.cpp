@@ -36,3 +36,13 @@ PolygonShape::PolygonShape(const std::vector<vga2::Vec>& vertices)
 
 PolygonShape::PolygonShape(const std::vector<pga2::Bivec>& vertices)
 :   Shape(get_shape_vertices(vertices), get_shape_indices(vertices)) {}
+
+ObjectPtr<PolygonShape> PolygonShape::polymorphic_copy() const
+{
+    return ObjectPtr<PolygonShape>::from_new(polymorphic_copy_impl());
+}
+
+PolygonShape* PolygonShape::polymorphic_copy_impl() const
+{
+    return new PolygonShape(*this);
+}
