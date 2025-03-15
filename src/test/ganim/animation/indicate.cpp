@@ -3,6 +3,7 @@
 #include "ganim/animation/indicate.hpp"
 
 #include "test/ganim/scene/test_scene.hpp"
+#include "test/ganim/ga_equals.hpp"
 #include "ganim/object/shape.hpp"
 
 using namespace ganim;
@@ -79,4 +80,22 @@ TEST_CASE("Indicate custom color", "[animation]") {
             REQUIRE(scene.get_pixel(2, x, y) == red);
         }
     }
+}
+
+TEST_CASE("Indicate 3D", "[animation]") {
+    auto scene = TestScene(1, 1, 1, 1, 2);
+    auto shape = make_shape(
+        {{ 2,  2, 0},
+         { 2, -2, 0},
+         {-2, -2, 0},
+         {-2,  2, 0}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape->set_visible(true);
+    shape->shift(vga3::e3);
+    auto r = shape->get_rotor();
+    indicate(scene, shape, {.scale_factor = 2});
+    scene.frame_advance();
+    REQUIRE_THAT(r, GAEquals(shape->get_rotor()));
+    REQUIRE(shape->get_scale() == 2);
 }
