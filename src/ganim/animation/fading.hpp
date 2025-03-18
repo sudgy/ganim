@@ -53,7 +53,7 @@ void fade_in(
     Ts&&... objects
 )
 {
-    (fade_in(scene, std::forward<Ts>(objects)), ...);
+    (fade_in(scene, std::forward<Ts>(objects), args), ...);
 }
 /** @brief An animation to fade out an object.
  *
