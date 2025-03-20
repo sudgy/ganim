@@ -60,3 +60,24 @@ TEST_CASE("depth_z", "[object]") {
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 3, 3) == "FF0000");
 }
+
+TEST_CASE("PolygonShape 3D", "[object]") {
+    auto scene = TestScene(8, 8, 4, 4, 1);
+    using namespace vga3;
+    auto shape1 = make_polygon_shape({
+        -3*e1 - 3*e2 - 2*e3,
+         3*e1 - 3*e2 - 2*e3,
+         3*e1 + 3*e2 + 2*e3,
+        -3*e1 + 3*e2 + 2*e3,
+    });
+    auto shape2 = make_shape(
+        {
+            {-3, -3, -2},
+            { 3, -3, -2},
+            { 3,  3,  2},
+            {-3,  3,  2}
+        },
+        {0, 1, 2, 0, 2, 3}
+    );
+    scene.check_draw_equivalent(shape1, shape2);
+}
