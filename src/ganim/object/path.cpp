@@ -2,6 +2,9 @@
 
 #include "ganim/gl/gl.hpp"
 
+#include "ganim/math.hpp"
+#include "ganim/ga/exp.hpp"
+
 using namespace ganim;
 using namespace pga2;
 
@@ -113,6 +116,26 @@ Path::Path(
 )
 {
     recreate(points, closed, thickness);
+}
+
+Path::Path(
+    const std::vector<pga3::Trivec>& points,
+    int circle_precision,
+    bool closed,
+    double thickness
+)
+{
+    recreate(points, circle_precision, closed, thickness);
+}
+
+Path::Path(
+    const std::vector<vga3::Vec>& points,
+    int circle_precision,
+    bool closed,
+    double thickness
+)
+{
+    recreate(points, circle_precision, closed, thickness);
 }
 
 void Path::recreate(
@@ -250,6 +273,151 @@ void Path::recreate(
         }
     }
     set_vertices(std::move(vertices), std::move(indices));
+}
+
+void Path::recreate(
+    const std::vector<vga3::Vec>& points,
+    int circle_precision,
+    bool closed,
+    double thickness
+)
+{
+    recreate(vga3_to_pga3(points), circle_precision, closed, thickness);
+}
+
+void Path::recreate(
+    const std::vector<pga3::Trivec>& points,
+    int circle_precision,
+    bool closed,
+    double thickness
+)
+{
+    using namespace pga3;
+    if (points.size() < 2) {
+        throw std::invalid_argument("Path must be given at least two points.");
+    }
+
+    auto filtered_points = std::vector<pga3::Trivec>();
+    filtered_points.reserve(points.size());
+    for (auto p : points) {
+        auto coef = p.blade_project<e123>();
+        if (coef == 0) {
+            throw std::invalid_argument(
+                    "Path doesn't support points at infinity.");
+        }
+        auto normalized = p / coef;
+        // Maybe somebody is making a path on a function that starts out
+        // stationary or something.  I don't know, but the following algorithm
+        // breaks on duplicate points, and I want to support them, so just
+        // remove any duplicate points.
+        if (filtered_points.empty() or filtered_points.back() != normalized) {
+            filtered_points.push_back(normalized);
+        }
+    }
+    if (closed) filtered_points.push_back(filtered_points.front());
+    auto s = ssize(filtered_points);
+    // Get all lines joining the input points together.  Note that like fence
+    // length vs. fence posts, there is one less join line than points.  These
+    // need to be normalized for future calculations.
+    auto joins = std::vector<pga3::Bivec>();
+    joins.reserve(s - 1);
+    for (int i = 0; i < s - 1; ++i) {
+        auto join = filtered_points[i] & filtered_points[i+1];
+        joins.push_back(join.normalized());
+    }
+
+    auto d = thickness / 2;
+    auto starting_plane = filtered_points[0] | joins[0];
+    auto line_plane = (e3 | joins[0]) | joins[0];
+    if (line_plane.norm2() < 1e-10) {
+        line_plane = (e1 | joins[0]) | joins[0];
+    }
+    line_plane = line_plane.normalized();
+    auto shifted_plane = line_plane + d*e0;
+    auto shifted_line = (joins[0] | shifted_plane) ^ shifted_plane;
+    auto circle_points = std::vector<pga3::Trivec>();
+    circle_points.resize(circle_precision);
+    circle_points[0] = -shifted_line ^ starting_plane;
+    for (int i = 1; i < circle_precision; ++i) {
+        auto r = ga_exp(joins[0] * τ * i / circle_precision);
+        circle_points[i] = (~r * circle_points[0] * r).grade_project<3>();
+    }
+    auto apply_to_circle_points = [&](const auto& rotor) {
+        for (auto& p : circle_points) {
+            p = (~rotor * p * rotor).template grade_project<3>();
+        }
+    };
+
+    auto final_points = std::vector<pga3::Trivec>();
+    final_points.reserve(circle_precision * filtered_points.size());
+    auto add_circle_points = [&]{
+        for (auto& p : circle_points) {
+            final_points.push_back(p);
+        }
+    };
+    auto r = Even(1);
+    if (closed) {
+        auto plane1 = (joins.back() | filtered_points[0]).normalized();
+        auto plane2 = (joins.front() | filtered_points[0]).normalized();
+        auto b = ga_log(plane1 * plane2);
+        r = ga_exp(b/4);
+        apply_to_circle_points(~r);
+    }
+    add_circle_points();
+    if (closed) {
+        apply_to_circle_points(r);
+    }
+
+    for (int i = 1; i < ssize(filtered_points); ++i) {
+        auto r = Even(-filtered_points[i-1]
+            * (filtered_points[i-1] + filtered_points[i]) / 2);
+        apply_to_circle_points(r);
+
+        if (i != ssize(filtered_points) - 1 or closed) {
+            auto plane1 = (joins[i-1] | filtered_points[i]).normalized();
+            auto plane2
+                = (joins[i % joins.size()] | filtered_points[i]).normalized();
+            auto b = ga_log(plane1 * plane2);
+            r = ga_exp(b/4);
+            apply_to_circle_points(r);
+        }
+        add_circle_points();
+        if (i != ssize(filtered_points) - 1 or closed) {
+            apply_to_circle_points(r);
+        }
+        for (auto& p : circle_points) {
+            p /= p.blade_project<e123>();
+        }
+    }
+
+    auto final_vertices = std::vector<Shape::Vertex>();
+    auto final_indices = std::vector<unsigned>();
+    final_vertices.reserve(final_points.size());
+    final_indices.reserve(joins.size() * circle_precision * 6);
+    auto t = 0;
+    for (auto& p : final_points) {
+        auto& v = final_vertices.emplace_back();
+        auto pd = p.undual();
+        v.x = pd.blade_project<e1>();
+        v.y = pd.blade_project<e2>();
+        v.z = pd.blade_project<e3>();
+        v.t = t++ / circle_precision;
+    }
+    for (int i = 0; i < ssize(joins); ++i) {
+        for (int j = 0; j < circle_precision; ++j) {
+            auto i1 = i*circle_precision + j;
+            auto i2 = (i+1)*circle_precision + j;
+            auto i3 = (i+1)*circle_precision + ((j+1) % circle_precision);
+            auto i4 = i*circle_precision + ((j+1) % circle_precision);
+            final_indices.push_back(i1);
+            final_indices.push_back(i3);
+            final_indices.push_back(i2);
+            final_indices.push_back(i1);
+            final_indices.push_back(i4);
+            final_indices.push_back(i3);
+        }
+    }
+    set_vertices(std::move(final_vertices), std::move(final_indices));
 }
 
 void Path::set_dash(double on_time, double off_time)

@@ -38,6 +38,40 @@ namespace ganim {
                 bool closed = false,
                 double thickness = 0.04
             );
+            /** @brief Construct a 3D path given a list of points using 3D PGA.
+             *
+             * @param points The points that this path will follow
+             * @param circle_precision The number of sides on the polygons used
+             * to represent the cylindrical shape of the path.
+             * @param closed Whether these points represent a closed curve or
+             * not.  If this parameter is true, there will be one extra line
+             * joining the first and last points of the path, making it a closed
+             * curve.
+             * @param thickness The width of the path.
+             */
+            explicit Path(
+                const std::vector<pga3::Trivec>& points,
+                int circle_precision,
+                bool closed = false,
+                double thickness = 0.04
+            );
+            /** @brief Construct a 3D path given a list of points using 3D VGA.
+             *
+             * @param points The points that this path will follow
+             * @param circle_precision The number of sides on the polygons used
+             * to represent the cylindrical shape of the path.
+             * @param closed Whether these points represent a closed curve or
+             * not.  If this parameter is true, there will be one extra line
+             * joining the first and last points of the path, making it a closed
+             * curve.
+             * @param thickness The width of the path.
+             */
+            explicit Path(
+                const std::vector<vga3::Vec>& points,
+                int circle_precision,
+                bool closed = false,
+                double thickness = 0.04
+            );
             /** @brief Basically the same as "recalling" the constructor.
              *
              * @see Path(const std::vector<pga2::Bivec>&, bool, double)
@@ -53,6 +87,26 @@ namespace ganim {
              */
             void recreate(
                 const std::vector<vga2::Vec>& points,
+                bool closed = false,
+                double thickness = 0.04
+            );
+            /** @brief Basically the same as "recalling" the constructor.
+             *
+             * @see Path(const std::vector<pga2::Trivec>&, int, bool, double)
+             */
+            void recreate(
+                const std::vector<pga3::Trivec>& points,
+                int circle_precision,
+                bool closed = false,
+                double thickness = 0.04
+            );
+            /** @brief Basically the same as "recalling" the constructor.
+             *
+             * @see Path(const std::vector<vga2::Vec>&, int, bool, double)
+             */
+            void recreate(
+                const std::vector<vga3::Vec>& points,
+                int circle_precision,
                 bool closed = false,
                 double thickness = 0.04
             );
@@ -102,6 +156,32 @@ namespace ganim {
     )
     {
         return ObjectPtr<Path>(points, closed, thickness);
+    }
+    /** @brief Make a Path in an ObjectPtr.
+     *
+     * @see Path::Path
+     */
+    inline ObjectPtr<Path> make_path(
+        const std::vector<pga3::Trivec>& points,
+        int circle_precision,
+        bool closed = false,
+        double thickness = 0.04
+    )
+    {
+        return ObjectPtr<Path>(points, circle_precision, closed, thickness);
+    }
+    /** @brief Make a Path in an ObjectPtr.
+     *
+     * @see Path::Path
+     */
+    inline ObjectPtr<Path> make_path(
+        const std::vector<vga3::Vec>& points,
+        int circle_precision,
+        bool closed = false,
+        double thickness = 0.04
+    )
+    {
+        return ObjectPtr<Path>(points, circle_precision, closed, thickness);
     }
 }
 

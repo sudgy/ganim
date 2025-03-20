@@ -4,9 +4,9 @@
 #include "test/ganim/scene/test_scene.hpp"
 
 using namespace ganim;
-using namespace vga2;
 
 TEST_CASE("Path straight line", "[object]") {
+    using namespace vga2;
     auto scene = TestScene(8, 8, 8, 8, 1);
     auto path = make_path(
         {
@@ -34,6 +34,7 @@ TEST_CASE("Path straight line", "[object]") {
 // elbow.  If you find a weird issue with points not on the curve, add another
 // test.
 TEST_CASE("Path single turn", "[object]") {
+    using namespace vga2;
     auto scene = TestScene(8, 8, 8, 8, 1);
     auto path1 = make_path(
         {
@@ -226,6 +227,7 @@ TEST_CASE("Path single turn", "[object]") {
 }
 
 TEST_CASE("Path elbows", "[object]") {
+    using namespace vga2;
     auto scene = TestScene(10, 10, 10, 10, 1);
     auto path = make_path(
         {
@@ -262,6 +264,7 @@ TEST_CASE("Path elbows", "[object]") {
 }
 
 TEST_CASE("Closed paths", "[object]") {
+    using namespace vga2;
     auto scene = TestScene(8, 8, 8, 8, 1);
     auto path = make_path(
         {
@@ -289,6 +292,7 @@ TEST_CASE("Closed paths", "[object]") {
 }
 
 TEST_CASE("Dashed paths", "[object]") {
+    using namespace vga2;
     auto scene = TestScene(8, 8, 8, 8, 1);
     auto path = make_path(
         {
@@ -317,4 +321,70 @@ TEST_CASE("Dashed paths", "[object]") {
             REQUIRE(scene.get_pixel(1, x, y) == color2);
         }
     }
+}
+
+TEST_CASE("3D Open Path", "[object]") {
+    auto scene = TestScene(32, 32, 4, 4, 1);
+    using namespace vga3;
+    auto path = make_path(
+        {
+            -e1 - e2,
+             e1 - e2,
+             e1 + e2,
+            -e1 + e2,
+        },
+        8,
+        false,
+        1
+    );
+    path->shift(-e1);
+    path->do_shading(false);
+    auto s2 = 0.5f/std::sqrt(2.f);
+    auto shape = make_shape(
+        {
+            {-1, -1 + 0.5},
+            {-1, -1 - 0.5},
+            {1 - s2, -1 + s2},
+            {1 + s2, -1 - s2},
+            {1 - s2,  1 - s2},
+            {1 + s2,  1 + s2},
+            {-1, 1 - 0.5},
+            {-1, 1 + 0.5},
+        },
+        {0, 1, 2, 2, 1, 3, 2, 3, 5, 5, 4, 2, 5, 7, 6, 5, 6, 4}
+    );
+    shape->shift(-e1);
+    scene.check_draw_equivalent(path, shape);
+}
+
+TEST_CASE("3D Closed Path", "[object]") {
+    auto scene = TestScene(32, 32, 4, 4, 1);
+    using namespace vga3;
+    auto path = make_path(
+        {
+            -e1 - e2,
+             e1 - e2,
+             e1 + e2,
+            -e1 + e2,
+        },
+        8,
+        true,
+        1
+    );
+    path->do_shading(false);
+    auto s2 = 0.5f/std::sqrt(2.f);
+    auto shape = make_shape(
+        {
+            {-1 + s2, -1 + s2},
+            {-1 - s2, -1 - s2},
+            {1 - s2, -1 + s2},
+            {1 + s2, -1 - s2},
+            {1 - s2,  1 - s2},
+            {1 + s2,  1 + s2},
+            {-1 + s2, 1 - s2},
+            {-1 - s2, 1 + s2},
+        },
+        {0, 1, 2, 2, 1, 3, 2, 3, 5, 5, 4, 2, 5, 7, 6, 5, 6, 4, 0, 6, 1, 7, 1, 6}
+    );
+    scene.check_draw_equivalent(path, shape);
 }

@@ -9,6 +9,7 @@ void vectors();
 void lighting();
 void oit();
 void bivectors();
+void paths_3d();
 
 int main()
 {
@@ -21,7 +22,8 @@ int main()
               << "6: vectors\n"
               << "7: lighting\n"
               << "8: Order-independent Transparency\n"
-              << "9: Bivectors\n";
+              << "9: Bivectors\n"
+              << "10: 3D Paths\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -51,6 +53,9 @@ int main()
             break;
         case 9:
             bivectors();
+            break;
+        case 10:
+            paths_3d();
             break;
         default:
             std::cout << "Invalid input\n";
