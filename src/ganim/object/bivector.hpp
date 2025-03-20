@@ -47,6 +47,26 @@ namespace ganim {
                 const std::vector<vga2::Vec>& points,
                 BivectorArgs args = {}
             );
+            /** @brief Make a bivector from an arbitrary list of points on its
+             * boundary using 3D PGA points.
+             *
+             * All of the vertices must lie roughly in a plane.  If they don't,
+             * the behavior is unspecified, and will probably look pretty bad.
+             */
+            Bivector(
+                const std::vector<pga3::Trivec>& points,
+                BivectorArgs args = {}
+            );
+            /** @brief Make a bivector from an arbitrary list of points on its
+             * boundary using 3D VGA points.
+             *
+             * All of the vertices must lie roughly in a plane.  If they don't,
+             * the behavior is unspecified, and will probably look pretty bad.
+             */
+            Bivector(
+                const std::vector<vga3::Vec>& points,
+                BivectorArgs args = {}
+            );
             /** @brief Make a bivector from two vectors, where the resulting
              * bivector is the exterior product of the two input vectors.
              */
@@ -125,6 +145,28 @@ namespace ganim {
      */
     inline ObjectPtr<Bivector> make_bivector(
         const std::vector<vga2::Vec>& points,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(points, args);
+    }
+    /** @brief Make a Bivector in an ObjectPtr.
+     *
+     * @see Bivector::Bivector
+     */
+    inline ObjectPtr<Bivector> make_bivector(
+        const std::vector<pga3::Trivec>& points,
+        BivectorArgs args = {}
+    )
+    {
+        return ObjectPtr<Bivector>(points, args);
+    }
+    /** @brief Make a Bivector in an ObjectPtr.
+     *
+     * @see Bivector::Bivector
+     */
+    inline ObjectPtr<Bivector> make_bivector(
+        const std::vector<vga3::Vec>& points,
         BivectorArgs args = {}
     )
     {

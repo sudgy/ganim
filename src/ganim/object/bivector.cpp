@@ -22,6 +22,84 @@ Bivector::Bivector(
 }
 
 Bivector::Bivector(
+    const std::vector<pga3::Trivec>& points,
+    BivectorArgs args
+)
+{
+    using namespace pga3;
+    auto b = [&]{
+        for (int i = 0; i < ssize(points); ++i) {
+            for (int j = i + 1; j < ssize(points); ++j) {
+                for (int k = j + 1; k < ssize(points); ++k) {
+                    auto p1 = points[i];
+                    auto p2 = points[j];
+                    auto p3 = points[k];
+                    auto plane = p1 & p2 & p3;
+                    if (plane.norm2() != 0.0) return plane.normalized();
+                }
+            }
+        }
+        throw std::invalid_argument(
+            "Unable to find the plane that a 3D bivector is in.  "
+            "This could be caused by passing in fewer than three "
+            "points or by all of the points being collinear.");
+    }();
+    auto r = Even(1);
+    if ((b + e3).norm2() > 1e-10) {
+        r *= -b * (b + e3).normalized();
+    }
+    auto vga3_flat_points = std::vector<vga3::Vec>();
+    vga3_flat_points.resize(points.size());
+    for (int i = 0; i < ssize(points); ++i) {
+        vga3_flat_points[i]
+            = pga3_to_vga3((~r * points[i] * r).grade_project<3>());
+    }
+    auto vga2_points = vga3_to_vga2(vga3_flat_points);
+    auto pga2_points = vga2_to_pga2(vga2_points);
+    common_construct(pga2_points, vga2_points, args);
+    apply_rotor(~r);
+}
+
+Bivector::Bivector(
+    const std::vector<vga3::Vec>& points,
+    BivectorArgs args
+)
+{
+    using namespace vga3;
+    auto b = [&]{
+        for (int i = 0; i < ssize(points); ++i) {
+            for (int j = i + 1; j < ssize(points); ++j) {
+                for (int k = j + 1; k < ssize(points); ++k) {
+                    auto p1 = points[i];
+                    auto p2 = points[j];
+                    auto p3 = points[k];
+                    auto plane = (p2 - p1) ^ (p3 - p2);
+                    if (plane.norm2() != 0.0) return plane.normalized();
+                }
+            }
+        }
+        throw std::invalid_argument(
+            "Unable to find the plane that a 3D bivector is in.  "
+            "This could be caused by passing in fewer than three "
+            "points or by all of the points being collinear.");
+    }();
+    auto r = Even(1);
+    if ((b + e12).norm2() > 1e-10) {
+        r *= -b * (b + e12).normalized();
+    }
+    auto vga3_flat_points = std::vector<vga3::Vec>();
+    vga3_flat_points.resize(points.size());
+    for (int i = 0; i < ssize(points); ++i) {
+        vga3_flat_points[i]
+            = (~r * points[i] * r).grade_project<1>();
+    }
+    auto vga2_points = vga3_to_vga2(vga3_flat_points);
+    auto pga2_points = vga2_to_pga2(vga2_points);
+    common_construct(pga2_points, vga2_points, args);
+    apply_rotor(~r);
+}
+
+Bivector::Bivector(
     const Vector& v1,
     const Vector& v2,
     BivectorArgs args

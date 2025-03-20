@@ -32,6 +32,7 @@ TEST_CASE("Bivector pga list constructor", "[object]") {
     group->set_visible(true);
 
     auto scene = TestScene(6, 6, 6, 6, 1);
+    scene.check_draw_equivalent(bivector, group);
 }
 
 TEST_CASE("Bivector vga list constructor", "[object]") {
@@ -295,5 +296,19 @@ TEST_CASE("Bivector polymorphic_copy", "[object]") {
     auto b2 = b1->polymorphic_copy();
     b2->set_color(b2->get_color());
     auto scene = TestScene(32, 32, 4, 4, 1);
+    scene.check_draw_equivalent(b1, b2);
+}
+
+TEST_CASE("Bivector 3D list of points", "[object]") {
+    using namespace vga3;
+    auto scene = TestScene(32, 32, 4, 4, 1);
+    auto b1 = make_bivector({
+        -3*e1 - 3*e2 - 2*e3,
+         3*e1 - 3*e2 - 2*e3,
+         3*e1 + 3*e2 + 2*e3,
+        -3*e1 + 3*e2 + 2*e3
+    });
+    auto b2 = make_bivector(6*e1, 6*e2 + 4*e3);
+    b2->shift(-3*e1 - 3*e2 - 2*e3);
     scene.check_draw_equivalent(b1, b2);
 }
