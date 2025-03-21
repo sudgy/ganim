@@ -55,7 +55,9 @@ void main() {
         vec3 a1 = gs_in[1].true_position - gs_in[0].true_position;
         vec3 a2 = gs_in[2].true_position - gs_in[0].true_position;
         vec3 n = normalize(cross(a1, a2));
-        gs_out.lighting = max((n.z + 1) / 2, 0.5);
+        const float min_lighting = 0.3;
+        float lighting_base = max(n.z, 0);
+        gs_out.lighting = mix(min_lighting, 1.0, lighting_base);
         EmitVertex();
     }
     EndPrimitive();

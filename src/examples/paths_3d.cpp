@@ -14,7 +14,7 @@ void paths_3d()
             2*std::cos(i/128.0)*e1 + 2*std::sin(i/128.0)*e2 + (i/1024.0 - 2) * e3
         );
     }
-    auto helix = make_path(helix_points, 16, false, 0.1);
+    auto helix = make_path(helix_points, 32, false, 0.1);
     helix->set_color("FF0000");
     auto cam = scene.get_camera();
     cam->rotate(τ/6, e23);
@@ -27,7 +27,7 @@ void paths_3d()
             4*std::cos(τ*i/128.0)*e1 + 4*std::sin(τ*i/128.0)*e2
         );
     }
-    auto torus = make_path(torus_points, 32, true, 1);
+    auto torus = make_path(torus_points, 64, true, 2);
     torus->set_color("00FF00");
     create(scene, torus);
     scene.wait(2);
