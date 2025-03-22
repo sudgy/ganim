@@ -350,8 +350,18 @@ void Path::recreate(
 
     auto final_points = std::vector<pga3::Trivec>();
     final_points.reserve(circle_precision * filtered_points.size());
-    auto add_circle_points = [&]{
-        for (auto& p : circle_points) {
+    auto add_circle_points = [&](const Even& rotor, const Trivec& midpoint) {
+        for (auto p : circle_points) {
+            p -= midpoint;
+            // The rotor is basically exp(θ/4)
+            // cos(θ/4)
+            auto c = rotor.blade_project<e>();
+            // sin(θ/4)
+            auto s = rotor.grade_project<2>().norm();
+            // cos(θ/2) (from double angle formula)
+            auto c2 = c*c - s*s;
+            p /= c2;
+            p += midpoint;
             final_points.push_back(p);
         }
     };
@@ -363,7 +373,7 @@ void Path::recreate(
         r = ga_exp(b/4);
         apply_to_circle_points(~r);
     }
-    add_circle_points();
+    add_circle_points(r, filtered_points[0]);
     if (closed) {
         apply_to_circle_points(r);
     }
@@ -381,7 +391,7 @@ void Path::recreate(
             r = ga_exp(b/4);
             apply_to_circle_points(r);
         }
-        add_circle_points();
+        add_circle_points(r, filtered_points[i]);
         if (i != ssize(filtered_points) - 1 or closed) {
             apply_to_circle_points(r);
         }
