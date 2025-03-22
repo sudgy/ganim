@@ -164,6 +164,7 @@ class Group : public Object {
         virtual void set_creating(bool creating) override;
         virtual void set_noise_creating(double noise_creating) override;
         virtual void set_fixed_in_frame(bool fixed_in_frame) override;
+        virtual void set_fixed_orientation(bool fixed_orientation) override;
         virtual Box get_true_bounding_box() const override;
         virtual Box get_logical_bounding_box() const override;
         virtual Box get_original_true_bounding_box() const override;

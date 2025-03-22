@@ -259,6 +259,16 @@ void Group::set_fixed_in_frame(bool fixed_in_frame)
     }
 }
 
+void Group::set_fixed_orientation(bool fixed_orientation)
+{
+    Object::set_fixed_orientation(fixed_orientation);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->set_fixed_orientation(fixed_orientation);
+        }
+    }
+}
+
 Box Group::get_true_bounding_box() const
 {
     return get_original_true_bounding_box();

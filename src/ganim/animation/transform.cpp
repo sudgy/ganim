@@ -231,8 +231,19 @@ namespace {
             }
             glUniform2f(shader.get_uniform("camera_scale"),
                         camera.get_x_scale(), camera.get_y_scale());
-            shader.set_rotor_uniform("view", ~camera.get_rotor());
-            shader.set_rotor_uniform("model", get_rotor());
+            auto view = ~camera.get_rotor();
+            shader.set_rotor_uniform("view", view);
+            auto model = get_rotor();
+            if (is_fixed_orientation()) {
+                using namespace pga3;
+                auto view_euclidean =
+                    view.blade_project<e>() +
+                    view.blade_project<e12>() * e12 +
+                    view.blade_project<e13>() * e13 +
+                    view.blade_project<e23>() * e23;
+                model = ~view_euclidean * model;
+            }
+            shader.set_rotor_uniform("model", model);
             glUniform1f(shader.get_uniform("scale"), 1.0);
             glUniform1f(shader.get_uniform("depth_z"), get_depth_z());
 

@@ -3,6 +3,8 @@
 
 #include "ganim/object/polygon_shape.hpp"
 
+#include "ganim/math.hpp"
+
 using namespace ganim;
 
 TEST_CASE("PolygonShape", "[object]") {
@@ -80,4 +82,34 @@ TEST_CASE("PolygonShape 3D", "[object]") {
         {0, 1, 2, 0, 2, 3}
     );
     scene.check_draw_equivalent(shape1, shape2);
+}
+
+TEST_CASE("fixed_orientation", "[object]") {
+    auto scene = TestScene(8, 8, 4, 4, 1);
+    using namespace vga3;
+    auto shape1 = make_polygon_shape({
+        -e1 - e2,
+         e1 - e2,
+         e1 + e2,
+        -e1 + e2
+    });
+    shape1->set_fixed_orientation(true);
+    auto shape2 = make_polygon_shape({
+        -e1 - e2,
+         e1 - e2,
+         e1 + e2,
+        -e1 + e2
+    });
+    scene.check_draw_equivalent(shape1, shape2, "1");
+    scene.get_camera()->rotate(τ/4, e23);
+    shape2->rotate(τ/4, e23);
+    scene.check_draw_equivalent(shape1, shape2, "2");
+    scene.get_camera()->rotate(τ/8, e13);
+    shape2->rotate(τ/8, e13);
+    scene.check_draw_equivalent(shape1, shape2, "3");
+    shape1->shift(e1);
+    shape2->shift(e1);
+    scene.check_draw_equivalent(shape1, shape2, "4");
+    scene.get_camera()->shift(e1);
+    scene.check_draw_equivalent(shape1, shape2, "5");
 }

@@ -178,6 +178,17 @@ namespace ganim {
              * not affected by the motion of the camera.
              */
             bool is_fixed_in_frame() const {return M_fixed_in_frame;}
+            /** @brief Set whether or not this object has a fixed orientation,
+             * i.e. is always facing the camera no matter what position it's at
+             * in 3D space.
+             */
+            virtual void set_fixed_orientation(bool fixed_orientation)
+                {M_fixed_orientation = fixed_orientation;}
+            /** @brief See whether or not this object has a fixed orientation,
+             * i.e. is always facing the camera no matter what position it's at
+             * in 3D space.
+             */
+            bool is_fixed_orientation() const {return M_fixed_orientation;}
             /** @brief Determine whether or not this object is being created.
              *
              * Used internally by things like the create animation.
@@ -486,6 +497,7 @@ namespace ganim {
             bool M_visible = false;
             bool M_creating = false;
             bool M_fixed_in_frame = false;
+            bool M_fixed_orientation = false;
             gl::Texture* M_peeling_depth_buffer = nullptr;
     };
 }
