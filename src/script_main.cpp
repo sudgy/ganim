@@ -1,6 +1,6 @@
-#include <iostream>
+int script_main(int argc, char* argv[]);
 
-int main()
+int main(int argc, char* argv[])
 {
-    std::cout << "The ganim scripting language has not been created yet.\n";
+    return script_main(argc, argv);
 }
