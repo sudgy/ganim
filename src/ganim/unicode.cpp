@@ -5,68 +5,76 @@
 
 using namespace ganim;
 
+std::uint32_t ganim::utf8_get_next_codepoint(
+    std::string_view input,
+    int* byte_size
+)
+{
+    if (input.size() == 0) return 0;
+    auto string = reinterpret_cast<const std::uint8_t*>(input.data());
+    if (!(string[0] & 0x80)) {
+        if (byte_size) *byte_size = 1;
+        return string[0];
+    }
+    if (input.size() < 2) {
+        throw std::invalid_argument(std::format(
+            "Expected more bytes in a UTF-8 codepoint.  Offending byte:"
+            " {:#x}", string[0]));
+    }
+    if (string[1] >> 6 != 2) {
+        throw std::invalid_argument(std::format(
+            "Malformed UTF-8 string found.  Offending bytes: {:#x} "
+            "{:#x}", string[0], string[1]));
+    }
+    if (string[0] >> 5 == 0b110) {
+        if (byte_size) *byte_size = 2;
+        return static_cast<int>(string[1] & 0b00111111) +
+              (static_cast<int>(string[0] & 0b00011111) << 6);
+    }
+    if (input.size() < 3) {
+        throw std::invalid_argument(std::format(
+            "Expected more bytes in a UTF-8 codepoint.  Offending bytes:"
+            " {:#x} {:#x}", string[0], string[1]));
+    }
+    if (string[2] >> 6 != 2) {
+        throw std::invalid_argument(std::format(
+            "Malformed UTF-8 string found.  Offending bytes: {:#x} "
+            "{:#x} {:#x}", string[0], string[1], string[2]));
+    }
+    if (string[0] >> 4 == 0b1110) {
+        if (byte_size) *byte_size = 3;
+        return static_cast<int>(string[2] & 0b00111111) +
+              (static_cast<int>(string[1] & 0b00111111) << 6) +
+              (static_cast<int>(string[0] & 0b00001111) << 12);
+    }
+    if (input.size() < 4) {
+        throw std::invalid_argument(std::format(
+            "Expected more bytes in a UTF-8 codepoint.  Offending bytes:"
+            " {:#x} {:#x} {:#x}", string[0], string[1], string[2]));
+    }
+    if (string[3] >> 6 != 2) {
+        throw std::invalid_argument(std::format(
+            "Malformed UTF-8 string found.  Offending bytes: {:#x} {:#x} "
+            "{:#x} {:#x}", string[0], string[1], string[2], string[3]));
+    }
+    if (string[0] >> 3 != 0b11110) {
+        throw std::invalid_argument(std::format(
+            "Malformed UTF-8 string found.  Offending byte: {:#x}",
+            string[0]));
+    }
+    if (byte_size) *byte_size = 4;
+    return static_cast<int>(string[3] & 0b00111111) +
+          (static_cast<int>(string[2] & 0b00111111) << 6) +
+          (static_cast<int>(string[1] & 0b00111111) << 12) +
+          (static_cast<int>(string[0] & 0b00000111) << 18);
+}
+
 Generator<std::uint32_t> ganim::utf8_to_codepoints(std::string_view input)
 {
+    int byte_size = 0;
     while (input.size() > 0) {
-        auto string = reinterpret_cast<const std::uint8_t*>(input.data());
-        if (!(string[0] & 0x80)) {
-            co_yield string[0];
-            input.remove_prefix(1);
-            continue;
-        }
-        if (input.size() < 2) {
-            throw std::invalid_argument(std::format(
-                "Expected more bytes in a UTF-8 codepoint.  Offending byte:"
-                " {:#x}", string[0]));
-        }
-        if (string[1] >> 6 != 2) {
-            throw std::invalid_argument(std::format(
-                "Malformed UTF-8 string found.  Offending bytes: {:#x} "
-                "{:#x}", string[0], string[1]));
-        }
-        if (string[0] >> 5 == 0b110) {
-            co_yield static_cast<int>(string[1] & 0b00111111) +
-                    (static_cast<int>(string[0] & 0b00011111) << 6);
-            input.remove_prefix(2);
-            continue;
-        }
-        if (input.size() < 3) {
-            throw std::invalid_argument(std::format(
-                "Expected more bytes in a UTF-8 codepoint.  Offending bytes:"
-                " {:#x} {:#x}", string[0], string[1]));
-        }
-        if (string[2] >> 6 != 2) {
-            throw std::invalid_argument(std::format(
-                "Malformed UTF-8 string found.  Offending bytes: {:#x} "
-                "{:#x} {:#x}", string[0], string[1], string[2]));
-        }
-        if (string[0] >> 4 == 0b1110) {
-            co_yield static_cast<int>(string[2] & 0b00111111) +
-                    (static_cast<int>(string[1] & 0b00111111) << 6) +
-                    (static_cast<int>(string[0] & 0b00001111) << 12);
-            input.remove_prefix(3);
-            continue;
-        }
-        if (input.size() < 4) {
-            throw std::invalid_argument(std::format(
-                "Expected more bytes in a UTF-8 codepoint.  Offending bytes:"
-                " {:#x} {:#x} {:#x}", string[0], string[1], string[2]));
-        }
-        if (string[3] >> 6 != 2) {
-            throw std::invalid_argument(std::format(
-                "Malformed UTF-8 string found.  Offending bytes: {:#x} {:#x} "
-                "{:#x} {:#x}", string[0], string[1], string[2], string[3]));
-        }
-        if (string[0] >> 3 != 0b11110) {
-            throw std::invalid_argument(std::format(
-                "Malformed UTF-8 string found.  Offending byte: {:#x}",
-                string[0]));
-        }
-        co_yield static_cast<int>(string[3] & 0b00111111) +
-                (static_cast<int>(string[2] & 0b00111111) << 6) +
-                (static_cast<int>(string[1] & 0b00111111) << 12) +
-                (static_cast<int>(string[0] & 0b00000111) << 18);
-        input.remove_prefix(4);
+        co_yield utf8_get_next_codepoint(input, &byte_size);
+        input.remove_prefix(byte_size);
     }
 }
 
@@ -103,7 +111,7 @@ UnicodeCodepoint::UnicodeCodepoint(std::string_view utf8)
 {
     if (utf8.empty()) throw std::invalid_argument(
             "An empty string was passed to UnicodeCodepoint's constructor.");
-    codepoint = *utf8_to_codepoints(utf8)();
+    codepoint = utf8_get_next_codepoint(utf8);
 }
 
 UnicodeCodepoint::UnicodeCodepoint(std::u16string_view utf16)

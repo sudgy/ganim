@@ -7,6 +7,10 @@
 #include "coroutine.hpp"
 
 namespace ganim {
+    std::uint32_t utf8_get_next_codepoint(
+        std::string_view input,
+        int* byte_size = nullptr
+    );
     Generator<std::uint32_t> utf8_to_codepoints(std::string_view input);
     Generator<std::uint32_t> utf16_to_codepoints(std::u16string_view input);
 
