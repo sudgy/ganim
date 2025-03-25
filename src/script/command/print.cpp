@@ -9,7 +9,13 @@ using namespace ganim::commands;
 
 Print::Print(Script& script)
 {
-    M_string = script.consume_token().string;
+    auto token = script.consume_token().string;
+    if (token[0] == '"') {
+        M_string = token.substr(1, token.size() - 2);
+    }
+    else {
+        // Error
+    }
 }
 
 void Print::execute() const
