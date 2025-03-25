@@ -2,6 +2,8 @@
 
 #include "script_exception.hpp"
 
+#include "script/expression/string_constant.hpp"
+
 using namespace ganim;
 
 Script::Script(std::string script)
@@ -31,12 +33,18 @@ void Script::execute() const
     }
 }
 
-const Token& Script::consume_token()
+const Token& Script::get_token()
 {
     if (M_index >= ssize(M_tokens)) {
         throw ScriptException(-1, -1, "Expected token");
     }
     auto& result = M_tokens[M_index];
+    return result;
+}
+
+const Token& Script::consume_token()
+{
+    auto& result = get_token();
     ++M_index;
     return result;
 }
@@ -51,4 +59,15 @@ void Script::expect_semicolon()
         throw ScriptException(
                 token.line_number, token.column_number, "Expected semicolon");
     }
+}
+
+std::unique_ptr<Expression> Script::get_expression()
+{
+    auto& token = consume_token();
+    if (token.string[0] == '"') {
+        return std::make_unique<expressions::StringConstant>(
+                std::string(token.string.substr(1, token.string.size() - 2)));
+    }
+    throw ScriptException(token.line_number, token.column_number,
+            "Expected expression");
 }

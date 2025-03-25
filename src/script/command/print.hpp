@@ -3,6 +3,8 @@
 
 #include "command.hpp"
 
+#include "script/expression/expression.hpp"
+
 namespace ganim::commands {
     class Print : public CommandFactoryBase<Print> {
         public:
@@ -12,8 +14,7 @@ namespace ganim::commands {
             inline static std::string command_name = "print";
 
         private:
-            // This will be very different in the future
-            std::string M_string;
+            std::unique_ptr<Expression> M_string;
     };
 }
 

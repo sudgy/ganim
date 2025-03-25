@@ -10,11 +10,9 @@ using namespace ganim::commands;
 
 Print::Print(Script& script)
 {
-    auto token = script.consume_token();
-    if (token.string[0] == '"') {
-        M_string = token.string.substr(1, token.string.size() - 2);
-    }
-    else {
+    auto& token = script.get_token();
+    M_string = script.get_expression();
+    if (M_string->type() != ExpressionType::String) {
         throw ScriptException(
                 token.line_number, token.column_number, "Expected string");
     }
@@ -22,5 +20,5 @@ Print::Print(Script& script)
 
 void Print::execute() const
 {
-    std::cout << M_string << "\n";
+    std::cout << M_string->as_string() << "\n";
 }
