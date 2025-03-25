@@ -7,24 +7,21 @@
 #include <memory>
 
 namespace ganim {
+    class Script;
     template <typename Derived> class CommandFactoryBase;
     class Command {
         template <typename Derived> friend class CommandFactoryBase;
         public:
-            explicit Command(std::string command_string)
-                : M_command_string(command_string) {}
+            Command()=default;
             virtual ~Command()=default;
 
             virtual void execute() const=0;
-
-        private:
-            std::string M_command_string;
     };
 
     inline std::unordered_map<
         std::string,
         std::function<
-            std::unique_ptr<Command>(std::string_view, std::string_view)
+            std::unique_ptr<Command>(Script& script)
         >
     > G_command_factory;
 
@@ -32,10 +29,8 @@ namespace ganim {
     char register_command()
     {
         G_command_factory[Derived::command_name]
-            = [](std::string_view full_command_string,
-                 std::string_view command_string)
-            {return std::make_unique<Derived>(
-                    full_command_string, command_string);};
+            = [](Script& script)
+            {return std::make_unique<Derived>(script);};
         return 0;
     }
 
@@ -43,8 +38,7 @@ namespace ganim {
     class CommandFactoryBase : public Command {
         inline static char factory_registration = register_command<Derived>();
         friend Derived;
-        CommandFactoryBase(std::string_view command_string)
-        : Command(std::string(command_string))
+        CommandFactoryBase()
         {
             (void)factory_registration;
         }

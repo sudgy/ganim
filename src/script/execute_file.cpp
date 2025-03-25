@@ -2,7 +2,7 @@
 
 #include <fstream>
 
-#include "string_to_commands.hpp"
+#include "script.hpp"
 
 void ganim::execute_file(std::string_view filename)
 {
@@ -22,8 +22,6 @@ void ganim::execute_file(std::string_view filename)
     }
     contents.append(buf, 0, stream.gcount());
 
-    auto commands = string_to_commands(contents);
-    for (auto& command : commands) {
-        command->execute();
-    }
+    auto script = Script(contents);
+    script.execute();
 }

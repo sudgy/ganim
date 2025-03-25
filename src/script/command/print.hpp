@@ -6,10 +6,7 @@
 namespace ganim::commands {
     class Print : public CommandFactoryBase<Print> {
         public:
-            Print(
-                std::string_view full_command_string,
-                std::string_view command_string
-            );
+            Print(Script& script);
             virtual void execute() const override;
 
             inline static std::string command_name = "print";
