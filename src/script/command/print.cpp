@@ -3,19 +3,22 @@
 #include <iostream>
 
 #include "script/script.hpp"
+#include "script/script_exception.hpp"
 
 using namespace ganim;
 using namespace ganim::commands;
 
 Print::Print(Script& script)
 {
-    auto token = script.consume_token().string;
-    if (token[0] == '"') {
-        M_string = token.substr(1, token.size() - 2);
+    auto token = script.consume_token();
+    if (token.string[0] == '"') {
+        M_string = token.string.substr(1, token.string.size() - 2);
     }
     else {
-        // Error
+        throw ScriptException(
+                token.line_number, token.column_number, "Expected string");
     }
+    script.expect_semicolon();
 }
 
 void Print::execute() const

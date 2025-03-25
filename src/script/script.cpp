@@ -1,5 +1,7 @@
 #include "script.hpp"
 
+#include "script_exception.hpp"
+
 using namespace ganim;
 
 Script::Script(std::string script)
@@ -26,7 +28,22 @@ void Script::execute() const
 
 const Token& Script::consume_token()
 {
+    if (M_index >= ssize(M_tokens)) {
+        throw ScriptException(-1, -1, "Expected token");
+    }
     auto& result = M_tokens[M_index];
     ++M_index;
     return result;
+}
+
+void Script::expect_semicolon()
+{
+    if (M_index >= ssize(M_tokens)) {
+        throw ScriptException(-1, -1, "Expected semicolon");
+    }
+    auto& token = consume_token();
+    if (token.string != ";") {
+        throw ScriptException(
+                token.line_number, token.column_number, "Expected semicolon");
+    }
 }

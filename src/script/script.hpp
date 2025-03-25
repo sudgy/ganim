@@ -10,6 +10,7 @@ namespace ganim {
             explicit Script(std::string script);
             void execute() const;
             const Token& consume_token();
+            void expect_semicolon();
 
         private:
             int M_index = 0;
