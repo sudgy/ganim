@@ -129,3 +129,58 @@ TEST_CASE("Tokenize", "[script]") {
     REQUIRE(tokens9[3].column_number == 1);
     REQUIRE(tokens9[3].byte_number == 9);
 }
+
+TEST_CASE("tokenize with strings", "[script]") {
+    auto tokens1 = tokenize("a \"b\" c");
+    auto tokens2 = tokenize("ab\"c\"");
+    auto tokens3 = tokenize("ab\"c\n\"");
+    auto tokens4 = tokenize("ab\"c\nd\" e");
+
+    REQUIRE(tokens1.size() == 3);
+    REQUIRE(tokens1[0].string == "a");
+    REQUIRE(tokens1[0].line_number == 0);
+    REQUIRE(tokens1[0].column_number == 0);
+    REQUIRE(tokens1[0].byte_number == 0);
+    REQUIRE(tokens1[1].string == "\"b\"");
+    REQUIRE(tokens1[1].line_number == 0);
+    REQUIRE(tokens1[1].column_number == 2);
+    REQUIRE(tokens1[1].byte_number == 2);
+    REQUIRE(tokens1[2].string == "c");
+    REQUIRE(tokens1[2].line_number == 0);
+    REQUIRE(tokens1[2].column_number == 6);
+    REQUIRE(tokens1[2].byte_number == 6);
+
+    REQUIRE(tokens2.size() == 2);
+    REQUIRE(tokens2[0].string == "ab");
+    REQUIRE(tokens2[0].line_number == 0);
+    REQUIRE(tokens2[0].column_number == 0);
+    REQUIRE(tokens2[0].byte_number == 0);
+    REQUIRE(tokens2[1].string == "\"c\"");
+    REQUIRE(tokens2[1].line_number == 0);
+    REQUIRE(tokens2[1].column_number == 2);
+    REQUIRE(tokens2[1].byte_number == 2);
+
+    REQUIRE(tokens3.size() == 2);
+    REQUIRE(tokens3[0].string == "ab");
+    REQUIRE(tokens3[0].line_number == 0);
+    REQUIRE(tokens3[0].column_number == 0);
+    REQUIRE(tokens3[0].byte_number == 0);
+    REQUIRE(tokens3[1].string == "\"c\n\"");
+    REQUIRE(tokens3[1].line_number == 0);
+    REQUIRE(tokens3[1].column_number == 2);
+    REQUIRE(tokens3[1].byte_number == 2);
+
+    REQUIRE(tokens4.size() == 3);
+    REQUIRE(tokens4[0].string == "ab");
+    REQUIRE(tokens4[0].line_number == 0);
+    REQUIRE(tokens4[0].column_number == 0);
+    REQUIRE(tokens4[0].byte_number == 0);
+    REQUIRE(tokens4[1].string == "\"c\nd\"");
+    REQUIRE(tokens4[1].line_number == 0);
+    REQUIRE(tokens4[1].column_number == 2);
+    REQUIRE(tokens4[1].byte_number == 2);
+    REQUIRE(tokens4[2].string == "e");
+    REQUIRE(tokens4[2].line_number == 1);
+    REQUIRE(tokens4[2].column_number == 3);
+    REQUIRE(tokens4[2].byte_number == 8);
+}
