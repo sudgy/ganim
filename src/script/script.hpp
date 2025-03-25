@@ -8,6 +8,7 @@ namespace ganim {
     class Script {
         public:
             explicit Script(std::string script);
+            void compile();
             void execute() const;
             const Token& consume_token();
             void expect_semicolon();

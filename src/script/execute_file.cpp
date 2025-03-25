@@ -23,5 +23,6 @@ void ganim::execute_file(std::string_view filename)
     contents.append(buf, 0, stream.gcount());
 
     auto script = Script(contents);
+    script.compile();
     script.execute();
 }

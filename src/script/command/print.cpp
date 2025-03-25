@@ -18,7 +18,6 @@ Print::Print(Script& script)
         throw ScriptException(
                 token.line_number, token.column_number, "Expected string");
     }
-    script.expect_semicolon();
 }
 
 void Print::execute() const

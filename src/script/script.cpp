@@ -5,17 +5,22 @@
 using namespace ganim;
 
 Script::Script(std::string script)
-: M_script(std::move(script))
+: M_script(std::move(script)) {}
+
+void Script::compile()
 {
+    M_index = 0;
+    M_commands.clear();
     M_tokens = tokenize(M_script);
     while (M_index < ssize(M_tokens)) {
         auto token = consume_token();
         auto it = G_command_factory.find(std::string(token.string));
         if (it == G_command_factory.end()) {
-            throw std::runtime_error(
+            throw ScriptException(token.line_number, token.column_number,
                     std::format("Unknown command \"{}\"", token.string));
         }
         M_commands.push_back(it->second(*this));
+        expect_semicolon();
     }
 }
 
