@@ -139,6 +139,10 @@ std::vector<Token> ganim::tokenize(std::string_view string)
         if (codepoint == '\n') {
             ++line_number;
             column_number = 0;
+            if (!in_string) {
+                token_line = line_number;
+                token_column = column_number;
+            }
         }
         string_view.remove_prefix(byte_size);
         byte_number += byte_size;
