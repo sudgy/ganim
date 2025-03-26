@@ -4,22 +4,34 @@
 
 #include "ganim.hpp"
 
+#include "script/unicode_categories.hpp"
+
 namespace {
-    //bool is_identifier_start(std::uint32_t codepoint)
-    //{
-    //    return ('a' <= codepoint and codepoint <= 'z') or
-    //           ('A' <= codepoint and codepoint <= 'Z');
-    //}
+    bool is_identifier_start(std::uint32_t codepoint)
+    {
+        if (codepoint < 0x80) {
+            return ('a' <= codepoint and codepoint <= 'z') or
+                   ('A' <= codepoint and codepoint <= 'Z');
+        }
+        else return C_xid_start.contains(codepoint);
+    }
     bool is_identifier_continue(std::uint32_t codepoint)
     {
-        return ('a' <= codepoint and codepoint <= 'z') or
-               ('A' <= codepoint and codepoint <= 'Z') or
-               ('0' <= codepoint and codepoint <= '9');
+        if (codepoint < 0x80) {
+            return ('a' <= codepoint and codepoint <= 'z') or
+                   ('A' <= codepoint and codepoint <= 'Z') or
+                   ('0' <= codepoint and codepoint <= '9');
+        }
+        else return C_xid_continue.contains(codepoint);
     }
     bool is_whitespace(std::uint32_t codepoint)
     {
-        return codepoint == ' ' or codepoint == '\n' or codepoint == '\r'
-            or codepoint == '\t';
+        if (codepoint < 0x80) {
+            return (codepoint >= 0x9 and codepoint <= 0xD) or codepoint == ' ';
+        }
+        else return (codepoint == 0x0085 or codepoint == 0x200E
+                  or codepoint == 0x200F or codepoint == 0x2028
+                  or codepoint == 0x2029);
     }
 }
 
