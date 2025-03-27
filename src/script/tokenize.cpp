@@ -51,94 +51,52 @@ std::vector<Token> ganim::tokenize(std::string_view string)
     int token_start = 0;
     int token_column = 0;
     int token_line = 0;
-    bool in_string = 0;
+
+    enum State {
+        None,
+        String,
+        Identifier,
+        Integer10
+    };
+    auto state = None;
+    enum CharacterType {
+        Whitespace,
+        IdentifierStart,
+        IdentifierContinue, // Doesn't include numbers
+        Number,
+        Else
+    };
 
     auto string_view = std::string_view(string);
     auto full_string_view = std::string_view(string);
     while (string_view.size() > 0) {
         auto codepoint = utf8_get_next_codepoint(string_view, &byte_size);
-        if (in_string) {
-            if (codepoint == '"') {
-                result.push_back({
-                    full_string_view.substr(
-                            token_start, byte_number - token_start + byte_size),
-                    token_line,
-                    token_column,
-                    token_start
-                });
-                token_start = byte_number + byte_size;
+        const auto type = [](auto c) {
+            if ('0' <= c and c <= '9') return Number;
+            if (is_whitespace(c)) return Whitespace;
+            if (is_identifier_start(c)) return IdentifierStart;
+            if (is_identifier_continue(c)) return IdentifierContinue;
+            return Else;
+        }(codepoint);
+        switch (state) {
+        case None:
+            switch (type) {
+            case Whitespace:
+                token_start += byte_size;
                 token_line = line_number;
                 token_column = column_number + 1;
-                in_string = false;
-            }
-        }
-        else {
-            const bool in_token = token_start != byte_number;
-            if (is_whitespace(codepoint)) {
-                if (in_token) {
-                    result.push_back({
-                        full_string_view.substr(
-                                token_start, byte_number - token_start),
-                        token_line,
-                        token_column,
-                        token_start
-                    });
-                    token_start = byte_number + byte_size;
-                    token_line = line_number;
-                    token_column = column_number + 1;
-                }
-                else {
-                    token_start += byte_size;
-                    token_line = line_number;
-                    token_column = column_number + 1;
-                }
-            }
-            else if (is_identifier_start(codepoint)) {
-                // Do nothing
-            }
-            else if (is_identifier_continue(codepoint)) {
-                if (in_token) {
-                    // Do nothing
-                }
-                else {
-                    throw ScriptException(line_number, column_number,
-                            "Invalid identifier");
-                }
-            }
-            else if (codepoint == '"') {
-                if (in_token) {
-                    result.push_back({
-                        full_string_view.substr(
-                                token_start, byte_number - token_start),
-                        token_line,
-                        token_column,
-                        token_start
-                    });
-                    token_start = byte_number;
-                    token_column = column_number;
-                }
-                in_string = true;
-            }
-            // Other character, like an operator
-            else {
-                if (in_token) {
-                    result.push_back({
-                        full_string_view.substr(
-                                token_start, byte_number - token_start),
-                        token_line,
-                        token_column,
-                        token_start
-                    });
-                    result.push_back({
-                        full_string_view.substr(byte_number, byte_size),
-                        token_line,
-                        column_number,
-                        byte_number
-                    });
-                    token_start = byte_number + byte_size;
-                    token_line = line_number;
-                    token_column = column_number + 1;
-                }
+                break;
+            case IdentifierStart:
+                state = Identifier;
+                break;
+            case IdentifierContinue:
+                throw ScriptException(line_number, column_number,
+                        "Invalid identifier");
+            case Number:
+                state = Integer10;
+                break;
+            case Else:
+                if (codepoint == '"') state = String;
                 else {
                     result.push_back({
                         full_string_view.substr(byte_number, byte_size),
@@ -150,13 +108,124 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                     token_line = line_number;
                     token_column += 1;
                 }
+                break;
             }
+            break;
+        case String:
+            if (codepoint == '"') {
+                result.push_back({
+                    full_string_view.substr(
+                            token_start, byte_number - token_start + byte_size),
+                    token_line,
+                    token_column,
+                    token_start
+                });
+                token_start = byte_number + byte_size;
+                token_line = line_number;
+                token_column = column_number + 1;
+                state = None;
+            }
+            break;
+        case Identifier:
+            switch (type) {
+            case Whitespace:
+                result.push_back({
+                    full_string_view.substr(
+                            token_start, byte_number - token_start),
+                    token_line,
+                    token_column,
+                    token_start
+                });
+                token_start = byte_number + byte_size;
+                token_line = line_number;
+                token_column = column_number + 1;
+                state = None;
+                break;
+            case IdentifierStart:
+            case IdentifierContinue:
+            case Number:
+                break;
+            case Else:
+                result.push_back({
+                    full_string_view.substr(
+                            token_start, byte_number - token_start),
+                    token_line,
+                    token_column,
+                    token_start
+                });
+                token_start = byte_number;
+                token_line = line_number;
+                token_column = column_number;
+                state = None;
+                if (codepoint == '"') state = String;
+                else {
+                    result.push_back({
+                        full_string_view.substr(byte_number, byte_size),
+                        token_line,
+                        column_number,
+                        byte_number
+                    });
+                    token_start += byte_size;
+                    token_line = line_number;
+                    token_column += 1;
+                }
+                break;
+            }
+            break;
+        case Integer10:
+            switch (type) {
+            case Whitespace:
+                result.push_back({
+                    full_string_view.substr(
+                            token_start, byte_number - token_start),
+                    token_line,
+                    token_column,
+                    token_start
+                });
+                token_start = byte_number + byte_size;
+                token_line = line_number;
+                token_column = column_number + 1;
+                state = None;
+                break;
+            case IdentifierStart:
+            case IdentifierContinue:
+                throw ScriptException(token_line, token_column,
+                        "Invalid numeric literal");
+            case Number:
+                break;
+            case Else:
+                result.push_back({
+                    full_string_view.substr(
+                            token_start, byte_number - token_start),
+                    token_line,
+                    token_column,
+                    token_start
+                });
+                token_start = byte_number;
+                token_line = line_number;
+                token_column = column_number;
+                state = None;
+                if (codepoint == '"') state = String;
+                else {
+                    result.push_back({
+                        full_string_view.substr(byte_number, byte_size),
+                        token_line,
+                        column_number,
+                        byte_number
+                    });
+                    token_start += byte_size;
+                    token_line = line_number;
+                    token_column += 1;
+                }
+                break;
+            }
+            break;
         }
         ++column_number;
         if (codepoint == '\n') {
             ++line_number;
             column_number = 0;
-            if (!in_string) {
+            if (state != String) {
                 token_line = line_number;
                 token_column = column_number;
             }

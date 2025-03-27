@@ -197,11 +197,30 @@ TEST_CASE("tokenize with strings", "[script]") {
     REQUIRE(tokens4[2].line_number == 1);
     REQUIRE(tokens4[2].column_number == 3);
     REQUIRE(tokens4[2].byte_number == 8);
-}
 
-TEST_CASE("tokenize error handling", "[script]") {
     // Using wide numeric characters so that it doesn't start trying to read it
     // as a number
     REQUIRE_THROWS_WITH(tokenize("abc ab１ １ab"),
             get_script_exception_message(0, 8, "Invalid identifier"));
+}
+
+TEST_CASE("tokenize numbers", "[script]") {
+    auto tokens1 = tokenize("123 456 a23a");
+
+    REQUIRE(tokens1.size() == 3);
+    REQUIRE(tokens1[0].string == "123");
+    REQUIRE(tokens1[0].line_number == 0);
+    REQUIRE(tokens1[0].column_number == 0);
+    REQUIRE(tokens1[0].byte_number == 0);
+    REQUIRE(tokens1[1].string == "456");
+    REQUIRE(tokens1[1].line_number == 0);
+    REQUIRE(tokens1[1].column_number == 4);
+    REQUIRE(tokens1[1].byte_number == 4);
+    REQUIRE(tokens1[2].string == "a23a");
+    REQUIRE(tokens1[2].line_number == 0);
+    REQUIRE(tokens1[2].column_number == 8);
+    REQUIRE(tokens1[2].byte_number == 8);
+
+    REQUIRE_THROWS_WITH(tokenize("ab 1ab"),
+            get_script_exception_message(0, 3, "Invalid numeric literal"));
 }
