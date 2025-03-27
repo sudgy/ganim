@@ -18,7 +18,7 @@ void Script::compile()
         auto token = consume_token();
         auto it = G_command_factory.find(std::string(token.string));
         if (it == G_command_factory.end()) {
-            throw ScriptException(token.line_number, token.column_number,
+            throw CompileError(token.line_number, token.column_number,
                     std::format("Unknown command \"{}\"", token.string));
         }
         M_commands.push_back(it->second(*this));
@@ -36,7 +36,7 @@ void Script::execute() const
 const Token& Script::get_token()
 {
     if (M_index >= ssize(M_tokens)) {
-        throw ScriptException(-1, -1, "Expected token");
+        throw CompileError(-1, -1, "Expected token");
     }
     auto& result = M_tokens[M_index];
     return result;
@@ -52,11 +52,11 @@ const Token& Script::consume_token()
 void Script::expect_semicolon()
 {
     if (M_index >= ssize(M_tokens)) {
-        throw ScriptException(-1, -1, "Expected semicolon");
+        throw CompileError(-1, -1, "Expected semicolon");
     }
     auto& token = consume_token();
     if (token.string != ";") {
-        throw ScriptException(
+        throw CompileError(
                 token.line_number, token.column_number, "Expected semicolon");
     }
 }
@@ -68,6 +68,6 @@ std::unique_ptr<Expression> Script::get_expression()
         return std::make_unique<expressions::StringConstant>(
                 std::string(token.string.substr(1, token.string.size() - 2)));
     }
-    throw ScriptException(token.line_number, token.column_number,
+    throw CompileError(token.line_number, token.column_number,
             "Expected expression");
 }

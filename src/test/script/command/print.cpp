@@ -13,11 +13,11 @@ using namespace ganim;
 
 TEST_CASE("Print error handling") {
     auto script = Script("print;");
-    REQUIRE_THROWS_AS(script.compile(), ScriptException);
+    REQUIRE_THROWS_AS(script.compile(), CompileError);
 
     auto script2 = Script("print \"Two\" \"Things\";");
-    REQUIRE_THROWS_AS(script2.compile(), ScriptException);
+    REQUIRE_THROWS_AS(script2.compile(), CompileError);
 
     auto script3 = Script("print \"foo\"");
-    REQUIRE_THROWS_AS(script3.compile(), ScriptException);
+    REQUIRE_THROWS_AS(script3.compile(), CompileError);
 }

@@ -55,21 +55,21 @@ TEST_CASE("Script error handling", "[script]") {
     script.compile();
     script.execute();
     REQUIRE_THROWS_WITH(script.consume_token(),
-            get_script_exception_message(-1, -1, "Expected token"));
+            get_compile_error_message(-1, -1, "Expected token"));
 
     auto script2 = Script("  foobar");
     REQUIRE_THROWS_WITH(script2.compile(),
-            get_script_exception_message(0, 2, "Unknown command \"foobar\""));
+            get_compile_error_message(0, 2, "Unknown command \"foobar\""));
 
     auto script3 = Script("test");
     REQUIRE_THROWS_WITH(script3.compile(),
-            get_script_exception_message(-1, -1, "Expected semicolon"));
+            get_compile_error_message(-1, -1, "Expected semicolon"));
 
     auto script4 = Script("test\ntest");
     REQUIRE_THROWS_WITH(script4.compile(),
-            get_script_exception_message(1, 0, "Expected semicolon"));
+            get_compile_error_message(1, 0, "Expected semicolon"));
 
     auto script5 = Script("test;\ntest");
     REQUIRE_THROWS_WITH(script5.compile(),
-            get_script_exception_message(-1, -1, "Expected semicolon"));
+            get_compile_error_message(-1, -1, "Expected semicolon"));
 }

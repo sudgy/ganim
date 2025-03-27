@@ -201,7 +201,7 @@ TEST_CASE("tokenize with strings", "[script]") {
     // Using wide numeric characters so that it doesn't start trying to read it
     // as a number
     REQUIRE_THROWS_WITH(tokenize("abc ab１ １ab"),
-            get_script_exception_message(0, 8, "Invalid identifier"));
+            get_compile_error_message(0, 8, "Invalid identifier"));
 }
 
 TEST_CASE("tokenize numbers", "[script]") {
@@ -222,5 +222,5 @@ TEST_CASE("tokenize numbers", "[script]") {
     REQUIRE(tokens1[2].byte_number == 8);
 
     REQUIRE_THROWS_WITH(tokenize("ab 1ab"),
-            get_script_exception_message(0, 3, "Invalid numeric literal"));
+            get_compile_error_message(0, 3, "Invalid numeric literal"));
 }

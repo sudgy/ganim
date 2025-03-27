@@ -5,7 +5,7 @@
 #include <format>
 
 namespace ganim {
-    inline std::string get_script_exception_message(
+    inline std::string get_compile_error_message(
             int line, int column, std::string_view actual_what)
     {
         if (line == -1) {
@@ -19,11 +19,11 @@ namespace ganim {
                     line + 1, column + 1, actual_what);
         }
     }
-    class ScriptException : public std::exception {
+    class CompileError : public std::exception {
         public:
-            ScriptException(int line, int column, std::string_view actual_what)
+            CompileError(int line, int column, std::string_view actual_what)
             {
-                M_what = get_script_exception_message(line, column,actual_what);
+                M_what = get_compile_error_message(line, column,actual_what);
             }
             virtual const char* what() const noexcept
             {

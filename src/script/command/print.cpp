@@ -13,7 +13,7 @@ Print::Print(Script& script)
     auto& token = script.get_token();
     M_string = script.get_expression();
     if (M_string->type() != ExpressionType::String) {
-        throw ScriptException(
+        throw CompileError(
                 token.line_number, token.column_number, "Expected string");
     }
 }

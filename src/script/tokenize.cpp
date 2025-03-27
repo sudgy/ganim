@@ -114,7 +114,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 state = Identifier;
                 break;
             case IdentifierContinue:
-                throw ScriptException(line_number, column_number,
+                throw CompileError(line_number, column_number,
                         "Invalid identifier");
             case Number:
                 state = Integer10;
@@ -154,7 +154,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 break;
             case IdentifierStart:
             case IdentifierContinue:
-                throw ScriptException(token_line, token_column,
+                throw CompileError(token_line, token_column,
                         "Invalid numeric literal");
             case Number:
                 break;
