@@ -224,3 +224,54 @@ TEST_CASE("tokenize numbers", "[script]") {
     REQUIRE_THROWS_WITH(tokenize("ab 1ab"),
             get_compile_error_message(0, 3, "Invalid numeric literal"));
 }
+
+TEST_CASE("tokenize floating-point", "[script]") {
+    auto tokens1 = tokenize("0.");
+    auto tokens2 = tokenize("0.1");
+    auto tokens3 = tokenize(".1");
+    auto tokens4 = tokenize("1e2");
+    auto tokens5 = tokenize("1e+2");
+    auto tokens6 = tokenize("1e-2");
+    auto tokens7 = tokenize("1.e-2");
+    auto tokens8 = tokenize("1.e2");
+    auto tokens9 = tokenize("1.5e2");
+    auto tokens10 = tokenize(".5e2");
+
+    REQUIRE(tokens1.size() == 1);
+    REQUIRE(tokens1[0].string == "0.");
+    REQUIRE(tokens2.size() == 1);
+    REQUIRE(tokens2[0].string == "0.1");
+    REQUIRE(tokens3.size() == 1);
+    REQUIRE(tokens3[0].string == ".1");
+    REQUIRE(tokens4.size() == 1);
+    REQUIRE(tokens4[0].string == "1e2");
+    REQUIRE(tokens5.size() == 1);
+    REQUIRE(tokens5[0].string == "1e+2");
+    REQUIRE(tokens6.size() == 1);
+    REQUIRE(tokens6[0].string == "1e-2");
+    REQUIRE(tokens7.size() == 1);
+    REQUIRE(tokens7[0].string == "1.e-2");
+    REQUIRE(tokens8.size() == 1);
+    REQUIRE(tokens8[0].string == "1.e2");
+    REQUIRE(tokens9.size() == 1);
+    REQUIRE(tokens9[0].string == "1.5e2");
+    REQUIRE(tokens10.size() == 1);
+    REQUIRE(tokens10[0].string == ".5e2");
+
+    REQUIRE_THROWS_WITH(tokenize("1.5.1"),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+    REQUIRE_THROWS_WITH(tokenize("1ee2"),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+    REQUIRE_THROWS_WITH(tokenize("1e2e2"),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+    REQUIRE_THROWS_WITH(tokenize("1.5e2e2"),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+    REQUIRE_THROWS_WITH(tokenize("1.5e++2"),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+    REQUIRE_THROWS_WITH(tokenize("1.5e+2."),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+    REQUIRE_THROWS_WITH(tokenize("1.5e+2e-2"),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+    REQUIRE_THROWS_WITH(tokenize("1.5ea"),
+            get_compile_error_message(0, 0, "Invalid floating-point literal"));
+}

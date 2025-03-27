@@ -56,9 +56,18 @@ std::vector<Token> ganim::tokenize(std::string_view string)
         None,
         String,
         Identifier,
-        Integer10
+        Integer10,
+        MaybeFloat,
+        Float
+    };
+    enum FloatState {
+        BeforePoint,
+        AfterPoint,
+        AfterE,
+        Ending
     };
     auto state = None;
+    auto float_state = BeforePoint;
     enum CharacterType {
         Whitespace,
         IdentifierStart,
@@ -82,15 +91,6 @@ std::vector<Token> ganim::tokenize(std::string_view string)
         token_start = byte_number + byte_size;
         token_line = line_number;
         token_column = column_number + 1;
-    };
-
-    auto long_token_else = [&](auto codepoint){
-        add_token(false);
-        token_start = byte_number;
-        token_column = column_number;
-        state = None;
-        if (codepoint == '"') state = String;
-        else add_token(true);
     };
 
     while (string_view.size() > 0) {
@@ -121,6 +121,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 break;
             case Else:
                 if (codepoint == '"') state = String;
+                else if (codepoint == '.') state = MaybeFloat;
                 else add_token(true);
                 break;
             }
@@ -142,7 +143,13 @@ std::vector<Token> ganim::tokenize(std::string_view string)
             case Number:
                 break;
             case Else:
-                long_token_else(codepoint);
+                add_token(false);
+                token_start = byte_number;
+                token_column = column_number;
+                state = None;
+                if (codepoint == '"') state = String;
+                else if (codepoint == '.') state = MaybeFloat;
+                else add_token(true);
                 break;
             }
             break;
@@ -154,13 +161,99 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 break;
             case IdentifierStart:
             case IdentifierContinue:
-                throw CompileError(token_line, token_column,
+                if (codepoint == 'e') {
+                    state = Float;
+                    float_state = AfterE;
+                }
+                else throw CompileError(token_line, token_column,
                         "Invalid numeric literal");
             case Number:
                 break;
             case Else:
-                long_token_else(codepoint);
+                if (codepoint == '.') {
+                    state = Float;
+                    float_state = AfterPoint;
+                }
+                else {
+                    add_token(false);
+                    token_start = byte_number;
+                    token_column = column_number;
+                    state = None;
+                    if (codepoint == '"') state = String;
+                    else add_token(true);
+                }
                 break;
+            }
+            break;
+        case MaybeFloat:
+            switch (type) {
+            case Whitespace:
+                add_token(false);
+                state = None;
+                break;
+            case IdentifierStart:
+                add_token(false);
+                break;
+            case IdentifierContinue:
+                throw CompileError(line_number, column_number,
+                        "Invalid identifier");
+            case Number:
+                state = Float;
+                float_state = AfterPoint;
+                break;
+            case Else:
+                add_token(false);
+                token_start = byte_number;
+                token_column = column_number;
+                state = None;
+                if (codepoint == '"') state = String;
+                else add_token(true);
+                break;
+            }
+            break;
+        case Float:
+            switch (type) {
+            case Whitespace:
+                add_token(false);
+                state = None;
+                break;
+            case IdentifierStart:
+                if (float_state == AfterPoint and codepoint == 'e') {
+                    float_state = AfterE;
+                }
+                else {
+                    throw CompileError(token_line, token_column,
+                            "Invalid floating-point literal");
+                }
+                break;
+            case IdentifierContinue:
+                throw CompileError(token_line, token_column,
+                        "Invalid floating-point literal");
+            case Number:
+                if (float_state == AfterE) float_state = Ending;
+                break;
+            case Else:
+                if (codepoint == '.') {
+                    throw CompileError(token_line, token_column,
+                            "Invalid floating-point literal");
+                }
+                if (codepoint == '+' or codepoint == '-') {
+                    if (float_state == AfterE) {
+                        float_state = Ending;
+                    }
+                    else {
+                        throw CompileError(token_line, token_column,
+                                "Invalid floating-point literal");
+                    }
+                }
+                else {
+                    add_token(false);
+                    token_start = byte_number;
+                    token_column = column_number;
+                    state = None;
+                    if (codepoint == '"') state = String;
+                    else add_token(true);
+                }
             }
             break;
         }
