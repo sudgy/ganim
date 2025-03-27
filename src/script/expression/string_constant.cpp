@@ -27,6 +27,15 @@ std::int64_t StringConstant::as_integer() const
     );
 }
 
+bool StringConstant::as_boolean() const
+{
+    throw RuntimeError(
+        M_line_number,
+        M_column_number,
+        std::format("String constant \"{}\" is not a boolean.", M_string)
+    );
+}
+
 TypeID StringConstant::type() const
 {
     return TypeID::String;

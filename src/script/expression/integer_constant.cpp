@@ -22,6 +22,15 @@ std::string IntegerConstant::as_string() const
     );
 }
 
+bool IntegerConstant::as_boolean() const
+{
+    throw RuntimeError(
+        M_line_number,
+        M_column_number,
+        std::format("Integer constant {} is not a boolean.", M_value)
+    );
+}
+
 std::int64_t IntegerConstant::as_integer() const
 {
     return M_value;

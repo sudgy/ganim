@@ -14,4 +14,7 @@ TEST_CASE("IntegerConstant") {
     REQUIRE_THROWS_WITH(expr.as_string(),
             get_runtime_error_message(2, 3,
                 "Integer constant 1 is not a string."));
+    REQUIRE_THROWS_WITH(expr.as_boolean(),
+            get_runtime_error_message(2, 3,
+                "Integer constant 1 is not a boolean."));
 }

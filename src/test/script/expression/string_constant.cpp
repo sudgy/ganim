@@ -14,4 +14,7 @@ TEST_CASE("StringConstant") {
     REQUIRE_THROWS_WITH(expr.as_integer(),
             get_runtime_error_message(2, 3,
                 "String constant \"1\" is not an integer."));
+    REQUIRE_THROWS_WITH(expr.as_boolean(),
+            get_runtime_error_message(2, 3,
+                "String constant \"1\" is not a boolean."));
 }
