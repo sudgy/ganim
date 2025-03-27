@@ -11,14 +11,23 @@ using namespace ganim::commands;
 Print::Print(Script& script)
 {
     auto& token = script.get_token();
-    M_string = script.get_expression();
-    if (M_string->type() != ExpressionType::String) {
+    M_expr = script.get_expression();
+    if (M_expr->type() != ExpressionType::String
+            and M_expr->type() != ExpressionType::Integer) {
         throw CompileError(
-                token.line_number, token.column_number, "Expected string");
+            token.line_number, token.column_number,
+            "Unable to convert expression to string");
     }
 }
 
 void Print::execute() const
 {
-    std::cout << M_string->as_string() << "\n";
+    switch (M_expr->type()) {
+    case ExpressionType::String:
+        std::cout << M_expr->as_string() << "\n";
+        break;
+    case ExpressionType::Integer:
+        std::cout << std::to_string(M_expr->as_integer()) << "\n";
+        break;
+    }
 }

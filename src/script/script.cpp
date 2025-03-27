@@ -3,6 +3,7 @@
 #include "script_exception.hpp"
 
 #include "script/expression/string_constant.hpp"
+#include "script/expression/integer_constant.hpp"
 
 using namespace ganim;
 
@@ -64,9 +65,17 @@ void Script::expect_semicolon()
 std::unique_ptr<Expression> Script::get_expression()
 {
     auto& token = consume_token();
-    if (token.string[0] == '"') {
+    auto c = token.string[0];
+    if (c == '"') {
         return std::make_unique<expressions::StringConstant>(
             std::string(token.string.substr(1, token.string.size() - 2)),
+            token.line_number,
+            token.column_number
+        );
+    }
+    else if ('0' <= c and c <= '9') {
+        return std::make_unique<expressions::IntegerConstant>(
+            std::stoi(std::string(token.string)),
             token.line_number,
             token.column_number
         );

@@ -1,2 +1,3 @@
 print "Hello, world!";
 print "Another one!";
+print 42;

@@ -14,7 +14,7 @@ namespace ganim::commands {
             inline static std::string command_name = "print";
 
         private:
-            std::unique_ptr<Expression> M_string;
+            std::unique_ptr<Expression> M_expr;
     };
 }
 
