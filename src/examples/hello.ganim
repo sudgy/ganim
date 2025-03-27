@@ -3,3 +3,7 @@ print "Another one!";
 print 42;
 print true;
 print false;
+print 1e2;
+print 1e100;
+print 6.28;
+print .5;

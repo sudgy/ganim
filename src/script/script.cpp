@@ -5,6 +5,7 @@
 #include "script/expression/string_constant.hpp"
 #include "script/expression/integer_constant.hpp"
 #include "script/expression/boolean_constant.hpp"
+#include "script/expression/float_constant.hpp"
 
 using namespace ganim;
 
@@ -75,6 +76,15 @@ std::unique_ptr<Expression> Script::get_expression()
         );
     }
     else if ('0' <= c and c <= '9') {
+        for (auto c : token.string) {
+            if (!('0' <= c and c <= '9')) {
+                return std::make_unique<expressions::FloatConstant>(
+                    std::stod(std::string(token.string)),
+                    token.line_number,
+                    token.column_number
+                );
+            }
+        }
         return std::make_unique<expressions::IntegerConstant>(
             std::stoi(std::string(token.string)),
             token.line_number,
@@ -91,6 +101,13 @@ std::unique_ptr<Expression> Script::get_expression()
     else if (token.string == "false") {
         return std::make_unique<expressions::BooleanConstant>(
             false,
+            token.line_number,
+            token.column_number
+        );
+    }
+    else if (c == '.' and token.string.size() > 1) {
+        return std::make_unique<expressions::FloatConstant>(
+            std::stod(std::string(token.string)),
             token.line_number,
             token.column_number
         );
