@@ -69,6 +69,30 @@ std::vector<Token> ganim::tokenize(std::string_view string)
 
     auto string_view = std::string_view(string);
     auto full_string_view = std::string_view(string);
+
+    auto add_token = [&](bool include_current_character){
+        auto size = byte_number - token_start;
+        if (include_current_character) size += byte_size;
+        result.push_back({
+            full_string_view.substr(token_start, size),
+            token_line,
+            token_column,
+            token_start
+        });
+        token_start = byte_number + byte_size;
+        token_line = line_number;
+        token_column = column_number + 1;
+    };
+
+    auto long_token_else = [&](auto codepoint){
+        add_token(false);
+        token_start = byte_number;
+        token_column = column_number;
+        state = None;
+        if (codepoint == '"') state = String;
+        else add_token(true);
+    };
+
     while (string_view.size() > 0) {
         auto codepoint = utf8_get_next_codepoint(string_view, &byte_size);
         const auto type = [](auto c) {
@@ -97,48 +121,20 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 break;
             case Else:
                 if (codepoint == '"') state = String;
-                else {
-                    result.push_back({
-                        full_string_view.substr(byte_number, byte_size),
-                        token_line,
-                        column_number,
-                        byte_number
-                    });
-                    token_start += byte_size;
-                    token_line = line_number;
-                    token_column += 1;
-                }
+                else add_token(true);
                 break;
             }
             break;
         case String:
             if (codepoint == '"') {
-                result.push_back({
-                    full_string_view.substr(
-                            token_start, byte_number - token_start + byte_size),
-                    token_line,
-                    token_column,
-                    token_start
-                });
-                token_start = byte_number + byte_size;
-                token_line = line_number;
-                token_column = column_number + 1;
+                add_token(true);
                 state = None;
             }
             break;
         case Identifier:
             switch (type) {
             case Whitespace:
-                result.push_back({
-                    full_string_view.substr(
-                            token_start, byte_number - token_start),
-                    token_line,
-                    token_column,
-                    token_start
-                });
-                token_start = byte_number + byte_size;
-                token_line = line_number;
-                token_column = column_number + 1;
+                add_token(false);
                 state = None;
                 break;
             case IdentifierStart:
@@ -146,45 +142,14 @@ std::vector<Token> ganim::tokenize(std::string_view string)
             case Number:
                 break;
             case Else:
-                result.push_back({
-                    full_string_view.substr(
-                            token_start, byte_number - token_start),
-                    token_line,
-                    token_column,
-                    token_start
-                });
-                token_start = byte_number;
-                token_line = line_number;
-                token_column = column_number;
-                state = None;
-                if (codepoint == '"') state = String;
-                else {
-                    result.push_back({
-                        full_string_view.substr(byte_number, byte_size),
-                        token_line,
-                        column_number,
-                        byte_number
-                    });
-                    token_start += byte_size;
-                    token_line = line_number;
-                    token_column += 1;
-                }
+                long_token_else(codepoint);
                 break;
             }
             break;
         case Integer10:
             switch (type) {
             case Whitespace:
-                result.push_back({
-                    full_string_view.substr(
-                            token_start, byte_number - token_start),
-                    token_line,
-                    token_column,
-                    token_start
-                });
-                token_start = byte_number + byte_size;
-                token_line = line_number;
-                token_column = column_number + 1;
+                add_token(false);
                 state = None;
                 break;
             case IdentifierStart:
@@ -194,29 +159,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
             case Number:
                 break;
             case Else:
-                result.push_back({
-                    full_string_view.substr(
-                            token_start, byte_number - token_start),
-                    token_line,
-                    token_column,
-                    token_start
-                });
-                token_start = byte_number;
-                token_line = line_number;
-                token_column = column_number;
-                state = None;
-                if (codepoint == '"') state = String;
-                else {
-                    result.push_back({
-                        full_string_view.substr(byte_number, byte_size),
-                        token_line,
-                        column_number,
-                        byte_number
-                    });
-                    token_start += byte_size;
-                    token_line = line_number;
-                    token_column += 1;
-                }
+                long_token_else(codepoint);
                 break;
             }
             break;
