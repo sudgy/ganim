@@ -275,3 +275,15 @@ TEST_CASE("tokenize floating-point", "[script]") {
     REQUIRE_THROWS_WITH(tokenize("1.5ea"),
             get_compile_error_message(0, 0, "Invalid floating-point literal"));
 }
+
+TEST_CASE("Token is_identifier") {
+    auto tokens = tokenize("a abc abc012 123 1.5 + \"abc\"");
+    REQUIRE(tokens.size() == 7);
+    REQUIRE(tokens[0].is_identifier);
+    REQUIRE(tokens[1].is_identifier);
+    REQUIRE(tokens[2].is_identifier);
+    REQUIRE(!tokens[3].is_identifier);
+    REQUIRE(!tokens[4].is_identifier);
+    REQUIRE(!tokens[5].is_identifier);
+    REQUIRE(!tokens[6].is_identifier);
+}

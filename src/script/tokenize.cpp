@@ -79,14 +79,18 @@ std::vector<Token> ganim::tokenize(std::string_view string)
     auto string_view = std::string_view(string);
     auto full_string_view = std::string_view(string);
 
-    auto add_token = [&](bool include_current_character){
+    auto add_token = [&](
+            bool include_current_character,
+            bool is_identifier = false
+        ) {
         auto size = byte_number - token_start;
         if (include_current_character) size += byte_size;
         result.push_back({
             full_string_view.substr(token_start, size),
             token_line,
             token_column,
-            token_start
+            token_start,
+            is_identifier
         });
         token_start = byte_number + byte_size;
         token_line = line_number;
@@ -135,7 +139,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
         case Identifier:
             switch (type) {
             case Whitespace:
-                add_token(false);
+                add_token(false, true);
                 state = None;
                 break;
             case IdentifierStart:
@@ -143,7 +147,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
             case Number:
                 break;
             case Else:
-                add_token(false);
+                add_token(false, true);
                 token_start = byte_number;
                 token_column = column_number;
                 state = None;
