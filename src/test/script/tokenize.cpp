@@ -1,6 +1,9 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "script/tokenize.hpp"
+
+#include "script/script_exception.hpp"
 
 using namespace ganim;
 
@@ -194,4 +197,11 @@ TEST_CASE("tokenize with strings", "[script]") {
     REQUIRE(tokens4[2].line_number == 1);
     REQUIRE(tokens4[2].column_number == 3);
     REQUIRE(tokens4[2].byte_number == 8);
+}
+
+TEST_CASE("tokenize error handling", "[script]") {
+    // Using wide numeric characters so that it doesn't start trying to read it
+    // as a number
+    REQUIRE_THROWS_WITH(tokenize("abc ab１ １ab"),
+            get_script_exception_message(0, 8, "Invalid identifier"));
 }

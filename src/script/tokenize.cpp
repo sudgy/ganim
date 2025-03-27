@@ -5,6 +5,7 @@
 #include "ganim.hpp"
 
 #include "script/unicode_categories.hpp"
+#include "script/script_exception.hpp"
 
 namespace {
     bool is_identifier_start(std::uint32_t codepoint)
@@ -92,12 +93,16 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                     token_column = column_number + 1;
                 }
             }
+            else if (is_identifier_start(codepoint)) {
+                // Do nothing
+            }
             else if (is_identifier_continue(codepoint)) {
                 if (in_token) {
                     // Do nothing
                 }
                 else {
-                    // Do nothing
+                    throw ScriptException(line_number, column_number,
+                            "Invalid identifier");
                 }
             }
             else if (codepoint == '"') {
