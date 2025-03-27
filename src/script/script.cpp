@@ -83,3 +83,25 @@ std::unique_ptr<Expression> Script::get_expression()
     throw CompileError(token.line_number, token.column_number,
             "Expected expression");
 }
+
+void Script::add_variable(
+    std::string_view name,
+    std::unique_ptr<Variable> variable,
+    int line_number,
+    int column_number
+)
+{
+    auto name_string = std::string(name);
+    if (M_variables.contains(name_string)) {
+        throw CompileError(line_number, column_number, std::format(
+                "A variable by the name \"{}\" already exists.", name));
+    }
+    M_variables[name_string] = std::move(variable);
+}
+
+Variable* Script::get_variable(const std::string& name)
+{
+    auto it = M_variables.find(name);
+    if (it == M_variables.end()) return nullptr;
+    else return it->second.get();
+}
