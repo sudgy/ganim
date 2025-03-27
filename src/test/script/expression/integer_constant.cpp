@@ -10,7 +10,7 @@ using namespace ganim::expressions;
 
 TEST_CASE("IntegerConstant") {
     auto expr = IntegerConstant(1, 2, 3);
-    REQUIRE(expr.type() == ExpressionType::Integer);
+    REQUIRE(expr.type() == TypeID::Integer);
     REQUIRE_THROWS_WITH(expr.as_string(),
             get_runtime_error_message(2, 3,
                 "Integer constant 1 is not a string."));

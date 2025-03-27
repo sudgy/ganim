@@ -27,7 +27,7 @@ std::int64_t StringConstant::as_integer() const
     );
 }
 
-ExpressionType StringConstant::type() const
+TypeID StringConstant::type() const
 {
-    return ExpressionType::String;
+    return TypeID::String;
 }

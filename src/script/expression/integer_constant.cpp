@@ -27,7 +27,7 @@ std::int64_t IntegerConstant::as_integer() const
     return M_value;
 }
 
-ExpressionType IntegerConstant::type() const
+TypeID IntegerConstant::type() const
 {
-    return ExpressionType::Integer;
+    return TypeID::Integer;
 }

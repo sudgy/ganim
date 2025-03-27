@@ -13,7 +13,7 @@ namespace ganim::expressions {
             );
             virtual std::string as_string() const override;
             virtual std::int64_t as_integer() const override;
-            virtual ExpressionType type() const override;
+            virtual TypeID type() const override;
 
         private:
             std::string M_string;
