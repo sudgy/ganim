@@ -22,6 +22,11 @@ std::string IntegerConstant::as_string() const
     );
 }
 
+std::int64_t IntegerConstant::as_integer() const
+{
+    return M_value;
+}
+
 bool IntegerConstant::as_boolean() const
 {
     throw RuntimeError(
@@ -29,11 +34,6 @@ bool IntegerConstant::as_boolean() const
         M_column_number,
         std::format("Integer constant {} is not a boolean.", M_value)
     );
-}
-
-std::int64_t IntegerConstant::as_integer() const
-{
-    return M_value;
 }
 
 TypeID IntegerConstant::type() const
