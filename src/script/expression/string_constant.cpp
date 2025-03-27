@@ -36,6 +36,15 @@ bool StringConstant::as_boolean() const
     );
 }
 
+double StringConstant::as_float() const
+{
+    throw RuntimeError(
+        M_line_number,
+        M_column_number,
+        std::format("String constant \"{}\" is not a float.", M_string)
+    );
+}
+
 TypeID StringConstant::type() const
 {
     return TypeID::String;

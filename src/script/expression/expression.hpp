@@ -14,6 +14,7 @@ namespace ganim {
             virtual std::string as_string() const=0;
             virtual std::int64_t as_integer() const=0;
             virtual bool as_boolean() const=0;
+            virtual double as_float() const=0;
             virtual TypeID type() const=0;
     };
 }

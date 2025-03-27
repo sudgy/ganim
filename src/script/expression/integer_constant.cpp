@@ -36,6 +36,15 @@ bool IntegerConstant::as_boolean() const
     );
 }
 
+double IntegerConstant::as_float() const
+{
+    throw RuntimeError(
+        M_line_number,
+        M_column_number,
+        std::format("Integer constant {} is not a float.", M_value)
+    );
+}
+
 TypeID IntegerConstant::type() const
 {
     return TypeID::Integer;

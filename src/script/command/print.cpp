@@ -34,5 +34,7 @@ void Print::execute() const
     case TypeID::Boolean:
         std::cout << (M_expr->as_boolean() ? "true" : "false") << "\n";
         break;
+    case TypeID::Float:
+        std::cout << M_expr->as_float() << "\n";
     }
 }

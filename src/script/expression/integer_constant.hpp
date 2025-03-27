@@ -14,6 +14,7 @@ namespace ganim::expressions {
             virtual std::string as_string() const override;
             virtual std::int64_t as_integer() const override;
             virtual bool as_boolean() const override;
+            virtual double as_float() const override;
             virtual TypeID type() const override;
 
         private:

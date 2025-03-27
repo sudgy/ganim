@@ -36,6 +36,15 @@ bool BooleanConstant::as_boolean() const
     return M_value;
 }
 
+double BooleanConstant::as_float() const
+{
+    throw RuntimeError(
+        M_line_number,
+        M_column_number,
+        std::format("Boolean constant {} is not a float.", M_value)
+    );
+}
+
 TypeID BooleanConstant::type() const
 {
     return TypeID::Boolean;
