@@ -66,7 +66,10 @@ std::unique_ptr<Expression> Script::get_expression()
     auto& token = consume_token();
     if (token.string[0] == '"') {
         return std::make_unique<expressions::StringConstant>(
-                std::string(token.string.substr(1, token.string.size() - 2)));
+            std::string(token.string.substr(1, token.string.size() - 2)),
+            token.line_number,
+            token.column_number
+        );
     }
     throw CompileError(token.line_number, token.column_number,
             "Expected expression");
