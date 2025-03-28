@@ -13,8 +13,13 @@ namespace ganim::commands {
 
             inline static std::string command_name = "print";
 
+            static void set_print_function(
+                    std::function<void(std::string_view)>);
+
         private:
             std::unique_ptr<Expression> M_expr;
+
+            static std::function<void(std::string_view)> S_print_function;
     };
 }
 

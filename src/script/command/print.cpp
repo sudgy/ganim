@@ -8,6 +8,17 @@
 using namespace ganim;
 using namespace ganim::commands;
 
+std::function<void(std::string_view)> Print::S_print_function
+= [](std::string_view string)
+{
+    std::cout << string << "\n";
+};
+
+void Print::set_print_function(std::function<void(std::string_view)> func)
+{
+    S_print_function = std::move(func);
+}
+
 Print::Print(Script& script)
 {
     // Uncomment everything in this function when get types that you don't know
@@ -26,16 +37,16 @@ void Print::execute() const
 {
     auto p = M_expr->value();
     if (auto value = p.get_as<std::string>()) {
-        std::cout << *value << "\n";
+        S_print_function(*value);
     }
     else if (auto value = p.get_as<std::int64_t>()) {
-        std::cout << std::to_string(*value) << "\n";
+        S_print_function(std::format("{}", *value));
     }
     else if (auto value = p.get_as<bool>()) {
-        std::cout << (*value ? "true" : "false") << "\n";
+        S_print_function(*value ? "true" : "false");
     }
     else if (auto value = p.get_as<double>()) {
-        std::cout << *value << "\n";
+        S_print_function(std::format("{}", *value));
     }
     else {
         // This shouldn't ever happen but if you fail and forget to implement
