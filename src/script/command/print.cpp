@@ -28,7 +28,7 @@ void Print::execute() const
     if (auto value = p.get_as<std::string>()) {
         std::cout << *value << "\n";
     }
-    else if (auto value = p.get_as<std::uint64_t>()) {
+    else if (auto value = p.get_as<std::int64_t>()) {
         std::cout << std::to_string(*value) << "\n";
     }
     else if (auto value = p.get_as<bool>()) {

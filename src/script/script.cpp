@@ -26,7 +26,7 @@ void Script::compile()
     }
 }
 
-void Script::execute() const
+void Script::execute()
 {
     for (auto& command : M_commands) {
         command->execute();
@@ -82,7 +82,7 @@ std::unique_ptr<Expression> Script::get_expression()
                 );
             }
         }
-        return std::make_unique<expressions::Constant<std::uint64_t>>(
+        return std::make_unique<expressions::Constant<std::int64_t>>(
             std::stoi(std::string(token.string)),
             token.line_number,
             token.column_number
@@ -115,7 +115,7 @@ std::unique_ptr<Expression> Script::get_expression()
 
 void Script::add_variable(
     std::string_view name,
-    std::unique_ptr<Variable> variable,
+    std::unique_ptr<Value> variable,
     int line_number,
     int column_number
 )
@@ -128,7 +128,7 @@ void Script::add_variable(
     M_variables[name_string] = std::move(variable);
 }
 
-Variable* Script::get_variable(const std::string& name)
+Value* Script::get_variable(const std::string& name)
 {
     auto it = M_variables.find(name);
     if (it == M_variables.end()) return nullptr;

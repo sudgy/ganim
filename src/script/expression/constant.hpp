@@ -1,6 +1,8 @@
 #ifndef GANIM_SCRIPT_EXPRESSION_CONSTANT_HPP
 #define GANIM_SCRIPT_EXPRESSION_CONSTANT_HPP
 
+#include <utility>
+
 #include "expression.hpp"
 
 namespace ganim::expressions {
