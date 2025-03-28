@@ -4,6 +4,7 @@
 #include <cstdint>
 
 namespace ganim {
+    using TypeID = std::uintptr_t;
     namespace detail {
         template <typename T>
         struct any_pointer_helper {
@@ -50,20 +51,25 @@ namespace ganim {
                 return M_tag == get_tag<T>();
             }
 
-            std::uintptr_t get_tag() const noexcept {return M_tag;}
+            TypeID get_tag() const noexcept {return M_tag;}
             template <typename T>
-            static std::uintptr_t get_tag() noexcept
+            static TypeID get_tag() noexcept
             {
-                return reinterpret_cast<std::uintptr_t>(
+                return reinterpret_cast<TypeID>(
                         &detail::any_pointer_helper<T>::tag);
             }
 
-            bool operator==(const any_pointer& other) const=default;
-            bool operator!=(const any_pointer& other) const=default;
+            bool operator==(const any_pointer& other) const noexcept=default;
+            bool operator!=(const any_pointer& other) const noexcept=default;
+
+            operator bool() const noexcept
+            {
+                return M_pointer;
+            }
 
         private:
             void* M_pointer = nullptr;
-            std::uintptr_t M_tag = 0;
+            TypeID M_tag = 0;
     };
 }
 

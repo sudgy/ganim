@@ -4,18 +4,18 @@
 #include <string>
 #include <cstdint>
 
-#include "script/type/type.hpp"
+#include "script/any_pointer.hpp"
 
 namespace ganim {
     class Expression {
         public:
             virtual ~Expression()=default;
 
-            virtual std::string as_string() const=0;
-            virtual std::int64_t as_integer() const=0;
-            virtual bool as_boolean() const=0;
-            virtual double as_float() const=0;
+            virtual any_pointer value()=0;
             virtual TypeID type() const=0;
+
+            virtual int line_number() const=0;
+            virtual int column_number() const=0;
     };
 }
 

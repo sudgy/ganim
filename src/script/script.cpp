@@ -2,10 +2,7 @@
 
 #include "script_exception.hpp"
 
-#include "script/expression/string_constant.hpp"
-#include "script/expression/integer_constant.hpp"
-#include "script/expression/boolean_constant.hpp"
-#include "script/expression/float_constant.hpp"
+#include "script/expression/constant.hpp"
 
 using namespace ganim;
 
@@ -69,7 +66,7 @@ std::unique_ptr<Expression> Script::get_expression()
     auto& token = consume_token();
     auto c = token.string[0];
     if (c == '"') {
-        return std::make_unique<expressions::StringConstant>(
+        return std::make_unique<expressions::Constant<std::string>>(
             std::string(token.string.substr(1, token.string.size() - 2)),
             token.line_number,
             token.column_number
@@ -78,35 +75,35 @@ std::unique_ptr<Expression> Script::get_expression()
     else if ('0' <= c and c <= '9') {
         for (auto c : token.string) {
             if (!('0' <= c and c <= '9')) {
-                return std::make_unique<expressions::FloatConstant>(
+                return std::make_unique<expressions::Constant<double>>(
                     std::stod(std::string(token.string)),
                     token.line_number,
                     token.column_number
                 );
             }
         }
-        return std::make_unique<expressions::IntegerConstant>(
+        return std::make_unique<expressions::Constant<std::uint64_t>>(
             std::stoi(std::string(token.string)),
             token.line_number,
             token.column_number
         );
     }
     else if (token.string == "true") {
-        return std::make_unique<expressions::BooleanConstant>(
+        return std::make_unique<expressions::Constant<bool>>(
             true,
             token.line_number,
             token.column_number
         );
     }
     else if (token.string == "false") {
-        return std::make_unique<expressions::BooleanConstant>(
+        return std::make_unique<expressions::Constant<bool>>(
             false,
             token.line_number,
             token.column_number
         );
     }
     else if (c == '.' and token.string.size() > 1) {
-        return std::make_unique<expressions::FloatConstant>(
+        return std::make_unique<expressions::Constant<double>>(
             std::stod(std::string(token.string)),
             token.line_number,
             token.column_number

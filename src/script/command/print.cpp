@@ -24,17 +24,24 @@ Print::Print(Script& script)
 
 void Print::execute() const
 {
-    switch (M_expr->type()) {
-    case TypeID::String:
-        std::cout << M_expr->as_string() << "\n";
-        break;
-    case TypeID::Integer:
-        std::cout << std::to_string(M_expr->as_integer()) << "\n";
-        break;
-    case TypeID::Boolean:
-        std::cout << (M_expr->as_boolean() ? "true" : "false") << "\n";
-        break;
-    case TypeID::Float:
-        std::cout << M_expr->as_float() << "\n";
+    auto p = M_expr->value();
+    if (auto value = p.get_as<std::string>()) {
+        std::cout << *value << "\n";
+    }
+    else if (auto value = p.get_as<std::uint64_t>()) {
+        std::cout << std::to_string(*value) << "\n";
+    }
+    else if (auto value = p.get_as<bool>()) {
+        std::cout << (*value ? "true" : "false") << "\n";
+    }
+    else if (auto value = p.get_as<double>()) {
+        std::cout << *value << "\n";
+    }
+    else {
+        // This shouldn't ever happen but if you fail and forget to implement
+        // this without adding a compile error it will
+        throw RuntimeError(
+            M_expr->line_number(), M_expr->column_number(),
+            "Unknown type encountered when printing");
     }
 }
