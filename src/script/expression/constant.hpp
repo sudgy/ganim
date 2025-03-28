@@ -12,7 +12,7 @@ namespace ganim::expressions {
                 int line_number,
                 int column_number
             )
-            :   M_value(value),
+            :   M_value(std::move(value)),
                 M_line_number(line_number),
                 M_column_number(column_number) {}
             virtual any_pointer value() override
