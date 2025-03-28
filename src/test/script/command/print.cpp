@@ -49,3 +49,22 @@ TEST_CASE("Print error handling", "[script]") {
     auto script3 = Script("print \"foo\"");
     REQUIRE_THROWS_AS(script3.compile(), CompileError);
 }
+
+TEST_CASE("Print variables", "[script]") {
+    auto results = std::vector<std::string>();
+    Print::set_print_function([&](std::string_view s) {
+        results.emplace_back(s);
+    });
+    auto script = Script(R"(
+var a = 5;
+print a;
+    )");
+    script.compile();
+    script.execute();
+    REQUIRE(results.size() == 1);
+    REQUIRE(results[0] == "5");
+
+    auto script2 = Script("print a;");
+    REQUIRE_THROWS_WITH(script2.compile(),
+            get_compile_error_message(0, 6, "Unknown identifier \"a\""));
+}

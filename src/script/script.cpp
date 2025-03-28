@@ -3,6 +3,7 @@
 #include "script_exception.hpp"
 
 #include "script/expression/constant.hpp"
+#include "script/expression/variable.hpp"
 
 using namespace ganim;
 
@@ -65,7 +66,35 @@ std::unique_ptr<Expression> Script::get_expression()
 {
     auto& token = consume_token();
     auto c = token.string[0];
-    if (c == '"') {
+    if (token.is_identifier) {
+        if (token.string == "true") {
+            return std::make_unique<expressions::Constant<bool>>(
+                true,
+                token.line_number,
+                token.column_number
+            );
+        }
+        else if (token.string == "false") {
+            return std::make_unique<expressions::Constant<bool>>(
+                false,
+                token.line_number,
+                token.column_number
+            );
+        }
+        else {
+            auto it = M_variables.find(std::string(token.string));
+            if (it == M_variables.end()) {
+                throw CompileError(token.line_number, token.column_number,
+                        std::format("Unknown identifier \"{}\"", token.string));
+            }
+            return std::make_unique<expressions::Variable>(
+                *it->second,
+                token.line_number,
+                token.column_number
+            );
+        }
+    }
+    else if (c == '"') {
         return std::make_unique<expressions::Constant<std::string>>(
             std::string(token.string.substr(1, token.string.size() - 2)),
             token.line_number,
@@ -84,20 +113,6 @@ std::unique_ptr<Expression> Script::get_expression()
         }
         return std::make_unique<expressions::Constant<std::int64_t>>(
             std::stoi(std::string(token.string)),
-            token.line_number,
-            token.column_number
-        );
-    }
-    else if (token.string == "true") {
-        return std::make_unique<expressions::Constant<bool>>(
-            true,
-            token.line_number,
-            token.column_number
-        );
-    }
-    else if (token.string == "false") {
-        return std::make_unique<expressions::Constant<bool>>(
-            false,
             token.line_number,
             token.column_number
         );
