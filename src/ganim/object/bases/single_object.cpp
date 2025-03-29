@@ -31,7 +31,7 @@ void SingleObject::draw_outline(const Camera& camera)
     glGetIntegerv(GL_VIEWPORT, current_viewport.data());
     const auto camera_width = camera.get_starting_width();
     const auto gtp = current_viewport[2] / camera_width;
-    const auto thickness = gtp * M_outline_thickness;
+    const auto thickness = gtp * M_outline_thickness / get_scale();
 
     auto features = ShaderFeature::Outline;
     if (peeling_depth_buffer()) features |= ShaderFeature::DepthPeeling;
@@ -129,8 +129,8 @@ void SingleObject::create_outline(const Camera& camera)
                     "an object that seems to have 3D extent.");
         }
     }
-    const auto bigger_width = x2 - x1 + M_outline_thickness * 3;
-    const auto bigger_height = y2 - y1 + M_outline_thickness * 3;
+    const auto bigger_width = x2 - x1 + M_outline_thickness * 3 / scale;
+    const auto bigger_height = y2 - y1 + M_outline_thickness * 3 / scale;
     const auto size_base = std::max(bigger_width, bigger_height);
 
     auto current_draw_framebuffer = 0;

@@ -162,3 +162,21 @@ TEST_CASE("Outlines and depth peeling", "[object]") {
     REQUIRE(scene.get_pixel(0, 3, 3) == Color("FF0000"));
     REQUIRE(scene.get_pixel(0, 0, 0) == Color("0000FF"));
 }
+
+TEST_CASE("Outlines and scaling", "[object]") {
+    auto scene = TestScene(8, 8, 8, 8, 1);
+    auto shape1 = make_shape(
+        {{-1, -1},
+         { 1, -1},
+         { 1,  1},
+         {-1,  1}},
+        {0, 1, 2, 0, 2, 3}
+    );
+    shape1->scale(2);
+    shape1->set_outline("FF0000", 2);
+    shape1->set_visible(true);
+    scene.add(shape1);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 0, 0) == Color("000000"));
+    REQUIRE(scene.get_pixel(0, 2, 0) != Color("000000"));
+}
