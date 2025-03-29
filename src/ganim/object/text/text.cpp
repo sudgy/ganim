@@ -39,9 +39,9 @@ Text::Text(const std::vector<std::string_view>& strings)
             last_letter = letter;
             if (letter == '\n') {
                 const auto x_shift = pos / 2;
-                for (int m = start_n; m < n; ++m) {
+                for (int m = start_n; m <= n; ++m) {
                     auto start = m == start_n ? 4*start_i : 0;
-                    auto end = m == n - 1 ? 4*i : ssize(vertices);
+                    auto end = m == n ? 4*i : ssize(vertices);
                     for (int j = start; j < end; ++j) {
                         all_vertices[m][j].x -= x_shift;
                     }
