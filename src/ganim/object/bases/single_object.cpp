@@ -129,8 +129,10 @@ void SingleObject::create_outline(const Camera& camera)
                     "an object that seems to have 3D extent.");
         }
     }
-    const auto bigger_width = x2 - x1 + M_outline_thickness * 3 / scale;
-    const auto bigger_height = y2 - y1 + M_outline_thickness * 3 / scale;
+    const auto bigger_width = x2 - x1
+        + M_outline_thickness * 3 / std::max(scale, 0.1);
+    const auto bigger_height = y2 - y1
+        + M_outline_thickness * 3 / std::max(scale, 0.1);
     const auto size_base = std::max(bigger_width, bigger_height);
 
     auto current_draw_framebuffer = 0;
