@@ -40,3 +40,8 @@ double rf::there_and_back(
     if (t < 1) return rate_func(t);
     else return 1 - rate_func(t - 1);
 }
+
+double rf::rush_into(double t)
+{
+    return 2*(smoothererstep(t/2+0.5)-0.5);
+}
