@@ -11,6 +11,7 @@ TEST_CASE("Point", "[object]") {
     auto scene = TestScene(8, 8, 8, 8, 1);
     auto red = Color("FF0000");
     auto black = Color("000000");
+    REQUIRE(pga3_to_vga3(point->get_origin()) == vga3::e1);
     point->set_color(red);
     point->set_visible(true);
     scene.add(point);
