@@ -115,6 +115,7 @@ class Animation {
                 *M_ending_object,
                 M_rate_function(t)
             );
+            if (M_each_frame) M_each_frame(t);
             if (M_animation_progress == M_animation_time) {
                 M_animation_time = 0;
                 if (M_at_end) M_at_end();
@@ -139,9 +140,13 @@ class Animation {
          */
         copy_type& get_ending_object() {return *M_ending_object;}
         /** @brief Run something at the end of the animation */
-        void at_end(std::function<void()> func)
+        void at_end(std::move_only_function<void()> func)
         {
             M_at_end = std::move(func);
+        }
+        void each_frame(std::move_only_function<void(double)> func)
+        {
+            M_each_frame = std::move(func);
         }
         /** @brief Add an object that the animation temporarily uses. */
         void add_animation_object(ObjectPtr<Object> object)
@@ -158,6 +163,7 @@ class Animation {
     private:
         std::move_only_function<double(double)> M_rate_function;
         std::move_only_function<void()> M_at_end;
+        std::move_only_function<void(double)> M_each_frame;
         ObjectPtr<T> M_object;
         SceneBase& M_scene;
         ObjectPtr<copy_type> M_starting_object = nullptr;

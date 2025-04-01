@@ -2,6 +2,7 @@
 
 #include "ganim/animation/scaling.hpp"
 #include "ganim/object/shape.hpp"
+#include "ganim/object/polygon_shape.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 
 using namespace ganim;
@@ -61,6 +62,61 @@ TEST_CASE("grow_from_point and shrink_to_point", "[animation]") {
             if (x > 3 and x < 12) color = white;
             REQUIRE(scene.get_pixel(4, x, y) == color);
             REQUIRE(scene.get_pixel(10, x, y) == color);
+        }
+    }
+}
+
+TEST_CASE("shrink_in", "[animation]") {
+    using namespace vga2;
+    auto scene = TestScene(16, 16, 16, 16, 4);
+    auto shape = make_polygon_shape({
+        -4*e1 - 4*e2, 4*e1 - 4*e2, 4*e1 + 4*e2, -4*e1 + 4*e2
+    });
+    shrink_in(scene, shape, {.rate_function = rf::linear, .scale_factor = 2});
+    auto part1 = make_polygon_shape({
+        -7*e1 - 7*e2, 7*e1 - 7*e2, 7*e1 + 7*e2, -7*e1 + 7*e2
+    });
+    part1->set_color("0F0F0F");
+    auto part2 = make_polygon_shape({
+        -6*e1 - 6*e2, 6*e1 - 6*e2, 6*e1 + 6*e2, -6*e1 + 6*e2
+    });
+    part2->set_color("3F3F3F");
+    auto part3 = make_polygon_shape({
+        -5*e1 - 5*e2, 5*e1 - 5*e2, 5*e1 + 5*e2, -5*e1 + 5*e2
+    });
+    part3->set_color("8F8F8F");
+    auto part4 = make_polygon_shape({
+        -4*e1 - 4*e2, 4*e1 - 4*e2, 4*e1 + 4*e2, -4*e1 + 4*e2
+    });
+    scene.wait(1);
+
+    shape.reset();
+    scene.add(part1);
+    part1->set_visible(true);
+    scene.frame_advance();
+
+    part1.reset();
+    scene.add(part2);
+    part2->set_visible(true);
+    scene.frame_advance();
+
+    part2.reset();
+    scene.add(part3);
+    part3->set_visible(true);
+    scene.frame_advance();
+
+    part3.reset();
+    scene.add(part4);
+    part4->set_visible(true);
+    scene.frame_advance();
+
+    for (int i = 0; i < 4; ++i) {
+        for (int x = 0; x < 16; ++x) {
+            for (int y = 0; y < 16; ++y) {
+                INFO("Frame " << i + 1);
+                INFO("x: " << x << " y: " << y);
+                REQUIRE(scene.get_pixel(i, x, y) == scene.get_pixel(i+4, x, y));
+            }
         }
     }
 }

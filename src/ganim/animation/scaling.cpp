@@ -35,3 +35,24 @@ void ganim::shrink_to_point(
     });
     object->add_updater(std::move(anim), true);
 }
+
+void ganim::shrink_in(
+    SceneBase& scene,
+    ObjectPtr<Object> object,
+    GrowArgs args
+)
+{
+    auto new_args = AnimationArgs(args.duration, args.rate_function);
+    auto anim = Animation(scene, object, new_args);
+    auto about_point = args.about_point.value_or(
+            pga3_to_vga3(object->get_origin()));
+    anim.get_starting_object().scale(args.scale_factor, about_point);
+    anim.get_starting_object().set_opacity(0);
+    anim.each_frame([object](double t) {
+        object->set_opacity(t*t);
+    });
+    object->set_visible(true);
+    object->scale(args.scale_factor, about_point);
+    object->set_opacity(0);
+    object->add_updater(std::move(anim), true);
+}
