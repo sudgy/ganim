@@ -38,8 +38,10 @@ class Transformable : public Animatable {
         Transformable();
         /** @brief Constructor with a preset rotor */
         Transformable(const pga3::Even& rotor);
-        /** @brief Resets the rotor to the identity */
-        Transformable& reset();
+        /** @brief Resets the rotor back to its default state, which is usually
+         * the identity
+         */
+        virtual Transformable& reset();
         /** @brief Get the rotor that transforms this object */
         constexpr const pga3::Even& get_rotor() const {return M_rotor;}
         /** @brief Get the origin of this object, defined as `~R*e123*R` */

@@ -66,7 +66,7 @@ class Camera : public Transformable {
          */
         double get_starting_height() const {return M_starting_height;}
         /** @brief Reset the camera back to its starting position */
-        void reset();
+        virtual Camera& reset() override;
 
     private:
         double M_x_scale = -1;
