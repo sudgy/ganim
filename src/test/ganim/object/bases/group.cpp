@@ -9,6 +9,7 @@
 #include "ganim/object/shape.hpp"
 #include "ganim/animation/animation.hpp"
 #include "ganim/animation/creation.hpp"
+#include "ganim/animation/color_stack.hpp"
 
 using namespace ganim;
 
@@ -733,4 +734,43 @@ TEST_CASE("Group color stack", "[object]") {
     test.pop_color();
     REQUIRE(obj1->get_color() == red);
     REQUIRE(obj2->get_color() == green);
+}
+
+TEST_CASE("Group color stack animations", "[object]") {
+    auto test = ObjectPtr<Group>();
+    auto obj1 = ObjectPtr<TestObject>();
+    auto obj2 = ObjectPtr<TestObject>();
+    auto scene = TestScene(1, 1, 1, 1, 4);
+    test->add(obj1, obj2);
+    auto red = Color("FF0000");
+    auto green = Color("00FF00");
+    auto blue = Color("0000FF");
+    obj1->set_color(red);
+    obj2->set_color(green);
+    push_color(scene, test, blue, {.rate_function = [](double t){return t;}});
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "BF003F");
+    REQUIRE(obj2->get_color() == "00BF3F");
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "7F007F");
+    REQUIRE(obj2->get_color() == "007F7F");
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "3F00BF");
+    REQUIRE(obj2->get_color() == "003FBF");
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "0000FF");
+    REQUIRE(obj2->get_color() == "0000FF");
+    pop_color(scene, test, {.rate_function = [](double t){return t;}});
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "3F00BF");
+    REQUIRE(obj2->get_color() == "003FBF");
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "7F007F");
+    REQUIRE(obj2->get_color() == "007F7F");
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "BF003F");
+    REQUIRE(obj2->get_color() == "00BF3F");
+    scene.frame_advance();
+    REQUIRE(obj1->get_color() == "FF0000");
+    REQUIRE(obj2->get_color() == "00FF00");
 }

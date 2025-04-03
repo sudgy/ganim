@@ -170,6 +170,17 @@ Group& Group::set_color(Color color)
     return *this;
 }
 
+Group& Group::push_color()
+{
+    Object::push_color();
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->push_color();
+        }
+    }
+    return *this;
+}
+
 Group& Group::push_color(Color color)
 {
     Object::push_color(color);

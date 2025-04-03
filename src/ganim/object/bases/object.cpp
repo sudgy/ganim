@@ -22,6 +22,12 @@ Object& Object::set_color(Color color)
     return *this;
 }
 
+Object& Object::push_color()
+{
+    M_color.push_back(M_color.back());
+    return *this;
+}
+
 Object& Object::push_color(Color color)
 {
     M_color.push_back(color);

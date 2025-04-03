@@ -74,6 +74,13 @@ namespace ganim {
             virtual Object& set_color(Color color);
             /** @brief Get the color of this object. */
             Color get_color() const {return M_color.back();}
+            /** @brief Push the current color onto the color stack
+             *
+             * The color on the top of the color stack is the one that is used
+             * in get_color and set_color.  To undo this operation, call @ref
+             * pop_color.
+             */
+            virtual Object& push_color();
             /** @brief Push a color onto the color stack
              *
              * The color on the top of the color stack is the one that is used

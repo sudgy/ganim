@@ -8,9 +8,8 @@ void ganim::push_color(
 )
 {
     auto anim = Animation(scene, object, args);
-    auto start_color = object->get_color();
-    anim.get_starting_object().push_color(start_color);
-    object->push_color(start_color);
+    anim.get_starting_object().push_color();
+    object->push_color();
     anim.get_ending_object().push_color(color);
     object->add_updater(std::move(anim), true);
 }
@@ -22,12 +21,9 @@ void ganim::pop_color(
 )
 {
     auto anim = Animation(scene, object, args);
-    auto start_color = object->get_color();
-    object->pop_color();
-    auto end_color = object->get_color();
-    object->push_color(start_color);
 
-    anim.get_ending_object().set_color(end_color);
+    anim.get_ending_object().pop_color();
+    anim.get_ending_object().push_color();
     anim.at_end([object]{
         object->pop_color();
     });
