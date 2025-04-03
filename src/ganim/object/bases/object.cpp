@@ -113,6 +113,11 @@ void Object::interpolate(
         auto diff = static_cast<int>(v2) - static_cast<int>(v1);
         return static_cast<std::uint8_t>(static_cast<int>(v1) + diff*t);
     };
+    if (start2->M_color.size() != end2->M_color.size()) {
+        throw std::runtime_error("Calling push_color and pop_color is not "
+                "supported for generic animations.  Use the dedicated "
+                "animations instead.");
+    }
     auto new_color = Color();
     new_color.r = interp(start2->M_color.back().r, end2->M_color.back().r);
     new_color.g = interp(start2->M_color.back().g, end2->M_color.back().g);

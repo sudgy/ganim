@@ -3,6 +3,7 @@
 #include "ganim/object/bases/object.hpp"
 
 #include "ganim/animation/animation.hpp"
+#include "ganim/animation/color_stack.hpp"
 #include "test/ganim/ga_equals.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 
@@ -362,4 +363,40 @@ TEST_CASE("Object color stack", "[object]") {
     REQUIRE(test.get_color() == red);
     test.pop_color();
     REQUIRE(test.get_color() == red);
+}
+
+TEST_CASE("Object color stack animating", "[object]") {
+    auto test1 = ObjectPtr<TestObject>();
+    auto test2 = ObjectPtr<TestObject>();
+    auto scene1 = TestScene(1, 1, 1, 1, 4);
+    auto scene2 = TestScene(1, 1, 1, 1, 4);
+
+    auto red = Color("FF0000");
+    auto green = Color("00FF00");
+    auto blue = Color("0000FF");
+
+    animate(scene1, test1).push_color(red);
+    REQUIRE_THROWS(scene1.wait(1));
+
+    test2->set_color(red);
+    push_color(scene2, test2, green, {.rate_function = [](double t){return t;}});
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "BF3F00");
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "7F7F00");
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "3FBF00");
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "00FF00");
+
+    test2->set_color(blue);
+    pop_color(scene2, test2, {.rate_function = [](double t){return t;}});
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "3F00BF");
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "7F007F");
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "BF003F");
+    scene2.frame_advance();
+    REQUIRE(test2->get_color() == "FF0000");
 }
