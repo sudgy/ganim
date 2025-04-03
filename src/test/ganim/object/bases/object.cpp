@@ -346,3 +346,20 @@ TEST_CASE("Object to_edge", "[object]") {
     test.to_edge(camera, e1 + 2*e2, 1);
     REQUIRE_THAT(test.get_center().undual(), GAEquals(e0 + 1.5*e1 + 2*e2));
 }
+
+TEST_CASE("Object color stack", "[object]") {
+    auto test = TestObject();
+
+    auto red = Color("FF0000");
+    auto green = Color("00FF00");
+    auto blue = Color("0000FF");
+    test.set_color(red);
+    test.push_color(green);
+    REQUIRE(test.get_color() == green);
+    test.set_color(blue);
+    REQUIRE(test.get_color() == blue);
+    test.pop_color();
+    REQUIRE(test.get_color() == red);
+    test.pop_color();
+    REQUIRE(test.get_color() == red);
+}

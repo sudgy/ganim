@@ -73,7 +73,21 @@ namespace ganim {
             /** @brief Set the color of this object. */
             virtual Object& set_color(Color color);
             /** @brief Get the color of this object. */
-            Color get_color() const {return M_color;}
+            Color get_color() const {return M_color.back();}
+            /** @brief Push a color onto the color stack
+             *
+             * The color on the top of the color stack is the one that is used
+             * in get_color and set_color.  To undo this operation, call @ref
+             * pop_color.
+             */
+            virtual Object& push_color(Color color);
+            /** @brief Pop a color from the color stack
+             *
+             * This will remove the current color and go back to the color from
+             * before the last call to @ref push_color.  If there is only one
+             * color in the color stack, this function does nothing.
+             */
+            virtual Object& pop_color();
             /** @brief Set the opacity of this object
              *
              * @param opacity The opacity to change to, from 0 to 1.  0 is fully
@@ -492,7 +506,7 @@ namespace ganim {
             double M_draw_fraction = 1;
             double M_noise_creating = 0.0;
             double M_depth_z = 0.0;
-            Color M_color = {255, 255, 255, 255};
+            std::vector<Color> M_color = {{255, 255, 255, 255}};
             double M_opacity = 1;
             bool M_visible = false;
             bool M_creating = false;

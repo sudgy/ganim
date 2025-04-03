@@ -716,3 +716,21 @@ TEST_CASE("Group adding/removing after construction", "[object]") {
     REQUIRE(updated1 == 2);
     REQUIRE(updated2 == 2);
 }
+
+TEST_CASE("Group color stack", "[object]") {
+    auto test = Group();
+    auto obj1 = ObjectPtr<TestObject>();
+    auto obj2 = ObjectPtr<TestObject>();
+    test.add(obj1, obj2);
+    auto red = Color("FF0000");
+    auto green = Color("00FF00");
+    auto blue = Color("0000FF");
+    obj1->set_color(red);
+    obj2->set_color(green);
+    test.push_color(blue);
+    REQUIRE(obj1->get_color() == blue);
+    REQUIRE(obj2->get_color() == blue);
+    test.pop_color();
+    REQUIRE(obj1->get_color() == red);
+    REQUIRE(obj2->get_color() == green);
+}

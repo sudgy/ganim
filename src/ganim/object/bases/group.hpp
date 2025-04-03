@@ -155,6 +155,8 @@ class Group : public Object {
         virtual void set_fps(int fps) override;
         virtual Group& apply_rotor(const pga3::Even& rotor) override;
         virtual Group& set_color(Color color) override;
+        virtual Group& push_color(Color color) override;
+        virtual Group& pop_color() override;
         virtual Group& set_opacity(double opacity) override;
         virtual Group& scale(double amount, const pga3::Trivec& about_point)
             override;

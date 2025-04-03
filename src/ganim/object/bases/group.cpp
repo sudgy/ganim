@@ -170,6 +170,28 @@ Group& Group::set_color(Color color)
     return *this;
 }
 
+Group& Group::push_color(Color color)
+{
+    Object::push_color(color);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->push_color(color);
+        }
+    }
+    return *this;
+}
+
+Group& Group::pop_color()
+{
+    Object::pop_color();
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->pop_color();
+        }
+    }
+    return *this;
+}
+
 Group& Group::set_opacity(double opacity)
 {
     Object::set_opacity(opacity);

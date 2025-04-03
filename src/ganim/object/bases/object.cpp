@@ -18,7 +18,19 @@ Object& Object::set_visible(bool visible)
 
 Object& Object::set_color(Color color)
 {
-    M_color = color;
+    M_color.back() = color;
+    return *this;
+}
+
+Object& Object::push_color(Color color)
+{
+    M_color.push_back(color);
+    return *this;
+}
+
+Object& Object::pop_color()
+{
+    if (M_color.size() > 1) M_color.pop_back();
     return *this;
 }
 
@@ -102,10 +114,10 @@ void Object::interpolate(
         return static_cast<std::uint8_t>(static_cast<int>(v1) + diff*t);
     };
     auto new_color = Color();
-    new_color.r = interp(start2->M_color.r, end2->M_color.r);
-    new_color.g = interp(start2->M_color.g, end2->M_color.g);
-    new_color.b = interp(start2->M_color.b, end2->M_color.b);
-    new_color.a = interp(start2->M_color.a, end2->M_color.a);
+    new_color.r = interp(start2->M_color.back().r, end2->M_color.back().r);
+    new_color.g = interp(start2->M_color.back().g, end2->M_color.back().g);
+    new_color.b = interp(start2->M_color.back().b, end2->M_color.back().b);
+    new_color.a = interp(start2->M_color.back().a, end2->M_color.back().a);
     set_color(new_color);
     set_opacity(start2->M_opacity + (end2->M_opacity - start2->M_opacity) * t);
     auto current_scale
