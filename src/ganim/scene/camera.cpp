@@ -19,3 +19,13 @@ Camera& Camera::reset()
     apply_rotor(M_original_rotor);
     return *this;
 }
+
+ObjectPtr<Camera> Camera::polymorphic_copy() const
+{
+    return ObjectPtr<Camera>::from_new(polymorphic_copy_impl());
+}
+
+Camera* Camera::polymorphic_copy_impl() const
+{
+    return new Camera(*this);
+}

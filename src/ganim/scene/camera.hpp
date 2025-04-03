@@ -68,7 +68,11 @@ class Camera : public Transformable {
         /** @brief Reset the camera back to its starting position */
         virtual Camera& reset() override;
 
+        ObjectPtr<Camera> polymorphic_copy() const;
+
     private:
+        virtual Camera* polymorphic_copy_impl() const override;
+
         double M_x_scale = -1;
         double M_y_scale = -1;
         double M_starting_width = -1;
