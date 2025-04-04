@@ -176,5 +176,9 @@ class Transformable : public Animatable {
         {Transformable::rotate(angle, about_point); return *this;} \
     Type& rotate(double angle, const pga3::Bivec& about_line) \
         {Transformable::rotate(angle, about_line); return *this;} \
+    Type& rotate(const pga2::Bivec& about_point) \
+        {Transformable::rotate(about_point); return *this;} \
+    Type& rotate(const pga3::Bivec& about_line) \
+        {Transformable::rotate(about_line); return *this;} \
 
 #endif
