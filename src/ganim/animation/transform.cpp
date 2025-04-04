@@ -167,6 +167,12 @@ namespace {
             auto& from = **M_from->M_tracked_object;
             auto& to = **M_to->M_tracked_object;
             SingleObject::interpolate(from, to, t);
+            if (from.is_fixed_in_frame()) {
+                set_fixed_in_frame(true);
+            }
+            if (from.is_fixed_orientation()) {
+                set_fixed_orientation(true);
+            }
             reset();
             auto c1 = from.get_outline_color();
             auto c2 = to.get_outline_color();
