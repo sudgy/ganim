@@ -270,6 +270,8 @@ namespace ganim {
                 {return get_original_true_bounding_box();}
             /** @brief Get the center of the object's logical bounding box. */
             pga2::Bivec get_center() const;
+            /** @brief Get the center of the object's logical bounding box. */
+            pga3::Trivec get_center_3d() const;
             /** @brief Get the center of the left side of the object's logical
              * bounding box.
              */

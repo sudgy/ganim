@@ -168,6 +168,11 @@ pga2::Bivec Object::get_center() const
     return get_logical_bounding_box().get_center();
 }
 
+pga3::Trivec Object::get_center_3d() const
+{
+    return get_logical_bounding_box().get_center_3d();
+}
+
 pga2::Bivec Object::get_left() const
 {
     return get_logical_bounding_box().get_left();
