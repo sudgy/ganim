@@ -106,12 +106,12 @@ void Group::draw_outline(const Camera& camera)
     }
 }
 
-void Group::set_outline(const Color& color, double thickness)
+void Group::set_outline(const Color& color, double thickness, bool shift_depth)
 {
     M_outline_color = color;
     M_outline_thickness = thickness;
     for (auto drawable : M_subobjects) {
-        drawable->set_outline(color, thickness);
+        drawable->set_outline(color, thickness, shift_depth);
     }
 }
 

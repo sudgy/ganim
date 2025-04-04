@@ -58,7 +58,7 @@ void SingleObject::draw_outline(const Camera& camera)
     }
     shader.set_rotor_uniform("model", model);
     glUniform1f(shader.get_uniform("scale"), get_scale());
-    glUniform1f(shader.get_uniform("depth_z"), get_depth_z());
+    glUniform1f(shader.get_uniform("depth_z"), get_depth_z() + M_outline_depth);
     auto color = M_outline_color;
     color.a = get_color().a * get_opacity();
     glUniform4f(shader.get_uniform("object_color"),
@@ -72,9 +72,14 @@ void SingleObject::draw_outline(const Camera& camera)
     glBindVertexArray(0);
 }
 
-void SingleObject::set_outline(const Color& color, double thickness)
+void SingleObject::set_outline(
+    const Color& color,
+    double thickness,
+    bool shift_depth
+)
 {
     M_outline_color = color;
+    M_outline_depth = shift_depth ? -0.001 : 0;
     if (thickness != M_outline_thickness) {
         M_outline_thickness = thickness;
         M_outline_texture = 0;

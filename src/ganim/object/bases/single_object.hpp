@@ -27,7 +27,11 @@ class SingleObject : public Object {
             return Object::is_visible();
         }
         virtual void draw_outline(const Camera& camera) override;
-        virtual void set_outline(const Color& color, double thickness) override;
+        virtual void set_outline(
+            const Color& color,
+            double thickness,
+            bool shift_depth = false
+        ) override;
         virtual void invalidate_outline() override;
         virtual Color get_outline_color() const override;
         virtual double get_outline_thickness() const override;
@@ -38,6 +42,7 @@ class SingleObject : public Object {
 
         Color M_outline_color;
         double M_outline_thickness = 0;
+        double M_outline_depth = 0;
         // TODO: Share this with other objects that look the same
         gl::Texture M_outline_texture = 0;
         gl::VertexArray M_outline_vertex_array = 0;

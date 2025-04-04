@@ -116,7 +116,11 @@ class Group : public Object {
         virtual void draw(const Camera& camera) override;
         virtual bool is_visible() const override;
         virtual void draw_outline(const Camera& camera) override;
-        virtual void set_outline(const Color& color, double thickness) override;
+        virtual void set_outline(
+            const Color& color,
+            double thickness,
+            bool shift_depth = false
+        ) override;
         virtual void invalidate_outline() override;
         virtual Color get_outline_color() const override;
         virtual double get_outline_thickness() const override;

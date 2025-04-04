@@ -48,8 +48,18 @@ namespace ganim {
              *
              * @param color The color of the outline.
              * @param thickness The width, in ganim units, of the outline.
+             * @param shift_depth Whether or not to make the depth buffer values
+             * of the outline be further away than the object itself.  This is
+             * necessary sometimes in 3D to prevent the outline being drawn over
+             * the object due to floating point inaccuracies.  It should be
+             * false in 2D scenes though where which objects cover others is
+             * done by drawing order rather than the depth buffer.
              */
-            virtual void set_outline(const Color& color, double thickness)=0;
+            virtual void set_outline(
+                const Color& color,
+                double thickness,
+                bool shift_depth = false
+            )=0;
             /** @brief Set the outline to be invalid
              *
              * The usual outline algorithm is expensive, so it is only ever done
