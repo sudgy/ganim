@@ -279,7 +279,7 @@ Object& Object::next_to(
 )
 {
     const auto other_box = object.get_logical_bounding_box();
-    return next_to(other_box.get_outside_point(direction), direction, buff);
+    return next_to(other_box.get_outside_point_3d(direction), direction, buff);
 }
 
 Object& Object::align_to(
