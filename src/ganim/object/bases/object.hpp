@@ -513,7 +513,7 @@ namespace ganim {
              * defaults to a transparent gray.  You probably want transparent
              * colors in general to make debugging easier.
              */
-            std::unique_ptr<Object>
+            ObjectPtr<Object>
                 get_bounding_box_object(Color color = "80808080") const;
 
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);

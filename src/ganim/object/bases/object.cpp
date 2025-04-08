@@ -342,7 +342,7 @@ Object& Object::to_edge(
     return *this;
 }
 
-std::unique_ptr<Object> Object::get_bounding_box_object(Color color) const
+ObjectPtr<Object> Object::get_bounding_box_object(Color color) const
 {
     auto box = get_logical_bounding_box();
     auto p1 = box.get_lower_left().undual();
@@ -354,7 +354,7 @@ std::unique_ptr<Object> Object::get_bounding_box_object(Color color) const
     std::cout << p2.blade_project<e1>() << " " << p2.blade_project<e2>() << "\n";
     std::cout << p3.blade_project<e1>() << " " << p3.blade_project<e2>() << "\n";
     std::cout << p4.blade_project<e1>() << " " << p4.blade_project<e2>() << "\n\n";
-    auto result = std::make_unique<Shape>(
+    auto result = make_shape(
         std::vector<Shape::Vertex>{
             {float(p1.blade_project<e1>()), float(p1.blade_project<e2>())},
             {float(p2.blade_project<e1>()), float(p2.blade_project<e2>())},
