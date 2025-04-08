@@ -174,8 +174,6 @@ Tex::Tex(std::filesystem::path dvi_filename)
     read_dvi(dvi_filename, *this);
     double x_min = INFINITY;
     double x_max = -INFINITY;
-    double y_min = INFINITY;
-    double y_max = -INFINITY;
     double y_bottom = 0.0;
     bool found_bottom = false;
     for (auto& section : M_vertices) {
@@ -186,24 +184,21 @@ Tex::Tex(std::filesystem::path dvi_filename)
             }
             x_min = std::min(x_min, x + c->bearing_x);
             x_max = std::max(x_max, x + c->bearing_x + c->width);
-            y_min = std::min(y_min, y + M_descender);
-            y_max = std::max(y_max, y + M_ascender);
         }
     }
     const auto x_shift = -(x_min + x_max) / 2;
     const auto y_shift = -y_bottom;
-    x_min += x_shift;
-    x_max += x_shift;
-    y_min += y_shift;
-    y_max += y_shift;
     using namespace vga2;
-    M_logical_bounding_box = Box(x_min*e1 + y_min*e2, x_max*e1 + y_max*e2);
     for (int j = 0; j < ssize(M_vertices); ++j) {
         auto vertices = std::vector<Shape::Vertex>();
         auto indices = std::vector<unsigned>();
         auto tvertices = std::vector<TextureVertex>();
         auto i = 0;
+        double y_min = INFINITY;
+        double y_max = -INFINITY;
         for (auto [c, x, y, s] : M_vertices[j]) {
+            y_min = std::min(y_min, y + M_descender + y_shift);
+            y_max = std::max(y_max, y + M_ascender + y_shift);
             vertices.push_back({
                 static_cast<float>(x + c->bearing_x * s + x_shift),
                 static_cast<float>(y + c->bearing_y * s + y_shift),
@@ -272,10 +267,19 @@ Tex::Tex(std::filesystem::path dvi_filename)
             ++i;
         }
         auto& new_shape
-            = M_shapes.emplace_back(make_shape_texture_shape(
-                        std::move(vertices), std::move(indices)));
+            = M_shapes.emplace_back(
+                        std::move(vertices), std::move(indices));
         new_shape->set_texture_vertices(std::move(tvertices));
         new_shape->set_texture(get_text_texture());
+
+        auto true_bounding_box = new_shape->get_true_bounding_box();
+        using namespace vga2;
+        auto x_min = pga2_to_vga2(
+                true_bounding_box.get_lower_left()).blade_project<e1>();
+        auto x_max = pga2_to_vga2(
+                true_bounding_box.get_upper_right()).blade_project<e1>();
+        new_shape->logical_bounding_box
+            = Box(x_min*e1 + y_min*e2, x_max*e1 + y_max*e2);
     }
     add(M_shapes);
 }
@@ -361,14 +365,7 @@ void Tex::set_colors(const std::unordered_map<std::string, Color>& colors)
     }
 }
 
-Box Tex::get_logical_bounding_box() const
+Box Tex::TexPiece::get_original_logical_bounding_box() const
 {
-    // We want to NOT use Group's version of get_logical_bounding_box(), and
-    // have the transforming properties of the original definition in Object.
-    return Object::get_logical_bounding_box();
-}
-
-Box Tex::get_original_logical_bounding_box() const
-{
-    return M_logical_bounding_box;
+    return logical_bounding_box;
 }
