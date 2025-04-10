@@ -409,6 +409,8 @@ ObjectPtr<Group> Group::range(int i)
     }
     result->set_draw_subobject_ratio(M_ratio);
     if (M_draw_together) result->draw_together();
+    if (is_fixed_in_frame()) result->set_fixed_in_frame(true);
+    if (is_fixed_orientation()) result->set_fixed_orientation(true);
     return result;
 }
 
