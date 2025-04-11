@@ -197,6 +197,18 @@ vga3::Vec pga3_to_vga3_cheat(const pga3::Vec& in);
 
 DEFINE_VECTOR_CONVERTER(pga3_to_vga3);
 
+/** @brief Convert a 3D PGA multivector to a 2D VGA multivector
+ *
+ * This is just the composition of @ref vga3_to_vga2 and @ref pga3_to_vga3.  If
+ * manually calling those two functions is ill-formed on the input multivector,
+ * this function is ill-formed too.
+ */
+template <std::uint64_t... bases>
+auto pga3_to_vga2(const pga3::Multivector<bases...>& in)
+{
+    return vga3_to_vga2(pga3_to_vga3(in));
+}
+
 /** @brief Convert a 2D VGA scalar to a 3D PGA scalar */
 pga3::Scalar vga2_to_pga3(const vga2::Scalar& in);
 /** @brief Convert a 2D VGA vector to a 3D PGA point

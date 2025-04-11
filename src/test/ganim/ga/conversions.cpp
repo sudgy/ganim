@@ -113,3 +113,11 @@ TEST_CASE("vga2_to_pga3", "[ga]") {
     REQUIRE_THAT(vga2_to_pga3(test3), GAEquals(1 + 2*e12));
     REQUIRE_THAT(vga2_to_pga3_full(test2), GAEquals(3*e23 - 2*e13));
 }
+
+TEST_CASE("pga3_to_vga2", "[ga]") {
+    auto test1 = pga3::Scalar(2);
+    auto test2 = (3*pga3::e1 + 2*pga3::e2 + pga3::e3 + 0.5*pga3::e0).dual();
+    using namespace vga2;
+    REQUIRE_THAT(pga3_to_vga2(test1), GAEquals(2));
+    REQUIRE_THAT(pga3_to_vga2(test2), GAEquals(6*e1 + 4*e2));
+}
