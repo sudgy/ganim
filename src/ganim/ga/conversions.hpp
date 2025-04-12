@@ -277,6 +277,101 @@ pga3::Trivec pointlike_to_pga3(const pointlike auto& p)
     else return p;
 }
 
+template <std::uint64_t... bases>
+auto to_vga2(const vga2::Multivector<bases...>& in)
+{
+    return in;
+}
+template <std::uint64_t... bases>
+auto to_vga2(const vga3::Multivector<bases...>& in)
+{
+    return vga3_to_vga2(in);
+}
+template <std::uint64_t... bases>
+auto to_vga2(const pga2::Multivector<bases...>& in)
+{
+    return pga2_to_vga2(in);
+}
+template <std::uint64_t... bases>
+auto to_vga2(const pga3::Multivector<bases...>& in)
+{
+    return pga3_to_vga2(in);
+}
+
+template <std::uint64_t... bases>
+auto to_vga3(const vga2::Multivector<bases...>& in)
+{
+    return vga2_to_vga3(in);
+}
+template <std::uint64_t... bases>
+auto to_vga3(const vga3::Multivector<bases...>& in)
+{
+    return in;
+}
+template <std::uint64_t... bases>
+auto to_vga3(const pga2::Multivector<bases...>& in)
+{
+    return pga2_to_vga3(in);
+}
+template <std::uint64_t... bases>
+auto to_vga3(const pga3::Multivector<bases...>& in)
+{
+    return pga3_to_vga3(in);
+}
+
+template <std::uint64_t... bases>
+auto to_pga2(const vga2::Multivector<bases...>& in)
+{
+    return vga2_to_pga2(in);
+}
+template <std::uint64_t... bases>
+auto to_pga2(const vga3::Multivector<bases...>& in)
+{
+    return vga2_to_pga2(vga3_to_vga2(in));
+}
+template <std::uint64_t... bases>
+auto to_pga2(const pga2::Multivector<bases...>& in)
+{
+    return in;
+}
+template <std::uint64_t... bases>
+auto to_pga2(const pga3::Multivector<bases...>& in)
+{
+    return pga3_to_pga2(in);
+}
+
+template <std::uint64_t... bases>
+auto to_pga3(const vga2::Multivector<bases...>& in)
+{
+    return vga2_to_pga3(in);
+}
+template <std::uint64_t... bases>
+auto to_pga3(const vga3::Multivector<bases...>& in)
+{
+    return vga3_to_pga3(in);
+}
+template <std::uint64_t... bases>
+auto to_pga3(const pga2::Multivector<bases...>& in)
+{
+    return pga2_to_pga3(in);
+}
+template <std::uint64_t... bases>
+auto to_pga3(const pga3::Multivector<bases...>& in)
+{
+    return in;
+}
+
+enum GAFlavor {VGA2, VGA3, PGA2, PGA3};
+
+template <GAFlavor flavor>
+auto ga_convert(const auto& in)
+{
+    if constexpr (flavor == VGA2) return to_vga2(in);
+    if constexpr (flavor == VGA3) return to_vga3(in);
+    if constexpr (flavor == PGA2) return to_pga2(in);
+    if constexpr (flavor == PGA3) return to_pga3(in);
+}
+
 }
 
 #endif
