@@ -238,9 +238,11 @@ void Bivector::common_construct(
 Bivector& Bivector::set_color(Color color)
 {
     Object::set_color(color);
-    M_outside->set_color(color);
-    color.a /= 2;
-    M_inside->set_color(color);
+    if (propagate()) {
+        M_outside->set_color(color);
+        color.a /= 2;
+        M_inside->set_color(color);
+    }
     return *this;
 }
 

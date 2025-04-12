@@ -4,6 +4,7 @@
 #include "ganim/object/bivector.hpp"
 
 #include "ganim/object/vector.hpp"
+#include "ganim/animation/fading.hpp"
 
 using namespace ganim;
 
@@ -311,4 +312,17 @@ TEST_CASE("Bivector 3D list of points", "[object]") {
     auto b2 = make_bivector(6*e1, 6*e2 + 4*e3);
     b2->shift(-3*e1 - 3*e2 - 2*e3);
     scene.check_draw_equivalent(b1, b2);
+}
+
+TEST_CASE("Bivector fade_out with changed subobject", "[object]") {
+    auto test = make_bivector(vga2::e12);
+    auto white = Color("FFFFFF");
+    auto red = Color("FF0000");
+    test->set_color(white);
+    auto a = test->get_outside()[0];
+    a->set_color(red);
+    auto scene = TestScene(1, 1, 1, 1, 4);
+    fade_out(scene, test);
+    scene.wait();
+    REQUIRE(a->get_color() == red);
 }

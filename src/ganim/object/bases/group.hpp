@@ -364,6 +364,9 @@ class Group : public Object {
             return std::move(M_new_subobjects);
         }
 
+    protected:
+        bool propagate() const {return M_propogate;}
+
     private:
         virtual Group* polymorphic_copy_impl() const;
 
