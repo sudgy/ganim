@@ -128,8 +128,9 @@ void SingleObject::create_outline(const Camera& camera)
     const auto z2 = p2.blade_project<e3>();
     {
         if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
-            apply_rotor(rotor);
+            set_opacity(opacity);
             this->scale(scale);
+            apply_rotor(rotor);
             throw std::runtime_error("An outline was attempted to be drawn on "
                     "an object that seems to have 3D extent.");
         }
@@ -252,7 +253,7 @@ void SingleObject::create_outline(const Camera& camera)
         current_viewport[0], current_viewport[1],
         current_viewport[2], current_viewport[3]
     );
+    set_opacity(opacity);
     this->scale(scale);
     apply_rotor(rotor);
-    set_opacity(opacity);
 }
