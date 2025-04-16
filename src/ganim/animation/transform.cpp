@@ -34,6 +34,21 @@ namespace {
             if (M_object_texture == 0) generate_textures(camera);
             return {M_object_texture, M_distance_transform};
         }
+        static void draw_object(const Camera& camera, Object& object)
+        {
+            if (auto* p = dynamic_cast<Group*>(&object)) {
+                auto& group = *p;
+                if (group.drawing_together()) object.draw(camera);
+                else {
+                    for (auto obj : group) {
+                        draw_object(camera, *obj);
+                    }
+                }
+            }
+            else {
+                object.draw(camera);
+            }
+        }
         void generate_textures(const Camera& camera)
         {
             M_bounding_box = tracked_object().get_true_bounding_box();
@@ -98,7 +113,7 @@ namespace {
             if (!is_visible) tracked_object().set_visible(true);
             auto old_peeling_depth_buffer = tracked_object().peeling_depth_buffer();
             tracked_object().set_peeling_depth_buffer(nullptr);
-            tracked_object().draw(fake_camera);
+            draw_object(fake_camera, tracked_object());
             tracked_object().set_peeling_depth_buffer(old_peeling_depth_buffer);
             if (!is_visible) tracked_object().set_visible(false);
 

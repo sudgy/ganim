@@ -422,7 +422,7 @@ TEST_CASE("texture_transform with groups", "[animation]") {
     auto group1 = make_group(shape1);
     auto group2 = make_group(shape2);
     group1->draw_together();
-    group2->draw_together();
+    //group2->draw_together(); Test that it works without this
     scene.add(group1, group2);
     group1->set_visible(true);
     scene.frame_advance();

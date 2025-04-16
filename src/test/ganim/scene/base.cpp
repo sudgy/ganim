@@ -208,3 +208,23 @@ TEST_CASE("Scene iterators", "[scene]") {
         first = false;
     }
 }
+
+TEST_CASE("Scene objects in multiple groups", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto test1 = ObjectPtr<TestDrawable>();
+    auto test2 = ObjectPtr<TestDrawable>();
+    auto group1 = make_group(test1);
+    auto group2 = make_group(test1, test2);
+    int updated1 = 0;
+    test1->add_updater([&]{++updated1;});
+    int updated2 = 0;
+    test2->add_updater([&]{++updated2;});
+    scene.add(group1, group2);
+    group1->set_visible(true);
+    group2->set_visible(true);
+    scene.wait();
+    REQUIRE(test1->draw_count == 1);
+    REQUIRE(test2->draw_count == 1);
+    REQUIRE(updated1 == 1);
+    REQUIRE(updated2 == 1);
+}
