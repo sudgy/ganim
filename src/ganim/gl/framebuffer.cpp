@@ -23,6 +23,7 @@ Framebuffer::Framebuffer(Framebuffer&& other) noexcept :
 Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept
 {
     if (this != &other) {
+        if (M_id) glDeleteFramebuffers(1, &M_id);
         M_id = other.M_id;
         other.M_id = 0;
     }

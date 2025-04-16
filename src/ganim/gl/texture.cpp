@@ -39,6 +39,7 @@ Texture::Texture(Texture&& other) noexcept : M_id(other.M_id)
 Texture& Texture::operator=(Texture&& other) noexcept
 {
     if (this != &other) {
+        if (M_id) glDeleteTextures(1, &M_id);
         M_id = other.M_id;
         other.M_id = 0;
     }

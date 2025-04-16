@@ -22,6 +22,7 @@ Buffer::Buffer(Buffer&& other) noexcept : M_id(other.M_id)
 Buffer& Buffer::operator=(Buffer&& other) noexcept
 {
     if (this != &other) {
+        if (M_id) glDeleteBuffers(1, &M_id);
         M_id = other.M_id;
         other.M_id = 0;
     }

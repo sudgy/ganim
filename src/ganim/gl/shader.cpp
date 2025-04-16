@@ -142,6 +142,7 @@ Shader::Shader(Shader&& other) noexcept : M_program_id(other.M_program_id)
 Shader& Shader::operator=(Shader&& other) noexcept
 {
     if (this != &other) {
+        if (M_program_id) glDeleteProgram(M_program_id);
         M_program_id = other.M_program_id;
         other.M_program_id = 0;
     }
