@@ -51,6 +51,9 @@ namespace {
         }
         void generate_textures(const Camera& camera)
         {
+            auto rotor = tracked_object().get_rotor();
+            tracked_object().apply_rotor(~rotor);
+
             M_bounding_box = tracked_object().get_true_bounding_box();
             using namespace pga3;
             auto p1 = M_bounding_box.get_inner_lower_left().undual();
@@ -61,11 +64,10 @@ namespace {
             const auto y2 = p2.blade_project<e2>();
             const auto z1 = p1.blade_project<e3>();
             const auto z2 = p2.blade_project<e3>();
-            {
-                if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
-                    throw std::runtime_error("A texture transform was attempted"
-                            " on an object that seems to have 3D extent.");
-                }
+            if (z2 - z1 > std::max(x2 - x1, y2 - y1) * 1e-10) {
+                tracked_object().apply_rotor(rotor);
+                throw std::runtime_error("A texture transform was attempted"
+                        " on an object that seems to have 3D extent.");
             }
             const auto size_base = std::max(x2 - x1, y2 - y1);
 
@@ -99,6 +101,7 @@ namespace {
                                    GL_TEXTURE_2D, M_object_texture, 0);
             auto status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
             if (status != GL_FRAMEBUFFER_COMPLETE) {
+                tracked_object().apply_rotor(rotor);
                 throw std::runtime_error("Error: Framebuffer is not complete "
                         "when performing a texture transform.");
             }
@@ -150,6 +153,8 @@ namespace {
             );
             if (current_blend) glEnable(GL_BLEND);
             else glDisable(GL_BLEND);
+
+            tracked_object().apply_rotor(rotor);
         }
     };
     struct TransformingPart : public SingleObject {
@@ -188,7 +193,6 @@ namespace {
             if (from.is_fixed_orientation()) {
                 set_fixed_orientation(true);
             }
-            reset();
             auto c1 = from.get_outline_color();
             auto c2 = to.get_outline_color();
             auto t1 = from.get_outline_thickness();
