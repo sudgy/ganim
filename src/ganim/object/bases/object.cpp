@@ -178,6 +178,11 @@ void Object::set_z(double z)
     shift((z - get_z())*e3);
 }
 
+void Object::set_center(const pga3::Trivec& point)
+{
+    shift(pga3_to_vga3(point) - get_center<VGA3>());
+}
+
 double Object::get_x() const
 {
     return get_center<PGA3>().undual().blade_project<e1>();

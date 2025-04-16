@@ -400,3 +400,14 @@ TEST_CASE("Object color stack animating", "[object]") {
     scene2.frame_advance();
     REQUIRE(test2->get_color() == "FF0000");
 }
+
+
+TEST_CASE("Object set_center", "[object]") {
+    auto test = TestObject();
+    test.bounding_box = Box(vga3::Vec(0, 0, 0), vga3::Vec(2, 2, 2));
+    using namespace vga2;
+    test.set_center(2*e1);
+    auto r = test.get_rotor();
+    auto p = (~r*pga3::e123*r).grade_project<3>();
+    REQUIRE_THAT(pga3_to_vga2(p), GAEquals(e1 - e2));
+}

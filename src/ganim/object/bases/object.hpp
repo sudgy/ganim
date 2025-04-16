@@ -275,6 +275,19 @@ namespace ganim {
             void set_y(double y);
             /** @brief Set the z coordinate of the center of this object. */
             void set_z(double z);
+            /** @brief Set the point that the center of this object is on.  It
+             * differs from @ref move_to in that `move_to` uses the origin of
+             * the object as the reference point while this uses the center of
+             * the object's logical bounding box.
+             */
+            void set_center(const pointlike auto& point)
+                {set_center(pointlike_to_pga3(point));}
+            /** @brief Set the point that the center of this object is on.  It
+             * differs from @ref move_to in that `move_to` uses the origin of
+             * the object as the reference point while this uses the center of
+             * the object's logical bounding box.
+             */
+            void set_center(const pga3::Trivec& point);
             /** @brief Get the x coordinate of the center of this object. */
             double get_x() const;
             /** @brief Get the y coordinate of the center of this object. */
