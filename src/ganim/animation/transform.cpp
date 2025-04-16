@@ -38,8 +38,8 @@ namespace {
         {
             M_bounding_box = tracked_object().get_true_bounding_box();
             using namespace pga3;
-            auto p1 = M_bounding_box.get_inner_lower_left_vertex().undual();
-            auto p2 = M_bounding_box.get_outer_upper_right_vertex().undual();
+            auto p1 = M_bounding_box.get_inner_lower_left().undual();
+            auto p2 = M_bounding_box.get_outer_upper_right().undual();
             const auto x1 = p1.blade_project<e1>();
             const auto x2 = p2.blade_project<e1>();
             const auto y1 = p1.blade_project<e2>();
@@ -374,10 +374,10 @@ namespace {
         {
             const auto& box1 = M_from->M_bounding_box;
             const auto& box2 = M_to->M_bounding_box;
-            auto p11 = box1.get_inner_lower_left_vertex().undual();
-            auto p12 = box1.get_outer_upper_right_vertex().undual();
-            auto p21 = box2.get_inner_lower_left_vertex().undual();
-            auto p22 = box2.get_outer_upper_right_vertex().undual();
+            auto p11 = box1.get_inner_lower_left().undual();
+            auto p12 = box1.get_outer_upper_right().undual();
+            auto p21 = box2.get_inner_lower_left().undual();
+            auto p22 = box2.get_outer_upper_right().undual();
             auto p1 = p11 * (1 - M_t) + p21 * M_t;
             auto p2 = p12 * (1 - M_t) + p22 * M_t;
             auto rotor = get_rotor();

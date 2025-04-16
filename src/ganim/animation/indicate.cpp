@@ -15,6 +15,6 @@ void ganim::indicate(
         }
     );
     auto& indicated = animate(scene, std::move(object), new_args);
-    auto center = indicated.get_logical_bounding_box().get_center_3d();
+    auto center = indicated.get_center<PGA3>();
     indicated.scale(args.scale_factor, center).set_color(args.color);
 }

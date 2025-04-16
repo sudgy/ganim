@@ -163,56 +163,6 @@ Box Object::get_logical_bounding_box() const
     );
 }
 
-pga2::Bivec Object::get_center() const
-{
-    return get_logical_bounding_box().get_center();
-}
-
-pga3::Trivec Object::get_center_3d() const
-{
-    return get_logical_bounding_box().get_center_3d();
-}
-
-pga2::Bivec Object::get_left() const
-{
-    return get_logical_bounding_box().get_left();
-}
-
-pga2::Bivec Object::get_right() const
-{
-    return get_logical_bounding_box().get_right();
-}
-
-pga2::Bivec Object::get_up() const
-{
-    return get_logical_bounding_box().get_up();
-}
-
-pga2::Bivec Object::get_down() const
-{
-    return get_logical_bounding_box().get_down();
-}
-
-pga2::Bivec Object::get_upper_left() const
-{
-    return get_logical_bounding_box().get_upper_left();
-}
-
-pga2::Bivec Object::get_upper_right() const
-{
-    return get_logical_bounding_box().get_upper_right();
-}
-
-pga2::Bivec Object::get_lower_left() const
-{
-    return get_logical_bounding_box().get_lower_left();
-}
-
-pga2::Bivec Object::get_lower_right() const
-{
-    return get_logical_bounding_box().get_lower_right();
-}
-
 void Object::set_x(double x)
 {
     shift((x - get_x())*e1);
@@ -230,20 +180,17 @@ void Object::set_z(double z)
 
 double Object::get_x() const
 {
-    return get_logical_bounding_box()
-        .get_center_3d().undual().blade_project<e1>();
+    return get_center<PGA3>().undual().blade_project<e1>();
 }
 
 double Object::get_y() const
 {
-    return get_logical_bounding_box()
-        .get_center_3d().undual().blade_project<e2>();
+    return get_center<PGA3>().undual().blade_project<e2>();
 }
 
 double Object::get_z() const
 {
-    return get_logical_bounding_box()
-        .get_center_3d().undual().blade_project<e3>();
+    return get_center<PGA3>().undual().blade_project<e3>();
 }
 
 Object& Object::next_to(
@@ -265,7 +212,7 @@ Object& Object::next_to(
     ideal_direction /= ideal_direction.undual().norm();
     ideal_direction *= buff;
     auto point2 = npoint + ideal_direction;
-    auto point3 = get_logical_bounding_box().get_outside_point_3d(-direction);
+    auto point3 = get_outside_point<PGA3>(-direction);
     // Using undual makes this use the "cheat" conversion
     shift((point2 - point3).undual());
 
@@ -278,8 +225,7 @@ Object& Object::next_to(
     double buff
 )
 {
-    const auto other_box = object.get_logical_bounding_box();
-    return next_to(other_box.get_outside_point_3d(direction), direction, buff);
+    return next_to(object.get_outside_point<PGA3>(direction), direction, buff);
 }
 
 Object& Object::align_to(
@@ -295,7 +241,7 @@ Object& Object::align_to(
     }
 
     auto plane = point | (point & ideal_direction);
-    auto outside = get_logical_bounding_box().get_outside_point_3d(direction);
+    auto outside = get_outside_point<PGA3>(direction);
     auto to_point = (outside | plane) ^ plane;
     to_point /= to_point.blade_project<e123>();
     // Using undual makes this use the "cheat" conversion
@@ -366,4 +312,10 @@ ObjectPtr<Object> Object::get_bounding_box_object(Color color) const
     color.a = 127;
     result->set_color(color);
     return result;
+}
+
+std::pair<pga3::Trivec, pga3::Trivec> Object::get_box() const
+{
+    auto box = get_logical_bounding_box();
+    return {box.get_inner_lower_left(), box.get_outer_upper_right()};
 }

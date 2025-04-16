@@ -118,8 +118,8 @@ void SingleObject::create_outline(const Camera& camera)
     set_opacity(1);
     auto bounding_box = get_true_bounding_box();
     using namespace pga3;
-    auto p1 = bounding_box.get_inner_lower_left_vertex().undual();
-    auto p2 = bounding_box.get_outer_upper_right_vertex().undual();
+    auto p1 = bounding_box.get_inner_lower_left().undual();
+    auto p2 = bounding_box.get_outer_upper_right().undual();
     const auto x1 = p1.blade_project<e1>();
     const auto x2 = p2.blade_project<e1>();
     const auto y1 = p1.blade_project<e2>();

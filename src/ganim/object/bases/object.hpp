@@ -21,7 +21,7 @@ namespace ganim {
      * If you want the chaining to work on subclasses, use the @ref
      * GANIM_OBJECT_CHAIN_DECLS macro.
      */
-    class Object : public Transformable {
+    class Object : public Transformable, public BoxInterface {
         public:
             /** @brief Draw this object onto the screen
              *
@@ -268,42 +268,6 @@ namespace ganim {
              */
             virtual Box get_original_logical_bounding_box() const
                 {return get_original_true_bounding_box();}
-            /** @brief Get the center of the object's logical bounding box. */
-            pga2::Bivec get_center() const;
-            /** @brief Get the center of the object's logical bounding box. */
-            pga3::Trivec get_center_3d() const;
-            /** @brief Get the center of the left side of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_left() const;
-            /** @brief Get the center of the right side of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_right() const;
-            /** @brief Get the center of the top side of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_up() const;
-            /** @brief Get the center of the bottom side of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_down() const;
-            /** @brief Get the upper left corner of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_upper_left() const;
-            /** @brief Get the upper right corner of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_upper_right() const;
-            /** @brief Get the lower left corner of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_lower_left() const;
-            /** @brief Get the lower right corner of the object's logical
-             * bounding box.
-             */
-            pga2::Bivec get_lower_right() const;
 
             /** @brief Set the x coordinate of the center of this object. */
             void set_x(double x);
@@ -520,6 +484,8 @@ namespace ganim {
 
         private:
             virtual Object* polymorphic_copy_impl() const override;
+            virtual std::pair<pga3::Trivec, pga3::Trivec> get_box()
+                const override final;
 
             double M_scale = 1;
             double M_draw_fraction = 1;

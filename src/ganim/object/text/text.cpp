@@ -6,6 +6,7 @@ using namespace ganim;
 
 Text::Text(const std::vector<std::string_view>& strings)
 {
+    draw_together();
     set_draw_subobject_ratio(0.2);
     using Vertex = Shape::Vertex;
     auto pos = 0.0;
