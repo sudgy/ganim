@@ -6,6 +6,7 @@
  */
 
 #include <cstdint>
+#include <string>
 
 namespace ganim::gl {
     /** @brief An RAII wrapper around OpenGL textures.
@@ -37,6 +38,8 @@ namespace ganim::gl {
             Texture& operator=(Texture&&) noexcept;
             Texture& operator=(const Texture&)=delete;
             operator unsigned() const {return M_id;}
+
+            void write_to_file(std::string filename);
 
         private:
             unsigned M_id = 0;

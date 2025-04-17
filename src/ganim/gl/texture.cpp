@@ -1,6 +1,9 @@
 #include "texture.hpp"
 
+#include <vector>
+
 #include "ganim/gl/gl.hpp"
+#include "ganim/util/stb_image_write.h"
 
 using namespace ganim::gl;
 
@@ -44,4 +47,16 @@ Texture& Texture::operator=(Texture&& other) noexcept
         other.M_id = 0;
     }
     return *this;
+}
+
+void Texture::write_to_file(std::string filename)
+{
+    int w = -1;
+    int h = -1;
+    glGetTextureLevelParameteriv(M_id, 0, GL_TEXTURE_WIDTH, &w);
+    glGetTextureLevelParameteriv(M_id, 0, GL_TEXTURE_HEIGHT, &h);
+    auto buffer = std::vector<std::uint8_t>();
+    buffer.resize(w*h*4);
+    glGetTextureImage(M_id, 0, GL_RGBA, GL_UNSIGNED_BYTE, w*h*4, buffer.data());
+    stbi_write_png(filename.c_str(), w, h, 4, buffer.data(), w * 4);
 }
