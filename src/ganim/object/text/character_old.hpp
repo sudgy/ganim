@@ -12,6 +12,7 @@
 #include "ganim/unicode.hpp"
 
 namespace ganim {
+    inline namespace deprecated {
     /** @brief A struct representing all of the data needed to draw a particular
      * character.
      *
@@ -122,6 +123,7 @@ namespace ganim {
      * beginning of your scene.
      */
     void set_text_texture_size(int size);
+    }
 }
 
 #endif

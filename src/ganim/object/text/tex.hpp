@@ -7,7 +7,7 @@
 
 namespace ganim {
 
-class Character;
+inline namespace deprecated {class Character;}
 
 class Tex : public Group, public DVIConsumer {
     public:

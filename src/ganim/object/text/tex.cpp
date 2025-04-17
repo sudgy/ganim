@@ -3,7 +3,7 @@
 #include <fstream>
 #include <charconv>
 
-#include "character.hpp"
+#include "character_old.hpp"
 
 using namespace ganim;
 

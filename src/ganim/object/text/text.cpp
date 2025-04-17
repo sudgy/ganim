@@ -1,6 +1,6 @@
 #include "text.hpp"
 
-#include "character.hpp"
+#include "character_old.hpp"
 
 using namespace ganim;
 
