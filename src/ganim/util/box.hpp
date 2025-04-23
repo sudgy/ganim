@@ -89,6 +89,13 @@ class BoxInterface {
         auto get_lower_right() const
             {return ga_convert<flavor>(get_lower_right_base());}
 
+        /** @brief Get the x coordinate of the center of this object. */
+        double get_x() const;
+        /** @brief Get the y coordinate of the center of this object. */
+        double get_y() const;
+        /** @brief Get the z coordinate of the center of this object. */
+        double get_z() const;
+
         /** @brief Get the point on the boundary of the box in a certain
          * direction, assuming a "2D Box".
          *

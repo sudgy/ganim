@@ -183,21 +183,6 @@ void Object::set_center(const pga3::Trivec& point)
     shift(pga3_to_vga3(point) - get_center<VGA3>());
 }
 
-double Object::get_x() const
-{
-    return get_center<PGA3>().undual().blade_project<e1>();
-}
-
-double Object::get_y() const
-{
-    return get_center<PGA3>().undual().blade_project<e2>();
-}
-
-double Object::get_z() const
-{
-    return get_center<PGA3>().undual().blade_project<e3>();
-}
-
 Object& Object::next_to(
     const pga3::Trivec& point,
     const pga3::Trivec& direction,

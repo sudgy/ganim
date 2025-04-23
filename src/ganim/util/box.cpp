@@ -211,6 +211,21 @@ pga2::Vec BoxInterface::get_down_edge() const
     return pga3_to_pga2(get_down_face());
 }
 
+double BoxInterface::get_x() const
+{
+    return get_center<PGA3>().undual().blade_project<e1>();
+}
+
+double BoxInterface::get_y() const
+{
+    return get_center<PGA3>().undual().blade_project<e2>();
+}
+
+double BoxInterface::get_z() const
+{
+    return get_center<PGA3>().undual().blade_project<e3>();
+}
+
 pga3::Trivec BoxInterface::get_upper_left_base() const
 {
     return (get_outer_upper_left_base() + get_inner_upper_left_base()) / 2;

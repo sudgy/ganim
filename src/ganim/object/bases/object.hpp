@@ -288,12 +288,6 @@ namespace ganim {
              * the object's logical bounding box.
              */
             void set_center(const pga3::Trivec& point);
-            /** @brief Get the x coordinate of the center of this object. */
-            double get_x() const;
-            /** @brief Get the y coordinate of the center of this object. */
-            double get_y() const;
-            /** @brief Get the z coordinate of the center of this object. */
-            double get_z() const;
 
             /** @brief Place the object next to another point in a certain
              * direction.
