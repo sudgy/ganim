@@ -65,3 +65,27 @@ TEST_CASE("Text", "[object][text]") {
     REQUIRE(found_white);
     REQUIRE(found_red);
 }
+
+TEST_CASE("Text newlines", "[object][text]") {
+    auto test1 = make_text(0.5, "Hello\nworld");
+    auto test2 = make_text(1.5, "Hello\n", "world");
+    auto test3 = make_text(2.5, "A very long ", "hello\n world");
+    auto box1 = test1->get_logical_bounding_box();
+    auto box21 = test2[0]->get_logical_bounding_box();
+    auto box22 = test2[1]->get_logical_bounding_box();
+    auto box31 = test3[0]->get_logical_bounding_box();
+    auto box32 = test3[1]->get_logical_bounding_box();
+
+    using namespace vga2;
+
+    REQUIRE(box1.get_x() == 0);
+    REQUIRE(box1.get_height() == 2.5);
+
+    REQUIRE(box21.get_x() == 0);
+    REQUIRE(box22.get_x() == 0);
+    REQUIRE(box21.get_y() - 2.5 == box22.get_y());
+
+    REQUIRE(box31.get_x() < 0);
+    REQUIRE(box32.get_x() > 0);
+    REQUIRE(box31.get_y() - 1.75 == box32.get_y());
+}

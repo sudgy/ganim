@@ -19,6 +19,19 @@ namespace ganim {
                 std::vector<std::string_view>{std::forward<Ts>(strings)...})) {}
             explicit Text(const std::vector<std::string_view>& strings);
 
+            template <typename... Ts>
+            explicit Text(double newline_buff, Ts&&... strings)
+                requires((std::convertible_to<Ts, std::string_view> and ...) and
+                        sizeof...(strings) > 0)
+            : Text(newline_buff,
+                static_cast<const std::vector<std::string_view>&>(
+                std::vector<std::string_view>{std::forward<Ts>(strings)...})
+            ) {}
+            explicit Text(
+                double newline_buff,
+                const std::vector<std::string_view>& strings
+            );
+
         private:
             class TextPiece : public TextureShape<Shape> {
                 public:
@@ -41,6 +54,20 @@ namespace ganim {
     )
     {
         return ObjectPtr<Text>(tex_strings);
+    }
+    template <typename... Ts>
+    ObjectPtr<Text> make_text(double newline_buff, Ts&&... tex_strings)
+        requires(std::convertible_to<Ts, std::string_view> and ...)
+    {
+        return ObjectPtr<Text>(newline_buff, std::forward<Ts>(tex_strings)...);
+    }
+
+    inline ObjectPtr<Text> make_text(
+        double newline_buff,
+        const std::vector<std::string_view>& tex_strings
+    )
+    {
+        return ObjectPtr<Text>(newline_buff, tex_strings);
     }
 }
 
