@@ -1,0 +1,67 @@
+#include <catch2/catch_test_macros.hpp>
+#include "test/ganim/scene/test_scene.hpp"
+#include "test/ganim/ga_equals.hpp"
+
+#include <iostream>
+
+#include "ganim/object/text/text.hpp"
+
+using namespace ganim;
+
+TEST_CASE("Text", "[object][text]") {
+    auto text1 = make_text("Wo", "rld");
+    REQUIRE(text1->size() == 2);
+    text1[1]->set_color("FF0000");
+    auto text2 = make_text("W", "o", "r", "l", "d");
+    REQUIRE(text2->size() == 5);
+    text2[2]->set_color("FF0000");
+    text2[3]->set_color("FF0000");
+    text2[4]->set_color("FF0000");
+
+    auto logical1 = text1[0]->get_logical_bounding_box();
+    auto logical2 = text1[1]->get_logical_bounding_box();
+    auto true1 = text1[0]->get_true_bounding_box();
+    auto true2 = text1[1]->get_true_bounding_box();
+
+    using namespace vga2;
+    REQUIRE_THAT(logical1.get_lower_left<VGA2>(),
+            GAEquals(-1.32306*e1 - 0.25*e2, 1e-5));
+    REQUIRE_THAT(logical1.get_upper_right<VGA2>(),
+            GAEquals(0.0984497*e1 + 0.75*e2, 1e-5));
+    REQUIRE_THAT(logical2.get_lower_left<VGA2>(),
+            GAEquals(0.1297*e1 - 0.25*e2, 1e-5));
+    REQUIRE_THAT(logical2.get_upper_right<VGA2>(),
+            GAEquals(1.32306*e1 + 0.75*e2, 1e-5));
+    REQUIRE_THAT(true1.get_lower_left<VGA2>(),
+            GAEquals(-1.32306*e1 - 0.03125*e2, 1e-5));
+    REQUIRE_THAT(true1.get_upper_right<VGA2>(),
+            GAEquals(0.0984497*e1 + 0.6875*e2, 1e-5));
+    REQUIRE_THAT(true2.get_lower_left<VGA2>(),
+            GAEquals(0.1297*e1 - 0.015625*e2, 1e-5));
+    REQUIRE_THAT(true2.get_upper_right<VGA2>(),
+            GAEquals(1.32306*e1 + 0.703125*e2, 1e-5));
+
+    auto scene = TestScene(16, 16, 4, 4, 1);
+    scene.check_draw_equivalent(text1, text2);
+
+    scene.add(text1);
+    text1->set_visible(true);
+    scene.frame_advance();
+    auto found_white = false;
+    auto found_red = false;
+    for (int x = 0; x < 16; ++x) {
+        for (int y = 0; y < 16; ++y) {
+            auto pixel = scene.get_pixel(0, x, y);
+            if (pixel.r > 0) {
+                if (pixel.g == pixel.r and pixel.b == pixel.r) {
+                    found_white = true;
+                }
+                if (pixel.g == 0 and pixel.b == 0) {
+                    found_red = true;
+                }
+            }
+        }
+    }
+    REQUIRE(found_white);
+    REQUIRE(found_red);
+}
