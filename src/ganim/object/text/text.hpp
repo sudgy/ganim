@@ -12,6 +12,7 @@ namespace ganim {
     struct TextArgs {
         double newline_buff = 0.0;
         std::string_view font_filename = "fonts/NewCM10-Regular.otf";
+        int font_pixel_size = 128;
     };
     class Text : public Group {
         public:

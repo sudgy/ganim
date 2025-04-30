@@ -57,13 +57,18 @@ namespace ganim {
      *
      * @param filename The filename for the font to use.  It must be a full,
      * valid, file path.  Plain font names like "Arial" are not supported.
+     * @param pixel_size The size, in pixels, of the letters internally.
+     * Increasing it produces better quality (up to a point) at the cost of
+     * increased GPU usage, possibly filling up the text texture.  You probably
+     * shouldn't ever increase it from the default of 128, but you may want to
+     * decrease it if you find yourself filling up the text texture.
      *
      * @return A reference to the new font.
      *
      * @throws std::runtime_error if the font file cannot be opened for any
      * reason.
      */
-    Font& get_font(const std::string& filename);
+    Font& get_font(const std::string& filename, int pixel_size = 128);
     /** @brief Get a glyph.
      *
      * You probably don't need to call this function, use @ref shape_text

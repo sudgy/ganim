@@ -16,13 +16,20 @@
 using namespace ganim;
 
 namespace {
-    std::unordered_map<std::string, Font> G_fonts;
+    struct pair_hash {
+        std::size_t operator()(const std::pair<std::string, int>& pair) const
+        {
+            auto h1 = std::hash<std::string>{}(pair.first);
+            auto h2 = std::hash<int>{}(pair.second);
+            return h1 ^ h2;
+        }
+    };
+    std::unordered_map<std::pair<std::string, int>, Font, pair_hash> G_fonts;
     FT_Library G_freetype;
     gl::Texture G_text_texture = 0;
     int G_tt_x = 2; // A single white pixel is placed on the corner for rules
     int G_tt_y = 0;
     int G_tt_h = 2;
-    constexpr auto GC_pixel_size = 128.0;
 }
 
 struct ganim::Font {
@@ -30,7 +37,9 @@ struct ganim::Font {
     FT_Face M_ft_face;
     hb_font_t* M_hb_font = nullptr;
     std::unordered_map<glyph_t, Glyph> M_glyphs;
-    Font(const std::string& filename)
+    double M_pixel_size = 0;
+    Font(const std::string& filename, int pixel_size)
+        : M_pixel_size(pixel_size)
     {
         if (S_count == 0) {
             G_text_texture = gl::Texture();
@@ -57,8 +66,7 @@ struct ganim::Font {
             throw std::runtime_error(
                     std::format("Unable to open font {}", filename));
         }
-        // TODO: Make this configurable
-        error = FT_Set_Pixel_Sizes(M_ft_face, 0, GC_pixel_size);
+        error = FT_Set_Pixel_Sizes(M_ft_face, 0, pixel_size);
         if (error) {
             std::cerr << "Unable to set font size " << filename << "\n";
         }
@@ -67,7 +75,7 @@ struct ganim::Font {
     }
     Font(const Font&)=delete;
     Font& operator=(const Font&)=delete;
-    Font(Font&& other)
+    Font(Font&& other) : M_pixel_size(other.M_pixel_size)
     {
         ++S_count;
         M_ft_face = other.M_ft_face;
@@ -78,6 +86,7 @@ struct ganim::Font {
     Font& operator=(Font&& other)
     {
         if (this != &other) {
+            M_pixel_size = other.M_pixel_size;
             if (M_hb_font) hb_font_destroy(M_hb_font);
             M_ft_face = other.M_ft_face;
             other.M_ft_face = nullptr;
@@ -100,9 +109,9 @@ struct ganim::Font {
     }
 };
 
-Font& ganim::get_font(const std::string& filename)
+Font& ganim::get_font(const std::string& filename, int pixel_size)
 {
-    return G_fonts.emplace(filename, Font(filename)).first->second;
+    return G_fonts.emplace(std::make_pair(filename, pixel_size), Font(filename, pixel_size)).first->second;
 }
 
 Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
@@ -143,10 +152,10 @@ Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
     result.texture_y = static_cast<double>(G_tt_y) / GC_default_text_texture_size;
     result.texture_width = static_cast<double>(width + 2) / GC_default_text_texture_size;
     result.texture_height = static_cast<double>(height + 2) / GC_default_text_texture_size;
-    result.width = (bitmap.width + 2) / GC_pixel_size;
-    result.height = (bitmap.rows + 2) / GC_pixel_size;
-    result.bearing_x = (face->glyph->bitmap_left - 1) / GC_pixel_size;
-    result.bearing_y = (face->glyph->bitmap_top + 1) / GC_pixel_size;
+    result.width = (bitmap.width + 2) / font.M_pixel_size;
+    result.height = (bitmap.rows + 2) / font.M_pixel_size;
+    result.bearing_x = (face->glyph->bitmap_left - 1) / font.M_pixel_size;
+    result.bearing_y = (face->glyph->bitmap_top + 1) / font.M_pixel_size;
 
     G_tt_x += width + 2;
     G_tt_h = std::max(G_tt_h, height + 2);
@@ -161,7 +170,7 @@ double ganim::get_font_ascender(Font& font)
     if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
         FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
     }
-    return face->glyph->bitmap_top / GC_pixel_size;
+    return face->glyph->bitmap_top / font.M_pixel_size;
 }
 
 double ganim::get_font_descender(Font& font)
@@ -172,7 +181,8 @@ double ganim::get_font_descender(Font& font)
     if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
         FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
     }
-    return (face->glyph->bitmap_top - int(face->glyph->bitmap.rows)) / GC_pixel_size;
+    return (face->glyph->bitmap_top - int(face->glyph->bitmap.rows))
+        / font.M_pixel_size;
 }
 
 std::vector<ShapedGlyph> ganim::shape_text(
@@ -206,9 +216,9 @@ std::vector<ShapedGlyph> ganim::shape_text(
         auto& glyph = result[i];
         glyph.glyph = &get_glyph(font, glyph_infos[i].codepoint);
         glyph.x_pos = (cursor_x + glyph_positions[i].x_offset)
-            / 64.0 / GC_pixel_size;
+            / 64.0 / font.M_pixel_size;
         glyph.y_pos = (cursor_y + glyph_positions[i].y_offset)
-            / 64.0 / GC_pixel_size;
+            / 64.0 / font.M_pixel_size;
         glyph.group_index = glyph_infos[i].cluster;
         cursor_x += glyph_positions[i].x_advance;
         cursor_y += glyph_positions[i].y_advance;

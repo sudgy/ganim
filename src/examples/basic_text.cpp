@@ -26,7 +26,7 @@ void basic_text()
     text->set_outline(Color("#000000"), 0.04);
     text->shift(-2*e2);
     noise_create(scene, text, 0.25, {.duration = 2});
-    auto align1 = make_text("Aligning");
+    auto align1 = make_text({.font_pixel_size = 16}, "Aligning");
     auto align2 = make_text(
             {.font_filename = "fonts/NewCM10-Italic.otf"}, "weird");
     auto align3 = make_tex("\\text{ones}");
