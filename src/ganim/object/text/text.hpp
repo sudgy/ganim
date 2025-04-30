@@ -9,6 +9,10 @@
 #include "../texture_shape.hpp"
 
 namespace ganim {
+    struct TextArgs {
+        double newline_buff = 0.0;
+        std::string_view font_filename = "fonts/NewCM10-Regular.otf";
+    };
     class Text : public Group {
         public:
             template <typename... Ts>
@@ -20,15 +24,15 @@ namespace ganim {
             explicit Text(const std::vector<std::string_view>& strings);
 
             template <typename... Ts>
-            explicit Text(double newline_buff, Ts&&... strings)
+            explicit Text(TextArgs args, Ts&&... strings)
                 requires((std::convertible_to<Ts, std::string_view> and ...) and
                         sizeof...(strings) > 0)
-            : Text(newline_buff,
+            : Text(args,
                 static_cast<const std::vector<std::string_view>&>(
                 std::vector<std::string_view>{std::forward<Ts>(strings)...})
             ) {}
             explicit Text(
-                double newline_buff,
+                TextArgs args,
                 const std::vector<std::string_view>& strings
             );
 
@@ -56,18 +60,18 @@ namespace ganim {
         return ObjectPtr<Text>(tex_strings);
     }
     template <typename... Ts>
-    ObjectPtr<Text> make_text(double newline_buff, Ts&&... tex_strings)
+    ObjectPtr<Text> make_text(TextArgs args, Ts&&... tex_strings)
         requires(std::convertible_to<Ts, std::string_view> and ...)
     {
-        return ObjectPtr<Text>(newline_buff, std::forward<Ts>(tex_strings)...);
+        return ObjectPtr<Text>(args, std::forward<Ts>(tex_strings)...);
     }
 
     inline ObjectPtr<Text> make_text(
-        double newline_buff,
+        TextArgs args,
         const std::vector<std::string_view>& tex_strings
     )
     {
-        return ObjectPtr<Text>(newline_buff, tex_strings);
+        return ObjectPtr<Text>(args, tex_strings);
     }
 }
 

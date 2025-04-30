@@ -67,9 +67,9 @@ TEST_CASE("Text", "[object][text]") {
 }
 
 TEST_CASE("Text newlines", "[object][text]") {
-    auto test1 = make_text(0.5, "Hello\nworld");
-    auto test2 = make_text(1.5, "Hello\n", "world");
-    auto test3 = make_text(2.5, "A very long ", "hello\n world");
+    auto test1 = make_text({0.5}, "Hello\nworld");
+    auto test2 = make_text({1.5}, "Hello\n", "world");
+    auto test3 = make_text({2.5}, "A very long ", "hello\n world");
     auto box1 = test1->get_logical_bounding_box();
     auto box21 = test2[0]->get_logical_bounding_box();
     auto box22 = test2[1]->get_logical_bounding_box();

@@ -4,15 +4,15 @@
 
 using namespace ganim;
 
-Text::Text(const std::vector<std::string_view>& strings) : Text(0.0, strings) {}
+Text::Text(const std::vector<std::string_view>& strings) : Text({}, strings) {}
 
-Text::Text(double newline_buff, const std::vector<std::string_view>& strings)
+Text::Text(TextArgs args, const std::vector<std::string_view>& strings)
 {
     draw_together();
     set_draw_subobject_ratio(0.2);
     using Vertex = Shape::Vertex;
     // TODO: Make this configurable
-    auto& font = get_font("fonts/NewCM10-Regular.otf");
+    auto& font = get_font(std::string(args.font_filename));
     auto shaped_glyphs_per_line = std::vector<std::vector<ShapedGlyph>>();
     auto later_strings = strings;
     later_strings.push_back("\n");
@@ -127,7 +127,7 @@ Text::Text(double newline_buff, const std::vector<std::string_view>& strings)
             all_indices[vertex.group].push_back(j + 1);
             all_indices[vertex.group].push_back(j + 3);
         }
-        y_plus -= ascender - descender + newline_buff;
+        y_plus -= ascender - descender + args.newline_buff;
     }
     auto text_texture = get_text_texture();
     M_pieces.reserve(size);

@@ -27,7 +27,8 @@ void basic_text()
     text->shift(-2*e2);
     noise_create(scene, text, 0.25, {.duration = 2});
     auto align1 = make_text("Aligning");
-    auto align2 = make_text("weird");
+    auto align2 = make_text(
+            {.font_filename = "fonts/NewCM10-Italic.otf"}, "weird");
     auto align3 = make_tex("\\text{ones}");
     align1->to_edge(*scene.get_camera(), -e2).shift(-2.5*e1);
     align2->shift(1*e1).align_to(*align1, -e2);
