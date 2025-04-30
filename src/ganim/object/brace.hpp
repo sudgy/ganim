@@ -13,6 +13,7 @@ namespace ganim {
     class Brace : public Path {
         public:
             Brace(vga2::Vec p1, vga2::Vec p2, BraceArgs args = {});
+            void recreate(vga2::Vec p1, vga2::Vec p2, BraceArgs args = {});
     };
     inline ObjectPtr<Brace> make_brace(
         vga2::Vec p1,

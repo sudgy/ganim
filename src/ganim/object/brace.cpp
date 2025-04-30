@@ -73,3 +73,9 @@ Brace::Brace(
     BraceArgs args
 )
 : Path(get_points(to_pga2(p1), to_pga2(p2), args), false, args.thickness) {}
+
+void Brace::recreate(vga2::Vec p1, vga2::Vec p2, BraceArgs args)
+{
+    Path::recreate(
+            get_points(to_pga2(p1), to_pga2(p2), args), false, args.thickness);
+}
