@@ -221,3 +221,25 @@ unsigned ganim::get_text_texture()
 {
     return G_text_texture;
 }
+
+void ganim::set_text_texture_size(int size)
+{
+    G_text_texture = gl::Texture();
+    glBindTexture(GL_TEXTURE_2D, G_text_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F,
+        size, size, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    const std::uint8_t rules[] = {0xFF, 0xFF, 0xFF, 0xFF};
+    glTexSubImage2D(GL_TEXTURE_2D, 0,
+            0, 0, 1, 1,
+            GL_RGBA, GL_UNSIGNED_BYTE, rules);
+    G_tt_x = 2;
+    G_tt_y = 0;
+    G_tt_h = 2;
+    for (auto& [_, font] : G_fonts) {
+        font.M_glyphs.clear();
+    }
+}

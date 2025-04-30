@@ -62,3 +62,6 @@ TEST_CASE("Text helpers", "[object][text]") {
     REQUIRE(shaped[4].glyph->bearing_x == 0.0234375);
     REQUIRE(shaped[4].glyph->bearing_y == 0.703125);
 }
+
+// There is a test for set_text_texture_size but it's in text.cpp because it's
+// easier to test there
