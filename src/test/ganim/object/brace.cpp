@@ -57,3 +57,50 @@ TEST_CASE("Brace on the right", "[object]") {
     auto scene = TestScene(32, 32, 16, 16, 1);
     scene.check_draw_equivalent(brace, path);
 }
+
+TEST_CASE("Brace on the verge of being squished", "[object]") {
+    using namespace vga2;
+    auto brace = make_brace(-3*e1, 3*e1, {true, 2, 0.5, 2});
+
+    const auto r = ga_exp(e12*τ/8);
+    auto points = std::vector{
+        -3*e1,
+        -2*e1 - e1 * ~r,
+        -2*e1 + e2,
+        -e1 + 2*e2 + e1 * ~r - 0.5*e1,
+        2*e2,
+        e1 + 2*e2 - e1 * r + 0.5*e1,
+        2*e1 + e2,
+        2*e1 + e1 * r,
+        3*e1
+    };
+    auto path = make_path(points, false, 0.5);
+
+    auto scene = TestScene(32, 32, 16, 16, 1);
+    scene.check_draw_equivalent(brace, path);
+}
+
+TEST_CASE("Squished brace", "[object]") {
+    using namespace vga2;
+    auto brace = make_brace(-1.5*e1, 1.5*e1, {true, 2, 0.5, 2});
+
+    const auto r = ga_exp(e12*τ/8);
+    auto points = std::vector{
+        -3*e1,
+        -2*e1 - e1 * ~r,
+        -2*e1 + e2,
+        -e1 + 2*e2 + e1 * ~r - 0.5*e1,
+        2*e2,
+        e1 + 2*e2 - e1 * r + 0.5*e1,
+        2*e1 + e2,
+        2*e1 + e1 * r,
+        3*e1
+    };
+    for (auto& p : points) {
+        p -= 0.5*p.blade_project<e1>()*e1;
+    }
+    auto path = make_path(points, false, 0.5);
+
+    auto scene = TestScene(32, 32, 16, 16, 1);
+    scene.check_draw_equivalent(brace, path);
+}
