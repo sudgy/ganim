@@ -11,6 +11,7 @@
 #include "ganim/object/arrow_path.hpp"
 #include "ganim/object/bivector.hpp"
 #include "ganim/object/point.hpp"
+#include "ganim/object/brace.hpp"
 #include "ganim/object/text/character_old.hpp"
 #include "ganim/object/text/text.hpp"
 #include "ganim/object/text/tex.hpp"
