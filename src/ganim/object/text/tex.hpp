@@ -7,7 +7,7 @@
 
 namespace ganim {
 
-inline namespace deprecated {class Character;}
+namespace deprecated {class Character;}
 
 class Tex : public Group, public DVIConsumer {
     public:
@@ -40,7 +40,7 @@ class Tex : public Group, public DVIConsumer {
     private:
         double M_magnification = 0.0;
         struct tex_vertex {
-            Character* character = nullptr;
+            deprecated::Character* character = nullptr;
             double x = 0.0;
             double y = 0.0;
             double scale = 1.0;

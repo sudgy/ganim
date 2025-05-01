@@ -233,7 +233,7 @@ Tex::Tex(std::filesystem::path dvi_filename)
             ++i;
         }
         for (auto [x, y, width, height] : M_rules[j]) {
-            const auto td = 1.0f / GC_default_text_texture_size / 2;
+            const auto td = 1.0f / deprecated::GC_default_text_texture_size / 2;
             vertices.push_back({
                 static_cast<float>(x + x_shift),
                 static_cast<float>(y + y_shift),
@@ -270,7 +270,7 @@ Tex::Tex(std::filesystem::path dvi_filename)
             = M_shapes.emplace_back(
                         std::move(vertices), std::move(indices));
         new_shape->set_texture_vertices(std::move(tvertices));
-        new_shape->set_texture(get_text_texture());
+        new_shape->set_texture(deprecated::get_text_texture());
 
         auto true_bounding_box = new_shape->get_true_bounding_box();
         using namespace vga2;
@@ -297,14 +297,14 @@ int Tex::write_character(
         filename = "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/"
             + filename + ".pfb";
     }
-    auto& font2 = get_font(filename);
+    auto& font2 = deprecated::get_font(filename);
     if (M_ascender == 0.0 or font.name == "cmr10") {
-        M_ascender = get_font_ascender(font2);
-        M_descender = get_font_descender(font2);
+        M_ascender = deprecated::get_font_ascender(font2);
+        M_descender = deprecated::get_font_descender(font2);
     }
     auto& character = get_character(font2, c);
     auto scale = M_magnification * 1e-5 / 2.54 * 72 / 10
-        * get_font_pem(font2);
+        * deprecated::get_font_pem(font2);
     M_vertices[M_current_section].emplace_back(
         &character, h * scale, -v * scale, font.size / 10.0
     );

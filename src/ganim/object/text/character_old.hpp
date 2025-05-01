@@ -12,7 +12,7 @@
 #include "ganim/unicode.hpp"
 
 namespace ganim {
-    inline namespace deprecated {
+    namespace deprecated {
     /** @brief A struct representing all of the data needed to draw a particular
      * character.
      *

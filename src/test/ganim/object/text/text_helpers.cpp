@@ -9,7 +9,7 @@ TEST_CASE("Text helpers", "[object][text]") {
     REQUIRE(get_font_ascender(font) == 0.75);
     REQUIRE(get_font_descender(font) == -0.25);
 
-    auto shaped = shape_text(font, {"Wo", "rld"});
+    auto shaped = shape_text(font, {U"Wo", U"rld"});
     REQUIRE(shaped.size() == 5);
     // W
     REQUIRE(shaped[0].x_pos == 0);

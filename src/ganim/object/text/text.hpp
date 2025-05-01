@@ -5,8 +5,7 @@
  * @brief Contains the @ref ganim::Text class
  */
 
-#include "../bases/group.hpp"
-#include "../texture_shape.hpp"
+#include "text_base.hpp"
 
 namespace ganim {
     struct TextArgs {
@@ -14,7 +13,7 @@ namespace ganim {
         std::string_view font_filename = "fonts/NewCM10-Regular.otf";
         int font_pixel_size = 128;
     };
-    class Text : public Group {
+    class Text : public TextBase {
         public:
             template <typename... Ts>
             explicit Text(Ts&&... strings)
@@ -38,13 +37,10 @@ namespace ganim {
             );
 
         private:
-            class TextPiece : public TextureShape<Shape> {
-                public:
-                    using TextureShape<Shape>::TextureShape;
-                    virtual Box get_original_logical_bounding_box() const override;
-                    Box logical_bounding_box;
-            };
-            std::vector<ObjectPtr<TextPiece>> M_pieces;
+            virtual std::vector<PositionedGlyph> get_glyphs(
+                    const std::vector<std::u32string>& strings) override;
+            Font* M_font = nullptr;
+            double M_newline_buff = 0.0;
     };
 
     template <typename... Ts>

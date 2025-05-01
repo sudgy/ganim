@@ -187,15 +187,14 @@ double ganim::get_font_descender(Font& font)
 
 std::vector<ShapedGlyph> ganim::shape_text(
     Font& font,
-    std::vector<std::string_view> text
+    const std::vector<std::u32string>& text
 )
 {
     auto buffer = hb_buffer_create();
-    int group_index = 0;
-    for (auto string : text) {
-        auto gen = utf8_to_codepoints(string);
-        while (auto codepoint = gen()) {
-            hb_buffer_add(buffer, *codepoint, group_index);
+    auto group_index = 0;
+    for (auto& string : text) {
+        for (auto codepoint : string) {
+            hb_buffer_add(buffer, codepoint, group_index);
         }
         ++group_index;
     }

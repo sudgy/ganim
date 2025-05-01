@@ -13,6 +13,7 @@
 #include "ganim/gl/texture.hpp"
 
 using namespace ganim;
+using namespace deprecated;
 
 namespace {
     std::unordered_map<std::string, Font> G_fonts;
@@ -24,7 +25,7 @@ namespace {
     constexpr auto GC_pixel_size = 128.0;
 }
 
-struct ganim::Font {
+struct ganim::deprecated::Font {
     inline static int S_count = 0;
     FT_Face M_face;
     std::unordered_map<int, Character> M_characters;
@@ -103,12 +104,12 @@ struct ganim::Font {
     }
 };
 
-Font& ganim::get_font(const std::string& filename)
+Font& ganim::deprecated::get_font(const std::string& filename)
 {
     return G_fonts.emplace(filename, Font(filename)).first->second;
 }
 
-Character& ganim::get_character(Font& font, UnicodeCodepoint character)
+Character& ganim::deprecated::get_character(Font& font, UnicodeCodepoint character)
 {
     auto face = font.M_face;
     auto codepoint = character.codepoint;
@@ -162,24 +163,24 @@ Character& ganim::get_character(Font& font, UnicodeCodepoint character)
     return result;
 }
 
-double ganim::get_font_pem(Font& font)
+double ganim::deprecated::get_font_pem(Font& font)
 {
     return font.M_face->size->metrics.x_ppem / GC_pixel_size;
 }
 
-double ganim::get_font_ascender(Font& font)
+double ganim::deprecated::get_font_ascender(Font& font)
 {
     auto& metrics = font.M_face->size->metrics;
     return metrics.ascender / 64 / GC_pixel_size;
 }
 
-double ganim::get_font_descender(Font& font)
+double ganim::deprecated::get_font_descender(Font& font)
 {
     auto& metrics = font.M_face->size->metrics;
     return metrics.descender / 64 / GC_pixel_size;
 }
 
-double ganim::get_kerning(
+double ganim::deprecated::get_kerning(
         Font& font, UnicodeCodepoint left, UnicodeCodepoint right)
 {
     auto face = font.M_face;
@@ -195,7 +196,7 @@ double ganim::get_kerning(
     return static_cast<double>(kerning.x) / 64 / GC_pixel_size;
 }
 
-unsigned ganim::get_text_texture()
+unsigned ganim::deprecated::get_text_texture()
 {
     return G_text_texture;
 }

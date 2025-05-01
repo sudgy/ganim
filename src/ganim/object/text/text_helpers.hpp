@@ -1,5 +1,5 @@
-#ifndef GANIM_OBJECT_CHARACTER_HPP
-#define GANIM_OBJECT_CHARACTER_HPP
+#ifndef GANIM_OBJECT_TEXT_HELPERS_HPP
+#define GANIM_OBJECT_TEXT_HELPERS_HPP
 
 #include <vector>
 #include <string>
@@ -42,6 +42,19 @@ namespace ganim {
                               ///< the glyph, in ganim units
         double bearing_y = 0; ///< @brief The y coordinate of the top side of
                               ///< the glyph, in ganim units
+    };
+    struct PositionedGlyph {
+        double x = 0;
+        double y = 0;
+        double width = 0;
+        double height = 0;
+        double y_min = 0;
+        double y_max = 0;
+        float texture_x = 0; ///< The x coordinate in the texture
+        float texture_y = 0; ///< The y coordinate in the texture
+        float texture_width = 0; ///< The width in the texture
+        float texture_height = 0; ///< The height in the texture
+        int group_index = -1;
     };
     /** @brief A type to keep track of fonts.
      *
@@ -107,7 +120,7 @@ namespace ganim {
      */
     std::vector<ShapedGlyph> shape_text(
         Font& font,
-        std::vector<std::string_view> text
+        const std::vector<std::u32string>& text
     );
     /** @brief Get the OpenGL texture ID used for text.
      */
