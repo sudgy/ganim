@@ -18,7 +18,7 @@ Text::Text(TextArgs args, const std::vector<std::string_view>& strings)
 std::vector<PositionedGlyph> Text::get_glyphs(
         const std::vector<std::u32string>& strings)
 {
-    auto shaped_glyphs_per_line = std::vector<std::vector<ShapedGlyph>>();
+    auto shaped_glyphs_per_line = std::vector<std::vector<PositionedGlyph>>();
     auto later_strings = strings;
     later_strings.push_back(U"\n");
     for (int i = 0; i < ssize(later_strings); ++i) {
@@ -47,28 +47,20 @@ std::vector<PositionedGlyph> Text::get_glyphs(
         auto x_min = double(INFINITY);
         auto x_max = double(-INFINITY);
         for (auto& glyph : shaped_glyphs) {
-            auto& c = *glyph.glyph;
-            x_min = std::min(x_min, glyph.x_pos + c.bearing_x);
-            x_max = std::max(x_max, glyph.x_pos + c.bearing_x);
-            x_min = std::min(x_min, glyph.x_pos + c.bearing_x + c.width);
-            x_max = std::max(x_max, glyph.x_pos + c.bearing_x + c.width);
-            result.emplace_back(
-                glyph.x_pos + c.bearing_x,
-                c.bearing_y + glyph.y_pos + y_plus,
-                c.width,
-                -c.height,
-                glyph.y_pos + descender + y_plus,
-                glyph.y_pos + ascender + y_plus,
-                c.texture_x,
-                c.texture_y,
-                c.texture_width,
-                c.texture_height,
-                glyph.group_index
-            );
+            auto& new_glyph = result.emplace_back(glyph);
+            x_min = std::min(x_min, glyph.draw_x);
+            x_max = std::max(x_max, glyph.draw_x);
+            x_min = std::min(x_min, glyph.draw_x + glyph.width);
+            x_max = std::max(x_max, glyph.draw_x + glyph.width);
+            new_glyph.y_pos += y_plus;
+            new_glyph.draw_y += y_plus;
+            new_glyph.y_min += y_plus;
+            new_glyph.y_max += y_plus;
         }
         const auto x_shift = -(x_min + x_max) / 2;
         for (int i = line_start; i < ssize(result); ++i) {
-            result[i].x += x_shift;
+            result[i].x_pos += x_shift;
+            result[i].draw_x += x_shift;
         }
         y_plus -= ascender - descender + M_newline_buff;
     }

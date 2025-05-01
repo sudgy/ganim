@@ -37,23 +37,23 @@ void TextBase::create(const std::vector<std::string_view>& strings)
 
         auto j = all_vertices[glyph.group_index].size();
         all_vertices[glyph.group_index].push_back({
-            static_cast<float>(glyph.x),
-            static_cast<float>(glyph.y),
+            static_cast<float>(glyph.draw_x),
+            static_cast<float>(glyph.draw_y),
             0, static_cast<float>(0 + j*4)
         });
         all_vertices[glyph.group_index].push_back({
-            static_cast<float>(glyph.x + glyph.width),
-            static_cast<float>(glyph.y),
+            static_cast<float>(glyph.draw_x + glyph.width),
+            static_cast<float>(glyph.draw_y),
             0, static_cast<float>(1 + j*4)
         });
         all_vertices[glyph.group_index].push_back({
-            static_cast<float>(glyph.x),
-            static_cast<float>(glyph.y + glyph.height),
+            static_cast<float>(glyph.draw_x),
+            static_cast<float>(glyph.draw_y - glyph.height),
             0, static_cast<float>(2 + j*4)
         });
         all_vertices[glyph.group_index].push_back({
-            static_cast<float>(glyph.x + glyph.width),
-            static_cast<float>(glyph.y + glyph.height),
+            static_cast<float>(glyph.draw_x + glyph.width),
+            static_cast<float>(glyph.draw_y - glyph.height),
             0, static_cast<float>(3 + j*4)
         });
 

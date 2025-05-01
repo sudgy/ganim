@@ -185,7 +185,7 @@ double ganim::get_font_descender(Font& font)
         / font.M_pixel_size;
 }
 
-std::vector<ShapedGlyph> ganim::shape_text(
+std::vector<PositionedGlyph> ganim::shape_text(
     Font& font,
     const std::vector<std::u32string>& text
 )
@@ -206,18 +206,30 @@ std::vector<ShapedGlyph> ganim::shape_text(
     auto glyph_infos = hb_buffer_get_glyph_infos(buffer, &glyph_count);
     auto glyph_positions = hb_buffer_get_glyph_positions(buffer, &glyph_count);
 
-    auto result = std::vector<ShapedGlyph>();
+    auto result = std::vector<PositionedGlyph>();
     result.resize(glyph_count);
 
     auto cursor_x = 0;
     auto cursor_y = 0;
+    const auto ascender = get_font_ascender(font);
+    const auto descender = get_font_descender(font);
     for (auto i = 0U; i < glyph_count; ++i) {
         auto& glyph = result[i];
-        glyph.glyph = &get_glyph(font, glyph_infos[i].codepoint);
+        auto& glyph_data = get_glyph(font, glyph_infos[i].codepoint);
         glyph.x_pos = (cursor_x + glyph_positions[i].x_offset)
             / 64.0 / font.M_pixel_size;
         glyph.y_pos = (cursor_y + glyph_positions[i].y_offset)
             / 64.0 / font.M_pixel_size;
+        glyph.draw_x = glyph.x_pos + glyph_data.bearing_x;
+        glyph.draw_y = glyph.y_pos + glyph_data.bearing_y;
+        glyph.width = glyph_data.width;
+        glyph.height = glyph_data.height;
+        glyph.y_min = glyph.y_pos + descender;
+        glyph.y_max = glyph.y_pos + ascender;
+        glyph.texture_x = glyph_data.texture_x;
+        glyph.texture_y = glyph_data.texture_y;
+        glyph.texture_width = glyph_data.texture_width;
+        glyph.texture_height = glyph_data.texture_height;
         glyph.group_index = glyph_infos[i].cluster;
         cursor_x += glyph_positions[i].x_advance;
         cursor_y += glyph_positions[i].y_advance;

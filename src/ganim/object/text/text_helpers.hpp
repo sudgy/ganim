@@ -44,8 +44,10 @@ namespace ganim {
                               ///< the glyph, in ganim units
     };
     struct PositionedGlyph {
-        double x = 0;
-        double y = 0;
+        double x_pos = 0;
+        double y_pos = 0;
+        double draw_x = 0;
+        double draw_y = 0;
         double width = 0;
         double height = 0;
         double y_min = 0;
@@ -97,18 +99,6 @@ namespace ganim {
     double get_font_ascender(Font& font);
     /** @brief Get the font descender */
     double get_font_descender(Font& font);
-    /** @brief A struct for the return type of @ref shape_text
-     *
-     * It represents a @ref Glyph with additional info, such as global
-     * positioning information.
-     */
-    struct ShapedGlyph {
-        Glyph* glyph = nullptr; ///< The @ref Glyph this ShapedGlyph is
-        double x_pos = 0; ///< The x position of this glyph
-        double y_pos = 0; ///< The y position of this glyph
-        int group_index = -1; ///< The index into the input vector this glyph is
-                              /// from
-    };
     /** @brief Shape a list of strings.
      *
      * The strings will all be concatenated and shaped at once.  The input is a
@@ -118,7 +108,7 @@ namespace ganim {
      * `shape_text({"ab", "c"}), the result will contain three glyphs, with "a"
      * and "b" having a group_index of 0, and "c" having a group_index of 1.
      */
-    std::vector<ShapedGlyph> shape_text(
+    std::vector<PositionedGlyph> shape_text(
         Font& font,
         const std::vector<std::u32string>& text
     );
