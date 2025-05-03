@@ -10,6 +10,7 @@ void lighting();
 void oit();
 void bivectors();
 void paths_3d();
+void polyhedra();
 
 int main()
 {
@@ -23,7 +24,8 @@ int main()
               << "7: lighting\n"
               << "8: Order-independent Transparency\n"
               << "9: Bivectors\n"
-              << "10: 3D Paths\n";
+              << "10: 3D Paths\n"
+              << "11: Polyhedra\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -56,6 +58,9 @@ int main()
             break;
         case 10:
             paths_3d();
+            break;
+        case 11:
+            polyhedra();
             break;
         default:
             std::cout << "Invalid input\n";
