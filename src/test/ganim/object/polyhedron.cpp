@@ -40,5 +40,5 @@ TEST_CASE("Polyhedron", "[object]") {
 
     auto scene = TestScene(32, 32, 4, 4, 1);
     scene.set_transparency_layers(16);
-    scene.check_draw_equivalent(polyhedron, group, "", "test");
+    scene.check_draw_equivalent(polyhedron, group);
 }

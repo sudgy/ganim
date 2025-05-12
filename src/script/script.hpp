@@ -1,6 +1,8 @@
 #ifndef GANIM_SCRIPT_SCRIPT_HPP
 #define GANIM_SCRIPT_SCRIPT_HPP
 
+#include <variant>
+
 #include "script/command/command.hpp"
 #include "script/expression/expression.hpp"
 #include "script/variable.hpp"

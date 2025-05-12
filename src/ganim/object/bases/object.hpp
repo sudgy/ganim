@@ -529,5 +529,7 @@ namespace ganim {
         {Object::scale(amount); return *this;} \
     Type& scale(double amount, const pointlike auto& about_point) \
         {Object::scale(amount, about_point); return *this;} \
+    Type& scale(double amount, const pga3::Trivec& about_point) \
+        {Object::scale(amount, about_point); return *this;} \
 
 #endif

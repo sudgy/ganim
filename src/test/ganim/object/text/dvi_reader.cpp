@@ -95,6 +95,7 @@ namespace {
                 REQUIRE(c == '!');
                 REQUIRE(h - starting_h == 55 + space_width - kerning);
                 REQUIRE(v == starting_v);
+                co_yield 11;
             }
     };
 }

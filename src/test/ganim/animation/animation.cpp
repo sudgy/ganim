@@ -18,6 +18,7 @@ namespace {
                 {return ObjectPtr<TestAnimatable>(*this);}
             virtual TestAnimatable* polymorphic_copy_impl() const override
                 {return new TestAnimatable(*this);}
+            using Animatable::interpolate;
             void interpolate(
                 const TestAnimatable& start,
                 const TestAnimatable& end,
