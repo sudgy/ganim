@@ -3,7 +3,9 @@
 
 #include <variant>
 #include <unordered_set>
+#include <unordered_map>
 #include <format>
+#include <deque>
 
 #include "ganim/object/text/text_helpers.hpp"
 
@@ -16,6 +18,10 @@ namespace ganim {
                     "GeX compilation error in group {} index {}: {}",
                     group, index, actual_what
                 );
+            }
+            virtual const char* what() const noexcept
+            {
+                return M_what.c_str();
             }
         private:
             std::string M_what;
@@ -51,12 +57,14 @@ namespace ganim {
             };
             struct CommandToken {
                 std::u32string command;
+                std::string command_utf8;
             };
 
             struct Token {
                 std::variant<CharacterToken, CommandToken> value;
                 int group = -1;
             };
+            using TokenList = std::deque<Token>;
 
             std::optional<std::uint32_t> read_character();
             void process_character_token(CharacterToken tok, int group);
@@ -68,6 +76,8 @@ namespace ganim {
             std::vector<std::unordered_set<std::uint32_t>> M_catcodes;
             std::vector<std::string> M_input;
             std::vector<std::u32string> M_output_codepoints;
+            std::unordered_map<std::u32string, TokenList> M_macros;
+            TokenList M_next_tokens;
             int M_group_index = 0;
             int M_string_index = 0;
     };

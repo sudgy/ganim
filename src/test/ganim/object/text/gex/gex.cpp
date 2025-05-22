@@ -1,4 +1,5 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "ganim/object/text/gex/gex.hpp"
 #include "ganim/object/text/text_helpers.hpp"
@@ -40,4 +41,21 @@ TEST_CASE("GeX Hello", "[object][text][gex]") {
     for (int i = 0; i < ssize(glyphs1); ++i) {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
+}
+
+TEST_CASE("Basic macros", "[object][text][gex]") {
+    auto gex = GeX({"A", "\\{\\%", "B\\relax C"});
+    auto glyphs1 = gex.get_output();
+
+    auto& font = get_font("fonts/NewCM10-Regular.otf");
+    auto glyphs2 = shape_text(font, {U"A", U"{%", U"BC"});
+
+    REQUIRE(glyphs1.size() == glyphs2.size());
+    for (int i = 0; i < ssize(glyphs1); ++i) {
+        test_glyph(glyphs1[i], glyphs2[i], i);
+    }
+
+    auto bad = GeX({"\\oopsy"});
+    REQUIRE_THROWS_WITH(bad.get_output(), "GeX compilation error in group 0 "
+            "index 6: Undefined control sequence \"oopsy\"");
 }
