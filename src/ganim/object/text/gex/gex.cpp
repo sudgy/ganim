@@ -4,6 +4,11 @@
 #include "ganim/unicode_categories.hpp"
 #include "ganim/object/text/text_helpers.hpp"
 
+namespace {
+    template<class... Ts>
+    struct overloaded : Ts... { using Ts::operator()...; };
+}
+
 using namespace ganim;
 
 GeX::GeX(const std::vector<std::string>& input) : M_input(input)
@@ -27,17 +32,29 @@ GeX::GeX(const std::vector<std::string>& input) : M_input(input)
 std::vector<PositionedGlyph> GeX::get_output()
 {
     auto& font = get_font("fonts/NewCM10-Regular.otf");
-    auto codepoints = std::vector<std::u32string>();
-    codepoints.resize(M_input.size());
+    M_output_codepoints.resize(M_input.size());
     while (auto token = read_token()) {
-        std::visit([&](auto& tok) {
-            codepoints[token->group].push_back(tok.codepoint);
+        std::visit(overloaded{
+            [&](CharacterToken& tok)
+                {process_character_token(tok, token->group);},
+            [&](CommandToken& tok)
+                {process_command_token(tok, token->group);}
         }, token->value);
     }
-    return shape_text(font, codepoints);
+    return shape_text(font, M_output_codepoints);
 }
 
-std::optional<GeX::Token> GeX::read_token()
+void GeX::process_character_token(CharacterToken tok, int group)
+{
+    M_output_codepoints[group].push_back(tok.codepoint);
+}
+
+void GeX::process_command_token(CommandToken tok, int group)
+{
+    // TODO
+}
+
+std::optional<std::uint32_t> GeX::read_character()
 {
     if (M_group_index < ssize(M_input)) {
         auto group = std::string_view(M_input[M_group_index]);
@@ -48,19 +65,47 @@ std::optional<GeX::Token> GeX::read_token()
                 &byte_size
             );
             M_string_index += byte_size;
-            // TODO: A lot
-            return Token(
-                CharacterToken(codepoint, get_category_code(codepoint)),
-                M_group_index
-            );
+            return codepoint;
         }
         else {
             ++M_group_index;
             M_string_index = 0;
-            return read_token();
+            return read_character();
         }
     }
     else return std::nullopt;
+}
+
+std::optional<GeX::Token> GeX::read_token()
+{
+    return read_character().transform([&](auto codepoint) {
+        auto category_code = get_category_code(codepoint);
+        if (category_code == CategoryCode::Escape) {
+            return read_escape();
+        }
+        else return Token(
+            CharacterToken(codepoint, get_category_code(codepoint)),
+            M_group_index
+        );
+    });
+}
+
+GeX::Token GeX::read_escape()
+{
+    auto group = std::string_view(M_input[M_group_index]);
+    auto name = std::u32string();
+    while (M_string_index < ssize(group)) {
+        int byte_size = 0;
+        auto codepoint = utf8_get_next_codepoint(
+            group.substr(M_string_index),
+            &byte_size
+        );
+        if (get_category_code(codepoint) == CategoryCode::Letter) {
+            name += codepoint;
+            M_string_index += byte_size;
+        }
+    }
+    return Token(CommandToken(name), M_group_index);
 }
 
 GeX::CategoryCode GeX::get_category_code(std::uint32_t codepoint)
