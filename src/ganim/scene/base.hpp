@@ -50,6 +50,8 @@ namespace ganim {
                 int fps
             );
             virtual ~SceneBase();
+            SceneBase(SceneBase&&) noexcept=default;
+            SceneBase& operator=(SceneBase&&) noexcept=default;
             /** @brief Process the scene for one frame.
              *
              * This will update all objects, draw them all onto the scene's
