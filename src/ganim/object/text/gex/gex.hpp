@@ -2,6 +2,7 @@
 #define GANIM_GEX_HPP
 
 #include <variant>
+#include <unordered_set>
 
 #include "ganim/object/text/text_helpers.hpp"
 
@@ -42,7 +43,9 @@ namespace ganim {
             };
 
             std::optional<Token> read_token();
+            CategoryCode get_category_code(std::uint32_t codepoint);
 
+            std::vector<std::unordered_set<std::uint32_t>> M_catcodes;
             std::vector<std::string> M_input;
             int M_group_index = 0;
             int M_string_index = 0;
