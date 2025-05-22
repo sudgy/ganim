@@ -4,7 +4,6 @@
 
 #include "ganim.hpp"
 
-#include "script/unicode_categories.hpp"
 #include "script/script_exception.hpp"
 
 namespace {

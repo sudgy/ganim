@@ -7,3 +7,4 @@
 #include "ganim/color.hpp"
 #include "ganim/math.hpp"
 #include "ganim/rate_functions.hpp"
+#include "ganim/unicode_categories.hpp"
