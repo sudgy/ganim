@@ -6,5 +6,6 @@
 
 extern const std::unordered_set<std::uint32_t> C_xid_start;
 extern const std::unordered_set<std::uint32_t> C_xid_continue;
+extern const std::unordered_set<std::uint32_t> unicode_letter;
 
 #endif
