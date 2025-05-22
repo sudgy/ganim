@@ -36,6 +36,7 @@ namespace ganim::rf {
         std::function<double(double)> rate_func = smoothererstep
     );
     double rush_into(double t);
+    double rush_out(double t);
 }
 
 #endif

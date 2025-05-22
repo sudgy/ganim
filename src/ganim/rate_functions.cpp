@@ -45,3 +45,8 @@ double rf::rush_into(double t)
 {
     return 2*(smoothererstep(t/2+0.5)-0.5);
 }
+
+double rf::rush_out(double t)
+{
+    return 2*smoothererstep(t/2);
+}
