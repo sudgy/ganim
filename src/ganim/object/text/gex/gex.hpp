@@ -82,6 +82,7 @@ namespace ganim {
             std::optional<Token> read_token();
             CommandToken read_escape() ;
             CategoryCode get_category_code(std::uint32_t codepoint);
+            GeXError make_error(std::string_view what) const;
 
             std::vector<std::unordered_set<std::uint32_t>> M_catcodes;
             std::vector<std::string> M_input;
@@ -90,6 +91,9 @@ namespace ganim {
             TokenList M_next_tokens;
             int M_group_index = 0;
             int M_string_index = 0;
+            int M_last_group_index = -1;
+            int M_last_string_index = -1;
+            bool M_expanding = false;
     };
 }
 

@@ -13,6 +13,7 @@ using namespace ganim;
 
 GeX::GeX(const std::vector<std::string>& input) : M_input(input)
 {
+    if (M_input.size() == 0) throw std::runtime_error("No input passed to GeX");
     M_catcodes.resize(16);
     M_catcodes[0] = {U'\\'};
     M_catcodes[1] = {U'{'};
@@ -67,7 +68,7 @@ void GeX::process_command_token(CommandToken tok, int group)
 {
     auto it = M_macros.find(tok.command);
     if (it == M_macros.end()) {
-        throw GeXError(M_group_index, M_string_index,
+        throw make_error(
             std::format("Undefined control sequence \"{}\"", tok.command_utf8));
     }
     auto& macro = it->second;
@@ -76,7 +77,7 @@ void GeX::process_command_token(CommandToken tok, int group)
     while (delim_index < ssize(macro.delimiters)) {
         auto token = read_token();
         if (!token) {
-            throw GeXError(M_group_index, M_string_index,
+            throw make_error(
                 std::format("Input ended while processing macro \"{}\"",
                     tok.command_utf8));
         }
@@ -86,9 +87,11 @@ void GeX::process_command_token(CommandToken tok, int group)
                 last_space = true;
                 tok->codepoint = U' ';
             }
+            else last_space = false;
         }
+        else last_space = false;
         if (token->value != macro.delimiters[delim_index].value) {
-            throw GeXError(M_group_index, M_string_index,
+            throw make_error(
                 std::format("Use of \\{} does not match its definition",
                     tok.command_utf8));
         }
@@ -118,15 +121,13 @@ bool GeX::process_built_in(const std::u32string& command, int group)
 void GeX::process_definition()
 {
     auto error1 = [&]{
-        return GeXError(M_group_index, M_string_index,
-                "Expected control sequence");
+        return make_error("Expected control sequence");
     };
     auto name_token = read_token();
-    if (!name_token) error1();
+    if (!name_token) throw error1();
     auto name = std::visit(overloaded{
         [&](CharacterToken&) -> std::u32string {
             throw error1();
-            return U"";
         },
         [&](CommandToken& command_token) {
             return command_token.command;
@@ -139,14 +140,13 @@ void GeX::process_definition()
     while (true) {
         auto token = read_token();
         if (!token) {
-            throw GeXError(M_group_index, M_string_index,
+            throw make_error(
                 "End of input reached while processing a definition");
         }
         if (auto tok = std::get_if<CharacterToken>(&token->value)) {
             if (tok->catcode == CategoryCode::StartGroup) break;
             else if (tok->catcode == CategoryCode::EndGroup) {
-                throw GeXError(M_group_index, M_string_index,
-                        "Unexpected end group token");
+                throw make_error("Unexpected end group token");
             }
             else if (tok->catcode == CategoryCode::Spacer) {
                 if (last_space) continue;
@@ -164,7 +164,7 @@ void GeX::process_definition()
     while (group_level != 0) {
         auto token = read_token();
         if (!token) {
-            throw GeXError(M_group_index, M_string_index,
+            throw make_error(
                 "End of input reached while processing a definition");
         }
         if (auto tok = std::get_if<CharacterToken>(&token->value)) {
@@ -204,10 +204,14 @@ std::optional<std::uint32_t> GeX::read_character()
 std::optional<GeX::Token> GeX::read_token()
 {
     if (!M_next_tokens.empty()) {
+        M_expanding = true;
         auto result = M_next_tokens.front();
         M_next_tokens.pop_front();
         return result;
     }
+    M_expanding = false;
+    M_last_group_index = M_group_index;
+    M_last_string_index = M_string_index;
     return read_character().transform([&](auto codepoint) {
         auto category_code = get_category_code(codepoint);
         if (category_code == CategoryCode::Escape) {
@@ -267,4 +271,21 @@ GeX::CategoryCode GeX::get_category_code(std::uint32_t codepoint)
         if (M_catcodes[i].contains(codepoint)) return CategoryCode(i);
     }
     return CategoryCode::Other;
+}
+
+GeXError GeX::make_error(std::string_view what) const
+{
+    auto group_index = M_last_group_index;
+    auto string_index = M_last_string_index;
+    if (group_index == ssize(M_input)) {
+        --group_index;
+        string_index = ssize(M_input.back());
+    }
+    if (M_expanding) {
+        // Yes I'm passing a temporary string as a string_view, but the string
+        // is immediately copied in GeXError
+        auto new_what = std::format("Error during macro expansion: {}", what);
+        return GeXError(group_index, string_index, new_what);
+    }
+    else return GeXError(group_index, string_index, what);
 }

@@ -57,7 +57,7 @@ TEST_CASE("Basic macros", "[object][text][gex]") {
 
     auto bad = GeX({"\\oopsy"});
     REQUIRE_THROWS_WITH(bad.get_output(), "GeX compilation error in group 0 "
-            "index 6: Undefined control sequence \"oopsy\"");
+            "index 0: Undefined control sequence \"oopsy\"");
 }
 
 TEST_CASE("Defining basic macros", "[object][text][gex]") {
@@ -71,6 +71,22 @@ TEST_CASE("Defining basic macros", "[object][text][gex]") {
     for (int i = 0; i < ssize(glyphs1); ++i) {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
+
+    auto bad1 = GeX({"\\def"});
+    REQUIRE_THROWS_WITH(bad1.get_output(), "GeX compilation error in group 0 "
+            "index 4: Expected control sequence");
+    auto bad2 = GeX({"\\def aa"});
+    REQUIRE_THROWS_WITH(bad2.get_output(), "GeX compilation error in group 0 "
+            "index 5: Expected control sequence");
+    auto bad3 = GeX({"\\def\\aa"});
+    REQUIRE_THROWS_WITH(bad3.get_output(), "GeX compilation error in group 0 "
+            "index 7: End of input reached while processing a definition");
+    auto bad4 = GeX({"\\def\\aa}"});
+    REQUIRE_THROWS_WITH(bad4.get_output(), "GeX compilation error in group 0 "
+            "index 7: Unexpected end group token");
+    auto bad5 = GeX({"\\def\\aa{"});
+    REQUIRE_THROWS_WITH(bad5.get_output(), "GeX compilation error in group 0 "
+            "index 8: End of input reached while processing a definition");
 }
 
 TEST_CASE("Macro expansion order", "[object][text][gex]") {
@@ -84,6 +100,10 @@ TEST_CASE("Macro expansion order", "[object][text][gex]") {
     for (int i = 0; i < ssize(glyphs1); ++i) {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
+
+    auto bad = GeX({"\\def\\aa{\\def b}\\aa"});
+    REQUIRE_THROWS_WITH(bad.get_output(), "GeX compilation error in group 0 "
+        "index 15: Error during macro expansion: Expected control sequence");
 }
 
 TEST_CASE("Macros with delimiters", "[object][text][gex]") {
@@ -97,4 +117,11 @@ TEST_CASE("Macros with delimiters", "[object][text][gex]") {
     for (int i = 0; i < ssize(glyphs1); ++i) {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
+
+    auto bad1 = GeX({"\\def\\aa|{b}\\aa"});
+    REQUIRE_THROWS_WITH(bad1.get_output(), "GeX compilation error in group 0 "
+            "index 14: Input ended while processing macro \"aa\"");
+    auto bad2 = GeX({"\\def\\aa|{b}\\aa["});
+    REQUIRE_THROWS_WITH(bad2.get_output(), "GeX compilation error in group 0 "
+            "index 14: Use of \\aa does not match its definition");
 }
