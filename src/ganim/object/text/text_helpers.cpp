@@ -190,13 +190,25 @@ std::vector<PositionedGlyph> ganim::shape_text(
     const std::vector<std::u32string>& text
 )
 {
-    auto buffer = hb_buffer_create();
     auto group_index = 0;
+    auto new_text = std::vector<std::pair<std::u32string, int>>();
+    new_text.reserve(text.size());
     for (auto& string : text) {
+        new_text.emplace_back(string, group_index++);
+    }
+    return shape_text_manual_groups(font, new_text);
+}
+
+std::vector<PositionedGlyph> ganim::shape_text_manual_groups(
+    Font& font,
+    const std::vector<std::pair<std::u32string, int>>& text
+)
+{
+    auto buffer = hb_buffer_create();
+    for (auto& [string, group_index] : text) {
         for (auto codepoint : string) {
             hb_buffer_add(buffer, codepoint, group_index);
         }
-        ++group_index;
     }
     hb_buffer_set_content_type(buffer, HB_BUFFER_CONTENT_TYPE_UNICODE);
     hb_buffer_guess_segment_properties(buffer);

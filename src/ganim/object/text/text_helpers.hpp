@@ -112,6 +112,17 @@ namespace ganim {
         Font& font,
         const std::vector<std::u32string>& text
     );
+    /** @brief Shape a list of strings with grouping done manually.
+     *
+     * This function is similar to @ref shape_text(Font&, const
+     * std::vector<std::u32string>&) except that the group each string is in is
+     * passed manually into the function.  Each element of the input vector is a
+     * pair of the string and the input group.
+     */
+    std::vector<PositionedGlyph> shape_text_manual_groups(
+        Font& font,
+        const std::vector<std::pair<std::u32string, int>>& text
+    );
     /** @brief Get the OpenGL texture ID used for text.
      */
     unsigned get_text_texture();
