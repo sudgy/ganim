@@ -69,8 +69,10 @@ namespace ganim {
             std::optional<std::uint32_t> read_character();
             void process_character_token(CharacterToken tok, int group);
             void process_command_token(CommandToken tok, int group);
+            bool process_built_in(const std::u32string& command, int group);
+            void process_definition();
             std::optional<Token> read_token();
-            Token read_escape() ;
+            CommandToken read_escape() ;
             CategoryCode get_category_code(std::uint32_t codepoint);
 
             std::vector<std::unordered_set<std::uint32_t>> M_catcodes;

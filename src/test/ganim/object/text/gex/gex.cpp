@@ -59,3 +59,19 @@ TEST_CASE("Basic macros", "[object][text][gex]") {
     REQUIRE_THROWS_WITH(bad.get_output(), "GeX compilation error in group 0 "
             "index 6: Undefined control sequence \"oopsy\"");
 }
+
+TEST_CASE("Defining basic macros", "[object][text][gex]") {
+    auto gex = GeX({"a\\def\\aa{b}", "\\aa"});
+    auto glyphs1 = gex.get_output();
+
+    auto& font = get_font("fonts/NewCM10-Regular.otf");
+    auto glyphs2 = shape_text(font, {U"a", U"b"});
+}
+
+TEST_CASE("Macro expansion order", "[object][text][gex]") {
+    auto gex = GeX({"\\def\\aa{a\\def\\aa{b}}", "\\aa", "\\aa"});
+    auto glyphs1 = gex.get_output();
+
+    auto& font = get_font("fonts/NewCM10-Regular.otf");
+    auto glyphs2 = shape_text(font, {U"", U"a", U"b"});
+}

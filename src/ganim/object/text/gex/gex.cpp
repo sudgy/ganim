@@ -37,6 +37,10 @@ GeX::GeX(const std::vector<std::string>& input) : M_input(input)
     M_macros[U"^"] = {{CharacterToken(U'^', CategoryCode::Other)}};
     M_macros[U"_"] = {{CharacterToken(U'_', CategoryCode::Other)}};
     M_macros[U"%"] = {{CharacterToken(U'%', CategoryCode::Other)}};
+
+    // Special commands, when an empty token list is found it will try to match
+    // up to one of these
+    M_macros[U"def"] = {};
 }
 
 std::vector<PositionedGlyph> GeX::get_output()
@@ -64,13 +68,82 @@ void GeX::process_command_token(CommandToken tok, int group)
     auto it = M_macros.find(tok.command);
     if (it == M_macros.end()) {
         throw GeXError(M_group_index, M_string_index,
-            std::format("Undefined control sequence \"{}\"",tok.command_utf8));
+            std::format("Undefined control sequence \"{}\"", tok.command_utf8));
     }
     auto& tokens = it->second;
+    if (tokens.empty()) {
+        if (process_built_in(tok.command, group)) return;
+    }
     M_next_tokens.prepend_range(tokens);
     for (int i = 0; i < ssize(tokens); ++i) {
         M_next_tokens[i].group = group;
     }
+}
+
+bool GeX::process_built_in(const std::u32string& command, int group)
+{
+    // I don't know if I'll ever need this but I'll keep it as a parameter just
+    // in case
+    (void)group;
+    if (command == U"def") {
+        process_definition();
+        return true;
+    }
+    return false;
+}
+
+void GeX::process_definition()
+{
+    auto error1 = [&]{
+        return GeXError(M_group_index, M_string_index,
+                "Expected control sequence");
+    };
+    auto name_token = read_token();
+    if (!name_token) error1();
+    auto name = std::visit(overloaded{
+        [&](CharacterToken&) -> std::u32string {
+            throw error1();
+            return U"";
+        },
+        [&](CommandToken& command_token) {
+            return command_token.command;
+        }
+    }, name_token->value);
+
+    // TODO: Delimiters and parameters
+    auto error2 = [&]{
+        return GeXError(M_group_index, M_string_index,
+                "Expected begin group token");
+    };
+    auto begin_group = read_token();
+    if (!begin_group) throw error2();
+    std::visit(overloaded{
+        [&](CharacterToken& tok) {
+            if (tok.catcode != CategoryCode::StartGroup) throw error2();
+        },
+        [&](CommandToken&) {
+            throw error2();
+        }
+    }, begin_group->value);
+
+    auto group_level = 1;
+    auto command_list = TokenList();
+    while (group_level != 0) {
+        auto token = read_token();
+        if (!token) {
+            throw GeXError(M_group_index, M_string_index,
+                "End of input reached while processing a definition");
+        }
+        if (auto tok = std::get_if<CharacterToken>(&token->value)) {
+            if (tok->catcode == CategoryCode::StartGroup) ++group_level;
+            else if (tok->catcode == CategoryCode::EndGroup) --group_level;
+        }
+        // Don't add the final end group
+        if (group_level != 0) {
+            command_list.push_back(*token);
+        }
+    }
+    M_macros[name] = std::move(command_list);
 }
 
 std::optional<std::uint32_t> GeX::read_character()
@@ -105,7 +178,7 @@ std::optional<GeX::Token> GeX::read_token()
     return read_character().transform([&](auto codepoint) {
         auto category_code = get_category_code(codepoint);
         if (category_code == CategoryCode::Escape) {
-            return read_escape();
+            return Token(read_escape(), M_group_index);
         }
         else return Token(
             CharacterToken(codepoint, get_category_code(codepoint)),
@@ -114,7 +187,7 @@ std::optional<GeX::Token> GeX::read_token()
     });
 }
 
-GeX::Token GeX::read_escape()
+GeX::CommandToken GeX::read_escape()
 {
     auto group = std::string_view(M_input[M_group_index]);
     auto name = std::u32string();
@@ -151,7 +224,7 @@ GeX::Token GeX::read_escape()
         }
         else break;
     }
-    return Token(CommandToken(name, std::string(name_utf8)), M_group_index);
+    return CommandToken(name, std::string(name_utf8));
 }
 
 GeX::CategoryCode GeX::get_category_code(std::uint32_t codepoint)
