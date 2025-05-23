@@ -66,6 +66,11 @@ TEST_CASE("Defining basic macros", "[object][text][gex]") {
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs2 = shape_text(font, {U"a", U"b"});
+
+    REQUIRE(glyphs1.size() == glyphs2.size());
+    for (int i = 0; i < ssize(glyphs1); ++i) {
+        test_glyph(glyphs1[i], glyphs2[i], i);
+    }
 }
 
 TEST_CASE("Macro expansion order", "[object][text][gex]") {
@@ -74,4 +79,22 @@ TEST_CASE("Macro expansion order", "[object][text][gex]") {
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs2 = shape_text(font, {U"", U"a", U"b"});
+
+    REQUIRE(glyphs1.size() == glyphs2.size());
+    for (int i = 0; i < ssize(glyphs1); ++i) {
+        test_glyph(glyphs1[i], glyphs2[i], i);
+    }
+}
+
+TEST_CASE("Macros with delimiters", "[object][text][gex]") {
+    auto gex = GeX({"a  \\def\\aa |  |{b}", "\\aa| |"});
+    auto glyphs1 = gex.get_output();
+
+    auto& font = get_font("fonts/NewCM10-Regular.otf");
+    auto glyphs2 = shape_text(font, {U"a  ", U"b"});
+
+    REQUIRE(glyphs1.size() == glyphs2.size());
+    for (int i = 0; i < ssize(glyphs1); ++i) {
+        test_glyph(glyphs1[i], glyphs2[i], i);
+    }
 }

@@ -29,14 +29,14 @@ GeX::GeX(const std::vector<std::string>& input) : M_input(input)
     M_catcodes[14] = {U'%'};
 
     M_macros[U"relax"] = {};
-    M_macros[U"{"] = {{CharacterToken(U'{', CategoryCode::Other)}};
-    M_macros[U"}"] = {{CharacterToken(U'}', CategoryCode::Other)}};
-    M_macros[U"$"] = {{CharacterToken(U'$', CategoryCode::Other)}};
-    M_macros[U"&"] = {{CharacterToken(U'&', CategoryCode::Other)}};
-    M_macros[U"#"] = {{CharacterToken(U'#', CategoryCode::Other)}};
-    M_macros[U"^"] = {{CharacterToken(U'^', CategoryCode::Other)}};
-    M_macros[U"_"] = {{CharacterToken(U'_', CategoryCode::Other)}};
-    M_macros[U"%"] = {{CharacterToken(U'%', CategoryCode::Other)}};
+    M_macros[U"{"] = {{}, {{CharacterToken(U'{', CategoryCode::Other)}}};
+    M_macros[U"}"] = {{}, {{CharacterToken(U'}', CategoryCode::Other)}}};
+    M_macros[U"$"] = {{}, {{CharacterToken(U'$', CategoryCode::Other)}}};
+    M_macros[U"&"] = {{}, {{CharacterToken(U'&', CategoryCode::Other)}}};
+    M_macros[U"#"] = {{}, {{CharacterToken(U'#', CategoryCode::Other)}}};
+    M_macros[U"^"] = {{}, {{CharacterToken(U'^', CategoryCode::Other)}}};
+    M_macros[U"_"] = {{}, {{CharacterToken(U'_', CategoryCode::Other)}}};
+    M_macros[U"%"] = {{}, {{CharacterToken(U'%', CategoryCode::Other)}}};
 
     // Special commands, when an empty token list is found it will try to match
     // up to one of these
@@ -70,12 +70,35 @@ void GeX::process_command_token(CommandToken tok, int group)
         throw GeXError(M_group_index, M_string_index,
             std::format("Undefined control sequence \"{}\"", tok.command_utf8));
     }
-    auto& tokens = it->second;
-    if (tokens.empty()) {
+    auto& macro = it->second;
+    int delim_index = 0;
+    bool last_space = false;
+    while (delim_index < ssize(macro.delimiters)) {
+        auto token = read_token();
+        if (!token) {
+            throw GeXError(M_group_index, M_string_index,
+                std::format("Input ended while processing macro \"{}\"",
+                    tok.command_utf8));
+        }
+        if (auto tok = std::get_if<CharacterToken>(&token->value)) {
+            if (tok->catcode == CategoryCode::Spacer) {
+                if (last_space) continue;
+                last_space = true;
+                tok->codepoint = U' ';
+            }
+        }
+        if (token->value != macro.delimiters[delim_index].value) {
+            throw GeXError(M_group_index, M_string_index,
+                std::format("Use of \\{} does not match its definition",
+                    tok.command_utf8));
+        }
+        ++delim_index;
+    }
+    if (macro.replacement_text.empty()) {
         if (process_built_in(tok.command, group)) return;
     }
-    M_next_tokens.prepend_range(tokens);
-    for (int i = 0; i < ssize(tokens); ++i) {
+    M_next_tokens.prepend_range(macro.replacement_text);
+    for (int i = 0; i < ssize(macro.replacement_text); ++i) {
         M_next_tokens[i].group = group;
     }
 }
@@ -110,21 +133,31 @@ void GeX::process_definition()
         }
     }, name_token->value);
 
-    // TODO: Delimiters and parameters
-    auto error2 = [&]{
-        return GeXError(M_group_index, M_string_index,
-                "Expected begin group token");
-    };
-    auto begin_group = read_token();
-    if (!begin_group) throw error2();
-    std::visit(overloaded{
-        [&](CharacterToken& tok) {
-            if (tok.catcode != CategoryCode::StartGroup) throw error2();
-        },
-        [&](CommandToken&) {
-            throw error2();
+    // TODO: Parameters
+    auto delimiters = TokenList();
+    bool last_space = false;
+    while (true) {
+        auto token = read_token();
+        if (!token) {
+            throw GeXError(M_group_index, M_string_index,
+                "End of input reached while processing a definition");
         }
-    }, begin_group->value);
+        if (auto tok = std::get_if<CharacterToken>(&token->value)) {
+            if (tok->catcode == CategoryCode::StartGroup) break;
+            else if (tok->catcode == CategoryCode::EndGroup) {
+                throw GeXError(M_group_index, M_string_index,
+                        "Unexpected end group token");
+            }
+            else if (tok->catcode == CategoryCode::Spacer) {
+                if (last_space) continue;
+                last_space = true;
+                tok->codepoint = U' ';
+            }
+            else last_space = false;
+        }
+        else last_space = false;
+        delimiters.push_back(*token);
+    }
 
     auto group_level = 1;
     auto command_list = TokenList();
@@ -143,7 +176,7 @@ void GeX::process_definition()
             command_list.push_back(*token);
         }
     }
-    M_macros[name] = std::move(command_list);
+    M_macros[name] = Macro(std::move(delimiters), std::move(command_list));
 }
 
 std::optional<std::uint32_t> GeX::read_character()
