@@ -47,21 +47,31 @@ GeX::GeX(const std::vector<std::string>& input) : M_input(input)
 std::vector<PositionedGlyph> GeX::get_output()
 {
     auto& font = get_font("fonts/NewCM10-Regular.otf");
-    M_output_codepoints.resize(M_input.size());
+    M_output_codepoints.reserve(M_input.size());
     while (auto token = read_token()) {
         std::visit(overloaded{
             [&](CharacterToken& tok)
                 {process_character_token(tok, token->group);},
             [&](CommandToken& tok)
-                {process_command_token(tok, token->group);}
+                {process_command_token(tok, token->group);},
+            [&](ParameterToken&)
+                {throw make_error("Unexpected parameter token");}
         }, token->value);
     }
-    return shape_text(font, M_output_codepoints);
+    return shape_text_manual_groups(font, M_output_codepoints);
 }
 
 void GeX::process_character_token(CharacterToken tok, int group)
 {
-    M_output_codepoints[group].push_back(tok.codepoint);
+    if (M_output_codepoints.empty()) {
+        M_output_codepoints.emplace_back(U"", group);
+    }
+    else {
+        if (M_output_codepoints.back().second != group) {
+            M_output_codepoints.emplace_back(U"", group);
+        }
+    }
+    M_output_codepoints.back().first.push_back(tok.codepoint);
 }
 
 void GeX::process_command_token(CommandToken tok, int group)
@@ -74,36 +84,143 @@ void GeX::process_command_token(CommandToken tok, int group)
     auto& macro = it->second;
     int delim_index = 0;
     bool last_space = false;
-    while (delim_index < ssize(macro.delimiters)) {
-        auto token = read_token();
-        if (!token) {
-            throw make_error(
-                std::format("Input ended while processing macro \"{}\"",
-                    tok.command_utf8));
-        }
-        if (auto tok = std::get_if<CharacterToken>(&token->value)) {
-            if (tok->catcode == CategoryCode::Spacer) {
-                if (last_space) continue;
-                last_space = true;
-                tok->codepoint = U' ';
+    auto parameters = std::vector<TokenList>();
+    auto get_token = [&] -> Token {
+        while (true) {
+            auto token = read_token();
+            if (!token) {
+                throw make_error(
+                    std::format("Input ended while processing macro \"{}\"",
+                        tok.command_utf8));
+            }
+            if (auto tok = std::get_if<CharacterToken>(&token->value)) {
+                if (tok->catcode == CategoryCode::Spacer) {
+                    if (last_space) continue;
+                    last_space = true;
+                    tok->codepoint = U' ';
+                }
+                else last_space = false;
             }
             else last_space = false;
+            return *token;
         }
-        else last_space = false;
-        if (token->value != macro.delimiters[delim_index].value) {
+    };
+    // Read initial delimiters
+    while (delim_index < ssize(macro.delimiters)) {
+        if (std::holds_alternative<ParameterToken>(
+                    macro.delimiters[delim_index].value)) {
+            break;
+        }
+        auto token = get_token();
+        if (token.value != macro.delimiters[delim_index].value) {
             throw make_error(
                 std::format("Use of \\{} does not match its definition",
                     tok.command_utf8));
         }
         ++delim_index;
     }
+    // Read parameters
+    while (delim_index < ssize(macro.delimiters)) {
+        auto& parameter_token = std::get<ParameterToken>(
+                macro.delimiters[delim_index].value);
+        auto& parameter_tokens = parameters.emplace_back();
+        auto group_level = 0;
+        auto common_process = [&] -> Token {
+            auto token = get_token();
+            if (auto tok = std::get_if<CharacterToken>(&token.value)) {
+                if (tok->codepoint == U'{') ++group_level;
+                if (tok->codepoint == U'}') --group_level;
+            }
+            if (group_level < 0) {
+                throw make_error("Unexpected end of group");
+            }
+            parameter_tokens.push_back(token);
+            return token;
+        };
+        if (parameter_token.delimited) {
+            auto delims = TokenList();
+            ++delim_index;
+            while (delim_index < ssize(macro.delimiters)) {
+                auto& token = macro.delimiters[delim_index];
+                if (std::holds_alternative<ParameterToken>(token.value)) {
+                    break;
+                }
+                else {
+                    delims.push_back(token);
+                    ++delim_index;
+                }
+            }
+            while (true) {
+                common_process();
+                if (group_level == 0) {
+                    auto diff = ssize(parameter_tokens) - ssize(delims);
+                    if (diff >= 0) {
+                        bool all_equal = true;
+                        for (int i = 0; i < ssize(delims); ++i) {
+                            if (parameter_tokens[i + diff] != delims[i]) {
+                                all_equal = false;
+                                break;
+                            }
+                        }
+                        if (all_equal) break;
+                    }
+                }
+            }
+            parameter_tokens.resize(parameter_tokens.size() - delims.size());
+        }
+        // Undelimited token
+        else {
+            do {
+                auto token = common_process();
+                if (auto tok = std::get_if<CharacterToken>(&token.value)) {
+                    if (tok->catcode == CategoryCode::Spacer) {
+                        parameter_tokens.clear();
+                    }
+                }
+            } while (group_level != 0 and !parameter_tokens.empty());
+            ++delim_index;
+        }
+        // Kill outer group
+        if (!parameter_tokens.empty()) {
+            auto tok1 = std::get_if<CharacterToken>(
+                    &parameter_tokens.front().value);
+            auto tok2 = std::get_if<CharacterToken>(
+                    &parameter_tokens.back().value);
+            if (tok1 and tok2 and tok1->catcode == CategoryCode::StartGroup
+                              and tok2->catcode == CategoryCode::EndGroup) {
+                parameter_tokens.pop_front();
+                parameter_tokens.pop_back();
+            }
+        }
+    }
     if (macro.replacement_text.empty()) {
         if (process_built_in(tok.command, group)) return;
     }
-    M_next_tokens.prepend_range(macro.replacement_text);
+    auto actual_expansion = TokenList();
+    auto add_replacement_text = [&](int start, int end) {
+        if (start != end) {
+            auto i = ssize(actual_expansion);
+            actual_expansion.insert(
+                actual_expansion.end(),
+                macro.replacement_text.begin() + start,
+                macro.replacement_text.begin() + end
+            );
+            for (; i < ssize(actual_expansion); ++i) {
+                actual_expansion[i].group = group;
+            }
+        }
+    };
+    auto start = 0;
     for (int i = 0; i < ssize(macro.replacement_text); ++i) {
-        M_next_tokens[i].group = group;
+        if (auto param_tok = std::get_if<ParameterToken>(
+                    &macro.replacement_text[i].value)) {
+            add_replacement_text(start, i);
+            actual_expansion.append_range(parameters[param_tok->number - 1]);
+            start = i + 1;
+        }
     }
+    add_replacement_text(start, ssize(macro.replacement_text));
+    M_next_tokens.prepend_range(actual_expansion);
 }
 
 bool GeX::process_built_in(const std::u32string& command, int group)
@@ -120,23 +237,34 @@ bool GeX::process_built_in(const std::u32string& command, int group)
 
 void GeX::process_definition()
 {
-    auto error1 = [&]{
+    auto name = process_definition_name();
+    auto [delimiters, parameter_number] = process_definition_delimiters();
+    auto command_list = process_definition_replacement(parameter_number);
+    M_macros[name] = Macro(std::move(delimiters), std::move(command_list));
+}
+
+std::u32string GeX::process_definition_name()
+{
+    auto error = [&]{
         return make_error("Expected control sequence");
     };
     auto name_token = read_token();
-    if (!name_token) throw error1();
-    auto name = std::visit(overloaded{
-        [&](CharacterToken&) -> std::u32string {
-            throw error1();
-        },
+    if (!name_token) throw error();
+    return std::visit(overloaded{
         [&](CommandToken& command_token) {
             return command_token.command;
+        },
+        [&](auto&) -> std::u32string {
+            throw error();
         }
     }, name_token->value);
+}
 
-    // TODO: Parameters
+std::pair<GeX::TokenList, int> GeX::process_definition_delimiters()
+{
     auto delimiters = TokenList();
     bool last_space = false;
+    int last_parameter = 0;
     while (true) {
         auto token = read_token();
         if (!token) {
@@ -155,10 +283,34 @@ void GeX::process_definition()
             }
             else last_space = false;
         }
-        else last_space = false;
+        else {
+            last_space = false;
+            if (auto tok = std::get_if<ParameterToken>(&token->value)) {
+                if (tok->number != last_parameter + 1) {
+                    throw make_error(
+                            "Parameters must be numbered consecutively");
+                }
+                last_parameter = tok->number;
+            }
+        }
         delimiters.push_back(*token);
     }
+    for (int i = 0; i < ssize(delimiters); ++i) {
+        if (auto tok = std::get_if<ParameterToken>(&delimiters[i].value)) {
+            if (i == ssize(delimiters) - 1) {
+                tok->delimited = false;
+            }
+            else if (std::holds_alternative<ParameterToken>(
+                        delimiters[i+1].value)) {
+                tok->delimited = false;
+            }
+        }
+    }
+    return {delimiters, last_parameter};
+}
 
+GeX::TokenList GeX::process_definition_replacement(int parameter_number)
+{
     auto group_level = 1;
     auto command_list = TokenList();
     while (group_level != 0) {
@@ -171,12 +323,17 @@ void GeX::process_definition()
             if (tok->catcode == CategoryCode::StartGroup) ++group_level;
             else if (tok->catcode == CategoryCode::EndGroup) --group_level;
         }
+        if (auto tok = std::get_if<ParameterToken>(&token->value)) {
+            if (tok->number > parameter_number) {
+                throw make_error("Illegal parameter number");
+            }
+        }
         // Don't add the final end group
         if (group_level != 0) {
             command_list.push_back(*token);
         }
     }
-    M_macros[name] = Macro(std::move(delimiters), std::move(command_list));
+    return command_list;
 }
 
 std::optional<std::uint32_t> GeX::read_character()
@@ -216,6 +373,9 @@ std::optional<GeX::Token> GeX::read_token()
         auto category_code = get_category_code(codepoint);
         if (category_code == CategoryCode::Escape) {
             return Token(read_escape(), M_group_index);
+        }
+        else if (category_code == CategoryCode::MacroParameter) {
+            return Token(read_parameter_token(), M_group_index);
         }
         else return Token(
             CharacterToken(codepoint, get_category_code(codepoint)),
@@ -262,6 +422,20 @@ GeX::CommandToken GeX::read_escape()
         else break;
     }
     return CommandToken(name, std::string(name_utf8));
+}
+
+GeX::ParameterToken GeX::read_parameter_token()
+{
+    auto number = read_character();
+    auto error = [&]{
+        return make_error(
+            "Expected integer from 1 to 9 after macro parameter token");
+    };
+    if (!number) throw error();
+    if (*number >= U'1' and *number <= U'9') {
+        return ParameterToken(*number - U'0', true);
+    }
+    else throw error();
 }
 
 GeX::CategoryCode GeX::get_category_code(std::uint32_t codepoint)
