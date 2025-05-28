@@ -31,8 +31,7 @@ namespace {
 }
 
 TEST_CASE("GeX Hello", "[object][text][gex]") {
-    auto gex = GeX({"He", "llo"});
-    auto glyphs1 = gex.get_output();
+    auto glyphs1 = gex_render({"He", "llo"});
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs2 = shape_text(font, {U"He", U"llo"});
@@ -44,8 +43,7 @@ TEST_CASE("GeX Hello", "[object][text][gex]") {
 }
 
 TEST_CASE("Basic macros", "[object][text][gex]") {
-    auto gex = GeX({"A", "\\{\\%", "B\\relax C"});
-    auto glyphs1 = gex.get_output();
+    auto glyphs1 = gex_render({"A", "\\{\\%", "B\\relax C"});
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs2 = shape_text(font, {U"A", U"{%", U"BC"});
@@ -55,14 +53,12 @@ TEST_CASE("Basic macros", "[object][text][gex]") {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
 
-    auto bad = GeX({"\\oopsy"});
-    REQUIRE_THROWS_WITH(bad.get_output(), "GeX compilation error in group 0 "
-            "index 0: Undefined control sequence \"oopsy\"");
+    REQUIRE_THROWS_WITH(gex_render({"\\oopsy"}), "GeX compilation error in "
+            "group 0 index 0: Undefined control sequence \"oopsy\"");
 }
 
 TEST_CASE("Defining basic macros", "[object][text][gex]") {
-    auto gex = GeX({"a\\def\\aa{b}", "\\aa"});
-    auto glyphs1 = gex.get_output();
+    auto glyphs1 = gex_render({"a\\def\\aa{b}", "\\aa"});
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs2 = shape_text(font, {U"a", U"b"});
@@ -72,26 +68,22 @@ TEST_CASE("Defining basic macros", "[object][text][gex]") {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
 
-    auto bad1 = GeX({"\\def"});
-    REQUIRE_THROWS_WITH(bad1.get_output(), "GeX compilation error in group 0 "
-            "index 4: Expected control sequence");
-    auto bad2 = GeX({"\\def aa"});
-    REQUIRE_THROWS_WITH(bad2.get_output(), "GeX compilation error in group 0 "
-            "index 5: Expected control sequence");
-    auto bad3 = GeX({"\\def\\aa"});
-    REQUIRE_THROWS_WITH(bad3.get_output(), "GeX compilation error in group 0 "
-            "index 7: End of input reached while processing a definition");
-    auto bad4 = GeX({"\\def\\aa}"});
-    REQUIRE_THROWS_WITH(bad4.get_output(), "GeX compilation error in group 0 "
-            "index 7: Unexpected end group token");
-    auto bad5 = GeX({"\\def\\aa{"});
-    REQUIRE_THROWS_WITH(bad5.get_output(), "GeX compilation error in group 0 "
-            "index 8: End of input reached while processing a definition");
+    REQUIRE_THROWS_WITH(gex_render({"\\def"}), "GeX compilation error in group "
+            "0 index 4: Expected control sequence");
+    REQUIRE_THROWS_WITH(gex_render({"\\def aa"}), "GeX compilation error in "
+            "group 0 index 5: Expected control sequence");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa"}), "GeX compilation error in "
+            "group 0 index 7: End of input reached while processing a "
+            "definition");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa}"}), "GeX compilation error in "
+            "group 0 index 7: Unexpected end group token");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa{"}), "GeX compilation error in "
+            "group 0 index 8: End of input reached while processing a "
+            "definition");
 }
 
 TEST_CASE("Macro expansion order", "[object][text][gex]") {
-    auto gex = GeX({"\\def\\aa{a\\def\\aa{b}}", "\\aa", "\\aa"});
-    auto glyphs1 = gex.get_output();
+    auto glyphs1 = gex_render({"\\def\\aa{a\\def\\aa{b}}", "\\aa", "\\aa"});
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs2 = shape_text(font, {U"", U"a", U"b"});
@@ -101,14 +93,13 @@ TEST_CASE("Macro expansion order", "[object][text][gex]") {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
 
-    auto bad = GeX({"\\def\\aa{\\def b}\\aa"});
-    REQUIRE_THROWS_WITH(bad.get_output(), "GeX compilation error in group 0 "
-        "index 15: Error during macro expansion: Expected control sequence");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa{\\def b}\\aa"}), "GeX "
+        "compilation error in group 0 index 15: Error during macro expansion: "
+        "Expected control sequence");
 }
 
 TEST_CASE("Macros with delimiters", "[object][text][gex]") {
-    auto gex = GeX({"a  \\def\\aa |  |{b}", "\\aa| |"});
-    auto glyphs1 = gex.get_output();
+    auto glyphs1 = gex_render({"a  \\def\\aa |  |{b}", "\\aa| |"});
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs2 = shape_text(font, {U"a  ", U"b"});
@@ -118,26 +109,26 @@ TEST_CASE("Macros with delimiters", "[object][text][gex]") {
         test_glyph(glyphs1[i], glyphs2[i], i);
     }
 
-    auto bad1 = GeX({"\\def\\aa|{b}\\aa"});
-    REQUIRE_THROWS_WITH(bad1.get_output(), "GeX compilation error in group 0 "
-            "index 14: Input ended while processing macro \"aa\"");
-    auto bad2 = GeX({"\\def\\aa|{b}\\aa["});
-    REQUIRE_THROWS_WITH(bad2.get_output(), "GeX compilation error in group 0 "
-            "index 14: Use of \\aa does not match its definition");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa|{b}\\aa"}), "GeX compilation "
+            "error in group 0 index 14: Input ended while processing macro "
+            "\"aa\"");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa|{b}\\aa["}), "GeX compilation "
+            "error in group 0 index 14: Use of \\aa does not match its "
+            "definition");
 }
 
 TEST_CASE("Macros with parameters", "[object][text][gex]") {
-    auto gex1 = GeX({R"(\def\aa#1{a#1}\aa b)"});
-    auto gex2 = GeX({R"(\def\aa#1{a#1}\aa{b})"});
-    auto gex3 = GeX({R"(\def\aa#1{a#1}\aa{bb})"});
-    auto gex4 = GeX({R"(\def\aa#1#2{a#1b#2}\aa c d)"});
-    auto gex5 = GeX({R"(\def\aa#1#2{a#1b#2}\aa{cc}{dd})"});
-    auto gex6 = GeX({R"(\def\aa|#1 #2|{a#1b#2}\aa|cc dd|)"});
-    auto gex7 = GeX({R"(\def\aa|#1#2|{a#1b#2}\aa|cc dd|)"});
-    auto gex8 = GeX({R"(\def\aa|#1|{a#1b}\aa||)"});
-    auto gex9 = GeX({R"(\def\aa#1#2{a#1b#2c}\aa)", "{d}", "{e}"});
-    auto gex10 = GeX({R"(\def\aa#1,#2{a#1b#2}\aa{c,d},e)"});
-    auto gex11 = GeX({
+    auto gex1_glyphs = gex_render({R"(\def\aa#1{a#1}\aa b)"});
+    auto gex2_glyphs = gex_render({R"(\def\aa#1{a#1}\aa{b})"});
+    auto gex3_glyphs = gex_render({R"(\def\aa#1{a#1}\aa{bb})"});
+    auto gex4_glyphs = gex_render({R"(\def\aa#1#2{a#1b#2}\aa c d)"});
+    auto gex5_glyphs = gex_render({R"(\def\aa#1#2{a#1b#2}\aa{cc}{dd})"});
+    auto gex6_glyphs = gex_render({R"(\def\aa|#1 #2|{a#1b#2}\aa|cc dd|)"});
+    auto gex7_glyphs = gex_render({R"(\def\aa|#1#2|{a#1b#2}\aa|cc dd|)"});
+    auto gex8_glyphs = gex_render({R"(\def\aa|#1|{a#1b}\aa||)"});
+    auto gex9_glyphs = gex_render({R"(\def\aa#1#2{a#1b#2c}\aa)", "{d}", "{e}"});
+    auto gex10_glyphs = gex_render({R"(\def\aa#1,#2{a#1b#2}\aa{c,d},e)"});
+    auto gex11_glyphs = gex_render({
         R"(\def\aa#1{a#1a})"
         R"(\def\bb#1{\aa#1})"
         R"(\bb b )"
@@ -145,25 +136,13 @@ TEST_CASE("Macros with parameters", "[object][text][gex]") {
         R"(\bb{bb} )"
         R"(\bb{{bb}})"
     });
-    auto gex12 = GeX({
+    auto gex12_glyphs = gex_render({
         R"(\def\aa#1{a#1a})"
         R"(\def\bb#1|{\aa#1})"
         R"(\bb bb| )"
         R"(\bb{bb}| )"
         R"(\bb{bb}c|)"
     });
-    auto gex1_glyphs = gex1.get_output();
-    auto gex2_glyphs = gex2.get_output();
-    auto gex3_glyphs = gex3.get_output();
-    auto gex4_glyphs = gex4.get_output();
-    auto gex5_glyphs = gex5.get_output();
-    auto gex6_glyphs = gex6.get_output();
-    auto gex7_glyphs = gex7.get_output();
-    auto gex8_glyphs = gex8.get_output();
-    auto gex9_glyphs = gex9.get_output();
-    auto gex10_glyphs = gex10.get_output();
-    auto gex11_glyphs = gex11.get_output();
-    auto gex12_glyphs = gex12.get_output();
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs1 = shape_text(font, {U"ab"});
@@ -227,13 +206,12 @@ TEST_CASE("Macros with parameters", "[object][text][gex]") {
         test_glyph(gex12_glyphs[i], glyphs12[i], i);
     }
 
-    auto bad1 = GeX({"\\def\\aa#2#1{b}"});
-    REQUIRE_THROWS_WITH(bad1.get_output(), "GeX compilation error in group 0 "
-            "index 7: Parameters must be numbered consecutively");
-    auto bad2 = GeX({"\\def\\aa#1{#2}"});
-    REQUIRE_THROWS_WITH(bad2.get_output(), "GeX compilation error in group 0 "
-            "index 10: Illegal parameter number");
-    auto bad3 = GeX({"\\def\\aa#1{#1}\\aa"});
-    REQUIRE_THROWS_WITH(bad3.get_output(), "GeX compilation error in group 0 "
-            "index 16: Input ended while processing macro \"aa\"");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa#2#1{b}"}), "GeX compilation "
+            "error in group 0 index 7: Parameters must be numbered "
+            "consecutively");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa#1{#2}"}), "GeX compilation "
+            "error in group 0 index 10: Illegal parameter number");
+    REQUIRE_THROWS_WITH(gex_render({"\\def\\aa#1{#1}\\aa"}), "GeX compilation "
+            "error in group 0 index 16: Input ended while processing macro "
+            "\"aa\"");
 }

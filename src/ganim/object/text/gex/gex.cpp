@@ -1,15 +1,60 @@
 #include "gex.hpp"
 
+#include <unordered_map>
+
 #include "ganim/unicode.hpp"
 #include "ganim/unicode_categories.hpp"
 #include "ganim/object/text/text_helpers.hpp"
 
+#include "gex_error.hpp"
+#include "category_code.hpp"
+#include "token.hpp"
+
+using namespace ganim;
+using namespace ganim::gex;
+
 namespace {
     template<class... Ts>
     struct overloaded : Ts... { using Ts::operator()...; };
-}
+    class GeX {
+        public:
+            explicit GeX(const std::vector<std::string>& input);
 
-using namespace ganim;
+            std::vector<PositionedGlyph> get_output();
+
+        private:
+
+            struct Macro {
+                TokenList delimiters;
+                TokenList replacement_text;
+            };
+
+            std::optional<std::uint32_t> read_character();
+            void process_character_token(CharacterToken tok, int group);
+            void process_command_token(CommandToken tok, int group);
+            bool process_built_in(const std::u32string& command, int group);
+            void process_definition();
+            std::u32string process_definition_name();
+            std::pair<TokenList, int> process_definition_delimiters();
+            TokenList process_definition_replacement(int parameter_number);
+            std::optional<Token> read_token();
+            CommandToken read_escape();
+            ParameterToken read_parameter_token();
+            CategoryCode get_category_code(std::uint32_t codepoint);
+            GeXError make_error(std::string_view what) const;
+
+            std::vector<std::unordered_set<std::uint32_t>> M_catcodes;
+            std::vector<std::string> M_input;
+            std::vector<std::pair<std::u32string, int>> M_output_codepoints;
+            std::unordered_map<std::u32string, Macro> M_macros;
+            TokenList M_next_tokens;
+            int M_group_index = 0;
+            int M_string_index = 0;
+            int M_last_group_index = -1;
+            int M_last_string_index = -1;
+            bool M_expanding = false;
+    };
+}
 
 GeX::GeX(const std::vector<std::string>& input) : M_input(input)
 {
@@ -260,7 +305,7 @@ std::u32string GeX::process_definition_name()
     }, name_token->value);
 }
 
-std::pair<GeX::TokenList, int> GeX::process_definition_delimiters()
+std::pair<TokenList, int> GeX::process_definition_delimiters()
 {
     auto delimiters = TokenList();
     bool last_space = false;
@@ -309,7 +354,7 @@ std::pair<GeX::TokenList, int> GeX::process_definition_delimiters()
     return {delimiters, last_parameter};
 }
 
-GeX::TokenList GeX::process_definition_replacement(int parameter_number)
+TokenList GeX::process_definition_replacement(int parameter_number)
 {
     auto group_level = 1;
     auto command_list = TokenList();
@@ -358,7 +403,7 @@ std::optional<std::uint32_t> GeX::read_character()
     else return std::nullopt;
 }
 
-std::optional<GeX::Token> GeX::read_token()
+std::optional<Token> GeX::read_token()
 {
     if (!M_next_tokens.empty()) {
         M_expanding = true;
@@ -384,7 +429,11 @@ std::optional<GeX::Token> GeX::read_token()
     });
 }
 
-GeX::CommandToken GeX::read_escape()
+static_assert(sizeof(Token) == 80);
+static_assert(sizeof(std::string) == 32);
+static_assert(sizeof(std::u32string) == 32);
+
+CommandToken GeX::read_escape()
 {
     auto group = std::string_view(M_input[M_group_index]);
     auto name = std::u32string();
@@ -424,7 +473,7 @@ GeX::CommandToken GeX::read_escape()
     return CommandToken(name, std::string(name_utf8));
 }
 
-GeX::ParameterToken GeX::read_parameter_token()
+ParameterToken GeX::read_parameter_token()
 {
     auto number = read_character();
     auto error = [&]{
@@ -438,7 +487,7 @@ GeX::ParameterToken GeX::read_parameter_token()
     else throw error();
 }
 
-GeX::CategoryCode GeX::get_category_code(std::uint32_t codepoint)
+CategoryCode GeX::get_category_code(std::uint32_t codepoint)
 {
     for (int i = 0; i < 16; ++i) {
         if (i == 12) continue;
@@ -462,4 +511,11 @@ GeXError GeX::make_error(std::string_view what) const
         return GeXError(group_index, string_index, new_what);
     }
     else return GeXError(group_index, string_index, what);
+}
+
+std::vector<PositionedGlyph>
+ganim::gex_render(const std::vector<std::string>& input)
+{
+    auto result = GeX(input);
+    return result.get_output();
 }
