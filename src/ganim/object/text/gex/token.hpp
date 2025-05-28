@@ -28,7 +28,11 @@ namespace ganim::gex {
         std::variant<CharacterToken, CommandToken, ParameterToken>
             value;
         int group = -1;
-        bool operator==(const Token&) const=default;
+        int string_index = -1;
+        bool operator==(const Token& other) const
+        {
+            return value == other.value and group == other.group;
+        }
     };
     using TokenList = std::deque<Token>;
 }

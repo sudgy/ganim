@@ -30,7 +30,11 @@ namespace {
 
             std::optional<std::uint32_t> read_character();
             void process_character_token(CharacterToken tok, int group);
-            void process_command_token(CommandToken tok, int group);
+            void process_command_token(
+                CommandToken tok,
+                int group,
+                int string_index
+            );
             bool process_built_in(const std::u32string& command, int group);
             void process_definition();
             std::u32string process_definition_name();
@@ -95,7 +99,7 @@ TokenList Preprocessor::get_output()
             [&](CharacterToken& tok)
                 {process_character_token(tok, token->group);},
             [&](CommandToken& tok)
-                {process_command_token(tok, token->group);},
+                {process_command_token(tok, token->group,token->string_index);},
             [&](ParameterToken&)
                 {throw make_error("Unexpected parameter token");}
         }, token->value);
@@ -108,7 +112,11 @@ void Preprocessor::process_character_token(CharacterToken tok, int group)
     M_output.push_back({tok, group});
 }
 
-void Preprocessor::process_command_token(CommandToken tok, int group)
+void Preprocessor::process_command_token(
+    CommandToken tok,
+    int group,
+    int string_index
+)
 {
     auto it = M_macros.find(tok.command);
     if (it == M_macros.end()) {
@@ -241,6 +249,7 @@ void Preprocessor::process_command_token(CommandToken tok, int group)
             );
             for (; i < ssize(actual_expansion); ++i) {
                 actual_expansion[i].group = group;
+                actual_expansion[i].string_index = string_index;
             }
         }
     };
@@ -406,21 +415,22 @@ std::optional<Token> Preprocessor::read_token()
     return read_character().transform([&](auto codepoint) {
         auto category_code = get_category_code(codepoint);
         if (category_code == CategoryCode::Escape) {
-            return Token(read_escape(), M_group_index);
+            return Token(read_escape(), M_group_index, M_string_index);
         }
         else if (category_code == CategoryCode::MacroParameter) {
-            return Token(read_parameter_token(), M_group_index);
+            return Token(
+                read_parameter_token(),
+                M_group_index,
+                M_string_index
+            );
         }
         else return Token(
             CharacterToken(codepoint, get_category_code(codepoint)),
-            M_group_index
+            M_group_index,
+            M_string_index
         );
     });
 }
-
-static_assert(sizeof(Token) == 80);
-static_assert(sizeof(std::string) == 32);
-static_assert(sizeof(std::u32string) == 32);
 
 CommandToken Preprocessor::read_escape()
 {
