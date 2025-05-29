@@ -29,7 +29,11 @@ namespace {
             };
 
             std::optional<std::uint32_t> read_character();
-            void process_character_token(CharacterToken tok, int group);
+            void process_character_token(
+                CharacterToken tok,
+                int group,
+                int string_index
+            );
             void process_command_token(
                 CommandToken tok,
                 int group,
@@ -97,9 +101,11 @@ TokenList Preprocessor::get_output()
     while (auto token = read_token()) {
         std::visit(overloaded{
             [&](CharacterToken& tok)
-                {process_character_token(tok, token->group);},
+                {process_character_token(
+                        tok, token->group, token->string_index);},
             [&](CommandToken& tok)
-                {process_command_token(tok, token->group,token->string_index);},
+                {process_command_token(
+                        tok, token->group, token->string_index);},
             [&](ParameterToken&)
                 {throw make_error("Unexpected parameter token");}
         }, token->value);
@@ -107,9 +113,13 @@ TokenList Preprocessor::get_output()
     return M_output;
 }
 
-void Preprocessor::process_character_token(CharacterToken tok, int group)
+void Preprocessor::process_character_token(
+    CharacterToken tok,
+    int group,
+    int string_index
+)
 {
-    M_output.push_back({tok, group});
+    M_output.emplace_back(tok, group, string_index);
 }
 
 void Preprocessor::process_command_token(
@@ -413,21 +423,25 @@ std::optional<Token> Preprocessor::read_token()
     M_last_group_index = M_group_index;
     M_last_string_index = M_string_index;
     return read_character().transform([&](auto codepoint) {
+        if (M_last_group_index != M_group_index) {
+            ++M_last_group_index;
+            M_last_string_index = 0;
+        }
         auto category_code = get_category_code(codepoint);
         if (category_code == CategoryCode::Escape) {
-            return Token(read_escape(), M_group_index, M_string_index);
+            return Token(read_escape(), M_last_group_index,M_last_string_index);
         }
         else if (category_code == CategoryCode::MacroParameter) {
             return Token(
                 read_parameter_token(),
-                M_group_index,
-                M_string_index
+                M_last_group_index,
+                M_last_string_index
             );
         }
         else return Token(
             CharacterToken(codepoint, get_category_code(codepoint)),
-            M_group_index,
-            M_string_index
+            M_last_group_index,
+            M_last_string_index
         );
     });
 }
