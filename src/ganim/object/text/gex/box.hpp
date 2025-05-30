@@ -3,7 +3,9 @@
 
 namespace ganim::gex {
     struct Box {
-
+        double width = 0;
+        double height = 0;
+        double depth = 0;
     };
 }
 
