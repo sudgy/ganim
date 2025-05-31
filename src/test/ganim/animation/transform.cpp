@@ -640,3 +640,38 @@ TEST_CASE("texture_transform during depth peeling", "[animation]") {
     REQUIRE(scene.get_pixel(1, 3, 3) == color);
     REQUIRE(scene.get_pixel(2, 3, 3) == color);
 }
+
+TEST_CASE("texture_transform cut off edges bug", "[animation]") {
+    // I could only replicate the bug with this big of a pixel size and those
+    // exact coordinates below, don't touch them
+    auto scene = TestScene(160, 160, 4, 4, 4);
+    using namespace vga2;
+    auto box1 = make_polygon_shape(
+        {
+            -1.80725*e1 - 0.25*e2,
+            -0.864868*e1 - 0.25*e2,
+            -0.864868*e1 + 0.75*e2,
+            -1.80725*e1 + 0.75*e2,
+        }
+    );
+    auto box2 = make_polygon_shape(
+        {
+            -0.836914*e1 - 0.25*e2,
+             1.80725*e1 - 0.25*e2,
+             1.80725*e1 + 0.5*e2,
+            -0.836914*e1 + 0.5*e2,
+        }
+    );
+    auto box3 = make_polygon_shape(
+        {
+            -1.16006*e1 - 0.383813*e2,
+             1.00537*e1 - 0.383813*e2,
+             1.00537*e1 + 0.765625*e2,
+            -1.16006*e1 + 0.765625*e2,
+        }
+    );
+    texture_transform(scene, make_group(box1, box2), box3);
+    scene.wait(2);
+    auto white = Color("FFFFFF");
+    REQUIRE(scene.get_pixel(2, 88, 55) == white);
+}

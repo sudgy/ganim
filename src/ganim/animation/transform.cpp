@@ -373,11 +373,11 @@ namespace {
                     if (to_values[x1 + y1*to_size] == 0) {
                         int x2 = std::min(
                             int(double(x)/to_width * from_width) + from_x_plus,
-                            to_size - 1
+                            from_size - 1
                         );
                         int y2 = std::min(
                             int(double(y)/to_height * from_height)+ from_y_plus,
-                            to_size - 1
+                            from_size - 1
                         );
                         M_scale2 = std::max(
                             M_scale2,
