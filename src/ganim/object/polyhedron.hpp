@@ -1,10 +1,10 @@
 #ifndef GANIM_OBJECT_POLYHEDRON_HPP
 #define GANIM_OBJECT_POLYHEDRON_HPP
 
-#include "ganim/object/bases/group.hpp"
+#include "ganim/object/bases/static_group.hpp"
 
 namespace ganim {
-    class Polyhedron : public Group {
+    class Polyhedron : public StaticGroup<Group, Group> {
         public:
             explicit Polyhedron(
                 const std::vector<vga3::Vec>& vertices,
@@ -19,14 +19,11 @@ namespace ganim {
 
             virtual Polyhedron& set_color(Color color) override;
 
-            const ObjectPtr<Group>& get_faces() const {return M_faces;}
-            const ObjectPtr<Group>& get_edges() const {return M_edges;}
+            ObjectPtr<Group> get_faces() const {return get<0>();}
+            ObjectPtr<Group> get_edges() const {return get<1>();}
 
         private:
             virtual Polyhedron* polymorphic_copy_impl() const override;
-
-            ObjectPtr<Group> M_faces;
-            ObjectPtr<Group> M_edges;
     };
     inline ObjectPtr<Polyhedron> make_polyhedron(
         const std::vector<vga3::Vec>& vertices,

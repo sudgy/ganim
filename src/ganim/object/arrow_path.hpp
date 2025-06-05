@@ -2,7 +2,7 @@
 #define GANIM_OBJECT_ARROW_PATH_HPP
 
 #include "ganim/object/path.hpp"
-#include "ganim/object/bases/group.hpp"
+#include "ganim/object/bases/static_group.hpp"
 
 namespace ganim {
     /** @brief A struct for the arguments to construct an @ref ArrowPath. */
@@ -22,7 +22,7 @@ namespace ganim {
      *
      * @see make_arrow_path
      */
-    class ArrowPath : public Group {
+    class ArrowPath : public StaticGroup<Path, Shape> {
         public:
             /** @brief Construct an arrow path given a list of points using 2D
              * PGA.
@@ -59,9 +59,6 @@ namespace ganim {
 
         private:
             virtual ArrowPath* polymorphic_copy_impl() const;
-
-            ObjectPtr<Path> M_path = nullptr;
-            ObjectPtr<Shape> M_tip = nullptr;
     };
     /** @brief Make an ArrowPath in an ObjectPtr.
      *

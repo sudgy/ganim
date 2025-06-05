@@ -52,10 +52,7 @@ Polyhedron::Polyhedron(
 )
 {
     auto parts = get_parts(vertices, faces);
-    M_faces = parts.first;
-    M_edges = parts.second;
-    add(M_faces);
-    add(M_edges);
+    set(parts.first, parts.second);
 }
 
 Polyhedron::Polyhedron(
@@ -64,19 +61,16 @@ Polyhedron::Polyhedron(
 )
 {
     auto parts = get_parts(vertices, faces);
-    M_faces = parts.first;
-    M_edges = parts.second;
-    add(M_faces);
-    add(M_edges);
+    set(parts.first, parts.second);
 }
 
 Polyhedron& Polyhedron::set_color(Color color)
 {
     Object::set_color(color);
     if (propagate()) {
-        M_edges->set_color(color);
+        get_edges()->set_color(color);
         color.a *= 0.625;
-        M_faces->set_color(color);
+        get_faces()->set_color(color);
     }
     return *this;
 }
@@ -89,9 +83,9 @@ ObjectPtr<Polyhedron> Polyhedron::polymorphic_copy() const
 Polyhedron* Polyhedron::polymorphic_copy_impl() const
 {
     auto result = std::make_unique<Polyhedron>(*this);
-    result->M_faces = M_faces->polymorphic_copy();
-    result->M_edges = M_edges->polymorphic_copy();
-    result->clear();
-    result->add(result->M_faces, result->M_edges);
+    result->set(
+        get_faces()->polymorphic_copy(),
+        get_edges()->polymorphic_copy()
+    );
     return result.release();
 }

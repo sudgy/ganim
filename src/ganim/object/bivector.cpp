@@ -184,9 +184,9 @@ void Bivector::common_construct(
         throw std::invalid_argument(
                 "Bivectors must have at least three vertices.");
     }
-    M_inside = make_polygon_shape(pga_points);
-    M_inside->set_color("FFFFFF7F");
-    M_outside = make_group();
+    auto inside = make_polygon_shape(pga_points);
+    inside->set_color("FFFFFF7F");
+    auto outside = make_group();
     auto path_args = ArrowPathArgs{
         .tip_size = args.tip_size,
         .thickness = args.thickness
@@ -196,6 +196,7 @@ void Bivector::common_construct(
     double current_path_length = 0.0;
     int current_path_start = 0;
     auto new_path = std::vector<vga2::Vec>();
+    auto outside_paths = std::vector<ObjectPtr<ArrowPath>>();
     for (int i = 0; i < ssize(vga_points); ++i) {
         auto i2 = (i + 1) % ssize(vga_points);
         auto i3 = (i + 2) % ssize(vga_points);
@@ -212,7 +213,7 @@ void Bivector::common_construct(
                 for (int j = current_path_start; j <= i2; ++j) {
                     new_path.push_back(vga_points[j]);
                 }
-                M_outside_paths.emplace_back(make_arrow_path(
+                outside_paths.emplace_back(make_arrow_path(
                             new_path, path_args));
                 current_path_length = 0.0;
                 current_path_start = i2;
@@ -226,22 +227,21 @@ void Bivector::common_construct(
     }
     new_path.push_back(vga_points[0]);
     // Maybe find a way to deal with this not being long enough?
-    M_outside_paths.emplace_back(make_arrow_path(
+    outside_paths.emplace_back(make_arrow_path(
                 new_path, path_args));
-    for (auto& path : M_outside_paths) {
-        M_outside->add(path);
+    for (auto& path : outside_paths) {
+        outside->add(path);
     }
-    add(M_inside);
-    add(M_outside);
+    set(inside, outside);
 }
 
 Bivector& Bivector::set_color(Color color)
 {
     Object::set_color(color);
     if (propagate()) {
-        M_outside->set_color(color);
+        get_outside()->set_color(color);
         color.a /= 2;
-        M_inside->set_color(color);
+        get_inside()->set_color(color);
     }
     return *this;
 }
@@ -254,16 +254,9 @@ ObjectPtr<Bivector> Bivector::polymorphic_copy() const
 Bivector* Bivector::polymorphic_copy_impl() const
 {
     auto result = std::make_unique<Bivector>(*this);
-    result->clear();
-    result->M_outside_paths.clear();
-    result->M_outside = make_group();
-    result->M_inside = M_inside->polymorphic_copy();
-    for (auto& path : M_outside_paths) {
-        auto new_path = path->polymorphic_copy();
-        result->M_outside_paths.push_back(new_path);
-        result->M_outside->add(new_path);
-    }
-    result->add(result->M_inside);
-    result->add(result->M_outside);
+    result->set(
+        get_inside()->polymorphic_copy(),
+        get_outside()->polymorphic_copy()
+    );
     return result.release();
 }

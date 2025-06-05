@@ -1,7 +1,7 @@
 #ifndef GANIM_OBJECT_BIVECTOR_HPP
 #define GANIM_OBJECT_BIVECTOR_HPP
 
-#include "ganim/object/bases/group.hpp"
+#include "ganim/object/bases/static_group.hpp"
 #include "ganim/object/polygon_shape.hpp"
 #include "ganim/object/arrow_path.hpp"
 
@@ -31,7 +31,7 @@ namespace ganim {
      *
      * @see make_bivector
      */
-    class Bivector : public Group {
+    class Bivector : public StaticGroup<PolygonShape, Group> {
         public:
             /** @brief Make a bivector from an arbitrary list of points on its
              * boundary using 2D PGA points.
@@ -107,10 +107,14 @@ namespace ganim {
                 vga3::Bivec b,
                 BivectorArgs args = {}
             );
-            /** @brief Get the objects making up the boundary of the bivector */
-            ObjectPtr<Group> get_outside() {return M_outside;}
             /** @brief Get the polygon making up the inside of the bivector */
-            ObjectPtr<PolygonShape> get_inside() {return M_inside;}
+            ObjectPtr<PolygonShape> get_inside() {return get<0>();}
+            /** @brief Get the polygon making up the inside of the bivector */
+            ObjectPtr<PolygonShape> get_inside() const {return get<0>();}
+            /** @brief Get the objects making up the boundary of the bivector */
+            ObjectPtr<Group> get_outside() {return get<1>();}
+            /** @brief Get the objects making up the boundary of the bivector */
+            ObjectPtr<Group> get_outside() const {return get<1>();}
             virtual Bivector& set_color(Color color) override;
 
             ObjectPtr<Bivector> polymorphic_copy() const;
@@ -123,9 +127,6 @@ namespace ganim {
                 const std::vector<vga2::Vec>& vga_points,
                 BivectorArgs args
             );
-            ObjectPtr<Group> M_outside = nullptr;
-            ObjectPtr<PolygonShape> M_inside = nullptr;
-            std::vector<ObjectPtr<ArrowPath>> M_outside_paths;
     };
 
     /** @brief Make a Bivector in an ObjectPtr.

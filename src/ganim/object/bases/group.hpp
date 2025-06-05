@@ -368,7 +368,7 @@ class Group : public Object {
         bool propagate() const {return M_propogate;}
 
     private:
-        virtual Group* polymorphic_copy_impl() const;
+        virtual Group* polymorphic_copy_impl() const override;
 
         std::vector<ObjectPtr<Object>> M_subobjects;
         std::vector<ObjectPtr<Object>> M_new_subobjects;

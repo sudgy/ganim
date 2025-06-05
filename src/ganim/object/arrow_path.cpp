@@ -44,13 +44,7 @@ void ArrowPath::recreate(
     auto final_line = (end_point & points.back()).normalized();
     auto tip_point = end_point + (final_line ^ e0 * args.tip_size);
     points.push_back(tip_point);
-    if (M_path.get()) {
-        M_path->recreate(points, false, args.thickness);
-    }
-    else {
-        M_path = make_path(points, false, args.thickness);
-        add(M_path);
-    }
+    auto path = make_path(points, false, args.thickness);
 
     auto r = Even(1);
     r *= e21 * (e12 + tip_point) / 2;
@@ -75,27 +69,17 @@ void ArrowPath::recreate(
     const auto y2 = float(p2.blade_project<e2>());
     const auto x3 = float(p3.blade_project<e1>());
     const auto y3 = float(p3.blade_project<e2>());
-    if (M_tip.get()) {
-        M_tip->set_vertices(
-            std::vector<Shape::Vertex>{
-                {x1, y1, 0, 0},
-                {x2, y2, 0, 0},
-                {x3, y3, 0, 1}
-            },
-            std::vector<unsigned>{0, 1, 2}
-        );
-    }
-    else {
-        M_tip = make_shape(
-            {
-                {x1, y1, 0, 0},
-                {x2, y2, 0, 0},
-                {x3, y3, 0, 1}
-            },
-            {0, 1, 2}
-        );
-        add(M_tip);
-    }
+
+    auto tip = make_shape(
+        {
+            {x1, y1, 0, 0},
+            {x2, y2, 0, 0},
+            {x3, y3, 0, 1}
+        },
+        {0, 1, 2}
+    );
+
+    set(path, tip);
 }
 
 void ArrowPath::recreate(
@@ -119,10 +103,9 @@ ObjectPtr<ArrowPath> ArrowPath::polymorphic_copy() const
 ArrowPath* ArrowPath::polymorphic_copy_impl() const
 {
     auto result = std::make_unique<ArrowPath>(*this);
-    result->clear();
-    result->M_path = M_path->polymorphic_copy();
-    result->M_tip = M_tip->polymorphic_copy();
-    result->add(result->M_path);
-    result->add(result->M_tip);
+    result->set(
+        get<0>()->polymorphic_copy(),
+        get<1>()->polymorphic_copy()
+    );
     return result.release();
 }
