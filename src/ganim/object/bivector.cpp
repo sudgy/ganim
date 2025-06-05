@@ -186,7 +186,7 @@ void Bivector::common_construct(
     }
     auto inside = make_polygon_shape(pga_points);
     inside->set_color("FFFFFF7F");
-    auto outside = make_group();
+    auto outside = make_typed_group<ArrowPath>();
     auto path_args = ArrowPathArgs{
         .tip_size = args.tip_size,
         .thickness = args.thickness

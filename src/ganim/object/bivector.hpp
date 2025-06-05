@@ -2,6 +2,7 @@
 #define GANIM_OBJECT_BIVECTOR_HPP
 
 #include "ganim/object/bases/static_group.hpp"
+#include "ganim/object/bases/typed_group.hpp"
 #include "ganim/object/polygon_shape.hpp"
 #include "ganim/object/arrow_path.hpp"
 
@@ -31,7 +32,7 @@ namespace ganim {
      *
      * @see make_bivector
      */
-    class Bivector : public StaticGroup<PolygonShape, Group> {
+    class Bivector : public StaticGroup<PolygonShape, TypedGroup<ArrowPath>> {
         public:
             /** @brief Make a bivector from an arbitrary list of points on its
              * boundary using 2D PGA points.
@@ -112,9 +113,10 @@ namespace ganim {
             /** @brief Get the polygon making up the inside of the bivector */
             ObjectPtr<PolygonShape> get_inside() const {return get<0>();}
             /** @brief Get the objects making up the boundary of the bivector */
-            ObjectPtr<Group> get_outside() {return get<1>();}
+            ObjectPtr<TypedGroup<ArrowPath>> get_outside() {return get<1>();}
             /** @brief Get the objects making up the boundary of the bivector */
-            ObjectPtr<Group> get_outside() const {return get<1>();}
+            ObjectPtr<TypedGroup<ArrowPath>> get_outside() const
+                {return get<1>();}
             virtual Bivector& set_color(Color color) override;
 
             ObjectPtr<Bivector> polymorphic_copy() const;

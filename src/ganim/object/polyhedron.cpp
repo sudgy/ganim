@@ -8,14 +8,14 @@
 using namespace ganim;
 
 namespace {
-    std::pair<ObjectPtr<Group>, ObjectPtr<Group>>
+    std::pair<ObjectPtr<TypedGroup<PolygonShape>>, ObjectPtr<TypedGroup<Path>>>
     get_parts(
         const auto& vertices,
         const std::vector<std::vector<int>>& face_indices
     )
     {
-        auto faces = make_group();
-        auto edges = make_group();
+        auto faces = make_typed_group<PolygonShape>();
+        auto edges = make_typed_group<Path>();
         auto accounted_edges = std::unordered_set<std::uint64_t>();
 
         for (auto& face : face_indices) {
