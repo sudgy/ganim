@@ -18,6 +18,7 @@ namespace {
 R"(\documentclass[preview]{standalone}
 
 \usepackage{amsmath}
+\usepackage{amssymb}
 
 \ExplSyntaxOn
 
@@ -296,6 +297,10 @@ int Tex::write_character(
     if (font.system) {
         filename = "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/"
             + filename + ".pfb";
+        if (!std::filesystem::exists(filename)) {
+            filename = "/usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/"
+                + font.name + ".pfb";
+        }
     }
     auto& font2 = deprecated::get_font(filename);
     if (M_ascender == 0.0 or font.name == "cmr10") {
