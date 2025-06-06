@@ -89,11 +89,8 @@ namespace ganim {
              */
             void lock_orientation(bool lock);
 
-            virtual Vector& scale(
-                double scale,
-                const pga3::Trivec& about_point
-            ) override;
-            using Object::scale;
+            Vector& vector_scale(double scale);
+            void reset_vector_scale() {M_vector_scale = 1;}
             virtual Vector& apply_rotor(const pga3::Even& rotor) override;
             using Object::apply_rotor;
             virtual Box get_original_true_bounding_box() const override;
@@ -120,6 +117,7 @@ namespace ganim {
 
             double M_max_tip_to_length_ratio = 0.5;
             double M_tip_size = 0.35;
+            double M_vector_scale = 1.0;
             bool M_manual_transform = false;
             bool M_animating = false;
             bool M_do_shading = false;

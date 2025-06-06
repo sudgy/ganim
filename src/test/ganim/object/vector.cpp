@@ -56,15 +56,12 @@ TEST_CASE("Vector object construction", "[object]") {
     REQUIRE_THAT((~r7 * down * r7).undual(), GAEquals(e0 + e1 - e2, 1e-5));
 }
 
-TEST_CASE("Vector object scale", "[object]") {
+TEST_CASE("Vector object vector_scale", "[object]") {
     using namespace vga3;
     auto test = Vector(e1);
-    test.scale(2);
+    test.vector_scale(2);
     REQUIRE_THAT(test.get_start_vga3(), GAEquals(0));
     REQUIRE_THAT(test.get_end_vga3(), GAEquals(2*e1));
-    test.scale(2, e1);
-    REQUIRE_THAT(test.get_start_vga3(), GAEquals(-e1));
-    REQUIRE_THAT(test.get_end_vga3(), GAEquals(3*e1));
 }
 
 TEST_CASE("Vector object transforms", "[object]") {
@@ -107,7 +104,7 @@ TEST_CASE("Vector object zero vector", "[object]") {
     test.rotate(τ/4, e12);
     REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
     REQUIRE_THAT(test.get_end_pga3(), GAEquals(e123));
-    test.reset_scale();
+    test.reset_vector_scale();
     REQUIRE_THAT(test.get_start_pga3(), GAEquals(e123));
     REQUIRE_THAT(test.get_end_pga3().undual(), GAEquals(e0 + e2, 1e-5));
 }
@@ -139,12 +136,12 @@ TEST_CASE("Vector drawing", "[object]") {
     auto test = make_vector(12*e1, {0.5, 6.2, 2});
     auto scene = TestScene(40, 10, 40, 10, 1);
     test->set_visible(true);
-    test->scale(0.5);
+    test->vector_scale(0.5);
     scene.add(test);
     scene.frame_advance();
-    test->scale(2);
+    test->vector_scale(2);
     scene.frame_advance();
-    test->scale(1.5);
+    test->vector_scale(1.5);
     scene.frame_advance();
     const auto white = Color("FFFFFF");
     const auto black = Color("000000");
@@ -283,4 +280,15 @@ TEST_CASE("Vector off-center flip", "[object]") {
     auto test = Vector(-e2, -e2 + e1);
     test.set_start_and_end(-e2, -e2 - e1);
     REQUIRE_THAT(test.get_start_vga2(), GAEquals(-e2, 1e-5));
+}
+
+TEST_CASE("Vector outline not too big", "[object]") {
+    using namespace vga2;
+    auto v = make_vector(10*e1, {0.5, 2, 2});
+    v->set_outline(Color("FF0000"), 1);
+    auto scene = TestScene(20, 20, 20, 20, 1);
+    scene.add(v);
+    v->set_visible(true);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 15, 5) == Color("000000"));
 }

@@ -123,11 +123,11 @@ Vector& Vector::set_end(pga3::Trivec p)
     const auto new_length = (p - current_start).undual().norm();
     M_manual_transform = true;
     if (current_length == 0) {
-        reset_scale();
-        scale(new_length);
+        M_vector_scale = 1;
+        vector_scale(new_length);
     }
     else {
-        scale(new_length / current_length);
+        vector_scale(new_length / current_length);
     }
     M_manual_transform = false;
     if (new_length != 0) {
@@ -195,7 +195,7 @@ pga3::Trivec Vector::get_end_pga3() const
 {
     using namespace pga3;
     const auto r = get_rotor();
-    return (~r*(e0 + get_scale()*e1).dual()*r).grade_project<3>();
+    return (~r*(e0 + M_vector_scale*e1).dual()*r).grade_project<3>();
 }
 
 vga2::Vec Vector::get_end_vga2() const
@@ -214,25 +214,20 @@ void Vector::lock_orientation(bool lock)
     if (lock) apply_rotor(pga3::Even(1));
 }
 
-Vector& Vector::scale(double scale, const pga3::Trivec& about_point)
+Vector& Vector::vector_scale(double scale)
 {
     if (M_manual_transform or M_animating) {
-        Object::scale(scale, about_point);
+        M_vector_scale *= scale;
         return *this;
     }
     using namespace pga3;
-    auto about_point2 = about_point;
-    about_point2 /= about_point2.blade_project<e123>();
-    auto transform = [&](pga3::Trivec point) {
-        point -= about_point2 - e123;
-        point *= scale;
-        point += (1 - scale)*e123;
-        point += about_point - e123;
-        return point;
-    };
-    auto new_start = transform(get_start_pga3());
-    auto new_end = transform(get_end_pga3());
-    set_start_and_end(new_start, new_end);
+    auto about_point = get_start_pga3();;
+    auto point = get_end_pga3();
+    point -= about_point - e123;
+    point *= scale;
+    point += (1 - scale)*e123;
+    point += about_point - e123;
+    set_end(point);
     return *this;
 }
 
@@ -269,7 +264,7 @@ Box Vector::get_original_true_bounding_box() const
 {
     auto y = M_tip_size / 2.0;
     using namespace vga2;
-    return {-y*e2/get_scale(), e1 + y*e2/get_scale()};
+    return {-y*e2, M_vector_scale*e1 + y*e2};
 }
 
 void Vector::draw(const Camera& camera)
@@ -416,5 +411,6 @@ void Vector::interpolate(
         (1 - t) * start2->M_max_tip_to_length_ratio +
         t * end2->M_max_tip_to_length_ratio;
     M_tip_size = (1 - t) * start2->M_tip_size + t * end2->M_tip_size;
+    M_vector_scale = (1 - t) * start2->M_vector_scale + t * end2->M_vector_scale;
     if (t == 1.0) set_start_and_end(end2->get_start_pga3(), end2->get_end_pga3());
 }
