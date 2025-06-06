@@ -82,10 +82,5 @@ ObjectPtr<Polyhedron> Polyhedron::polymorphic_copy() const
 
 Polyhedron* Polyhedron::polymorphic_copy_impl() const
 {
-    auto result = std::make_unique<Polyhedron>(*this);
-    result->set(
-        get_faces()->polymorphic_copy(),
-        get_edges()->polymorphic_copy()
-    );
-    return result.release();
+    return new Polyhedron(*this);
 }

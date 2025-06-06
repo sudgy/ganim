@@ -37,7 +37,11 @@ class Tex : public Group, public DVIConsumer {
         virtual void process_special(std::string_view special) override;
         void set_colors(const std::unordered_map<std::string, Color>& colors);
 
+        ObjectPtr<Tex> polymorphic_copy() const;
+
     private:
+        virtual Tex* polymorphic_copy_impl() const override;
+
         double M_magnification = 0.0;
         struct tex_vertex {
             deprecated::Character* character = nullptr;

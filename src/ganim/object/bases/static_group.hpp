@@ -15,6 +15,23 @@ class StaticGroup : public Group {
         {
             add(objects...);
         }
+        StaticGroup(const StaticGroup& other)
+        :   Group(other, nullptr),
+            M_objects(other.copy_impl(std::make_index_sequence<sizeof...(Ts)>{}))
+        {
+            add_all(std::make_index_sequence<sizeof...(Ts)>{});
+        }
+        StaticGroup& operator=(const StaticGroup& other)
+        {
+            Object::operator=(other);
+            copy_members(other);
+            M_objects = other.copy_impl(std::make_index_sequence<sizeof...(Ts)>{});
+            clear();
+            add_all(std::make_index_sequence<sizeof...(Ts)>{});
+            return *this;
+        }
+        StaticGroup(StaticGroup&&) noexcept=default;
+        StaticGroup& operator=(StaticGroup&&) noexcept=default;
         void set(ObjectPtr<Ts>... objects)
         {
             M_objects = {objects...};
@@ -36,24 +53,24 @@ class StaticGroup : public Group {
 
         virtual StaticGroup* polymorphic_copy_impl() const override
         {
-            return polymorphic_copy_impl_impl(
-                    std::make_index_sequence<sizeof...(Ts)>{});
+            return new StaticGroup(*this);
         }
         template <std::size_t... Is>
-        StaticGroup*
-        polymorphic_copy_impl_impl(std::index_sequence<Is...>) const
+        auto copy_impl(std::index_sequence<Is...>) const
         {
-            return new StaticGroup(
-                    std::get<Is>(M_objects)->polymorphic_copy()...);
+            return std::make_tuple(std::get<Is>(M_objects)->polymorphic_copy()...);
+        }
+        template <std::size_t... Is>
+        auto add_all(std::index_sequence<Is...>)
+        {
+            (add(std::get<Is>(M_objects)), ...);
         }
 };
 
 template <typename... Ts>
-auto make_static_group(ObjectPtr<Ts>&&... objects)
+auto make_static_group(ObjectPtr<Ts>... objects)
 {
-    auto result = ObjectPtr<StaticGroup<Ts...>>(
-        std::forward<ObjectPtr<Ts>>(objects)...
-    );
+    auto result = ObjectPtr<StaticGroup<Ts...>>(objects...);
     return result;
 }
 

@@ -19,6 +19,13 @@ concept normal_input_range =
     } and
     !requires(T& group, ObjectPtr<Object> object) {
         group.add(object);
+    } and
+    // Should hopefully catch TypedGroup
+    !requires(T& group) {
+        group.range(0, 0);
+    } and
+    !requires(T& group) {
+        group->range(0, 0);
     };
 
 struct ArrangeArgs {
@@ -43,9 +50,9 @@ struct ArrangeArgs {
 class Group : public Object {
     public:
         Group()=default;
-        Group(const Group&)=default;
+        Group(const Group&);
         Group(Group&&) noexcept=default;
-        Group& operator=(const Group&)=default;
+        Group& operator=(const Group&);
         Group& operator=(Group&&) noexcept=default;
         /*** @brief Add an object to this group */
         void add(ObjectPtr<Object> object);
@@ -366,6 +373,8 @@ class Group : public Object {
 
     protected:
         bool propagate() const {return M_propogate;}
+        void copy_members(const Group& other);
+        Group(const Group& other, std::nullptr_t);
 
     private:
         virtual Group* polymorphic_copy_impl() const override;

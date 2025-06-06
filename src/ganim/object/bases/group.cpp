@@ -8,6 +8,47 @@
 
 using namespace ganim;
 
+Group::Group(const Group& other)
+:   Object(other),
+    M_ratio(other.M_ratio),
+    M_outline_thickness(other.M_outline_thickness),
+    M_outline_color(other.M_outline_color),
+    M_propogate(other.M_propogate),
+    M_draw_together(other.M_draw_together)
+{
+    for (auto& obj : other.M_subobjects) {
+        add(obj->polymorphic_copy());
+    }
+}
+
+Group::Group(const Group& other, std::nullptr_t)
+:   Object(other),
+    M_ratio(other.M_ratio),
+    M_outline_thickness(other.M_outline_thickness),
+    M_outline_color(other.M_outline_color),
+    M_propogate(other.M_propogate),
+    M_draw_together(other.M_draw_together) {}
+
+void Group::copy_members(const Group& other)
+{
+    M_ratio = other.M_ratio;
+    M_outline_thickness = other.M_outline_thickness;
+    M_outline_color = other.M_outline_color;
+    M_propogate = other.M_propogate;
+    M_draw_together = other.M_draw_together;
+}
+
+Group& Group::operator=(const Group& other)
+{
+    Object::operator=(other);
+    copy_members(other);
+    clear();
+    for (auto& obj : other.M_subobjects) {
+        add(obj->polymorphic_copy());
+    }
+    return *this;
+}
+
 void Group::add(ObjectPtr<Object> object)
 {
     M_new_subobjects.push_back(object);
@@ -37,13 +78,7 @@ ObjectPtr<Group> Group::polymorphic_copy() const
 
 Group* Group::polymorphic_copy_impl() const
 {
-    auto result = std::make_unique<Group>(*this);
-    result->M_subobjects.clear();
-    result->M_new_subobjects.clear();
-    for (auto& obj : M_subobjects) {
-        result->add(obj->polymorphic_copy());
-    }
-    return result.release();
+    return new Group(*this);
 }
 
 void Group::interpolate(const Animatable& start, const Animatable& end, double t)

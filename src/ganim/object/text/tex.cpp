@@ -374,3 +374,13 @@ Box Tex::TexPiece::get_original_logical_bounding_box() const
 {
     return logical_bounding_box;
 }
+
+ObjectPtr<Tex> Tex::polymorphic_copy() const
+{
+    return ObjectPtr<Tex>::from_new(polymorphic_copy_impl());
+}
+
+Tex* Tex::polymorphic_copy_impl() const
+{
+    return new Tex(*this);
+}

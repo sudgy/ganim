@@ -66,3 +66,13 @@ std::vector<PositionedGlyph> Text::get_glyphs(
     }
     return result;
 }
+
+ObjectPtr<Text> Text::polymorphic_copy() const
+{
+    return ObjectPtr<Text>::from_new(polymorphic_copy_impl());
+}
+
+Text* Text::polymorphic_copy_impl() const
+{
+    return new Text(*this);
+}

@@ -89,9 +89,19 @@ namespace ganim {
                 texture_shape_helper::set_uniforms(shader);
             }
 
+            ObjectPtr<TextureShape> polymorphic_copy() const
+            {
+                return ObjectPtr<TextureShape>::from_new(
+                        polymorphic_copy_impl());
+            }
+
             GANIM_OBJECT_CHAIN_DECLS(TextureShape);
 
         private:
+            virtual TextureShape* polymorphic_copy_impl() const override
+            {
+                return new TextureShape(*this);
+            }
             virtual void buffer_vertices() override
             {
                 texture_shape_helper::buffer_vertices(

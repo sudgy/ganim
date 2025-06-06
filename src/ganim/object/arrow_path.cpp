@@ -102,10 +102,5 @@ ObjectPtr<ArrowPath> ArrowPath::polymorphic_copy() const
 
 ArrowPath* ArrowPath::polymorphic_copy_impl() const
 {
-    auto result = std::make_unique<ArrowPath>(*this);
-    result->set(
-        get<0>()->polymorphic_copy(),
-        get<1>()->polymorphic_copy()
-    );
-    return result.release();
+    return new ArrowPath(*this);
 }

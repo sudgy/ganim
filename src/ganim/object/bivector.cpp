@@ -253,10 +253,5 @@ ObjectPtr<Bivector> Bivector::polymorphic_copy() const
 
 Bivector* Bivector::polymorphic_copy_impl() const
 {
-    auto result = std::make_unique<Bivector>(*this);
-    result->set(
-        get_inside()->polymorphic_copy(),
-        get_outside()->polymorphic_copy()
-    );
-    return result.release();
+    return new Bivector(*this);
 }

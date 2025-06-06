@@ -9,6 +9,21 @@ template <std::derived_from<Object> T>
 class TypedGroup : public Group {
     public:
         TypedGroup()=default;
+        TypedGroup(const TypedGroup& other)
+        :   Group(other, nullptr)
+        {
+            for (auto& obj : other.M_subobjects) add(obj->polymorphic_copy());
+        }
+        TypedGroup& operator=(const TypedGroup& other)
+        {
+            Object::operator=(other);
+            copy_members(other);
+            clear();
+            for (auto& obj : other.M_subobjects) add(obj->polymorphic_copy());
+            return *this;
+        }
+        TypedGroup(TypedGroup&&) noexcept=default;
+        TypedGroup& operator=(TypedGroup&&) noexcept=default;
 
         void add(ObjectPtr<T> object)
         {
@@ -120,20 +135,15 @@ class TypedGroup : public Group {
 
         virtual TypedGroup* polymorphic_copy_impl() const override
         {
-            auto result = std::make_unique<TypedGroup>(*this);
-            result->clear();
-            for (auto& obj : M_subobjects) {
-                result->add(obj->polymorphic_copy());
-            }
-            return result.release();
+            return new TypedGroup(*this);
         }
 };
 
 template <std::derived_from<Object> T, std::derived_from<T>... Ts>
-auto make_typed_group(ObjectPtr<Ts>&&... objects)
+auto make_typed_group(ObjectPtr<Ts>... objects)
 {
     auto result = ObjectPtr<TypedGroup<T>>();
-    (result->add(std::forward<Ts>(objects)), ...);
+    (result->add(objects), ...);
     return result;
 }
 
