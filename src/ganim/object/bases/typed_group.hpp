@@ -88,7 +88,7 @@ class TypedGroup : public Group {
 
         ObjectPtr<TypedGroup> range(int i1, int i2)
         {
-            auto result = TypedGroup();
+            auto result = ObjectPtr<TypedGroup>();
             if (i1 < 0) i1 = size() + i1;
             if (i2 < 0) i2 = size() + i2;
             if (i1 < 0) {
@@ -102,15 +102,15 @@ class TypedGroup : public Group {
             for (int i = i1; i < i2; ++i) {
                 result->add(M_subobjects[i]);
             }
-            result->set_draw_subobject_ratio(M_ratio);
-            if (M_draw_together) result->draw_together();
+            result->set_draw_subobject_ratio(get_draw_subobject_ratio());
+            if (drawing_together()) result->draw_together();
             if (is_fixed_in_frame()) result->set_fixed_in_frame(true);
             if (is_fixed_orientation()) result->set_fixed_orientation(true);
             return result;
         }
         ObjectPtr<TypedGroup> range(int i)
         {
-            auto result = TypedGroup();
+            auto result = ObjectPtr<TypedGroup>();
             if (i < 0) i = size() + i;
             if (i < 0) {
                 throw std::out_of_range(
@@ -123,8 +123,8 @@ class TypedGroup : public Group {
             for (; i < size(); ++i) {
                 result->add(M_subobjects[i]);
             }
-            result->set_draw_subobject_ratio(M_ratio);
-            if (M_draw_together) result->draw_together();
+            result->set_draw_subobject_ratio(get_draw_subobject_ratio());
+            if (drawing_together()) result->draw_together();
             if (is_fixed_in_frame()) result->set_fixed_in_frame(true);
             if (is_fixed_orientation()) result->set_fixed_orientation(true);
             return result;
