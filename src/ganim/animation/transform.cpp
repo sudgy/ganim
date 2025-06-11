@@ -564,6 +564,7 @@ struct TransformAnimation {
             *M_to,
             M_rate_function(t)
         );
+        M_object->invalidate_outline();
         M_object->shift(std::sin(t * τ/2)*M_direction);
         if (M_animation_progress == M_animation_time) {
             M_animation_time = 0;

@@ -14,6 +14,7 @@ using namespace ganim;
 SingleObject::SingleObject(const SingleObject& other)
     : Object(other),
     M_outline_color(other.M_outline_color),
+    M_outline_thickness(other.M_outline_thickness),
     M_always_invalidate_outline(other.M_always_invalidate_outline)
     // The OpenGL stuff gets made whenever it's not there and is needed so we
     // don't have to copy it here
