@@ -24,7 +24,7 @@ void texture_shape_helper::buffer_vertices(
 {
     const auto vsize = sizeof(Shape::Vertex) * self.get_vertices().size();
     const auto tsize = sizeof(TextureVertex) * texture_vertices.size();
-    glBufferData(GL_ARRAY_BUFFER, vsize + tsize, nullptr, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vsize + tsize, nullptr, GL_DYNAMIC_DRAW);
     glBufferSubData(GL_ARRAY_BUFFER, 0, vsize, &self.get_vertices()[0]);
     glBufferSubData(GL_ARRAY_BUFFER, vsize, tsize, &texture_vertices[0]);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Shape::Vertex),

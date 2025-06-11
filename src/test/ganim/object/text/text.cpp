@@ -7,6 +7,8 @@
 #include "ganim/object/text/text.hpp"
 #include "ganim/object/text/text_helpers.hpp"
 
+#include "ganim/animation/transform.hpp"
+
 using namespace ganim;
 
 TEST_CASE("Text", "[object][text]") {
@@ -95,4 +97,22 @@ TEST_CASE("Text newlines", "[object][text]") {
     REQUIRE(box31.get_x() < 0);
     REQUIRE(box32.get_x() > 0);
     REQUIRE(box31.get_y() - 1.75 == box32.get_y());
+}
+
+TEST_CASE("Text transform", "[object][text]") {
+    auto test1 = make_text("OO");
+    auto test2 = make_text("OO");
+    auto scene = TestScene(16, 16, 4, 4, 2);
+    scene.add(test1);
+    test1->set_visible(true);
+    scene.frame_advance();
+    transform(scene, test1[0], test2[0]);
+    scene.wait(1);
+    for (int x = 0; x < 16; ++x) {
+        for (int y = 0; y < 16; ++y) {
+            INFO("x = " << x << ", y = " << y);
+            REQUIRE(scene.get_pixel(0, x, y) == scene.get_pixel(1, x, y));
+            REQUIRE(scene.get_pixel(0, x, y) == scene.get_pixel(2, x, y));
+        }
+    }
 }
