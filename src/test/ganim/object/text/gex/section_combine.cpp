@@ -6,12 +6,10 @@ using namespace ganim;
 using namespace ganim::gex;
 
 TEST_CASE("section_combine", "[object][text][gex]") {
+    auto glyph = std::vector<PositionedGlyph>{{.x_pos = 0, .y_pos = 0}};
     auto glyphs1 = section_combine({});
-    auto glyphs2 = section_combine({RenderedSection({{}}, Box(1, 2, 3))});
-    auto glyphs3 = section_combine({
-        RenderedSection({{}}, Box(1, 2, 3)),
-        RenderedSection({{}}, Box(2, 3, 2))
-    });
+    auto glyphs2 = section_combine({Box(1, 2, 3, glyph)});
+    auto glyphs3 = section_combine({Box(1, 2, 3, glyph), Box(2, 3, 2, glyph)});
 
     REQUIRE(glyphs1.size() == 0);
 

@@ -15,10 +15,6 @@ namespace ganim::gex {
             DisplayMath
         } type;
     };
-    struct RenderedSection {
-        std::vector<PositionedGlyph> glyphs;
-        Box box;
-    };
 }
 
 #endif

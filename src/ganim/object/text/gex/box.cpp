@@ -3,50 +3,59 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-BoxCombineResult gex::combine_boxes_horizontally(const std::vector<Box>& boxes)
+Box gex::combine_boxes_horizontally(const std::vector<Box>& boxes)
 {
-    auto result = BoxCombineResult();
+    auto result = Box();
     for (auto& box : boxes) {
-        auto& pluses = result.pluses.emplace_back();
-        pluses.first = result.new_box.width;
-        result.new_box.width += box.width;
-        result.new_box.height = std::max(result.new_box.height, box.height);
-        result.new_box.depth = std::max(result.new_box.depth, box.depth);
+        for (const auto& glyph : box.glyphs) {
+            auto& new_glyph = result.glyphs.emplace_back(glyph);
+            new_glyph.x_pos += result.width;
+            new_glyph.draw_x += result.width;
+        }
+        result.width += box.width;
+        result.height = std::max(result.height, box.height);
+        result.depth = std::max(result.depth, box.depth);
     }
     return result;
 }
 
-BoxCombineResult gex::combine_boxes_vertically(
+Box gex::combine_boxes_vertically(
     const std::vector<Box>& boxes,
     int reference_box
 )
 {
     if (boxes.size() == 0) return {};
-    auto result = BoxCombineResult();
+    auto result = Box();
     auto pluses_zero_reference = std::vector<double>();
     pluses_zero_reference.push_back(-boxes.front().height);
     for (int i = 0; i < ssize(boxes); ++i) {
         auto& box = boxes[i];
         pluses_zero_reference.back() += box.height;
         pluses_zero_reference.push_back(box.depth);
-        result.new_box.width = std::max(result.new_box.width, box.width);
+        result.width = std::max(result.width, box.width);
         if (i <= reference_box) {
-            result.new_box.height += box.height;
+            result.height += box.height;
         }
         if (i < reference_box) {
-            result.new_box.height += box.depth;
+            result.height += box.depth;
         }
         if (i >= reference_box) {
-            result.new_box.depth += box.depth;
+            result.depth += box.depth;
         }
         if (i > reference_box) {
-            result.new_box.depth += box.height;
+            result.depth += box.height;
         }
     }
     for (int i = 0; i < ssize(boxes); ++i) {
-        auto& pluses = result.pluses.emplace_back();
-        pluses.second = pluses_zero_reference[reference_box]
+        auto y_plus = pluses_zero_reference[reference_box]
             - pluses_zero_reference[i];
+        for (const auto& glyph : boxes[i].glyphs) {
+            auto& new_glyph = result.glyphs.emplace_back(glyph);
+            new_glyph.y_pos += y_plus;
+            new_glyph.draw_y += y_plus;
+            new_glyph.y_min += y_plus;
+            new_glyph.y_max += y_plus;
+        }
     }
     return result;
 }

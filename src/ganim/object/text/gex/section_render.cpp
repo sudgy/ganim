@@ -5,7 +5,7 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-RenderedSection gex::section_render(const Section& section)
+Box gex::section_render(const Section& section)
 {
     if (section.type == Section::Text) {
         auto& font = get_font("fonts/NewCM10-Regular.otf");
@@ -25,7 +25,7 @@ RenderedSection gex::section_render(const Section& section)
         }
         auto glyphs = shape_text_manual_groups(font, codepoints);
         if (glyphs.empty()) {
-            return {{}, {}};
+            return {};
         }
         auto left_x_pos = std::numeric_limits<double>::infinity();
         auto right_x_pos = -std::numeric_limits<double>::infinity();
@@ -38,16 +38,14 @@ RenderedSection gex::section_render(const Section& section)
             top_y_pos = std::max(top_y_pos, glyph.draw_y);
             bottom_y_pos = std::min(bottom_y_pos, glyph.draw_y - glyph.height);
         }
-        return {
-            glyphs,
-            Box(
+        return Box(
                 right_x_pos - left_x_pos,
                 top_y_pos - y_pos,
-                y_pos - bottom_y_pos
-            )
-        };
+                y_pos - bottom_y_pos,
+                glyphs
+            );
     }
     else {
-        return {{}, {}};
+        return {};
     }
 }

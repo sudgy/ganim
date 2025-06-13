@@ -49,12 +49,12 @@ TEST_CASE("GeX text section render", "[object][text][gex]") {
         Section(convert_to_tokens("ag"), Section::Text)
     );
 
-    REQUIRE(section1.box.width == 0.46875);
-    REQUIRE(section1.box.height == 0.453125);
-    REQUIRE(section1.box.depth == 0.015625);
-    REQUIRE(section2.box.width == 0.984375);
-    REQUIRE(section2.box.height == 0.4609375);
-    REQUIRE(section2.box.depth == 0.2109375);
+    REQUIRE(section1.width == 0.46875);
+    REQUIRE(section1.height == 0.453125);
+    REQUIRE(section1.depth == 0.015625);
+    REQUIRE(section2.width == 0.984375);
+    REQUIRE(section2.height == 0.4609375);
+    REQUIRE(section2.depth == 0.2109375);
 
     auto& font = get_font("fonts/NewCM10-Regular.otf");
     auto glyphs1 = shape_text(font, {U"a"});

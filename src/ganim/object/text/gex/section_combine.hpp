@@ -5,7 +5,7 @@
 
 namespace ganim::gex {
     std::vector<PositionedGlyph> section_combine(
-        const std::vector<RenderedSection>& sections
+        const std::vector<Box>& sections
     );
 }
 

@@ -4,7 +4,7 @@
 #include "section.hpp"
 
 namespace ganim::gex {
-    RenderedSection section_render(const Section& section);
+    Box section_render(const Section& section);
 }
 
 #endif

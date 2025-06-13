@@ -6,81 +6,103 @@ using namespace ganim;
 using namespace ganim::gex;
 
 TEST_CASE("combine_boxes_horizontally", "[object][text][gex]") {
+    auto glyph = std::vector<PositionedGlyph>{{.x_pos = 0, .y_pos = 0}};
     auto test1 = combine_boxes_horizontally({});
-    auto test2 = combine_boxes_horizontally({Box(1, 2, 3)});
-    auto test3 = combine_boxes_horizontally({Box(1, 2, 3), Box(1, 2, 3)});
-    auto test4 = combine_boxes_horizontally({Box(1, 2, 3), Box(2, 3, 2)});
+    auto test2 = combine_boxes_horizontally({Box(1, 2, 3, glyph)});
+    auto test3 = combine_boxes_horizontally(
+        {Box(1, 2, 3, glyph), Box(1, 2, 3, glyph)});
+    auto test4 = combine_boxes_horizontally(
+        {Box(1, 2, 3, glyph), Box(2, 3, 2, glyph)});
 
-    REQUIRE(test1.new_box.width == 0);
-    REQUIRE(test1.new_box.height == 0);
-    REQUIRE(test1.new_box.depth == 0);
-    REQUIRE(test1.pluses.size() == 0);
+    REQUIRE(test1.width == 0);
+    REQUIRE(test1.height == 0);
+    REQUIRE(test1.depth == 0);
+    REQUIRE(test1.glyphs.size() == 0);
 
-    REQUIRE(test2.new_box.width == 1);
-    REQUIRE(test2.new_box.height == 2);
-    REQUIRE(test2.new_box.depth == 3);
-    REQUIRE(test2.pluses.size() == 1);
-    REQUIRE(test2.pluses[0] == std::pair{0.0, 0.0});
+    REQUIRE(test2.width == 1);
+    REQUIRE(test2.height == 2);
+    REQUIRE(test2.depth == 3);
+    REQUIRE(test2.glyphs.size() == 1);
+    REQUIRE(test2.glyphs[0].x_pos == 0.0);
+    REQUIRE(test2.glyphs[0].y_pos == 0.0);
 
-    REQUIRE(test3.new_box.width == 2);
-    REQUIRE(test3.new_box.height == 2);
-    REQUIRE(test3.new_box.depth == 3);
-    REQUIRE(test3.pluses.size() == 2);
-    REQUIRE(test3.pluses[0] == std::pair{0.0, 0.0});
-    REQUIRE(test3.pluses[1] == std::pair{1.0, 0.0});
+    REQUIRE(test3.width == 2);
+    REQUIRE(test3.height == 2);
+    REQUIRE(test3.depth == 3);
+    REQUIRE(test3.glyphs.size() == 2);
+    REQUIRE(test3.glyphs[0].x_pos == 0.0);
+    REQUIRE(test3.glyphs[0].y_pos == 0.0);
+    REQUIRE(test3.glyphs[1].x_pos == 1.0);
+    REQUIRE(test3.glyphs[1].y_pos == 0.0);
 
-    REQUIRE(test4.new_box.width == 3);
-    REQUIRE(test4.new_box.height == 3);
-    REQUIRE(test4.new_box.depth == 3);
-    REQUIRE(test4.pluses.size() == 2);
-    REQUIRE(test4.pluses[0] == std::pair{0.0, 0.0});
-    REQUIRE(test4.pluses[1] == std::pair{1.0, 0.0});
+    REQUIRE(test4.width == 3);
+    REQUIRE(test4.height == 3);
+    REQUIRE(test4.depth == 3);
+    REQUIRE(test3.glyphs.size() == 2);
+    REQUIRE(test3.glyphs[0].x_pos == 0.0);
+    REQUIRE(test3.glyphs[0].y_pos == 0.0);
+    REQUIRE(test3.glyphs[1].x_pos == 1.0);
+    REQUIRE(test3.glyphs[1].y_pos == 0.0);
 }
 
 TEST_CASE("combine_boxes_vertically", "[object][text][gex]") {
+    auto glyph = std::vector<PositionedGlyph>{{.x_pos = 0, .y_pos = 0}};
     auto test1 = combine_boxes_vertically({}, 0);
-    auto test2 = combine_boxes_vertically({Box(1, 2, 3)}, 0);
-    auto test3 = combine_boxes_vertically({Box(1, 2, 3), Box(1, 2, 3)}, 0);
-    auto test4 = combine_boxes_vertically({Box(1, 2, 3), Box(1, 2, 3)}, 1);
-    auto test5 = combine_boxes_vertically({Box(1, 2, 3), Box(2, 3, 2)}, 0);
-    auto test6 = combine_boxes_vertically({Box(1, 2, 3), Box(2, 3, 2)}, 1);
+    auto test2 = combine_boxes_vertically({Box(1, 2, 3, glyph)}, 0);
+    auto test3 = combine_boxes_vertically(
+            {Box(1, 2, 3, glyph), Box(1, 2, 3, glyph)}, 0);
+    auto test4 = combine_boxes_vertically(
+            {Box(1, 2, 3, glyph), Box(1, 2, 3, glyph)}, 1);
+    auto test5 = combine_boxes_vertically(
+            {Box(1, 2, 3, glyph), Box(2, 3, 2, glyph)}, 0);
+    auto test6 = combine_boxes_vertically(
+            {Box(1, 2, 3, glyph), Box(2, 3, 2, glyph)}, 1);
 
-    REQUIRE(test1.new_box.width == 0);
-    REQUIRE(test1.new_box.height == 0);
-    REQUIRE(test1.new_box.depth == 0);
-    REQUIRE(test1.pluses.size() == 0);
+    REQUIRE(test1.width == 0);
+    REQUIRE(test1.height == 0);
+    REQUIRE(test1.depth == 0);
+    REQUIRE(test1.glyphs.size() == 0);
 
-    REQUIRE(test2.new_box.width == 1);
-    REQUIRE(test2.new_box.height == 2);
-    REQUIRE(test2.new_box.depth == 3);
-    REQUIRE(test2.pluses.size() == 1);
-    REQUIRE(test2.pluses[0] == std::pair{0.0, 0.0});
+    REQUIRE(test2.width == 1);
+    REQUIRE(test2.height == 2);
+    REQUIRE(test2.depth == 3);
+    REQUIRE(test2.glyphs.size() == 1);
+    REQUIRE(test2.glyphs[0].x_pos == 0.0);
+    REQUIRE(test2.glyphs[0].y_pos == 0.0);
 
-    REQUIRE(test3.new_box.width == 1);
-    REQUIRE(test3.new_box.height == 2);
-    REQUIRE(test3.new_box.depth == 8);
-    REQUIRE(test3.pluses.size() == 2);
-    REQUIRE(test3.pluses[0] == std::pair{0.0, 0.0});
-    REQUIRE(test3.pluses[1] == std::pair{0.0, -5.0});
+    REQUIRE(test3.width == 1);
+    REQUIRE(test3.height == 2);
+    REQUIRE(test3.depth == 8);
+    REQUIRE(test3.glyphs.size() == 2);
+    REQUIRE(test3.glyphs[0].x_pos == 0.0);
+    REQUIRE(test3.glyphs[0].y_pos == 0.0);
+    REQUIRE(test3.glyphs[1].x_pos == 0.0);
+    REQUIRE(test3.glyphs[1].y_pos == -5.0);
 
-    REQUIRE(test4.new_box.width == 1);
-    REQUIRE(test4.new_box.height == 7);
-    REQUIRE(test4.new_box.depth == 3);
-    REQUIRE(test4.pluses.size() == 2);
-    REQUIRE(test4.pluses[0] == std::pair{0.0, 5.0});
-    REQUIRE(test4.pluses[1] == std::pair{0.0, 0.0});
+    REQUIRE(test4.width == 1);
+    REQUIRE(test4.height == 7);
+    REQUIRE(test4.depth == 3);
+    REQUIRE(test4.glyphs.size() == 2);
+    REQUIRE(test4.glyphs[0].x_pos == 0.0);
+    REQUIRE(test4.glyphs[0].y_pos == 5.0);
+    REQUIRE(test4.glyphs[1].x_pos == 0.0);
+    REQUIRE(test4.glyphs[1].y_pos == 0.0);
 
-    REQUIRE(test5.new_box.width == 2);
-    REQUIRE(test5.new_box.height == 2);
-    REQUIRE(test5.new_box.depth == 8);
-    REQUIRE(test5.pluses.size() == 2);
-    REQUIRE(test5.pluses[0] == std::pair{0.0, 0.0});
-    REQUIRE(test5.pluses[1] == std::pair{0.0, -6.0});
+    REQUIRE(test5.width == 2);
+    REQUIRE(test5.height == 2);
+    REQUIRE(test5.depth == 8);
+    REQUIRE(test5.glyphs.size() == 2);
+    REQUIRE(test5.glyphs[0].x_pos == 0.0);
+    REQUIRE(test5.glyphs[0].y_pos == 0.0);
+    REQUIRE(test5.glyphs[1].x_pos == 0.0);
+    REQUIRE(test5.glyphs[1].y_pos == -6.0);
 
-    REQUIRE(test6.new_box.width == 2);
-    REQUIRE(test6.new_box.height == 8);
-    REQUIRE(test6.new_box.depth == 2);
-    REQUIRE(test6.pluses.size() == 2);
-    REQUIRE(test6.pluses[0] == std::pair{0.0, 6.0});
-    REQUIRE(test6.pluses[1] == std::pair{0.0, 0.0});
+    REQUIRE(test6.width == 2);
+    REQUIRE(test6.height == 8);
+    REQUIRE(test6.depth == 2);
+    REQUIRE(test6.glyphs.size() == 2);
+    REQUIRE(test6.glyphs[0].x_pos == 0.0);
+    REQUIRE(test6.glyphs[0].y_pos == 6.0);
+    REQUIRE(test6.glyphs[1].x_pos == 0.0);
+    REQUIRE(test6.glyphs[1].y_pos == 0.0);
 }
