@@ -22,6 +22,9 @@ class TextBase : public Group {
                 using TextureShape<Shape>::TextureShape;
                 virtual Box get_original_logical_bounding_box() const override;
                 Box logical_bounding_box;
+
+                ObjectPtr<TextPiece> polymorphic_copy() const;
+                virtual TextPiece* polymorphic_copy_impl() const;
         };
         std::vector<ObjectPtr<TextPiece>> M_pieces;
 };

@@ -384,3 +384,13 @@ Tex* Tex::polymorphic_copy_impl() const
 {
     return new Tex(*this);
 }
+
+ObjectPtr<Tex::TexPiece> Tex::TexPiece::polymorphic_copy() const
+{
+    return ObjectPtr<Tex::TexPiece>::from_new(polymorphic_copy_impl());
+}
+
+Tex::TexPiece* Tex::TexPiece::polymorphic_copy_impl() const
+{
+    return new Tex::TexPiece(*this);
+}

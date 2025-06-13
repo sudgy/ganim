@@ -103,3 +103,13 @@ Box TextBase::TextPiece::get_original_logical_bounding_box() const
 {
     return logical_bounding_box;
 }
+
+ObjectPtr<TextBase::TextPiece> TextBase::TextPiece::polymorphic_copy() const
+{
+    return ObjectPtr<TextBase::TextPiece>::from_new(polymorphic_copy_impl());
+}
+
+TextBase::TextPiece* TextBase::TextPiece::polymorphic_copy_impl() const
+{
+    return new TextBase::TextPiece(*this);
+}
