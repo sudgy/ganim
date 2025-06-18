@@ -19,6 +19,7 @@ MathList gex::make_math_list(const Section& section)
     auto result = MathList();
     for (auto& token : section.tokens) {
         auto& tok = get<CharacterToken>(token.value);
+        if (tok.codepoint == U' ') continue;
         auto atom_type = get_atom_type(tok.codepoint);
         auto atom_nucleus = AtomField(AtomFieldSymbol(tok.codepoint), Box());
         auto atom = Atom(Box(), atom_type, atom_nucleus);

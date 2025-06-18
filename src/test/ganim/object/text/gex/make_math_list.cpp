@@ -4,7 +4,7 @@
 
 using namespace ganim::gex;
 
-TEST_CASE("GeX make_atom_list basic", "[object][text][gex]") {
+TEST_CASE("GeX make_math_list basic", "[object][text][gex]") {
     auto section = Section();
     section.type = Section::InlineMath;
 
@@ -31,4 +31,16 @@ TEST_CASE("GeX make_atom_list basic", "[object][text][gex]") {
     atom = &get<Atom>(list[2].value);
     REQUIRE(atom->type == AtomType::Bin);
     REQUIRE(get<AtomFieldSymbol>(atom->nucleus.value).codepoint == U'+');
+}
+
+TEST_CASE("GeX make_math_list removing spaces", "[object][text][gex]") {
+    auto section = Section();
+    section.type = Section::InlineMath;
+
+    section.tokens.emplace_back(CharacterToken(U'H', CategoryCode::Other), 0,0);
+    section.tokens.emplace_back(CharacterToken(U' ', CategoryCode::Other), 1,0);
+    section.tokens.emplace_back(CharacterToken(U'e', CategoryCode::Other), 2,0);
+
+    auto list = make_math_list(section);
+    REQUIRE(list.size() == 2);
 }
