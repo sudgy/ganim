@@ -1,5 +1,7 @@
 #include "render_math_list.hpp"
 
+#include "math_letter_map.hpp"
+
 using namespace ganim;
 using namespace ganim::gex;
 
@@ -38,7 +40,7 @@ Box gex::render_math_list(MathList list)
         last_atom->type = Ord;
     }
 
-    auto& font = get_font("fonts/NewCM10-Regular.otf");
+    auto& font = get_font("fonts/NewCMMath-Regular.otf");
     auto rendered_list = std::vector<Atom>();
     auto ord_start = -1;
     auto render_ords = [&](int start, int end) {
@@ -46,8 +48,11 @@ Box gex::render_math_list(MathList list)
         for (int i = start; i < end; ++i) {
             auto& atom = get<Atom>(list[i].value);
             auto& atom_symbol = get<AtomFieldSymbol>(atom.nucleus.value);
-            text.emplace_back(
-                    std::u32string(1, atom_symbol.codepoint), list[i].group);
+            auto it = math_letter_map.find(atom_symbol.codepoint);
+            auto codepoint = it == math_letter_map.end()
+                ? atom_symbol.codepoint
+                : it->second;
+            text.emplace_back(std::u32string(1, codepoint), list[i].group);
         }
         auto glyphs = shape_text_manual_groups(font, text);
         auto box = box_from_glyphs(glyphs);
