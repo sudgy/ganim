@@ -95,6 +95,7 @@ namespace ganim {
      * in.
      */
     Glyph& get_glyph(Font& font, glyph_t glyph_index);
+    Glyph& get_glyph_by_codepoint(Font& font, glyph_t glyph_index);
     /** @brief Get the font ascender */
     double get_font_ascender(Font& font);
     /** @brief Get the font descender */

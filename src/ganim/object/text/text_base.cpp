@@ -4,18 +4,7 @@ using namespace ganim;
 
 void TextBase::create(const std::vector<std::string_view>& strings)
 {
-    auto codepoint_strings = std::vector<std::u32string>();
-    codepoint_strings.reserve(strings.size());
-    for (auto& str : strings) {
-        auto& codepoints = codepoint_strings.emplace_back();
-        codepoints.reserve(str.size());
-        auto gen = utf8_to_codepoints(str);
-        while (auto codepoint = gen()) {
-            codepoints.push_back(*codepoint);
-        }
-    }
-
-    auto glyphs = get_glyphs(codepoint_strings);
+    auto glyphs = get_glyphs(strings);
 
     using Vertex = Shape::Vertex;
     auto all_vertices = std::vector<std::vector<Vertex>>();

@@ -1,11 +1,11 @@
-#include "atom.hpp"
+#include "noad.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
 
-std::pair<int, bool> gex::get_atom_spacing(Atom left, Atom right)
+std::pair<int, bool> gex::get_atom_spacing(AtomType left, AtomType right)
 {
-    using enum Atom;
+    using enum AtomType;
     if (int(left) > int(Inner)) left = Ord;
     if (int(right) > int(Inner)) right = Ord;
     switch (left) {

@@ -17,6 +17,7 @@ namespace ganim::gex {
         const std::vector<Box>& boxes,
         int reference_box
     );
+    Box box_from_glyphs(std::vector<PositionedGlyph> glyphs);
 }
 
 #endif

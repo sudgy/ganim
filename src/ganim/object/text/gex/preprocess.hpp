@@ -6,7 +6,7 @@
 #include "token.hpp"
 
 namespace ganim::gex {
-    TokenList preprocess(const std::vector<std::string>& input);
+    TokenList preprocess(const std::vector<std::string_view>& input);
 }
 
 #endif

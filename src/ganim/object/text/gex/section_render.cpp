@@ -1,6 +1,7 @@
 #include "section_render.hpp"
 
-#include <limits>
+#include "make_math_list.hpp"
+#include "render_math_list.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
@@ -24,28 +25,9 @@ Box gex::section_render(const Section& section)
             );
         }
         auto glyphs = shape_text_manual_groups(font, codepoints);
-        if (glyphs.empty()) {
-            return {};
-        }
-        auto left_x_pos = std::numeric_limits<double>::infinity();
-        auto right_x_pos = -std::numeric_limits<double>::infinity();
-        auto y_pos = glyphs.front().y_pos;
-        auto top_y_pos = -std::numeric_limits<double>::infinity();
-        auto bottom_y_pos = std::numeric_limits<double>::infinity();
-        for (auto& glyph : glyphs) {
-            left_x_pos = std::min(left_x_pos, glyph.x_pos);
-            right_x_pos = std::max(right_x_pos, glyph.x_pos + glyph.width);
-            top_y_pos = std::max(top_y_pos, glyph.draw_y);
-            bottom_y_pos = std::min(bottom_y_pos, glyph.draw_y - glyph.height);
-        }
-        return Box(
-                right_x_pos - left_x_pos,
-                top_y_pos - y_pos,
-                y_pos - bottom_y_pos,
-                glyphs
-            );
+        return box_from_glyphs(glyphs);
     }
     else {
-        return {};
+        return render_math_list(make_math_list(section));
     }
 }

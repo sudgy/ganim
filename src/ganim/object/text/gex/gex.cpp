@@ -7,14 +7,11 @@
 #include "section_render.hpp"
 #include "section_combine.hpp"
 
-
-
-
 using namespace ganim;
 using namespace ganim::gex;
 
 std::vector<PositionedGlyph>
-ganim::gex_render(const std::vector<std::string>& input)
+ganim::gex_render(const std::vector<std::string_view>& input)
 {
     auto tokens = preprocess(input);
     auto sections = split(tokens);

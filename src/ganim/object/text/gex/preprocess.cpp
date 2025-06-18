@@ -18,7 +18,7 @@ namespace {
     struct overloaded : Ts... { using Ts::operator()...; };
     class Preprocessor {
         public:
-            explicit Preprocessor(const std::vector<std::string>& input);
+            explicit Preprocessor(const std::vector<std::string_view>& input);
             TokenList get_output();
 
         private:
@@ -51,7 +51,7 @@ namespace {
             GeXError make_error(std::string_view what) const;
 
             std::vector<std::unordered_set<std::uint32_t>> M_catcodes;
-            std::vector<std::string> M_input;
+            std::vector<std::string_view> M_input;
             TokenList M_output;
             std::unordered_map<std::u32string, Macro> M_macros;
             TokenList M_next_tokens;
@@ -63,7 +63,8 @@ namespace {
     };
 }
 
-Preprocessor::Preprocessor(const std::vector<std::string>& input) : M_input(input)
+Preprocessor::Preprocessor(const std::vector<std::string_view>& input)
+    : M_input(input)
 {
     if (M_input.size() == 0) throw std::runtime_error("No input passed to Preprocessor");
     M_catcodes.resize(16);
@@ -526,7 +527,7 @@ GeXError Preprocessor::make_error(std::string_view what) const
     else return GeXError(group_index, string_index, what);
 }
 
-TokenList ganim::gex::preprocess(const std::vector<std::string>& input)
+TokenList ganim::gex::preprocess(const std::vector<std::string_view>& input)
 {
     auto preprocessor = Preprocessor(input);
     return preprocessor.get_output();

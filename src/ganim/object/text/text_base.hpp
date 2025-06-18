@@ -15,7 +15,7 @@ class TextBase : public Group {
 
     private:
         virtual std::vector<PositionedGlyph> get_glyphs(
-                const std::vector<std::u32string>& strings)=0;
+                const std::vector<std::string_view>& strings)=0;
 
         class TextPiece : public TextureShape<Shape> {
             public:

@@ -18,3 +18,4 @@
 #include "ganim/object/text/character_old.hpp"
 #include "ganim/object/text/text.hpp"
 #include "ganim/object/text/tex.hpp"
+#include "ganim/object/text/gex.hpp"

@@ -16,10 +16,21 @@ Text::Text(TextArgs args, const std::vector<std::string_view>& strings)
 }
 
 std::vector<PositionedGlyph> Text::get_glyphs(
-        const std::vector<std::u32string>& strings)
+        const std::vector<std::string_view>& strings)
 {
+    auto codepoint_strings = std::vector<std::u32string>();
+    codepoint_strings.reserve(strings.size());
+    for (auto& str : strings) {
+        auto& codepoints = codepoint_strings.emplace_back();
+        codepoints.reserve(str.size());
+        auto gen = utf8_to_codepoints(str);
+        while (auto codepoint = gen()) {
+            codepoints.push_back(*codepoint);
+        }
+    }
+
     auto shaped_glyphs_per_line = std::vector<std::vector<PositionedGlyph>>();
-    auto later_strings = strings;
+    auto& later_strings = codepoint_strings;
     later_strings.push_back(U"\n");
     for (int i = 0; i < ssize(later_strings); ++i) {
         while (true) {
