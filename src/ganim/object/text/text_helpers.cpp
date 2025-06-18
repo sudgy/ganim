@@ -162,6 +162,13 @@ Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
     return result;
 }
 
+double ganim::get_font_em(Font& font)
+{
+    // Not sure why, but my output didn't match the TeX output unless I had
+    // conversion factor.
+    return 1.2 * font.M_ft_face->size->metrics.x_ppem / font.M_pixel_size;
+}
+
 double ganim::get_font_ascender(Font& font)
 {
     auto face = font.M_ft_face;

@@ -86,6 +86,7 @@ Box gex::render_math_list(MathList list)
         render_ords(ord_start, ssize(list));
     }
 
+    const auto em = get_font_em(font);
     auto result_boxes = std::vector<Box>();
     for (int i = 0; i < ssize(rendered_list); ++i) {
         result_boxes.push_back(rendered_list[i].box);
@@ -94,7 +95,7 @@ Box gex::render_math_list(MathList list)
                 rendered_list[i].type,
                 rendered_list[i+1].type
             );
-            result_boxes.push_back(Box(1*spacing.first, 0, 0, {}));
+            result_boxes.push_back(Box(em*spacing.first/18.0, 0, 0, {}));
         }
     }
     return combine_boxes_horizontally(result_boxes);
