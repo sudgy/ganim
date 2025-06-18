@@ -6,6 +6,11 @@ using namespace ganim;
 using namespace ganim::gex;
 
 namespace {
+    // Experimentally, the distance from the midline to the baseline is 0.265625
+    //void vcenter(Box& box)
+    //{
+
+    //}
     void do_preprocessing(MathList& list)
     {
         using enum AtomType;
