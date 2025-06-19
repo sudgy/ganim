@@ -46,8 +46,9 @@ namespace {
             last_atom->type = Ord;
         }
     }
-    std::vector<Atom> do_rendering(MathList& list, Font& font)
+    std::vector<Atom> do_rendering(MathList& list, Font& font, Style style)
     {
+        auto scaling = get_style_scaling(style);
         using enum AtomType;
         auto rendered_list = std::vector<Atom>();
         auto ord_start = -1;
@@ -64,6 +65,7 @@ namespace {
             }
             auto glyphs = shape_text_manual_groups(font, text);
             auto box = box_from_glyphs(glyphs);
+            scale_box(box, scaling);
             auto new_atom = Atom(box, Ord, AtomField(AtomFieldBox(), box));
             rendered_list.push_back(new_atom);
         };
@@ -74,6 +76,7 @@ namespace {
                     {{std::u32string(1, atom_symbol->codepoint), group}}
                 );
                 atom.nucleus.box = box_from_glyphs(glyphs);
+                scale_box(atom.nucleus.box, scaling);
                 atom.box = atom.nucleus.box;
                 rendered_list.push_back(atom);
             }
@@ -100,8 +103,9 @@ namespace {
         }
         return rendered_list;
     }
-    Box do_combine(std::vector<Atom>& rendered_list, Font& font)
+    Box do_combine(std::vector<Atom>& rendered_list, Font& font, Style style)
     {
+        auto scaling = get_style_scaling(style);
         const auto em = get_font_em(font);
         auto result_boxes = std::vector<Box>();
         for (int i = 0; i < ssize(rendered_list); ++i) {
@@ -111,18 +115,19 @@ namespace {
                     rendered_list[i].type,
                     rendered_list[i+1].type
                 );
-                result_boxes.push_back(Box(em*spacing.first/18.0, 0, 0, {}));
+                result_boxes.push_back(
+                    Box(scaling*em*spacing.first/18.0, 0, 0, {}));
             }
         }
         return combine_boxes_horizontally(result_boxes);
     }
 }
 
-Box gex::render_math_list(MathList list)
+Box gex::render_math_list(MathList list, Style style)
 {
     using enum AtomType;
     do_preprocessing(list);
     auto& font = get_font("fonts/NewCMMath-Regular.otf");
-    auto rendered_list = do_rendering(list, font);
-    return do_combine(rendered_list, font);
+    auto rendered_list = do_rendering(list, font, style);
+    return do_combine(rendered_list, font, style);
 }

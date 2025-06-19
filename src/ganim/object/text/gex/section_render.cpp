@@ -28,6 +28,8 @@ Box gex::section_render(const Section& section)
         return box_from_glyphs(glyphs);
     }
     else {
-        return render_math_list(make_math_list(section));
+        auto style = section.type == Section::InlineMath
+            ? Style::Text : Style::Display;
+        return render_math_list(make_math_list(section), style);
     }
 }

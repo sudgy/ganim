@@ -85,3 +85,20 @@ Box gex::box_from_glyphs(std::vector<PositionedGlyph> glyphs)
             glyphs
         );
 }
+
+void gex::scale_box(Box& box, double scale)
+{
+    box.width *= scale;
+    box.height *= scale;
+    box.depth *= scale;
+    for (auto& glyph : box.glyphs) {
+        glyph.x_pos *= scale;
+        glyph.y_pos *= scale;
+        glyph.draw_x *= scale;
+        glyph.draw_y *= scale;
+        glyph.width *= scale;
+        glyph.height *= scale;
+        glyph.y_min *= scale;
+        glyph.y_max *= scale;
+    }
+}
