@@ -46,11 +46,11 @@ namespace {
             last_atom->type = Ord;
         }
     }
-    std::vector<Atom> do_rendering(MathList& list, Font& font, Style style)
+    MathList do_rendering(MathList& list, Font& font, Style style)
     {
         auto scaling = get_style_scaling(style);
         using enum AtomType;
-        auto rendered_list = std::vector<Atom>();
+        auto rendered_list = MathList();
         auto ord_start = -1;
         auto render_ords = [&](int start, int end) {
             auto text = std::vector<std::pair<std::u32string, int>>();
@@ -67,7 +67,8 @@ namespace {
             auto box = box_from_glyphs(glyphs);
             scale_box(box, scaling);
             auto new_atom = Atom(box, Ord, AtomField(AtomFieldBox(), box));
-            rendered_list.push_back(new_atom);
+            rendered_list.push_back(Noad(
+                        new_atom, list[start].group, list[start].string_index));
         };
         auto render_atom = [&](auto& atom, int group) {
             if (auto atom_symbol = get_if<AtomFieldSymbol>(&atom.nucleus.value)) {
@@ -78,7 +79,7 @@ namespace {
                 atom.nucleus.box = box_from_glyphs(glyphs);
                 scale_box(atom.nucleus.box, scaling);
                 atom.box = atom.nucleus.box;
-                rendered_list.push_back(atom);
+                rendered_list.push_back(Noad(atom, group, -1));
             }
         };
         auto is_symbol_ord = [&](auto& atom) {
@@ -103,22 +104,26 @@ namespace {
         }
         return rendered_list;
     }
-    Box do_combine(std::vector<Atom>& rendered_list, Font& font, Style style)
+    Box do_combine(MathList& rendered_list, Font& font, Style style)
     {
         auto scaling = get_style_scaling(style);
         const auto em = get_font_em(font);
         auto result_boxes = std::vector<Box>();
+        auto last_type = AtomType(-1);
         for (int i = 0; i < ssize(rendered_list); ++i) {
-            result_boxes.push_back(rendered_list[i].box);
-            if (i + 1 < ssize(rendered_list)) {
-                auto spacing = get_atom_spacing(
-                    rendered_list[i].type,
-                    rendered_list[i+1].type
-                );
-                if (spacing.second or !is_script_styles(style)) {
-                    result_boxes.push_back(
-                        Box(scaling*em*spacing.first/18.0, 0, 0, {}));
+            if (auto atom = get_if<Atom>(&rendered_list[i].value)) {
+                if (last_type != AtomType(-1)) {
+                    auto spacing = get_atom_spacing(
+                        last_type,
+                        atom->type
+                    );
+                    if (spacing.second or !is_script_styles(style)) {
+                        result_boxes.push_back(
+                            Box(scaling*em*spacing.first/18.0, 0, 0, {}));
+                    }
                 }
+                result_boxes.push_back(atom->box);
+                last_type = atom->type;
             }
         }
         return combine_boxes_horizontally(result_boxes);
