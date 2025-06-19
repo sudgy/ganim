@@ -95,3 +95,18 @@ double gex::get_style_scaling(Style style)
     }
     std::unreachable();
 }
+
+bool gex::is_script_styles(Style style)
+{
+    switch (style) {
+        case Display: return false;
+        case Text: return false;
+        case Script: return true;
+        case ScriptScript: return true;
+        case CrampedDisplay: return false;
+        case CrampedText: return false;
+        case CrampedScript: return true;
+        case CrampedScriptScript: return true;
+    }
+    std::unreachable();
+}

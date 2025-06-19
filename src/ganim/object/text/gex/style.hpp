@@ -18,6 +18,7 @@ namespace ganim::gex {
     Style get_denominator_style(Style style);
     Style get_cramped_style(Style style);
     double get_style_scaling(Style style);
+    bool is_script_styles(Style style);
 }
 
 #endif

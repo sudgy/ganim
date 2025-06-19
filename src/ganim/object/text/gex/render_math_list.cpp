@@ -115,8 +115,10 @@ namespace {
                     rendered_list[i].type,
                     rendered_list[i+1].type
                 );
-                result_boxes.push_back(
-                    Box(scaling*em*spacing.first/18.0, 0, 0, {}));
+                if (spacing.second or !is_script_styles(style)) {
+                    result_boxes.push_back(
+                        Box(scaling*em*spacing.first/18.0, 0, 0, {}));
+                }
             }
         }
         return combine_boxes_horizontally(result_boxes);
