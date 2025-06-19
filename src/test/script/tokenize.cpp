@@ -16,7 +16,7 @@ TEST_CASE("Tokenize", "[script]") {
     auto tokens6 = tokenize(" [  ab \n c");
     auto tokens7 = tokenize(" [ab \n c");
     auto tokens8 = tokenize(" [ab[ \n c");
-    auto tokens9 = tokenize(" [ab· \n c");
+    auto tokens9 = tokenize(" [ab⋅ \n c");
     auto tokens10 = tokenize("a\nb");
 
     REQUIRE(tokens1.size() == 3);
@@ -124,14 +124,14 @@ TEST_CASE("Tokenize", "[script]") {
     REQUIRE(tokens9[1].line_number == 0);
     REQUIRE(tokens9[1].column_number == 2);
     REQUIRE(tokens9[1].byte_number == 2);
-    REQUIRE(tokens9[2].string == "·");
+    REQUIRE(tokens9[2].string == "⋅");
     REQUIRE(tokens9[2].line_number == 0);
     REQUIRE(tokens9[2].column_number == 4);
     REQUIRE(tokens9[2].byte_number == 4);
     REQUIRE(tokens9[3].string == "c");
     REQUIRE(tokens9[3].line_number == 1);
     REQUIRE(tokens9[3].column_number == 1);
-    REQUIRE(tokens9[3].byte_number == 9);
+    REQUIRE(tokens9[3].byte_number == 10);
 
     REQUIRE(tokens10.size() == 2);
     REQUIRE(tokens10[0].string == "a");

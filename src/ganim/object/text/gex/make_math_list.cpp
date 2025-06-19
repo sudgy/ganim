@@ -1,5 +1,7 @@
 #include "make_math_list.hpp"
 
+#include "ganim/unicode_categories.hpp"
+
 using namespace ganim;
 using namespace ganim::gex;
 
@@ -8,9 +10,12 @@ using namespace ganim::gex;
 AtomType get_atom_type(std::int32_t codepoint)
 {
     using enum AtomType;
-    // Very temporary
-    if (codepoint == U'=') return Rel;
-    if (codepoint == U'+') return Bin;
+    if (C_tex_op.contains(codepoint)) return Op;
+    if (C_tex_bin.contains(codepoint)) return Bin;
+    if (C_tex_rel.contains(codepoint)) return Rel;
+    if (C_tex_open.contains(codepoint)) return Open;
+    if (C_tex_close.contains(codepoint)) return Close;
+    if (C_tex_punct.contains(codepoint)) return Punct;
     return Ord;
 }
 

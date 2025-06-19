@@ -15,6 +15,8 @@ namespace {
         for (std::uint32_t c = U'α'; c <= U'ω'; ++c) {
             result[c] = U'𝛼' + (c - U'α');
         }
+        result[U'*'] = U'∗';
+        result[U'-'] = U'−';
         return result;
     }
 }

@@ -6,6 +6,8 @@
 
 #include "script/script_exception.hpp"
 
+using namespace ganim;
+
 namespace {
     bool is_identifier_start(std::uint32_t codepoint)
     {
@@ -34,8 +36,6 @@ namespace {
                   or codepoint == 0x2029);
     }
 }
-
-using namespace ganim;
 
 std::vector<Token> ganim::tokenize(std::string_view string)
 {
