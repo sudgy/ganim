@@ -12,17 +12,19 @@ Box gex::section_render(const Section& section)
         auto& font = get_font("fonts/NewCM10-Regular.otf");
         auto codepoints = std::vector<std::pair<std::u32string, int>>();
         for (auto& token : section.tokens) {
-            if (codepoints.empty()) {
-                codepoints.emplace_back(U"", token.group);
-            }
-            else {
-                if (codepoints.back().second != token.group) {
+            if (auto tok = get_if<CharacterToken>(&token.value)) {
+                if (tok->catcode == CategoryCode::StartGroup or
+                    tok->catcode == CategoryCode::EndGroup) continue;
+                if (codepoints.empty()) {
                     codepoints.emplace_back(U"", token.group);
                 }
+                else {
+                    if (codepoints.back().second != token.group) {
+                        codepoints.emplace_back(U"", token.group);
+                    }
+                }
+                codepoints.back().first.push_back(tok->codepoint);
             }
-            codepoints.back().first.push_back(
-                std::get<CharacterToken>(token.value).codepoint
-            );
         }
         auto glyphs = shape_text_manual_groups(font, codepoints);
         return box_from_glyphs(glyphs);

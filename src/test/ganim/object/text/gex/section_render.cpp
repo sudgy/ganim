@@ -13,6 +13,8 @@ namespace {
         for (auto c : str) {
             auto cat = CategoryCode::Letter;
             if (c == '$') cat = CategoryCode::MathShift;
+            if (c == '{') cat = CategoryCode::StartGroup;
+            if (c == '}') cat = CategoryCode::EndGroup;
             result.emplace_back(CharacterToken(c, cat), 0, i++);
         }
         return result;
@@ -62,4 +64,10 @@ TEST_CASE("GeX text section render", "[object][text][gex]") {
 
     check_glyphs(section1.glyphs, glyphs1);
     check_glyphs(section2.glyphs, glyphs2);
+}
+
+TEST_CASE("GeX section_render braces in text mode", "[object][text][gex]") {
+    auto section = section_render(
+            Section(convert_to_tokens("a{bc}"), Section::Text));
+    REQUIRE(section.glyphs.size() == 3);
 }
