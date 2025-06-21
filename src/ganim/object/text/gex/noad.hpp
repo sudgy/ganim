@@ -50,9 +50,12 @@ namespace ganim::gex {
         AtomField nucleus;
         // Coming soon: Subscript and superscript
     };
+    struct CommandNoad {
+        std::string command;
+    };
 
     struct Noad {
-        std::variant<Atom> value;
+        std::variant<Atom, CommandNoad> value;
         int group = -1;
         int string_index = -1;
     };

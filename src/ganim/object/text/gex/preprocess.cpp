@@ -26,6 +26,7 @@ namespace {
             struct Macro {
                 TokenList delimiters;
                 TokenList replacement_text;
+                bool output_directly = false;
             };
 
             std::optional<std::uint32_t> read_character();
@@ -83,6 +84,14 @@ Preprocessor::Preprocessor(const std::vector<std::string_view>& input)
     M_catcodes[14] = {U'%'};
 
     M_macros[U"relax"] = {};
+    M_macros[U"displaystyle"] =
+        {{}, {{CommandToken(U"displaystyle", "displaystyle")}}, true};
+    M_macros[U"textstyle"] =
+        {{}, {{CommandToken(U"textstyle", "textstyle")}}, true};
+    M_macros[U"scriptstyle"] =
+        {{}, {{CommandToken(U"scriptstyle", "scriptstyle")}}, true};
+    M_macros[U"scriptscriptstyle"] =
+        {{}, {{CommandToken(U"scriptscriptstyle", "scriptscriptstyle")}}, true};
     M_macros[U"{"] = {{}, {{CharacterToken(U'{', CategoryCode::Other)}}};
     M_macros[U"}"] = {{}, {{CharacterToken(U'}', CategoryCode::Other)}}};
     M_macros[U"$"] = {{}, {{CharacterToken(U'$', CategoryCode::Other)}}};
@@ -274,7 +283,12 @@ void Preprocessor::process_command_token(
         }
     }
     add_replacement_text(start, ssize(macro.replacement_text));
-    M_next_tokens.prepend_range(actual_expansion);
+    if (macro.output_directly) {
+        M_output.append_range(actual_expansion);
+    }
+    else {
+        M_next_tokens.prepend_range(actual_expansion);
+    }
 }
 
 bool Preprocessor::process_built_in(const std::u32string& command, int group)

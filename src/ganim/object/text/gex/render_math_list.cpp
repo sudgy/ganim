@@ -11,6 +11,25 @@ namespace {
     //{
 
     //}
+    void check_style_change(CommandNoad& command, Style& style, double& scaling)
+    {
+        if (command.command == "displaystyle") {
+            style = Style::Display;
+            scaling = get_style_scaling(style);
+        }
+        else if (command.command == "textstyle") {
+            style = Style::Text;
+            scaling = get_style_scaling(style);
+        }
+        else if (command.command == "scriptstyle") {
+            style = Style::Script;
+            scaling = get_style_scaling(style);
+        }
+        else if (command.command == "scriptscriptstyle") {
+            style = Style::ScriptScript;
+            scaling = get_style_scaling(style);
+        }
+    }
     void do_preprocessing(MathList& list)
     {
         using enum AtomType;
@@ -82,20 +101,28 @@ namespace {
                 rendered_list.push_back(Noad(atom, group, -1));
             }
         };
-        auto is_symbol_ord = [&](auto& atom) {
-            return atom->type == Ord and
-                std::holds_alternative<AtomFieldSymbol>(atom->nucleus.value);
+        auto is_symbol_ord = [&](auto& noad) {
+            if (auto atom = std::get_if<Atom>(&noad.value)) {
+                return atom->type == Ord and
+                    std::holds_alternative<AtomFieldSymbol>(
+                            atom->nucleus.value);
+            }
+            return false;
         };
         for (int i = 0; i < ssize(list); ++i) {
             auto& noad = list[i];
-            if (auto atom = std::get_if<Atom>(&noad.value)) {
-                if (is_symbol_ord(atom) and ord_start == -1) ord_start = i;
-                else if (!is_symbol_ord(atom)) {
-                    if (ord_start != -1) {
-                        render_ords(ord_start, i);
-                        ord_start = -1;
-                    }
+            if (is_symbol_ord(noad) and ord_start == -1) ord_start = i;
+            else if (!is_symbol_ord(noad)) {
+                if (ord_start != -1) {
+                    render_ords(ord_start, i);
+                    ord_start = -1;
+                }
+                if (auto atom = std::get_if<Atom>(&noad.value)) {
                     render_atom(*atom, noad.group);
+                }
+                else if (auto command = std::get_if<CommandNoad>(&noad.value)) {
+                    check_style_change(*command, style, scaling);
+                    rendered_list.push_back(noad);
                 }
             }
         }
@@ -111,19 +138,24 @@ namespace {
         auto result_boxes = std::vector<Box>();
         auto last_type = AtomType(-1);
         for (int i = 0; i < ssize(rendered_list); ++i) {
-            if (auto atom = get_if<Atom>(&rendered_list[i].value)) {
+            auto& noad = rendered_list[i];
+            if (auto atom = get_if<Atom>(&noad.value)) {
                 if (last_type != AtomType(-1)) {
                     auto spacing = get_atom_spacing(
                         last_type,
                         atom->type
                     );
-                    if (spacing.second or !is_script_styles(style)) {
-                        result_boxes.push_back(
-                            Box(scaling*em*spacing.first/18.0, 0, 0, {}));
+                    if (!spacing.second and is_script_styles(style)) {
+                        spacing.first = 1;
                     }
+                    result_boxes.push_back(
+                        Box(scaling*em*spacing.first/18.0, 0, 0, {}));
                 }
                 result_boxes.push_back(atom->box);
                 last_type = atom->type;
+            }
+            else if (auto command = std::get_if<CommandNoad>(&noad.value)) {
+                check_style_change(*command, style, scaling);
             }
         }
         return combine_boxes_horizontally(result_boxes);

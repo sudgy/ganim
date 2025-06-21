@@ -1,9 +1,15 @@
 #include "make_math_list.hpp"
 
 #include "ganim/unicode_categories.hpp"
+#include "gex_error.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
+
+namespace {
+    template<class... Ts>
+    struct overloaded : Ts... { using Ts::operator()...; };
+}
 
 // I'm sure this is supposed to be configurable so this might change in the
 // future
@@ -23,13 +29,31 @@ MathList gex::make_math_list(const Section& section)
 {
     auto result = MathList();
     for (auto& token : section.tokens) {
-        auto& tok = get<CharacterToken>(token.value);
-        if (tok.codepoint == U' ') continue;
-        auto atom_type = get_atom_type(tok.codepoint);
-        auto atom_nucleus = AtomField(AtomFieldSymbol(tok.codepoint), Box());
-        auto atom = Atom(Box(), atom_type, atom_nucleus);
-        auto noad = Noad(atom, token.group, token.string_index);
-        result.push_back(noad);
+        std::visit(overloaded{
+            [&](const CharacterToken& tok)
+            {
+                if (tok.codepoint == U' ') return;
+                auto atom_type = get_atom_type(tok.codepoint);
+                auto atom_nucleus
+                    = AtomField(AtomFieldSymbol(tok.codepoint), Box());
+                auto atom = Atom(Box(), atom_type, atom_nucleus);
+                auto noad = Noad(atom, token.group, token.string_index);
+                result.push_back(noad);
+            },
+            [&](const CommandToken& tok)
+            {
+                result.emplace_back(
+                    CommandNoad(tok.command_utf8),
+                    token.group,
+                    token.string_index
+                );
+            },
+            [&](const ParameterToken&)
+            {
+                throw GeXError(token.group, token.string_index,
+                        "Unexpected parameter token");
+            },
+        }, token.value);
     }
     return result;
 }

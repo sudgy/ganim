@@ -44,3 +44,20 @@ TEST_CASE("GeX make_math_list removing spaces", "[object][text][gex]") {
     auto list = make_math_list(section);
     REQUIRE(list.size() == 2);
 }
+
+TEST_CASE("GeX make_math_list commands", "[object][text][gex]") {
+    auto section = Section();
+    section.type = Section::InlineMath;
+    section.tokens.emplace_back(CommandToken(U"aaa", "aaa"), 0, 0);
+    section.tokens.emplace_back(CommandToken(U"bbb", "bbb"), 1, 0);
+    auto list = make_math_list(section);
+    REQUIRE(list.size() == 2);
+    REQUIRE(list[0].group == 0);
+    REQUIRE(list[1].group == 1);
+    REQUIRE(list[0].string_index == 0);
+    REQUIRE(list[1].string_index == 0);
+    auto& command1 = get<CommandNoad>(list[0].value);
+    auto& command2 = get<CommandNoad>(list[1].value);
+    REQUIRE(command1.command == "aaa");
+    REQUIRE(command2.command == "bbb");
+}

@@ -180,3 +180,18 @@ TEST_CASE("Macros with parameters", "[object][text][gex]") {
             "error in group 0 index 16: Input ended while processing macro "
             "\"aa\"");
 }
+
+TEST_CASE("preprocess style commands", "[object][text][gex]") {
+    auto tokens = preprocess({"\\displaystyle", "\\scriptstyle"});
+    REQUIRE(tokens.size() == 2);
+    REQUIRE(tokens[0].group == 0);
+    REQUIRE(tokens[1].group == 1);
+    REQUIRE(tokens[0].string_index == 0);
+    REQUIRE(tokens[1].string_index == 0);
+    auto& token1 = get<CommandToken>(tokens[0].value);
+    auto& token2 = get<CommandToken>(tokens[1].value);
+    REQUIRE(token1.command == U"displaystyle");
+    REQUIRE(token1.command_utf8 == "displaystyle");
+    REQUIRE(token2.command == U"scriptstyle");
+    REQUIRE(token2.command_utf8 == "scriptstyle");
+}

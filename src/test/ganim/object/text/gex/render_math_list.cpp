@@ -264,3 +264,72 @@ TEST_CASE("GeX render_math_list basic spacing", "[object][text][gex]") {
     REQUIRE(box4.glyphs[4].texture_height == 0.08984375f);
     REQUIRE(box4.glyphs[4].group_index == 4);
 }
+
+TEST_CASE("GeX render_math_list style changes", "[object][text][gex]") {
+    auto list = MathList();
+    auto add_to_list = [&](
+        MathList& list,
+        AtomType type,
+        std::uint32_t codepoint,
+        int group
+    )
+    {
+        list.emplace_back(
+            Atom(
+                Box(),
+                type,
+                AtomField(
+                    AtomFieldSymbol(codepoint),
+                    Box()
+                )
+            ),
+            group,
+            0
+        );
+    };
+    using enum AtomType;
+    add_to_list(list, Ord, U'a', 0);
+    list.emplace_back(CommandNoad("scriptstyle"), 1, 0);
+    add_to_list(list, Ord, U'+', 1);
+    list.emplace_back(CommandNoad("displaystyle"), 2, 0);
+    add_to_list(list, Ord, U'a', 2);
+    auto box = render_math_list(list, Style::Text);
+
+    REQUIRE(box.height == 0.453125);
+    REQUIRE(box.depth == 0.06562499999999999);
+    REQUIRE(box.width == 1.48104166666666659);
+    REQUIRE(box.glyphs.size() == 3);
+    REQUIRE(box.glyphs[0].x_pos == 0);
+    REQUIRE(box.glyphs[0].y_pos == 0);
+    REQUIRE(box.glyphs[0].draw_x == 0.03125);
+    REQUIRE(box.glyphs[0].draw_y == 0.453125);
+    REQUIRE(box.glyphs[0].width == 0.4765625);
+    REQUIRE(box.glyphs[0].height == 0.46875);
+    REQUIRE(box.glyphs[0].y_min == -0.2578125);
+    REQUIRE(box.glyphs[0].y_max == 0.75);
+    REQUIRE(box.glyphs[0].texture_width == 0.059570312f);
+    REQUIRE(box.glyphs[0].texture_height == 0.05859375f);
+    REQUIRE(box.glyphs[0].group_index == 0);
+    REQUIRE(box.glyphs[1].x_pos == 0.52322916666666663);
+    REQUIRE(box.glyphs[1].y_pos == 0);
+    REQUIRE(box.glyphs[1].draw_x == 0.55604166666666666);
+    REQUIRE(box.glyphs[1].draw_y == 0.42109374999999999);
+    REQUIRE(box.glyphs[1].width == 0.48124999999999996);
+    REQUIRE(box.glyphs[1].height == 0.48671874999999998);
+    REQUIRE(box.glyphs[1].y_min == -0.18046874999999998);
+    REQUIRE(box.glyphs[1].y_max == 0.52499999999999991);
+    REQUIRE(box.glyphs[1].texture_width == 0.0859375f);
+    REQUIRE(box.glyphs[1].texture_height == 0.086914062f);
+    REQUIRE(box.glyphs[1].group_index == 1);
+    REQUIRE(box.glyphs[2].x_pos == 1.00447916666666659);
+    REQUIRE(box.glyphs[2].y_pos == 0);
+    REQUIRE(box.glyphs[2].draw_x == 1.03572916666666659);
+    REQUIRE(box.glyphs[2].draw_y == 0.453125);
+    REQUIRE(box.glyphs[2].width == 0.4765625);
+    REQUIRE(box.glyphs[2].height == 0.46875);
+    REQUIRE(box.glyphs[2].y_min == -0.2578125);
+    REQUIRE(box.glyphs[2].y_max == 0.75);
+    REQUIRE(box.glyphs[2].texture_width == 0.059570312f);
+    REQUIRE(box.glyphs[2].texture_height == 0.05859375f);
+    REQUIRE(box.glyphs[2].group_index == 2);
+}
