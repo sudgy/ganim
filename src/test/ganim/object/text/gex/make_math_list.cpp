@@ -5,14 +5,13 @@
 using namespace ganim::gex;
 
 TEST_CASE("GeX make_math_list basic", "[object][text][gex]") {
-    auto section = Section();
-    section.type = Section::InlineMath;
+    auto tokens = TokenList();
 
-    section.tokens.emplace_back(CharacterToken(U'H', CategoryCode::Other), 0,0);
-    section.tokens.emplace_back(CharacterToken(U'=', CategoryCode::Other), 1,0);
-    section.tokens.emplace_back(CharacterToken(U'+', CategoryCode::Other), 2,0);
+    tokens.emplace_back(CharacterToken(U'H', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'=', CategoryCode::Other), 1, 0);
+    tokens.emplace_back(CharacterToken(U'+', CategoryCode::Other), 2, 0);
 
-    auto list = make_math_list(section);
+    auto list = make_math_list(tokens);
     REQUIRE(list.size() == 3);
     REQUIRE(list[0].group == 0);
     REQUIRE(list[0].string_index == 0);
@@ -34,23 +33,21 @@ TEST_CASE("GeX make_math_list basic", "[object][text][gex]") {
 }
 
 TEST_CASE("GeX make_math_list removing spaces", "[object][text][gex]") {
-    auto section = Section();
-    section.type = Section::InlineMath;
+    auto tokens = TokenList();
 
-    section.tokens.emplace_back(CharacterToken(U'H', CategoryCode::Other), 0,0);
-    section.tokens.emplace_back(CharacterToken(U' ', CategoryCode::Other), 1,0);
-    section.tokens.emplace_back(CharacterToken(U'e', CategoryCode::Other), 2,0);
+    tokens.emplace_back(CharacterToken(U'H', CategoryCode::Other), 0,0);
+    tokens.emplace_back(CharacterToken(U' ', CategoryCode::Other), 1,0);
+    tokens.emplace_back(CharacterToken(U'e', CategoryCode::Other), 2,0);
 
-    auto list = make_math_list(section);
+    auto list = make_math_list(tokens);
     REQUIRE(list.size() == 2);
 }
 
 TEST_CASE("GeX make_math_list commands", "[object][text][gex]") {
-    auto section = Section();
-    section.type = Section::InlineMath;
-    section.tokens.emplace_back(CommandToken(U"aaa", "aaa"), 0, 0);
-    section.tokens.emplace_back(CommandToken(U"bbb", "bbb"), 1, 0);
-    auto list = make_math_list(section);
+    auto tokens = TokenList();
+    tokens.emplace_back(CommandToken(U"aaa", "aaa"), 0, 0);
+    tokens.emplace_back(CommandToken(U"bbb", "bbb"), 1, 0);
+    auto list = make_math_list(tokens);
     REQUIRE(list.size() == 2);
     REQUIRE(list[0].group == 0);
     REQUIRE(list[1].group == 1);

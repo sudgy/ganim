@@ -25,10 +25,10 @@ AtomType get_atom_type(std::int32_t codepoint)
     return Ord;
 }
 
-MathList gex::make_math_list(const Section& section)
+MathList gex::make_math_list(const TokenList& tokens)
 {
     auto result = MathList();
-    for (auto& token : section.tokens) {
+    for (auto& token : tokens) {
         std::visit(overloaded{
             [&](const CharacterToken& tok)
             {

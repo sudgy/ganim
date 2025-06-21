@@ -5,7 +5,7 @@
 #include "noad.hpp"
 
 namespace ganim::gex {
-    MathList make_math_list(const Section& section);
+    MathList make_math_list(const TokenList& section);
 }
 
 #endif
