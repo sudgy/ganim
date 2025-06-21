@@ -30,8 +30,11 @@ namespace ganim::gex {
     class Noad;
     using MathList = std::vector<Noad>;
 
+    struct AtomFieldEmpty {};
     struct AtomFieldSymbol {
         std::uint32_t codepoint = 0;
+        int group = -1;
+        int string_index = -1;
     };
     struct AtomFieldBox {
         // Box is already in AtomField
@@ -40,7 +43,12 @@ namespace ganim::gex {
         MathList list;
     };
     struct AtomField {
-        std::variant<AtomFieldSymbol, AtomFieldBox, AtomFieldList> value;
+        std::variant<
+            AtomFieldEmpty,
+            AtomFieldSymbol,
+            AtomFieldBox,
+            AtomFieldList
+        > value;
         Box box;
     };
 
@@ -48,16 +56,17 @@ namespace ganim::gex {
         Box box;
         AtomType type;
         AtomField nucleus;
-        // Coming soon: Subscript and superscript
+        AtomField subscript = {};
+        AtomField superscript = {};
     };
     struct CommandNoad {
         std::string command;
+        int group = -1;
+        int string_index = -1;
     };
 
     struct Noad {
         std::variant<Atom, CommandNoad> value;
-        int group = -1;
-        int string_index = -1;
     };
 }
 

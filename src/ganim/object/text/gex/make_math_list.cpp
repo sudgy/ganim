@@ -59,20 +59,21 @@ void process_character_token(
                     AtomFieldList(make_math_list(new_list)),
                     Box()
                 )
-            ),
-            tokens[i].group,
-            tokens[i].string_index
+            )
         );
         result.push_back(std::move(noad));
         i = j;
     }
     else {
         auto atom_type = get_atom_type(tok.codepoint);
-        auto atom_nucleus
-            = AtomField(AtomFieldSymbol(tok.codepoint), Box());
+        auto symbol = AtomFieldSymbol(
+            tok.codepoint,
+            tokens[i].group,
+            tokens[i].string_index
+        );
+        auto atom_nucleus = AtomField(symbol, Box());
         auto atom = Atom(Box(), atom_type, atom_nucleus);
-        auto noad = Noad(atom, tokens[i].group, tokens[i].string_index);
-        result.push_back(std::move(noad));
+        result.push_back(Noad(std::move(atom)));
     }
 }
 
@@ -91,11 +92,11 @@ MathList gex::make_math_list(const TokenList& tokens)
             },
             [&](const CommandToken& tok)
             {
-                result.emplace_back(
-                    CommandNoad(tok.command_utf8),
+                result.emplace_back(CommandNoad(
+                    tok.command_utf8,
                     token.group,
                     token.string_index
-                );
+                ));
             },
             [&](const ParameterToken&)
             {

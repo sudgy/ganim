@@ -6,7 +6,6 @@ using namespace ganim;
 using namespace ganim::gex;
 
 namespace {
-    // Experimentally, the distance from the midline to the baseline is 0.265625
     //void vcenter(Box& box)
     //{
 
@@ -80,35 +79,32 @@ namespace {
                 auto codepoint = it == math_letter_map.end()
                     ? atom_symbol.codepoint
                     : it->second;
-                text.emplace_back(std::u32string(1, codepoint), list[i].group);
+                text.emplace_back(std::u32string(1, codepoint), atom_symbol.group);
             }
             auto glyphs = shape_text_manual_groups(font, text);
             auto box = box_from_glyphs(glyphs);
             scale_box(box, scaling);
             auto new_atom = Atom(box, Ord, AtomField(AtomFieldBox(), box));
-            rendered_list.push_back(Noad(
-                std::move(new_atom),
-                list[start].group,
-                list[start].string_index
-            ));
+            rendered_list.push_back(Noad(std::move(new_atom)));
         };
-        auto render_atom = [&](auto& atom, int group) {
+        auto render_atom = [&](auto& atom) {
             auto value = &atom.nucleus.value;
             if (auto atom_symbol = get_if<AtomFieldSymbol>(value)) {
                 auto glyphs = shape_text_manual_groups(
                     font,
-                    {{std::u32string(1, atom_symbol->codepoint), group}}
+                    {{std::u32string(1, atom_symbol->codepoint),
+                        atom_symbol->group}}
                 );
                 atom.nucleus.box = box_from_glyphs(glyphs);
                 scale_box(atom.nucleus.box, scaling);
                 atom.box = atom.nucleus.box;
-                rendered_list.push_back(Noad(atom, group, -1));
+                rendered_list.push_back(Noad(atom));
             }
             else if (auto atom_list = get_if<AtomFieldList>(value)) {
                 atom.nucleus.box = render_math_list(atom_list->list, style);
                 atom.box = atom.nucleus.box;
                 atom.nucleus.value = AtomFieldBox();
-                rendered_list.push_back(Noad(atom, group, -1));
+                rendered_list.push_back(Noad(atom));
             }
         };
         auto is_symbol_ord = [&](auto& noad) {
@@ -128,7 +124,7 @@ namespace {
                     ord_start = -1;
                 }
                 if (auto atom = std::get_if<Atom>(&noad.value)) {
-                    render_atom(*atom, noad.group);
+                    render_atom(*atom);
                 }
                 else if (auto command = std::get_if<CommandNoad>(&noad.value)) {
                     check_style_change(*command, style, scaling);
