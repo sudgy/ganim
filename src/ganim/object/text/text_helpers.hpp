@@ -96,11 +96,6 @@ namespace ganim {
      */
     Glyph& get_glyph(Font& font, glyph_t glyph_index);
     Glyph& get_glyph_by_codepoint(Font& font, glyph_t glyph_index);
-    double get_font_em(Font& font);
-    /** @brief Get the font ascender */
-    double get_font_ascender(Font& font);
-    /** @brief Get the font descender */
-    double get_font_descender(Font& font);
     /** @brief Shape a list of strings.
      *
      * The strings will all be concatenated and shaped at once.  The input is a
@@ -146,6 +141,34 @@ namespace ganim {
      * beginning of your scene.
      */
     void set_text_texture_size(int size);
+    /** @brief Get the font ascender */
+    double get_font_ascender(Font& font);
+    /** @brief Get the font descender */
+    double get_font_descender(Font& font);
+    double get_font_em(Font& font);
+    double get_font_x_height(Font& font);
+    double get_font_quad(Font& font);
+    double get_font_num1(Font& font);
+    double get_font_num2(Font& font);
+    double get_font_num3(Font& font);
+    double get_font_denom1(Font& font);
+    double get_font_denom2(Font& font);
+    double get_font_sup1(Font& font);
+    double get_font_sup2(Font& font);
+    double get_font_sup3(Font& font);
+    double get_font_sub1(Font& font);
+    double get_font_sub2(Font& font);
+    double get_font_sup_drop(Font& font);
+    double get_font_sub_drop(Font& font);
+    double get_font_delim1(Font& font);
+    double get_font_delim2(Font& font);
+    double get_font_axis_height(Font& font);
+    double get_font_default_rule_thickness(Font& font);
+    double get_font_big_op_spacing1(Font& font);
+    double get_font_big_op_spacing2(Font& font);
+    double get_font_big_op_spacing3(Font& font);
+    double get_font_big_op_spacing4(Font& font);
+    double get_font_big_op_spacing5(Font& font);
 }
 
 #endif

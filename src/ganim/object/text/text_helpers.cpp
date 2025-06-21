@@ -162,11 +162,6 @@ Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
     return result;
 }
 
-double ganim::get_font_em(Font& font)
-{
-    return font.M_ft_face->size->metrics.x_ppem / font.M_pixel_size;
-}
-
 double ganim::get_font_ascender(Font& font)
 {
     auto face = font.M_ft_face;
@@ -280,4 +275,124 @@ void ganim::set_text_texture_size(int size)
     for (auto& [_, font] : G_fonts) {
         font.M_glyphs.clear();
     }
+}
+
+double ganim::get_font_em(Font& font)
+{
+    return font.M_ft_face->size->metrics.x_ppem / font.M_pixel_size;
+}
+
+double ganim::get_font_x_height(Font& font)
+{
+    return get_font_em(font)*4.0/9.0;
+}
+
+double ganim::get_font_quad(Font& font)
+{
+    return get_font_em(font)*1.15;
+}
+
+double ganim::get_font_num1(Font& font)
+{
+    return get_font_em(font)*0.746712;
+}
+
+double ganim::get_font_num2(Font& font)
+{
+    return get_font_em(font)*0.423933;
+}
+
+double ganim::get_font_num3(Font& font)
+{
+    return get_font_em(font)*0.473933;
+}
+
+double ganim::get_font_denom1(Font& font)
+{
+    return get_font_em(font)*0.756155;
+}
+
+double ganim::get_font_denom2(Font& font)
+{
+    return get_font_em(font)*0.375043;
+}
+
+double ganim::get_font_sup1(Font& font)
+{
+    return get_font_em(font)*0.412892;
+}
+
+double ganim::get_font_sup2(Font& font)
+{
+    return get_font_em(font)*0.362892;
+}
+
+double ganim::get_font_sup3(Font& font)
+{
+    return get_font_em(font)*0.288889;
+}
+
+double ganim::get_font_sub1(Font& font)
+{
+    return get_font_em(font)*0.15;
+}
+
+double ganim::get_font_sub2(Font& font)
+{
+    return get_font_em(font)*0.309219;
+}
+
+double ganim::get_font_sup_drop(Font& font)
+{
+    return get_font_em(font)*0.386108;
+}
+
+double ganim::get_font_sub_drop(Font& font)
+{
+    return get_font_em(font)*0.05;
+}
+
+double ganim::get_font_delim1(Font& font)
+{
+    return get_font_em(font)*2.39;
+}
+
+double ganim::get_font_delim2(Font& font)
+{
+    return get_font_em(font)*1.01;
+}
+
+double ganim::get_font_axis_height(Font& font)
+{
+    return get_font_em(font)*0.25;
+}
+
+double ganim::get_font_default_rule_thickness(Font& font)
+{
+    return get_font_em(font)*0.04;
+}
+
+double ganim::get_font_big_op_spacing1(Font& font)
+{
+    return get_font_em(font)/9.0;
+}
+
+double ganim::get_font_big_op_spacing2(Font& font)
+{
+    return get_font_em(font)/6.0;
+}
+
+double ganim::get_font_big_op_spacing3(Font& font)
+{
+    return get_font_em(font)*0.2;
+}
+
+double ganim::get_font_big_op_spacing4(Font& font)
+{
+    return get_font_em(font)*0.6;
+}
+
+double ganim::get_font_big_op_spacing5(Font& font)
+{
+    return get_font_em(font)*0.1;
 }
