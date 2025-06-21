@@ -333,3 +333,37 @@ TEST_CASE("GeX render_math_list style changes", "[object][text][gex]") {
     REQUIRE(box.glyphs[2].texture_height == 0.05859375f);
     REQUIRE(box.glyphs[2].group_index == 2);
 }
+
+TEST_CASE("GeX render_math_list groups/styles", "[object][text][gex]") {
+    // a {\scriptstyle a {a \textstyle a} a} a
+    auto list = MathList();
+    auto a_noad = Noad(
+        Atom(Box(), AtomType::Ord, AtomField(AtomFieldSymbol(U'a'), Box())),
+        0,
+        0
+    );
+    list.emplace_back(a_noad);
+    list.emplace_back(
+        Atom(Box(), AtomType::Ord, AtomField(AtomFieldList({
+            Noad(CommandNoad("scriptstyle"), 0, 0),
+            a_noad,
+            Noad(Atom(Box(), AtomType::Ord, AtomField(AtomFieldList({
+                a_noad,
+                Noad(CommandNoad("textstyle"), 0, 0),
+                a_noad
+            }), Box())), 0, 0),
+            a_noad
+        }), Box())),
+        0,
+        0
+    );
+    list.emplace_back(a_noad);
+    auto box = render_math_list(list, Style::Text);
+
+    REQUIRE(box.glyphs.size() == 6);
+    REQUIRE(box.glyphs[0].width >  box.glyphs[1].width);
+    REQUIRE(box.glyphs[2].width == box.glyphs[1].width);
+    REQUIRE(box.glyphs[3].width == box.glyphs[0].width);
+    REQUIRE(box.glyphs[4].width == box.glyphs[1].width);
+    REQUIRE(box.glyphs[5].width == box.glyphs[0].width);
+}

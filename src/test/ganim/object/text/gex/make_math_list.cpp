@@ -58,3 +58,29 @@ TEST_CASE("GeX make_math_list commands", "[object][text][gex]") {
     REQUIRE(command1.command == "aaa");
     REQUIRE(command2.command == "bbb");
 }
+
+TEST_CASE("GeX make_math_list groups", "[object][text][gex]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'{', CategoryCode::StartGroup), 1, 0);
+    tokens.emplace_back(CharacterToken(U'b', CategoryCode::Other), 1, 0);
+    tokens.emplace_back(CharacterToken(U'}', CategoryCode::EndGroup), 1, 0);
+    auto list = make_math_list(tokens);
+
+    REQUIRE(list.size() == 2);
+    REQUIRE(list[0].group == 0);
+    REQUIRE(list[1].group == 1);
+    auto& atom1 = get<Atom>(list[0].value);
+    auto& atom2 = get<Atom>(list[1].value);
+    REQUIRE(atom1.type == AtomType::Ord);
+    REQUIRE(atom2.type == AtomType::Ord);
+    auto& symbol1 = get<AtomFieldSymbol>(atom1.nucleus.value);
+    auto& sub_list = get<AtomFieldList>(atom2.nucleus.value).list;
+    REQUIRE(symbol1.codepoint == U'a');
+    REQUIRE(sub_list.size() == 1);
+    REQUIRE(sub_list[0].group == 1);
+    auto& atom3 = get<Atom>(sub_list[0].value);
+    REQUIRE(atom3.type == AtomType::Ord);
+    auto& symbol2 = get<AtomFieldSymbol>(atom3.nucleus.value);
+    REQUIRE(symbol2.codepoint == U'b');
+}

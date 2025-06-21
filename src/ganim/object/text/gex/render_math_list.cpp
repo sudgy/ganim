@@ -87,10 +87,14 @@ namespace {
             scale_box(box, scaling);
             auto new_atom = Atom(box, Ord, AtomField(AtomFieldBox(), box));
             rendered_list.push_back(Noad(
-                        new_atom, list[start].group, list[start].string_index));
+                std::move(new_atom),
+                list[start].group,
+                list[start].string_index
+            ));
         };
         auto render_atom = [&](auto& atom, int group) {
-            if (auto atom_symbol = get_if<AtomFieldSymbol>(&atom.nucleus.value)) {
+            auto value = &atom.nucleus.value;
+            if (auto atom_symbol = get_if<AtomFieldSymbol>(value)) {
                 auto glyphs = shape_text_manual_groups(
                     font,
                     {{std::u32string(1, atom_symbol->codepoint), group}}
@@ -98,6 +102,12 @@ namespace {
                 atom.nucleus.box = box_from_glyphs(glyphs);
                 scale_box(atom.nucleus.box, scaling);
                 atom.box = atom.nucleus.box;
+                rendered_list.push_back(Noad(atom, group, -1));
+            }
+            else if (auto atom_list = get_if<AtomFieldList>(value)) {
+                atom.nucleus.box = render_math_list(atom_list->list, style);
+                atom.box = atom.nucleus.box;
+                atom.nucleus.value = AtomFieldBox();
                 rendered_list.push_back(Noad(atom, group, -1));
             }
         };

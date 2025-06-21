@@ -7,9 +7,9 @@ using namespace ganim;
 using namespace ganim::gex;
 
 namespace {
-    template<class... Ts>
-    struct overloaded : Ts... { using Ts::operator()...; };
-}
+
+template<class... Ts>
+struct overloaded : Ts... { using Ts::operator()...; };
 
 // I'm sure this is supposed to be configurable so this might change in the
 // future
@@ -25,20 +25,69 @@ AtomType get_atom_type(std::int32_t codepoint)
     return Ord;
 }
 
+void process_character_token(
+    const TokenList& tokens,
+    int& i,
+    const CharacterToken& tok,
+    MathList& result
+)
+{
+    if (tok.codepoint == U' ') return;
+    if (tok.catcode == CategoryCode::StartGroup) {
+        int group_level = 1;
+        int j = i + 1;
+        for (; j < ssize(tokens); ++j) {
+            if (auto tok = get_if<CharacterToken>(&tokens[j].value)) {
+                if (tok->catcode == CategoryCode::StartGroup) {
+                    ++group_level;
+                }
+                else if (tok->catcode == CategoryCode::EndGroup) {
+                    --group_level;
+                    if (group_level == 0) break;
+                }
+            }
+        }
+        auto new_list = TokenList();
+        for (int k = i + 1; k < j; ++k) {
+            new_list.push_back(tokens[k]);
+        }
+        auto noad = Noad(
+            Atom(
+                Box(),
+                AtomType::Ord,
+                AtomField(
+                    AtomFieldList(make_math_list(new_list)),
+                    Box()
+                )
+            ),
+            tokens[i].group,
+            tokens[i].string_index
+        );
+        result.push_back(std::move(noad));
+        i = j;
+    }
+    else {
+        auto atom_type = get_atom_type(tok.codepoint);
+        auto atom_nucleus
+            = AtomField(AtomFieldSymbol(tok.codepoint), Box());
+        auto atom = Atom(Box(), atom_type, atom_nucleus);
+        auto noad = Noad(atom, tokens[i].group, tokens[i].string_index);
+        result.push_back(std::move(noad));
+    }
+}
+
+}
+
+
 MathList gex::make_math_list(const TokenList& tokens)
 {
     auto result = MathList();
-    for (auto& token : tokens) {
+    for (int i = 0; i < ssize(tokens); ++i) {
+        auto& token = tokens[i];
         std::visit(overloaded{
             [&](const CharacterToken& tok)
             {
-                if (tok.codepoint == U' ') return;
-                auto atom_type = get_atom_type(tok.codepoint);
-                auto atom_nucleus
-                    = AtomField(AtomFieldSymbol(tok.codepoint), Box());
-                auto atom = Atom(Box(), atom_type, atom_nucleus);
-                auto noad = Noad(atom, token.group, token.string_index);
-                result.push_back(noad);
+                process_character_token(tokens, i, tok, result);
             },
             [&](const CommandToken& tok)
             {
