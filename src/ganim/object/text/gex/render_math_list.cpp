@@ -156,8 +156,9 @@ namespace {
                         atom->type
                     );
                     if (!spacing.second and is_script_styles(style)) {
-                        spacing.first = 1;
+                        spacing.first = 0;
                     }
+                    ++spacing.first;
                     result_boxes.push_back(
                         Box(scaling*em*spacing.first/18.0, 0, 0, {}));
                 }
