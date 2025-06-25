@@ -22,10 +22,7 @@ TEST_CASE("GeX render_math_list basic spacing", "[object][text][gex]") {
             Atom(
                 Box(),
                 type,
-                AtomField(
-                    AtomFieldSymbol(codepoint, group, 0),
-                    Box()
-                )
+                AtomSymbol(codepoint, group, 0)
             )
         );
     };
@@ -276,10 +273,7 @@ TEST_CASE("GeX render_math_list style changes", "[object][text][gex]") {
             Atom(
                 Box(),
                 type,
-                AtomField(
-                    AtomFieldSymbol(codepoint, group, 0),
-                    Box()
-                )
+                AtomSymbol(codepoint, group, 0)
             )
         );
     };
@@ -334,20 +328,20 @@ TEST_CASE("GeX render_math_list groups/styles", "[object][text][gex]") {
     // a {\scriptstyle a {a \textstyle a} a} a
     auto list = MathList();
     auto a_noad = Noad(
-        Atom(Box(), AtomType::Ord, AtomField(AtomFieldSymbol(U'a',0,0), Box()))
+        Atom(Box(), AtomType::Ord, AtomSymbol(U'a',0,0))
     );
     list.emplace_back(a_noad);
     list.emplace_back(
-        Atom(Box(), AtomType::Ord, AtomField(AtomFieldList({
+        Atom(Box(), AtomType::Ord, AtomList({
             Noad(CommandNoad("scriptstyle", 0, 0)),
             a_noad,
-            Noad(Atom(Box(), AtomType::Ord, AtomField(AtomFieldList({
+            Noad(Atom(Box(), AtomType::Ord, AtomList({
                 a_noad,
                 Noad(CommandNoad("textstyle", 0, 0)),
                 a_noad
-            }), Box()))),
+            }))),
             a_noad
-        }), Box()))
+        }))
     );
     list.emplace_back(a_noad);
     auto box = render_math_list(list, Style::Text);

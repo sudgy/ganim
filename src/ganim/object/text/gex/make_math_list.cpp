@@ -55,10 +55,7 @@ void process_character_token(
             Atom(
                 Box(),
                 AtomType::Ord,
-                AtomField(
-                    AtomFieldList(make_math_list(new_list)),
-                    Box()
-                )
+                AtomList(make_math_list(new_list))
             )
         );
         result.push_back(std::move(noad));
@@ -66,13 +63,12 @@ void process_character_token(
     }
     else {
         auto atom_type = get_atom_type(tok.codepoint);
-        auto symbol = AtomFieldSymbol(
+        auto symbol = AtomSymbol(
             tok.codepoint,
             tokens[i].group,
             tokens[i].string_index
         );
-        auto atom_nucleus = AtomField(symbol, Box());
-        auto atom = Atom(Box(), atom_type, atom_nucleus);
+        auto atom = Atom(Box(), atom_type, std::move(symbol));
         result.push_back(Noad(std::move(atom)));
     }
 }

@@ -74,7 +74,7 @@ namespace {
             auto text = std::vector<std::pair<std::u32string, int>>();
             for (int i = start; i < end; ++i) {
                 auto& atom = get<Atom>(list[i].value);
-                auto& atom_symbol = get<AtomFieldSymbol>(atom.nucleus.value);
+                auto& atom_symbol = get<AtomSymbol>(atom.value);
                 auto it = math_letter_map.find(atom_symbol.codepoint);
                 auto codepoint = it == math_letter_map.end()
                     ? atom_symbol.codepoint
@@ -84,34 +84,31 @@ namespace {
             auto glyphs = shape_text_manual_groups(font, text);
             auto box = box_from_glyphs(glyphs);
             scale_box(box, scaling);
-            auto new_atom = Atom(box, Ord, AtomField(AtomFieldBox(), box));
+            auto new_atom = Atom(box, Ord, AtomBox());
             rendered_list.push_back(Noad(std::move(new_atom)));
         };
         auto render_atom = [&](auto& atom) {
-            auto value = &atom.nucleus.value;
-            if (auto atom_symbol = get_if<AtomFieldSymbol>(value)) {
+            auto value = &atom.value;
+            if (auto atom_symbol = get_if<AtomSymbol>(value)) {
                 auto glyphs = shape_text_manual_groups(
                     font,
                     {{std::u32string(1, atom_symbol->codepoint),
                         atom_symbol->group}}
                 );
-                atom.nucleus.box = box_from_glyphs(glyphs);
-                scale_box(atom.nucleus.box, scaling);
-                atom.box = atom.nucleus.box;
+                atom.box = box_from_glyphs(glyphs);
+                scale_box(atom.box, scaling);
                 rendered_list.push_back(Noad(atom));
             }
-            else if (auto atom_list = get_if<AtomFieldList>(value)) {
-                atom.nucleus.box = render_math_list(atom_list->list, style);
-                atom.box = atom.nucleus.box;
-                atom.nucleus.value = AtomFieldBox();
+            else if (auto atom_list = get_if<AtomList>(value)) {
+                atom.box = render_math_list(atom_list->list, style);
+                atom.value = AtomBox();
                 rendered_list.push_back(Noad(atom));
             }
         };
         auto is_symbol_ord = [&](auto& noad) {
             if (auto atom = std::get_if<Atom>(&noad.value)) {
                 return atom->type == Ord and
-                    std::holds_alternative<AtomFieldSymbol>(
-                            atom->nucleus.value);
+                    std::holds_alternative<AtomSymbol>(atom->value);
             }
             return false;
         };

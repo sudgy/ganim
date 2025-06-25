@@ -15,21 +15,21 @@ TEST_CASE("GeX make_math_list basic", "[object][text][gex]") {
     REQUIRE(list.size() == 3);
     auto atom = &get<Atom>(list[0].value);
     REQUIRE(atom->type == AtomType::Ord);
-    auto& symbol1 = get<AtomFieldSymbol>(atom->nucleus.value);
+    auto& symbol1 = get<AtomSymbol>(atom->value);
     REQUIRE(symbol1.codepoint == U'H');
     REQUIRE(symbol1.group == 0);
     REQUIRE(symbol1.string_index == 0);
 
     atom = &get<Atom>(list[1].value);
     REQUIRE(atom->type == AtomType::Rel);
-    auto& symbol2 = get<AtomFieldSymbol>(atom->nucleus.value);
+    auto& symbol2 = get<AtomSymbol>(atom->value);
     REQUIRE(symbol2.codepoint == U'=');
     REQUIRE(symbol2.group == 1);
     REQUIRE(symbol2.string_index == 0);
 
     atom = &get<Atom>(list[2].value);
     REQUIRE(atom->type == AtomType::Bin);
-    auto& symbol3 = get<AtomFieldSymbol>(atom->nucleus.value);
+    auto& symbol3 = get<AtomSymbol>(atom->value);
     REQUIRE(symbol3.codepoint == U'+');
     REQUIRE(symbol3.group == 2);
     REQUIRE(symbol3.string_index == 0);
@@ -75,14 +75,14 @@ TEST_CASE("GeX make_math_list groups", "[object][text][gex]") {
     auto& atom2 = get<Atom>(list[1].value);
     REQUIRE(atom1.type == AtomType::Ord);
     REQUIRE(atom2.type == AtomType::Ord);
-    auto& symbol1 = get<AtomFieldSymbol>(atom1.nucleus.value);
-    auto& sub_list = get<AtomFieldList>(atom2.nucleus.value).list;
+    auto& symbol1 = get<AtomSymbol>(atom1.value);
+    auto& sub_list = get<AtomList>(atom2.value).list;
     REQUIRE(symbol1.codepoint == U'a');
     REQUIRE(symbol1.group == 0);
     REQUIRE(sub_list.size() == 1);
     auto& atom3 = get<Atom>(sub_list[0].value);
     REQUIRE(atom3.type == AtomType::Ord);
-    auto& symbol2 = get<AtomFieldSymbol>(atom3.nucleus.value);
+    auto& symbol2 = get<AtomSymbol>(atom3.value);
     REQUIRE(symbol2.codepoint == U'b');
     REQUIRE(symbol2.group == 1);
 }
