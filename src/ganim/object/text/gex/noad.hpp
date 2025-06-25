@@ -4,8 +4,10 @@
 #include <vector>
 #include <variant>
 #include <cstdint>
+#include <memory>
 
 #include "box.hpp"
+#include "ganim/copy_ptr.hpp"
 
 namespace ganim::gex {
     enum class AtomType {
@@ -28,6 +30,7 @@ namespace ganim::gex {
 
 
     class Noad;
+    class Atom;
     using MathList = std::vector<Noad>;
 
     struct AtomEmpty {};
@@ -42,6 +45,19 @@ namespace ganim::gex {
     struct AtomList {
         MathList list;
     };
+    struct AtomSubscript {
+        copy_ptr<Atom> nucleus;
+        copy_ptr<Atom> subscript;
+    };
+    struct AtomSuperscript {
+        copy_ptr<Atom> nucleus;
+        copy_ptr<Atom> superscript;
+    };
+    struct AtomSubsuperscript {
+        copy_ptr<Atom> nucleus;
+        copy_ptr<Atom> subscript;
+        copy_ptr<Atom> superscript;
+    };
 
     struct Atom {
         Box box;
@@ -50,7 +66,10 @@ namespace ganim::gex {
             AtomEmpty,
             AtomSymbol,
             AtomBox,
-            AtomList
+            AtomList,
+            AtomSubscript,
+            AtomSuperscript,
+            AtomSubsuperscript
         > value;
     };
     struct CommandNoad {

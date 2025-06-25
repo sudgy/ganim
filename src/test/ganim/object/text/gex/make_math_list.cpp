@@ -86,3 +86,48 @@ TEST_CASE("GeX make_math_list groups", "[object][text][gex]") {
     REQUIRE(symbol2.codepoint == U'b');
     REQUIRE(symbol2.group == 1);
 }
+
+TEST_CASE("GeX make_math_list subscripts/superscripts", "[object][text][gex]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'_', CategoryCode::Subscript), 1, 0);
+    tokens.emplace_back(CharacterToken(U'b', CategoryCode::Other), 1, 0);
+    tokens.emplace_back(CharacterToken(U'^', CategoryCode::Superscript), 2, 0);
+    tokens.emplace_back(CharacterToken(U'{', CategoryCode::StartGroup), 2, 0);
+    tokens.emplace_back(CharacterToken(U'c', CategoryCode::Other), 2, 0);
+    tokens.emplace_back(CharacterToken(U'd', CategoryCode::Other), 2, 0);
+    tokens.emplace_back(CharacterToken(U'}', CategoryCode::EndGroup), 2, 0);
+    tokens.emplace_back(CharacterToken(U'e', CategoryCode::Other), 3, 0);
+    auto list = make_math_list(tokens);
+
+    REQUIRE(list.size() == 2);
+    auto& atom1 = get<Atom>(list[0].value);
+    auto& atom2 = get<Atom>(list[1].value);
+    REQUIRE(atom1.type == AtomType::Ord);
+    REQUIRE(atom2.type == AtomType::Ord);
+    auto& base = get<AtomSubsuperscript>(atom1.value);
+    REQUIRE(base.nucleus->type == AtomType::Ord);
+    REQUIRE(base.subscript->type == AtomType::Ord);
+    REQUIRE(base.superscript->type == AtomType::Ord);
+    auto& nucleus = get<AtomSymbol>(base.nucleus->value);
+    auto& subscript = get<AtomSymbol>(base.subscript->value);
+    auto& superscript = get<AtomList>(base.superscript->value).list;
+    REQUIRE(nucleus.codepoint == U'a');
+    REQUIRE(nucleus.group == 0);
+    REQUIRE(subscript.codepoint == U'b');
+    REQUIRE(subscript.group == 1);
+    REQUIRE(superscript.size() == 2);
+    auto& atom3 = get<Atom>(superscript[0].value);
+    auto& atom4 = get<Atom>(superscript[1].value);
+    REQUIRE(atom3.type == AtomType::Ord);
+    REQUIRE(atom4.type == AtomType::Ord);
+    auto& superscript1 = get<AtomSymbol>(atom3.value);
+    auto& superscript2 = get<AtomSymbol>(atom4.value);
+    REQUIRE(superscript1.codepoint == U'c');
+    REQUIRE(superscript1.group == 2);
+    REQUIRE(superscript2.codepoint == U'd');
+    REQUIRE(superscript2.group == 2);
+    auto& symbol = get<AtomSymbol>(atom2.value);
+    REQUIRE(symbol.codepoint == U'e');
+    REQUIRE(symbol.group == 3);
+}
