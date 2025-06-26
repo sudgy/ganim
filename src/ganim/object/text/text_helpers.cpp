@@ -284,12 +284,12 @@ double ganim::get_font_em(Font& font)
 
 double ganim::get_font_x_height(Font& font)
 {
-    return get_font_em(font)*4.0/9.0;
+    return get_font_em(font)*431/1000;
 }
 
 double ganim::get_font_quad(Font& font)
 {
-    return get_font_em(font)*1.15;
+    return get_font_em(font);
 }
 
 double ganim::get_font_num1(Font& font)
@@ -339,7 +339,7 @@ double ganim::get_font_sub1(Font& font)
 
 double ganim::get_font_sub2(Font& font)
 {
-    return get_font_em(font)*0.309219;
+    return get_font_em(font)*0.259219;
 }
 
 double ganim::get_font_sup_drop(Font& font)

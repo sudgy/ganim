@@ -102,3 +102,24 @@ void gex::scale_box(Box& box, double scale)
         glyph.y_max *= scale;
     }
 }
+
+void gex::vertical_shift_box(Box& box, double amount)
+{
+    box.height += amount;
+    box.depth -= amount;
+    for (auto& glyph : box.glyphs) {
+        glyph.y_pos += amount;
+        glyph.draw_y += amount;
+        glyph.y_min += amount;
+        glyph.y_max += amount;
+    }
+}
+
+void gex::horizontal_shift_box(Box& box, double amount)
+{
+    box.width += amount;
+    for (auto& glyph : box.glyphs) {
+        glyph.x_pos += amount;
+        glyph.draw_x += amount;
+    }
+}

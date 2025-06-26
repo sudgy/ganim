@@ -26,7 +26,7 @@ namespace ganim::gex {
         Vcent  // Produced by \vcenter
     };
     // Boolean says whether to add the spacing for script styles
-    std::pair<int, bool> get_atom_spacing(AtomType left, AtomType right);
+    std::pair<double, bool> get_atom_spacing(AtomType left, AtomType right);
 
 
     class Noad;
