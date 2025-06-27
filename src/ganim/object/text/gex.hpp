@@ -15,7 +15,7 @@ class Gex : public TextBase {
             std::vector<std::string_view>{std::forward<Ts>(tex_strings)...})) {}
         Gex(const std::vector<std::string_view>& tex_strings);
 
-        //void set_colors(const std::unordered_map<std::string, Color>& colors);
+        void set_colors(const std::unordered_map<std::string, Color>& colors);
 
         ObjectPtr<Gex> polymorphic_copy() const;
 
@@ -26,6 +26,7 @@ class Gex : public TextBase {
                 const std::vector<std::string_view>& strings) override;
 
         Font* M_font = nullptr;
+        std::vector<std::string> M_tex_strings;
 };
 
 template <typename... Ts>
