@@ -129,6 +129,7 @@ Vector& Vector::set_end(pga3::Trivec p)
     else {
         vector_scale(new_length / current_length);
     }
+    M_vector_scale = std::abs(M_vector_scale);
     M_manual_transform = false;
     if (new_length != 0) {
         current_end = get_end_pga3();
@@ -289,6 +290,9 @@ void Vector::draw(const Camera& camera)
             view.blade_project<e13>() * e13 +
             view.blade_project<e23>() * e23;
         model = ~view_euclidean * model;
+    }
+    if (M_vector_scale < 0) {
+        model = ga_exp(pga3::e12*τ/4) * model;
     }
     shader.set_rotor_uniform("model", model);
     auto color = get_color();

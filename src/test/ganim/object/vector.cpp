@@ -292,3 +292,19 @@ TEST_CASE("Vector outline not too big", "[object]") {
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 15, 5) == Color("000000"));
 }
+
+TEST_CASE("Vector animating negative scale", "[object]") {
+    using namespace vga2;
+    auto v = make_vector(e1, {.thickness = 1});
+    v->set_visible(true);
+    auto scene = TestScene(20, 20, 1, 1, 4);
+    scene.add(v);
+    animate(scene, v).vector_scale(-1);
+    scene.wait(1);
+    REQUIRE(scene.get_pixel(3, 15, 10) == Color("000000"));
+    REQUIRE(scene.get_pixel(3, 5, 10) == Color("FFFFFF"));
+    v->reset_vector_scale();
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(4, 15, 10) == Color("000000"));
+    REQUIRE(scene.get_pixel(4, 5, 10) == Color("FFFFFF"));
+}
