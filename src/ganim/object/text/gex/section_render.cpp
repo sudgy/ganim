@@ -6,10 +6,23 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-Box gex::section_render(const Section& section)
+Box gex::section_render(Section section)
 {
     if (section.type == Section::Text) {
         auto& font = get_font("fonts/NewCM10-Regular.otf");
+        double space_amount = 0.0;
+        while (!section.tokens.empty()) {
+            if (auto tok=get_if<CharacterToken>(&section.tokens.back().value)) {
+                if (tok->catcode == CategoryCode::Spacer) {
+                    if (tok->codepoint == U' ') {
+                        space_amount += get_font_em(font) / 3.0;
+                        section.tokens.pop_back();
+                        continue;
+                    }
+                }
+            }
+            break;
+        }
         auto codepoints = std::vector<std::pair<std::u32string, int>>();
         for (auto& token : section.tokens) {
             if (auto tok = get_if<CharacterToken>(&token.value)) {
@@ -27,7 +40,9 @@ Box gex::section_render(const Section& section)
             }
         }
         auto glyphs = shape_text_manual_groups(font, codepoints);
-        return box_from_glyphs(glyphs);
+        auto result = box_from_glyphs(glyphs);
+        result.width += space_amount;
+        return result;
     }
     else {
         auto style = section.type == Section::InlineMath
