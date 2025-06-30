@@ -164,7 +164,7 @@ TEST_CASE("GeX render_math_list style changes", "[object][text][gex]") {
 
     REQUIRE(box.height == 0.453125);
     REQUIRE(box.depth == 0.015625);
-    REQUIRE(box.width == 1.33394097222222219);
+    REQUIRE(box.width == 1.38116319444444446);
     REQUIRE(box.glyphs.size() == 3);
     REQUIRE(box.glyphs[0].x_pos == 0);
     REQUIRE(box.glyphs[0].y_pos == 0);

@@ -12,7 +12,7 @@ std::pair<double, bool> gex::get_atom_spacing(AtomType left, AtomType right)
         case Ord:
             switch (right) {
                 case Ord:
-                    return {0.5, true};
+                    return {1.0, true};
                 case Op:
                     return {4.5, true};
                 case Bin:
