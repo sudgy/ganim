@@ -3,23 +3,37 @@
 
 #include "ganim/object/text/gex/preprocess.hpp"
 
+#include <unordered_map>
+
 using namespace ganim;
 using namespace ganim::gex;
 
 namespace {
+    auto catcode_map1 = std::unordered_map<char, CategoryCode>{
+        {' ', CategoryCode::Spacer},
+        {',', CategoryCode::Other},
+        {'{', CategoryCode::Other},
+        {'%', CategoryCode::Other}
+    };
+    auto catcode_map2 = std::unordered_map<char, CategoryCode>{
+        {' ', CategoryCode::Other},
+        {'{', CategoryCode::StartGroup},
+        {'}', CategoryCode::EndGroup}
+    };
     TokenList get_tokens(
         std::string_view str,
         std::vector<int> groups,
-        std::vector<int> indices
+        std::vector<int> indices,
+        std::unordered_map<char, CategoryCode> catcode_map = catcode_map1
     )
     {
         auto result = TokenList();
         for (int i = 0; i < ssize(str); ++i) {
             auto catcode = CategoryCode::Letter;
-            if (str[i] == ' ') catcode = CategoryCode::Spacer;
-            if (str[i] == ',') catcode = CategoryCode::Other;
-            if (str[i] == '{') catcode = CategoryCode::Other;
-            if (str[i] == '%') catcode = CategoryCode::Other;
+            auto it = catcode_map.find(str[i]);
+            if (it != catcode_map.end()) {
+                catcode = it->second;
+            }
             result.emplace_back(
                 CharacterToken(str[i], catcode),
                 groups[i],
@@ -28,14 +42,30 @@ namespace {
         }
         return result;
     }
+    TokenList get_tokens(
+        std::string_view str,
+        int glyphs_size,
+        std::unordered_map<char, CategoryCode> catcode_map = catcode_map1
+    )
+    {
+        auto groups = std::vector<int>();
+        auto indices = std::vector<int>();
+        groups.resize(glyphs_size, -1);
+        indices.resize(glyphs_size, -1);
+        return get_tokens(str, groups, indices, catcode_map);
+    }
     void test_tokens(const TokenList& tokens1, const TokenList& tokens2)
     {
         REQUIRE(tokens1.size() == tokens2.size());
         for (int i = 0; i < ssize(tokens1); ++i) {
             INFO("i = " << i);
             REQUIRE(tokens1[i].value == tokens2[i].value);
-            REQUIRE(tokens1[i].group == tokens2[i].group);
-            REQUIRE(tokens1[i].string_index == tokens2[i].string_index);
+            if (tokens2[i].group != -1) {
+                REQUIRE(tokens1[i].group == tokens2[i].group);
+            }
+            if (tokens2[i].string_index != -1) {
+                REQUIRE(tokens1[i].string_index == tokens2[i].string_index);
+            }
         }
     }
 }
@@ -194,4 +224,50 @@ TEST_CASE("preprocess style commands", "[object][text][gex]") {
     REQUIRE(token1.command_utf8 == "displaystyle");
     REQUIRE(token2.command == U"scriptstyle");
     REQUIRE(token2.command_utf8 == "scriptstyle");
+}
+
+TEST_CASE("GeX preprocess expandafter", "[object][text][gex]") {
+    auto tokens1 = preprocess({
+        R"(\def\aa#1{a#1a})"
+        R"(\def\bb{bb})"
+        R"(\aa\bb\ )" // Expands to a\bb a -> abba
+        R"(\expandafter\aa\bb)" // Expands to \aa bb -> abab
+    });
+    auto tokens2 = preprocess({
+        R"(\def\aa#1{{a#1a}})"
+        R"(\def\bb{bb})"
+        // Expands to \expandafter\aa\aa bb -> \aa{aba}b -> {aabaa}b
+        R"(\expandafter\expandafter\expandafter\aa\expandafter\aa\bb\ )"
+        // Expands to \aa{a\bb a} -> \aa{abba} -> {aabbaa}
+        R"(\expandafter\aa\aa\bb\ )"
+        // Expands to {a\expandafter a}\aa\bb -> {aa}\aa\bb -> {aa}{a\bb a}
+        // -> {aa}{abba}
+        R"(\aa\expandafter\aa\bb\ )"
+        // Expands to {a\aa a}\bb -> {a{aaa}}\bb -> {a{aaa}}bb
+        R"(\aa\aa\bb)"
+    });
+    auto tokens3 = preprocess({
+        R"(\def\aa#1{{a#1a}})"
+        R"(\def\bb{bb})"
+        R"(\def\cc{\bb})"
+        // Expands to \aa\bb -> {a\bb a} -> {abba}
+        R"(\expandafter\aa\cc\ )"
+        // Expands to \expandafter\aa\bb -> \aa bb -> {aba}b
+        R"(\expandafter\expandafter\expandafter\aa\cc)"
+    });
+    REQUIRE_THROWS(preprocess({
+        R"(\def\aa#1{{a#1a}})"
+        R"(\def\bb{bb})"
+        R"(\expandafter{\aa}\bb)"
+    }));
+    // Ensure no arguments doesn't break it, having only one of the two
+    // arguments was already tested above
+    preprocess({"\\expandafter"});
+    auto ttokens1 = get_tokens("abba abab", 9, catcode_map2);
+    auto ttokens2 = get_tokens(
+            "{aabaa}b {aabbaa} {aa}{abba} {a{aaa}}bb", 39, catcode_map2);
+    auto ttokens3 = get_tokens("{abba} {aba}b", 13, catcode_map2);
+    test_tokens(tokens1, ttokens1);
+    test_tokens(tokens2, ttokens2);
+    test_tokens(tokens3, ttokens3);
 }

@@ -45,6 +45,7 @@ namespace {
             std::u32string process_definition_name();
             std::pair<TokenList, int> process_definition_delimiters();
             TokenList process_definition_replacement(int parameter_number);
+            void process_expandafter();
             std::optional<Token> read_token();
             CommandToken read_escape();
             ParameterToken read_parameter_token();
@@ -100,10 +101,13 @@ Preprocessor::Preprocessor(const std::vector<std::string_view>& input)
     M_macros[U"^"] = {{}, {{CharacterToken(U'^', CategoryCode::Other)}}};
     M_macros[U"_"] = {{}, {{CharacterToken(U'_', CategoryCode::Other)}}};
     M_macros[U"%"] = {{}, {{CharacterToken(U'%', CategoryCode::Other)}}};
+    // No idea if this is the best way to implement this, but it should work
+    M_macros[U" "] = {{}, {{CharacterToken(U' ', CategoryCode::Other)}}};
 
     // Special commands, when an empty token list is found it will try to match
     // up to one of these
     M_macros[U"def"] = {};
+    M_macros[U"expandafter"] = {};
 }
 
 TokenList Preprocessor::get_output()
@@ -300,6 +304,10 @@ bool Preprocessor::process_built_in(const std::u32string& command, int group)
         process_definition();
         return true;
     }
+    else if (command == U"expandafter") {
+        process_expandafter();
+        return true;
+    }
     return false;
 }
 
@@ -402,6 +410,34 @@ TokenList Preprocessor::process_definition_replacement(int parameter_number)
         }
     }
     return command_list;
+}
+
+void Preprocessor::process_expandafter()
+{
+    auto first_token = read_token();
+    if (!first_token) return;
+    if (auto second_token = read_token()) {
+        std::visit(overloaded{
+            [&](CharacterToken&) {
+                M_next_tokens.push_front(*second_token);
+                M_next_tokens.push_front(*first_token);
+            },
+            [&](CommandToken& tok) {
+                process_command_token(
+                    tok,
+                    second_token->group,
+                    second_token->string_index
+                );
+                M_next_tokens.push_front(*first_token);
+            },
+            [&](ParameterToken&) {
+                throw make_error("Unexpected parameter token");
+            }
+        }, second_token->value);
+    }
+    else {
+        M_next_tokens.push_front(*first_token);
+    }
 }
 
 std::optional<std::uint32_t> Preprocessor::read_character()
