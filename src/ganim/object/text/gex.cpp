@@ -41,7 +41,21 @@ Gex::Gex(const std::vector<std::string_view>& strings)
 std::vector<PositionedGlyph> Gex::get_glyphs(
         const std::vector<std::string_view>& strings)
 {
-    return gex_render(strings);
+    auto result = gex_render(strings);
+    auto x_min = double(INFINITY);
+    auto x_max = -double(INFINITY);
+    for (auto& glyph : result) {
+        x_min = std::min(x_min, glyph.draw_x);
+        x_min = std::min(x_min, glyph.draw_x + glyph.width);
+        x_max = std::max(x_max, glyph.draw_x);
+        x_max = std::max(x_max, glyph.draw_x + glyph.width);
+    }
+    const auto x_shift = -(x_min + x_max) / 2;
+    for (auto& glyph : result) {
+        glyph.x_pos += x_shift;
+        glyph.draw_x += x_shift;
+    }
+    return result;
 }
 
 ObjectPtr<Gex> Gex::polymorphic_copy() const
