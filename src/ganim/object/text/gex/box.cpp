@@ -5,7 +5,7 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-Box gex::combine_boxes_horizontally(const std::vector<Box>& boxes)
+Box gex::combine_boxes_horizontally(const std::vector<Box>& boxes, double buff)
 {
     auto result = Box();
     for (auto& box : boxes) {
@@ -14,7 +14,7 @@ Box gex::combine_boxes_horizontally(const std::vector<Box>& boxes)
             new_glyph.x_pos += result.width;
             new_glyph.draw_x += result.width;
         }
-        result.width += box.width;
+        result.width += box.width + buff;
         result.height = std::max(result.height, box.height);
         result.depth = std::max(result.depth, box.depth);
     }

@@ -12,7 +12,10 @@ namespace ganim::gex {
         double depth = 0;
         std::vector<PositionedGlyph> glyphs;
     };
-    Box combine_boxes_horizontally(const std::vector<Box>& boxes);
+    Box combine_boxes_horizontally(
+        const std::vector<Box>& boxes,
+        double buff = 0
+    );
     Box combine_boxes_vertically(
         const std::vector<Box>& boxes,
         int reference_box

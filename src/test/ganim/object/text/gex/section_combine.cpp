@@ -20,6 +20,6 @@ TEST_CASE("section_combine", "[object][text][gex]") {
     REQUIRE(glyphs3.size() == 2);
     REQUIRE(glyphs3[0].x_pos == 0);
     REQUIRE(glyphs3[0].y_pos == 0);
-    REQUIRE(glyphs3[1].x_pos == 1);
+    REQUIRE(glyphs3[1].x_pos == 1.1);
     REQUIRE(glyphs3[1].y_pos == 0);
 }
