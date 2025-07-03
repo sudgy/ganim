@@ -10,6 +10,8 @@
 #include "category_code.hpp"
 #include "token.hpp"
 
+#include "macros.cpp"
+
 using namespace ganim;
 using namespace ganim::gex;
 
@@ -29,6 +31,7 @@ namespace {
                 bool output_directly = false;
             };
 
+            void initialize_macros();
             std::optional<std::uint32_t> read_character();
             void process_character_token(
                 CharacterToken tok,
@@ -84,6 +87,11 @@ Preprocessor::Preprocessor(const std::vector<std::string_view>& input)
     M_catcodes[13] = {U'~'};
     M_catcodes[14] = {U'%'};
 
+    initialize_macros();
+}
+
+void Preprocessor::initialize_macros()
+{
     M_macros[U"relax"] = {};
     M_macros[U"displaystyle"] =
         {{}, {{CommandToken(U"displaystyle", "displaystyle")}}, true};
@@ -108,6 +116,17 @@ Preprocessor::Preprocessor(const std::vector<std::string_view>& input)
     // up to one of these
     M_macros[U"def"] = {};
     M_macros[U"expandafter"] = {};
+
+    auto real_input = std::move(M_input);
+    M_input = macro_input;
+    get_output();
+
+    M_input = std::move(real_input);
+    M_group_index = 0;
+    M_string_index = 0;
+    M_last_group_index = -1;
+    M_last_string_index = -1;
+    M_expanding = false;
 }
 
 TokenList Preprocessor::get_output()
