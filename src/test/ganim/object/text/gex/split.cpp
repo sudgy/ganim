@@ -58,3 +58,17 @@ TEST_CASE("GeX split", "[object][text][gex]") {
             "error in group 0 index 2: Three math shift characters in a row are"
             " not permitted.");
 }
+
+TEST_CASE("GeX split mathaccent at start", "[object][text][gex]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CharacterToken(U'$', CategoryCode::MathShift), 0, 0);
+    tokens.emplace_back(CharacterToken(U'$', CategoryCode::MathShift), 0, 0);
+    tokens.emplace_back(CommandToken(U"mathaccent", "mathaccent"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Letter), 0, 0);
+    tokens.emplace_back(CharacterToken(U'b', CategoryCode::Letter), 0, 0);
+    tokens.emplace_back(CharacterToken(U'$', CategoryCode::MathShift), 0, 0);
+    tokens.emplace_back(CharacterToken(U'$', CategoryCode::MathShift), 0, 0);
+    auto split = gex::split(tokens);
+    REQUIRE(split.size() == 1);
+    REQUIRE(split[0].tokens.size() == 3);
+}

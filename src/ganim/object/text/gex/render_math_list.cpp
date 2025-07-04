@@ -45,6 +45,7 @@ namespace {
             void render_atom_symbol(Atom& atom, AtomSymbol& symbol,Style style);
             void render_atom_list(Atom& atom, AtomList& list, Style style);
             void render_atom_script(Atom& atom, Style style);
+            void render_atom_accent(Atom& atom, AtomAccent& accent,Style style);
 
             MathList& M_list;
             MathList M_rendered_list;
@@ -151,6 +152,8 @@ void Processor::render_atom(Atom& atom, Style style)
             {render_atom_script(atom, style);},
         [&](AtomSubsuperscript&)
             {render_atom_script(atom, style);},
+        [&](AtomAccent& accent)
+            {render_atom_accent(atom, accent, style);},
         [&](auto&) {}
     }, atom.value);
 }
@@ -290,6 +293,41 @@ void Processor::render_atom_script(
             atom.box = combine_boxes_horizontally({nucleus->box, script_box});
         }
     }
+}
+
+void Processor::render_atom_accent(Atom& atom, AtomAccent& accent, Style style)
+{
+    render_atom(*accent.accent, style);
+    scale_box(accent.accent->box, 0.5);
+    render_atom(*accent.nucleus, get_cramped_style(style));
+    auto& a = accent.accent->box;
+    auto& n = accent.nucleus->box;
+    auto height = std::max(n.height, get_font_x_height(M_font)) + 0.05;
+    for (auto& glyph : a.glyphs) {
+        glyph.y_pos += height;
+        glyph.draw_y += height;
+        glyph.y_min += height;
+        glyph.y_max += height;
+    }
+    if (n.width > a.width) {
+        auto x_dif = (n.width - a.width) / 2.0;
+        for (auto& glyph : a.glyphs) {
+            glyph.x_pos += x_dif;
+            glyph.draw_x += x_dif;
+        }
+    }
+    else {
+        auto x_dif = (a.width - n.width) / 2.0;
+        for (auto& glyph : n.glyphs) {
+            glyph.x_pos += x_dif;
+            glyph.draw_x += x_dif;
+        }
+    }
+    atom.box.width = std::max(a.width, n.width);
+    atom.box.height = height + a.height;
+    atom.box.depth = n.depth;
+    atom.box.glyphs.append_range(a.glyphs);
+    atom.box.glyphs.append_range(n.glyphs);
 }
 
 Box Processor::do_combine(Style style)

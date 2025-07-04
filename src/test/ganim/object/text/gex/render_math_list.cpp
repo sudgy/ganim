@@ -294,3 +294,17 @@ TEST_CASE("GeX render_math_list sub/superscripts", "[object][text][gex]") {
     check_later_same(6, 8);
     REQUIRE(box.glyphs[9].y_pos < box.glyphs[4].y_pos);
 }
+
+TEST_CASE("GeX render_math_list accents", "[object][text][gex]") {
+    // a \mathaccent a b b
+    auto list = MathList();
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'a')));
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomAccent(
+        std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'a')),
+        std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'b'))
+    )));
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'b')));
+    auto box = render_math_list(list, Style::Display);
+
+    REQUIRE(box.glyphs.size() == 4);
+}

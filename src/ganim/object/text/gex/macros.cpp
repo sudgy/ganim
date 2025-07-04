@@ -4,7 +4,9 @@
 namespace {
 
 std::vector<std::string_view> macro_input = {
-"\\def\\vec#1{#1\xE2\x83\x97}" // Temporary solution
+R"(\def\vec#1{\mathaccent →{#1}})"
+R"(\def\bvec#1{\mathaccent ⇒{#1}})"
+R"(\def\tvec#1{\mathaccent ⇛{#1}})"
 };
 
 }

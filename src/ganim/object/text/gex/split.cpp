@@ -45,14 +45,15 @@ std::vector<Section> gex::split(const TokenList& tokens)
                             "permitted."
                     );
                 }
+                continue;
             }
-            else if (dollars_seen != 0) {
-                if (dollars_seen == 1) display = false;
-                else display = true;
-                dollars_seen = 0;
-                start = i;
-                math_mode = !math_mode;
-            }
+        }
+        if (dollars_seen != 0) {
+            if (dollars_seen == 1) display = false;
+            else display = true;
+            dollars_seen = 0;
+            start = i;
+            math_mode = !math_mode;
         }
     }
     if (math_mode) {

@@ -30,6 +30,7 @@ class Processor {
         Processor(const TokenList& tokens) : tokens(tokens) {}
         void process();
         void process_character_token(const CharacterToken& token);
+        void process_command_token(const CommandToken& token);
         void process_normal(std::uint32_t codepoint);
         void process_group();
         void process_subscript();
@@ -46,6 +47,7 @@ class Processor {
         MathList result;
         bool subscript = false;
         bool superscript = false;
+        int accent = 0;
 };
 
 }
@@ -61,11 +63,7 @@ void Processor::process()
             },
             [&](const CommandToken& tok)
             {
-                add_noad(Noad(CommandNoad(
-                    tok.command_utf8,
-                    token.group,
-                    token.string_index
-                )));
+                process_command_token(tok);
             },
             [&](const ParameterToken&)
             {
@@ -95,6 +93,22 @@ void Processor::process_character_token(const CharacterToken& tok)
         default:
             process_normal(tok.codepoint);
             break;
+    }
+}
+
+void Processor::process_command_token(const CommandToken& tok)
+{
+    auto& token = current_token();
+    if (tok.command_utf8 == "mathaccent") {
+        add_noad(Noad(Atom(Box(), AtomType::Acc, AtomAccent())));
+        accent = 2;
+    }
+    else {
+        add_noad(Noad(CommandNoad(
+            tok.command_utf8,
+            token.group,
+            token.string_index
+        )));
     }
 }
 
@@ -230,6 +244,17 @@ void Processor::add_noad(Noad noad)
                 std::make_unique<Atom>(std::move(atom)),
                 std::make_unique<Atom>(get<Atom>(noad.value))
             ))));
+        }
+    }
+    else if (accent > 0) {
+        auto& accent_noad = result.back();
+        auto& accent_atom = get<AtomAccent>(get<Atom>(accent_noad.value).value);
+        --accent;
+        if (!accent_atom.accent) {
+            accent_atom.accent = std::make_unique<Atom>(get<Atom>(noad.value));
+        }
+        else {
+            accent_atom.nucleus = std::make_unique<Atom>(get<Atom>(noad.value));
         }
     }
     else {

@@ -22,6 +22,8 @@ namespace ganim {
             }
             T* get() noexcept {return M_ptr.get();}
             T* operator->() noexcept {return M_ptr.get();}
+            T& operator*() const noexcept {return *M_ptr;}
+            operator bool() const noexcept {return M_ptr.get();}
 
         private:
             std::unique_ptr<T> M_ptr = nullptr;

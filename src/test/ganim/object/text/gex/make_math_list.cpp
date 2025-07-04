@@ -131,3 +131,46 @@ TEST_CASE("GeX make_math_list subscripts/superscripts", "[object][text][gex]") {
     REQUIRE(symbol.codepoint == U'e');
     REQUIRE(symbol.group == 3);
 }
+
+TEST_CASE("GeX make_math_list accents", "[object][text][gex]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CommandToken(U"mathaccent", "mathaccent"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 1, 0);
+    tokens.emplace_back(CharacterToken(U'b', CategoryCode::Other), 2, 0);
+    tokens.emplace_back(CommandToken(U"mathaccent", "mathaccent"), 3, 0);
+    tokens.emplace_back(CharacterToken(U'{', CategoryCode::StartGroup), 4, 0);
+    tokens.emplace_back(CharacterToken(U'c', CategoryCode::Other), 5, 0);
+    tokens.emplace_back(CharacterToken(U'}', CategoryCode::EndGroup), 6, 0);
+    tokens.emplace_back(CharacterToken(U'{', CategoryCode::StartGroup), 7, 0);
+    tokens.emplace_back(CharacterToken(U'd', CategoryCode::Other), 8, 0);
+    tokens.emplace_back(CharacterToken(U'}', CategoryCode::EndGroup), 9, 0);
+    auto list = make_math_list(tokens);
+
+    REQUIRE(list.size() == 2);
+    auto& atom1 = get<Atom>(list[0].value);
+    auto& atom2 = get<Atom>(list[1].value);
+    REQUIRE(atom1.type == AtomType::Acc);
+    REQUIRE(atom2.type == AtomType::Acc);
+    auto& accent_atom1 = get<AtomAccent>(atom1.value);
+    auto& accent_atom2 = get<AtomAccent>(atom2.value);
+    REQUIRE(accent_atom1.nucleus->type == AtomType::Ord);
+    REQUIRE(accent_atom1.accent->type == AtomType::Ord);
+    REQUIRE(accent_atom2.nucleus->type == AtomType::Ord);
+    REQUIRE(accent_atom2.accent->type == AtomType::Ord);
+    auto& nucleus1 = get<AtomSymbol>(accent_atom1.nucleus->value);
+    auto& accent1 = get<AtomSymbol>(accent_atom1.accent->value);
+    auto& nucleus2_list = get<AtomList>(accent_atom2.nucleus->value).list;
+    auto& accent2_list = get<AtomList>(accent_atom2.accent->value).list;
+    REQUIRE(nucleus2_list.size() == 1);
+    REQUIRE(accent2_list.size() == 1);
+    auto& nucleus2 = get<AtomSymbol>(get<Atom>(nucleus2_list[0].value).value);
+    auto& accent2 = get<AtomSymbol>(get<Atom>(accent2_list[0].value).value);
+    REQUIRE(accent1.codepoint == U'a');
+    REQUIRE(accent1.group == 1);
+    REQUIRE(nucleus1.codepoint == U'b');
+    REQUIRE(nucleus1.group == 2);
+    REQUIRE(accent2.codepoint == U'c');
+    REQUIRE(accent2.group == 5);
+    REQUIRE(nucleus2.codepoint == U'd');
+    REQUIRE(nucleus2.group == 8);
+}

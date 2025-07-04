@@ -101,6 +101,8 @@ void Preprocessor::initialize_macros()
         {{}, {{CommandToken(U"scriptstyle", "scriptstyle")}}, true};
     M_macros[U"scriptscriptstyle"] =
         {{}, {{CommandToken(U"scriptscriptstyle", "scriptscriptstyle")}}, true};
+    M_macros[U"mathaccent"] =
+        {{}, {{CommandToken(U"mathaccent", "mathaccent")}}, true};
     M_macros[U"{"] = {{}, {{CharacterToken(U'{', CategoryCode::Other)}}};
     M_macros[U"}"] = {{}, {{CharacterToken(U'}', CategoryCode::Other)}}};
     M_macros[U"$"] = {{}, {{CharacterToken(U'$', CategoryCode::Other)}}};
