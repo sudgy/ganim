@@ -2,6 +2,7 @@
 #include <catch2/matchers/catch_matchers_string.hpp>
 
 #include "ganim/object/text/gex/preprocess.hpp"
+#include "ganim/object/text/gex/macro.hpp"
 
 #include <unordered_map>
 
@@ -270,4 +271,20 @@ TEST_CASE("GeX preprocess expandafter", "[object][text][gex]") {
     test_tokens(tokens1, ttokens1);
     test_tokens(tokens2, ttokens2);
     test_tokens(tokens3, ttokens3);
+}
+
+TEST_CASE("GeX default global macros", "[object][text][gex]") {
+    auto tokens1 = preprocess({"\\vec v"});
+    auto tokens2 = preprocess({"\\mathaccent →{v}"});
+    REQUIRE(tokens1.size() == tokens2.size());
+}
+
+TEST_CASE("GeX macros add_base_macros", "[object][text][gex]") {
+    MacroStack::add_base_macros(R"(\def\addbasemacrostest{a})");
+    auto tokens = preprocess({"\\addbasemacrostest"});
+    REQUIRE(tokens.size() == 1);
+    auto& character = get<CharacterToken>(tokens[0].value);
+    REQUIRE(character.codepoint == U'a');
+    REQUIRE(tokens[0].group == 0);
+    REQUIRE(tokens[0].string_index == 0);
 }
