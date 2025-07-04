@@ -65,6 +65,8 @@ void Preprocessor::process_character_token(
     int string_index
 )
 {
+    if (tok.catcode == CategoryCode::StartGroup) M_macros.push();
+    if (tok.catcode == CategoryCode::EndGroup) M_macros.pop();
     M_output.emplace_back(tok, group, string_index);
 }
 

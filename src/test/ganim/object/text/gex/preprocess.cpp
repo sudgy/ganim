@@ -288,3 +288,14 @@ TEST_CASE("GeX macros add_base_macros", "[object][text][gex]") {
     REQUIRE(tokens[0].group == 0);
     REQUIRE(tokens[0].string_index == 0);
 }
+
+TEST_CASE("GeX \\def in groups", "[object][text][gex]") {
+    auto tokens1 = preprocess({
+        R"(\def\aa{a})"
+        R"(\aa)"
+        R"({\def\aa{b}\aa})"
+        R"(\aa)"
+    });
+    auto tokens2 = get_tokens("a{b}a", 5, catcode_map2);
+    test_tokens(tokens1, tokens2);
+}
