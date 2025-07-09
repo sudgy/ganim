@@ -6,6 +6,7 @@
 #include "ganim/object/bases/group.hpp"
 #include "ganim/object/bases/static_group.hpp"
 #include "ganim/object/bases/typed_group.hpp"
+#include "ganim/object/scene_object.hpp"
 #include "ganim/object/value.hpp"
 #include "ganim/object/path.hpp"
 #include "ganim/object/vector.hpp"

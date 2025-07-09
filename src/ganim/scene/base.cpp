@@ -200,7 +200,7 @@ void SceneBase::frame_advance()
             M_background_color.r / 255.0,
             M_background_color.g / 255.0,
             M_background_color.b / 255.0,
-            1
+            M_background_color.a / 255.0
         );
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         if (M_background_object) {

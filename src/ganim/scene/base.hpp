@@ -157,6 +157,9 @@ namespace ganim {
             /** @brief Get the camera used for drawing */
             ObjectPtr<Camera> get_camera() {return M_camera;}
 
+            unsigned get_framebuffer_texture() const
+                {return M_downsampled_framebuffer_texture;}
+
             auto begin() {return M_objects.begin();}
             auto end() {return M_objects.end();}
             auto begin() const {return M_objects.begin();}
