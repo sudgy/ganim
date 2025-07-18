@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "math_letter_map.hpp"
+#include "accent_offsets.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
@@ -297,6 +298,26 @@ void Processor::render_atom_script(
 
 void Processor::render_atom_accent(Atom& atom, AtomAccent& accent, Style style)
 {
+    auto codepoint = 0;
+    Atom* nucleus = accent.nucleus.get();
+    while (true) {
+        if (auto list = get_if<AtomList>(&nucleus->value)) {
+            if (list->list.size() == 1) {
+                if (auto new_nucleus = get_if<Atom>(&list->list[0].value)) {
+                    nucleus = new_nucleus;
+                    continue;
+                }
+            }
+        }
+        break;
+    }
+    if (auto symbol = get_if<AtomSymbol>(&nucleus->value)) {
+        auto it = math_letter_map.find(symbol->codepoint);
+        codepoint = it == math_letter_map.end()
+            ? symbol->codepoint
+            : it->second;
+    }
+
     render_atom(*accent.accent, style);
     scale_box(accent.accent->box, 0.5);
     render_atom(*accent.nucleus, get_cramped_style(style));
@@ -321,6 +342,13 @@ void Processor::render_atom_accent(Atom& atom, AtomAccent& accent, Style style)
         for (auto& glyph : n.glyphs) {
             glyph.x_pos += x_dif;
             glyph.draw_x += x_dif;
+        }
+    }
+    const double offset = get_accent_offset(codepoint);
+    if (offset > 0) {
+        for (auto& glyph : a.glyphs) {
+            glyph.x_pos += offset;
+            glyph.draw_x += offset;
         }
     }
     atom.box.width = std::max(a.width, n.width);
