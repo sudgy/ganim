@@ -18,7 +18,8 @@ namespace ganim {
         DepthPeeling = 1 << 7,
         Dash = 1 << 8,
         TextureTransform = 1 << 9,
-        Outline = 1 << 10
+        Outline = 1 << 10,
+        Pixelate = 1 << 11
     };
     constexpr bool operator&(ShaderFeature f1, ShaderFeature f2)
     {

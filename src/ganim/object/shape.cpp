@@ -117,6 +117,9 @@ void Shape::draw(const Camera& camera)
         glUniform1f(shader.get_uniform("this_t"), actual_draw_fraction);
         glUniform1f(shader.get_uniform("noise_scale"), actual_noise);
     }
+    if (M_pixelate_size) {
+        glUniform1i(shader.get_uniform("pixel_size"), M_pixelate_size);
+    }
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, M_indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
@@ -172,6 +175,11 @@ Shape* Shape::polymorphic_copy_impl() const
     return new Shape(*this);
 }
 
+void Shape::pixelate(int pixel_size)
+{
+    M_pixelate_size = pixel_size;
+}
+
 void Shape::buffer_vertices()
 {
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex)*M_vertices.size(),
@@ -202,6 +210,7 @@ ShaderFeature Shape::get_shader_flags()
     if (is_creating()) flags |= Create;
     else if (noise_creating()) flags |= NoiseCreate;
     if (M_do_shading) flags |= FaceShading;
+    if (M_pixelate_size) flags |= Pixelate;
     return flags;
 }
 

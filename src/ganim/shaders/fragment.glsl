@@ -59,6 +59,9 @@ uniform float scale2;
 uniform float thickness;
 uniform sampler2D distance_transform;
 #endif
+#ifdef PIXELATE
+uniform int pixel_size;
+#endif
 
 out vec4 color;
 
@@ -147,8 +150,38 @@ void main()
 #ifdef VERTEX_COLORS
     color *= fs_in.color;
 #endif
+#ifdef PIXELATE
+    ivec2 texture_size = textureSize(in_texture, 0);
+    ivec2 pixel_start = ivec2(
+        int(fs_in.tex_coord.x * texture_size.x) / pixel_size * pixel_size,
+        int(fs_in.tex_coord.y * texture_size.y) / pixel_size * pixel_size
+    );
+    vec4 pixel_color = vec4(0, 0, 0, 0);
+    int pixels_used = 0;
+    for (int x = 0; x < pixel_size; ++x) {
+        for (int y = 0; y < pixel_size; ++y) {
+            vec4 this_color = texture(in_texture, vec2(
+                float(pixel_start.x + x) / texture_size.x,
+                float(pixel_start.y + y) / texture_size.y
+            ));
+            if (this_color.a > 0) {
+                pixel_color += this_color;
+                ++pixels_used;
+            }
+        }
+    }
+    if (pixels_used == 0) {
+        color *= 0;
+    }
+    else {
+        pixel_color /= pixels_used;
+        color *= pixel_color;
+    }
+#endif
 #ifdef TEXTURE
+#ifndef PIXELATE
     color *= texture(in_texture, fs_in.tex_coord);
+#endif
 #endif
 #ifdef FACE_SHADING
     color.xyz *= fs_in.lighting;

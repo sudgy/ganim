@@ -111,6 +111,7 @@ namespace ganim {
                 double t
             ) override;
             ObjectPtr<Shape> polymorphic_copy() const;
+            void pixelate(int pixel_size);
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 
@@ -141,6 +142,7 @@ namespace ganim {
             bool M_opengl_valid = false;
             bool M_changed_after_construction = false;
             bool M_do_shading = false;
+            int M_pixelate_size = 0;
     };
     /** @brief Make a Shape in an ObjectPtr.
      *

@@ -83,6 +83,11 @@ gl::Shader& get_shader(ShaderFeature features)
         geometry.add_source("#define OUTLINE\n");
         fragment.add_source("#define OUTLINE\n");
     }
+    if (features & Pixelate) {
+        vertex.add_source("#define PIXELATE\n");
+        geometry.add_source("#define PIXELATE\n");
+        fragment.add_source("#define PIXELATE\n");
+    }
 
     vertex.add_source(
 #include "ganim/shaders/vertex.glsl"
