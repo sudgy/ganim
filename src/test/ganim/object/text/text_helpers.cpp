@@ -14,7 +14,7 @@ TEST_CASE("Text helpers", "[object][text]") {
     // W
     REQUIRE(shaped[0].x_pos == 0);
     REQUIRE(shaped[0].y_pos == 0);
-    REQUIRE(shaped[0].draw_x == 0.0078125);
+    REQUIRE(shaped[0].draw_x == 0);
     REQUIRE(shaped[0].draw_y == 0.6875);
     REQUIRE(shaped[0].width == 1.015625);
     REQUIRE(shaped[0].height == 0.71875);
@@ -26,7 +26,7 @@ TEST_CASE("Text helpers", "[object][text]") {
     // o
     REQUIRE(shaped[1].x_pos == 0.9449462890625);
     REQUIRE(shaped[1].y_pos == 0);
-    REQUIRE(shaped[1].draw_x == 0.9605712890625);
+    REQUIRE(shaped[1].draw_x == 0.9527587890625);
     REQUIRE(shaped[1].draw_y == 0.453125);
     REQUIRE(shaped[1].width == 0.46875);
     REQUIRE(shaped[1].height == 0.46875);
@@ -38,7 +38,7 @@ TEST_CASE("Text helpers", "[object][text]") {
     // r
     REQUIRE(shaped[2].x_pos == 1.4449462890625);
     REQUIRE(shaped[2].y_pos == 0);
-    REQUIRE(shaped[2].draw_x == 1.4605712890625);
+    REQUIRE(shaped[2].draw_x == 1.4527587890625);
     REQUIRE(shaped[2].draw_y == 0.453125);
     REQUIRE(shaped[2].width == 0.359375);
     REQUIRE(shaped[2].height == 0.4609375);
@@ -50,7 +50,7 @@ TEST_CASE("Text helpers", "[object][text]") {
     // l
     REQUIRE(shaped[3].x_pos == 1.8369140625);
     REQUIRE(shaped[3].y_pos == 0);
-    REQUIRE(shaped[3].draw_x == 1.8603515625);
+    REQUIRE(shaped[3].draw_x == 1.8525390625);
     REQUIRE(shaped[3].draw_y == 0.703125);
     REQUIRE(shaped[3].width == 0.2421875);
     REQUIRE(shaped[3].height == 0.7109375);
@@ -62,7 +62,7 @@ TEST_CASE("Text helpers", "[object][text]") {
     // d
     REQUIRE(shaped[4].x_pos == 2.1148681640625);
     REQUIRE(shaped[4].y_pos == 0);
-    REQUIRE(shaped[4].draw_x == 2.1383056640625);
+    REQUIRE(shaped[4].draw_x == 2.1304931640625);
     REQUIRE(shaped[4].draw_y == 0.703125);
     REQUIRE(shaped[4].width == 0.515625);
     REQUIRE(shaped[4].height == 0.71875);

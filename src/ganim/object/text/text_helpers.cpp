@@ -246,6 +246,10 @@ std::vector<PositionedGlyph> ganim::shape_text_manual_groups(
         cursor_x += glyph_positions[i].x_advance;
         cursor_y += glyph_positions[i].y_advance;
     }
+    auto shift = result[0].draw_x;
+    for (auto i = 0U; i < glyph_count; ++i) {
+        result[i].draw_x -= shift;
+    }
     hb_buffer_destroy(buffer);
     return result;
 }
