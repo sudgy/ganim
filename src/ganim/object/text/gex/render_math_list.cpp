@@ -240,7 +240,7 @@ void Processor::render_atom_script(
     if (!superscript) {
         auto& x = subscript->box;
         horizontal_shift_box(x, scriptspace);
-        x.width += scriptspace*2.5;
+        x.width += scriptspace;
         vertical_shift_box(x, -std::max({
             v,
             σ16,
@@ -251,7 +251,7 @@ void Processor::render_atom_script(
     else {
         auto& x = superscript->box;
         horizontal_shift_box(x, scriptspace);
-        x.width += scriptspace*2.5;
+        x.width += scriptspace;
         double p = 0.0;
         if (style == Style::Display) {
             p = σ13;
@@ -274,7 +274,7 @@ void Processor::render_atom_script(
         else {
             auto& y = subscript->box;
             horizontal_shift_box(y, scriptspace);
-            y.width += scriptspace*2.5;
+            y.width += scriptspace;
             v = std::max(v, σ17);
             if ((u - x.depth) - (y.height - v) < 4*θ) {
                 v = 4*θ - u + x.depth + y.height;
