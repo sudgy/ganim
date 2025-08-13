@@ -38,6 +38,16 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED 23)
 
+add_executable(sample_parse src/parse/parse.cpp)
+add_custom_command(
+    OUTPUT ${PROJECT_BINARY_DIR}/sample_parser.cpp
+           ${PROJECT_BINARY_DIR}/sample_parser.hpp
+    DEPENDS sample_parse src/parse/sample_grammar.grammar
+    COMMAND sample_parse ${PROJECT_SOURCE_DIR}/src/parse/sample_grammar.grammar
+                         ${PROJECT_SOURCE_DIR}/src/parse/skeleton
+                         ${PROJECT_BINARY_DIR}/sample_parser
+)
+
 find_package(Catch2 3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(FT2 freetype2)
@@ -61,7 +71,7 @@ add_library(ganimscript OBJECT ${GANIM_SCRIPT_FILES})
 add_library(ganimeditor OBJECT ${GANIM_EDITOR_FILES})
 add_executable(ganimscript_exe src/script_main.cpp)
 add_executable(ganim_exe src/editor_main.cpp)
-add_executable(test ${TEST_FILES})
+add_executable(test ${TEST_FILES} ${PROJECT_BINARY_DIR}/sample_parser.cpp)
 add_executable(examples ${EXAMPLE_FILES})
 
 target_include_directories(ganim PUBLIC src)
@@ -72,6 +82,7 @@ target_include_directories(ganimeditor PUBLIC src)
 target_include_directories(ganimscript_exe PUBLIC src)
 target_include_directories(ganim_exe PUBLIC src)
 target_include_directories(test PUBLIC src)
+target_include_directories(test PUBLIC src ${PROJECT_BINARY_DIR})
 target_include_directories(examples PUBLIC src)
 
 target_link_libraries(ganim PUBLIC "${AVCODEC}")
