@@ -550,7 +550,11 @@ void read_grammar_file(std::istream& file)
                 }
             }
             else {
-                auto symbol = symbol_map.at(input);
+                auto it = symbol_map.find(input);
+                if (it == symbol_map.end()) {
+                    throw std::runtime_error("Unknown symbol " + input);
+                }
+                auto symbol = it->second;
                 prod.symbols.emplace_back(
                     symbol,
                     tokens.contains(symbol)
@@ -762,7 +766,7 @@ int main(int argc, char* argv[])
 
     auto symbol_types = std::unordered_map<SymbolID, std::string>();
     auto token_type = std::string("std::variant<std::monostate");
-    auto type_set = std::unordered_set<std::string>();
+    auto type_set = std::unordered_set<std::string>{"std::monostate"};
     for (auto& [symbol, token_type_string] : tokens) {
         symbol_types[symbol] = token_type_string;
         if (type_set.insert(token_type_string).second) {
@@ -829,8 +833,10 @@ int main(int argc, char* argv[])
                      << "::builtin_token(std::string_view token)\n";
                 file << "{\n";
                 for (auto& token : builtin_symbols) {
-                    file << sp1 << "if (token == \"" << token
-                         << "\") {\n";
+                    file << sp1 << "if (token == \"";
+                    if (token == "\"") file << "\\\"";
+                    else file << token;
+                    file << "\") {\n";
                     file << sp2 << "return token_type("
                          << int(symbol_map.at(token))
                          << ", std::monostate());\n";
@@ -854,7 +860,7 @@ int main(int argc, char* argv[])
                 static constexpr auto sp2 = "        ";
                 static constexpr auto sp3 = "            ";
                 for (auto& [encoded, action] : table.actions) {
-                    file << sp2 << "case " << encoded << ":\n";
+                    file << sp2 << "case " << encoded << "UL:\n";
                     std::visit(overloaded{
                     [&](ActionError&){},
                     [&](ActionShift& shift) {
@@ -870,18 +876,19 @@ int main(int argc, char* argv[])
                             auto it = symbol_types.find(
                                 prod.symbols[i].identifier);
                             if (it != symbol_types.end()) {
-                                file << sp3 << "auto& var" << i + 1
-                                     << " = get<" << it->second
+                                file << sp3 << "[[maybe_unused]] auto& var"
+                                     << i + 1 << " = get<" << it->second
                                      << ">(M_states[M_states.size() - "
                                      << ssize(prod.symbols)-i << "].value);\n";
                             }
                         }
-                        file << sp3 << "auto var0 = ";
+                        file << sp3 << "auto var0 = static_cast<"
+                             << symbol_types.at(prod.name) << ">(";
                         auto code_view = std::string_view(prod.code);
                         while (true) {
                             auto dollar_pos = code_view.find('$');
                             if (dollar_pos == code_view.npos) {
-                                file << code_view << ";\n";
+                                file << code_view << ");\n";
                                 break;
                             }
                             file << code_view.substr(0, dollar_pos);

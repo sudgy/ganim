@@ -48,6 +48,15 @@ add_custom_command(
                          ${PROJECT_BINARY_DIR}/sample_parser
 )
 
+add_custom_command(
+    OUTPUT ${PROJECT_BINARY_DIR}/gex_dimension_parser.cpp
+           ${PROJECT_BINARY_DIR}/gex_dimension_parser.hpp
+    DEPENDS sample_parse src/parse/gex_dimension.grammar
+    COMMAND sample_parse ${PROJECT_SOURCE_DIR}/src/parse/gex_dimension.grammar
+                         ${PROJECT_SOURCE_DIR}/src/parse/skeleton
+                         ${PROJECT_BINARY_DIR}/gex_dimension_parser
+)
+
 find_package(Catch2 3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(FT2 freetype2)
@@ -66,7 +75,8 @@ file(GLOB_RECURSE GANIM_EDITOR_FILES CONFIGURE_DEPENDS src/editor/*.cpp)
 file(GLOB_RECURSE TEST_FILES CONFIGURE_DEPENDS src/test/*.cpp)
 file(GLOB_RECURSE EXAMPLE_FILES CONFIGURE_DEPENDS src/examples/*.cpp)
 
-add_library(ganim STATIC ${GANIM_FILES})
+add_library(ganim STATIC ${GANIM_FILES}
+                         ${PROJECT_BINARY_DIR}/gex_dimension_parser.cpp)
 add_library(ganimscript OBJECT ${GANIM_SCRIPT_FILES})
 add_library(ganimeditor OBJECT ${GANIM_EDITOR_FILES})
 add_executable(ganimscript_exe src/script_main.cpp)
