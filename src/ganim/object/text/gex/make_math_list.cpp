@@ -2,6 +2,7 @@
 
 #include "ganim/unicode_categories.hpp"
 #include "gex_error.hpp"
+#include "gex_dimension_parser.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
@@ -35,12 +36,14 @@ class Processor {
         void process_group();
         void process_subscript();
         void process_superscript();
+        void process_generalized_fraction();
 
         MathList get_result() {return std::move(result);}
 
     private:
         const Token& current_token() {return tokens[token_index];}
         void add_noad(Noad noad);
+        double read_dimension();
 
         const TokenList& tokens;
         int token_index = 0;
@@ -102,6 +105,9 @@ void Processor::process_command_token(const CommandToken& tok)
     if (tok.command_utf8 == "mathaccent") {
         add_noad(Noad(Atom(Box(), AtomType::Acc, AtomAccent())));
         accent = 2;
+    }
+    else if (tok.command_utf8 == "abovewithdelims") {
+        process_generalized_fraction();
     }
     else {
         add_noad(Noad(CommandNoad(
@@ -178,6 +184,46 @@ void Processor::process_superscript()
         throw GeXError(token.group, token.string_index, "Expected atom");
     }
     superscript = true;
+}
+
+void Processor::process_generalized_fraction()
+{
+    auto get_delim = [&] -> std::uint32_t {
+        while (true) {
+            ++token_index;
+            if (token_index == ssize(tokens)) {
+                throw GeXError(-1, -1, "Expected character token");
+            }
+            auto& token = current_token();
+            if (auto tok = get_if<CharacterToken>(&token.value)) {
+                if (tok->catcode == CategoryCode::Spacer) {
+                    continue;
+                }
+                if (tok->catcode != CategoryCode::Other) {
+                    throw GeXError(token.group, token.string_index,
+                        "Expected character token");
+                }
+                if (tok->codepoint == U'.') return 0;
+                else return tok->codepoint;
+            }
+        }
+    };
+    auto delim1 = get_delim();
+    auto delim2 = get_delim();
+    ++token_index;
+    auto rule_thickness = read_dimension();
+    auto denom_list = TokenList();
+    for ( ; token_index < ssize(tokens); ++token_index) {
+        denom_list.push_back(current_token());
+    }
+    auto noad = FractionNoad(
+        std::move(result),
+        make_math_list(denom_list),
+        delim1,
+        delim2,
+        rule_thickness
+    );
+    result = MathList{{noad}};
 }
 
 void Processor::add_noad(Noad noad)
@@ -260,6 +306,61 @@ void Processor::add_noad(Noad noad)
     else {
         result.push_back(std::move(noad));
     }
+}
+
+double Processor::read_dimension()
+{
+    auto parser = DimensionParser();
+    while (!parser.finished()) {
+        try {
+            if (token_index == ssize(tokens)) {
+                parser.push(parser.end_token());
+                break;
+            }
+        }
+        catch (std::invalid_argument&) {
+            throw GeXError(-1, -1, "Syntax error while reading a dimension");
+        }
+        auto& token = current_token();
+        try {
+            bool pushed = false;
+            if (auto tok = get_if<CharacterToken>(&token.value)) {
+                auto c = tok->codepoint;
+                if (c >= '0' and c <= '7') {
+                    pushed = parser.push(parser.OctalDigit_token(c));
+                }
+                else if (c >= '8' and c <= '9') {
+                    pushed = parser.push(parser.DecimalDigit_token(c));
+                }
+                else if (c >= 'A' and c <= 'F') {
+                    pushed = parser.push(parser.HexDigit_token(c));
+                }
+                else if (c == ' ') {
+                    pushed = parser.push(parser.Space_token(' '));
+                }
+                else if (
+                    c == '.' or c == ','  or c == 'p' or c == 't' or c == 'c' or
+                    c == 'i' or c == 'n'  or c == 'b' or c == 'm' or c == 'd' or
+                    c == 's' or c == '\'' or c == '"' or c == '+' or c == '-')
+                {
+                    pushed = parser.push(
+                        parser.builtin_token(std::string(1, c)));
+                }
+                else {
+                    pushed = parser.push(parser.end_token());
+                }
+            }
+            else {
+                pushed = parser.push(parser.end_token());
+            }
+            if (pushed) ++token_index;
+        }
+        catch (std::invalid_argument&) {
+            throw GeXError(token.group, token.string_index,
+                "Syntax error while parsing a dimension");
+        }
+    }
+    return parser.get_result();
 }
 
 

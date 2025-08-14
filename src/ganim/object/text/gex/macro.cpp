@@ -25,6 +25,8 @@ MacroStack::MacroStack()
                 true};
         S_base_frame[U"mathaccent"] =
             {{}, {{CommandToken(U"mathaccent", "mathaccent")}}, true};
+        S_base_frame[U"abovewithdelims"] =
+            {{}, {{CommandToken(U"abovewithdelims", "abovewithdelims")}}, true};
         S_base_frame[U"{"] = {{}, {{CharacterToken(U'{',CategoryCode::Other)}}};
         S_base_frame[U"}"] = {{}, {{CharacterToken(U'}',CategoryCode::Other)}}};
         S_base_frame[U"$"] = {{}, {{CharacterToken(U'$',CategoryCode::Other)}}};

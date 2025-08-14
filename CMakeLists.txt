@@ -84,7 +84,7 @@ add_executable(ganim_exe src/editor_main.cpp)
 add_executable(test ${TEST_FILES} ${PROJECT_BINARY_DIR}/sample_parser.cpp)
 add_executable(examples ${EXAMPLE_FILES})
 
-target_include_directories(ganim PUBLIC src)
+target_include_directories(ganim PUBLIC src ${PROJECT_BINARY_DIR})
 target_include_directories(ganim PUBLIC ${FT2_INCLUDE_DIRS})
 target_compile_options(ganim PUBLIC ${FT2_CFLAGS_OTHER})
 target_include_directories(ganimscript PUBLIC src)

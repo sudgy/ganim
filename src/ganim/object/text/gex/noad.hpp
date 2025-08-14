@@ -82,9 +82,16 @@ namespace ganim::gex {
         int group = -1;
         int string_index = -1;
     };
+    struct FractionNoad {
+        MathList numerator;
+        MathList denominator;
+        std::uint32_t left_delim = 0;
+        std::uint32_t right_delim = 0;
+        double rule_thickness = 0.0;
+    };
 
     struct Noad {
-        std::variant<Atom, CommandNoad> value;
+        std::variant<Atom, CommandNoad, FractionNoad> value;
     };
 }
 

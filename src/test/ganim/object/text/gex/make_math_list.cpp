@@ -174,3 +174,44 @@ TEST_CASE("GeX make_math_list accents", "[object][text][gex]") {
     REQUIRE(nucleus2.codepoint == U'd');
     REQUIRE(nucleus2.group == 8);
 }
+
+TEST_CASE("GeX make_math_list fractions", "[object][text][gexx]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'b', CategoryCode::Other), 0, 1);
+    tokens.emplace_back(
+        CommandToken(U"abovewithdelims", "abovewithdelims"), 0, 2);
+    tokens.emplace_back(CharacterToken(U' ', CategoryCode::Spacer), 0, 3);
+    tokens.emplace_back(CharacterToken(U'(', CategoryCode::Other), 0, 4);
+    tokens.emplace_back(CharacterToken(U' ', CategoryCode::Spacer), 0, 5);
+    tokens.emplace_back(CharacterToken(U'.', CategoryCode::Other), 0, 6);
+    tokens.emplace_back(CharacterToken(U' ', CategoryCode::Spacer), 0, 7);
+    tokens.emplace_back(CharacterToken(U'1', CategoryCode::Other), 0, 8);
+    tokens.emplace_back(CharacterToken(U'p', CategoryCode::Other), 0, 9);
+    tokens.emplace_back(CharacterToken(U't', CategoryCode::Other), 0, 10);
+    tokens.emplace_back(CharacterToken(U'c', CategoryCode::Other), 0, 11);
+    tokens.emplace_back(CharacterToken(U'd', CategoryCode::Other), 0, 12);
+    auto list = make_math_list(tokens);
+
+    REQUIRE(list.size() == 1);
+    auto& fraction = get<FractionNoad>(list[0].value);
+    REQUIRE(fraction.left_delim == U'(');
+    REQUIRE(fraction.right_delim == 0);
+    REQUIRE(fraction.rule_thickness == 1.0);
+
+    REQUIRE(fraction.numerator.size() == 2);
+    auto& atom1 = get<Atom>(fraction.numerator[0].value);
+    auto& atom2 = get<Atom>(fraction.numerator[1].value);
+    auto& symbol1 = get<AtomSymbol>(atom1.value);
+    auto& symbol2 = get<AtomSymbol>(atom2.value);
+    REQUIRE(symbol1.codepoint == U'a');
+    REQUIRE(symbol2.codepoint == U'b');
+
+    REQUIRE(fraction.denominator.size() == 2);
+    auto& atom3 = get<Atom>(fraction.denominator[0].value);
+    auto& atom4 = get<Atom>(fraction.denominator[1].value);
+    auto& symbol3 = get<AtomSymbol>(atom3.value);
+    auto& symbol4 = get<AtomSymbol>(atom4.value);
+    REQUIRE(symbol3.codepoint == U'c');
+    REQUIRE(symbol4.codepoint == U'd');
+}
