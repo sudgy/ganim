@@ -88,6 +88,7 @@ namespace ganim::gex {
         std::uint32_t left_delim = 0;
         std::uint32_t right_delim = 0;
         double rule_thickness = 0.0;
+        int group = -1;
     };
 
     struct Noad {

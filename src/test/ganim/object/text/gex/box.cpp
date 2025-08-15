@@ -106,3 +106,20 @@ TEST_CASE("combine_boxes_vertically", "[object][text][gex]") {
     REQUIRE(test6.glyphs[1].x_pos == 0.0);
     REQUIRE(test6.glyphs[1].y_pos == 0.0);
 }
+
+TEST_CASE("combine_boxes_vertically overlapping objects?",
+        "[object][text][gex]")
+{
+    auto glyph1 = PositionedGlyph();
+    auto glyph2 = PositionedGlyph();
+    auto glyph3 = PositionedGlyph();
+    glyph1.draw_y = 0.5;
+    glyph2.draw_y = 0.1;
+    glyph3.draw_y = 0.7;
+    auto test = combine_boxes_vertically({
+        Box(1, 0.5, 0.01, {glyph1}),
+        Box(1, 0.1, 0, {glyph2}),
+        Box(1, 0.7, 0.01, {glyph3}),
+    }, 0);
+    REQUIRE(test.glyphs[1].draw_y > test.glyphs[2].draw_y);
+}

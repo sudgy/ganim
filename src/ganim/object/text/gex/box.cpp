@@ -33,7 +33,7 @@ Box gex::combine_boxes_vertically(
     for (int i = 0; i < ssize(boxes); ++i) {
         auto& box = boxes[i];
         pluses_zero_reference.back() += box.height;
-        pluses_zero_reference.push_back(box.depth);
+        pluses_zero_reference.push_back(pluses_zero_reference.back()+box.depth);
         result.width = std::max(result.width, box.width);
         if (i <= reference_box) {
             result.height += box.height;
@@ -84,6 +84,27 @@ Box gex::box_from_glyphs(std::vector<PositionedGlyph> glyphs)
             y_pos - bottom_y_pos,
             glyphs
         );
+}
+
+Box gex::make_rule(double width, double height, double depth, int group_index)
+{
+    auto result = Box(width, height, depth, {});
+    const auto td = 1.0f / GC_default_text_texture_size / 2;
+    result.glyphs.resize(1);
+    result.glyphs[0].x_pos = 0;
+    result.glyphs[0].y_pos = 0;
+    result.glyphs[0].draw_x = 0;
+    result.glyphs[0].draw_y = -depth;
+    result.glyphs[0].width = width;
+    result.glyphs[0].height = height + depth;
+    result.glyphs[0].y_min = -depth;
+    result.glyphs[0].y_max = height;
+    result.glyphs[0].texture_x = 0;
+    result.glyphs[0].texture_y = 0;
+    result.glyphs[0].texture_width = td;
+    result.glyphs[0].texture_height = td;
+    result.glyphs[0].group_index = group_index;
+    return result;
 }
 
 void gex::scale_box(Box& box, double scale)

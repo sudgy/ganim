@@ -304,54 +304,52 @@ TEST_CASE("GeX various fraction names", "[object][text][gex]") {
     auto tokens = preprocess({
         R"(\over \atop \choose \above \overwithdelims()\atopwithdelims())"
     });
-    REQUIRE(tokens.size() == 43);
+    REQUIRE(tokens.size() == 41);
     REQUIRE(get<CommandToken>(tokens[0].value).command_utf8
         == "abovewithdelims");
     REQUIRE(get<CharacterToken>(tokens[1].value).codepoint == U'.');
     REQUIRE(get<CharacterToken>(tokens[2].value).codepoint == U'.');
     REQUIRE(get<CharacterToken>(tokens[3].value).codepoint == U' ');
-    REQUIRE(get<CharacterToken>(tokens[4].value).codepoint == U'0');
-    REQUIRE(get<CharacterToken>(tokens[5].value).codepoint == U'.');
-    REQUIRE(get<CharacterToken>(tokens[6].value).codepoint == U'4');
-    REQUIRE(get<CharacterToken>(tokens[7].value).codepoint == U'p');
-    REQUIRE(get<CharacterToken>(tokens[8].value).codepoint == U't');
-    REQUIRE(get<CommandToken>(tokens[9].value).command_utf8
+    REQUIRE(get<CharacterToken>(tokens[4].value).codepoint == U'-');
+    REQUIRE(get<CharacterToken>(tokens[5].value).codepoint == U'1');
+    REQUIRE(get<CharacterToken>(tokens[6].value).codepoint == U'p');
+    REQUIRE(get<CharacterToken>(tokens[7].value).codepoint == U't');
+    REQUIRE(get<CommandToken>(tokens[8].value).command_utf8
         == "abovewithdelims");
+    REQUIRE(get<CharacterToken>(tokens[9].value).codepoint == U'.');
     REQUIRE(get<CharacterToken>(tokens[10].value).codepoint == U'.');
-    REQUIRE(get<CharacterToken>(tokens[11].value).codepoint == U'.');
-    REQUIRE(get<CharacterToken>(tokens[12].value).codepoint == U' ');
-    REQUIRE(get<CharacterToken>(tokens[13].value).codepoint == U'0');
-    REQUIRE(get<CharacterToken>(tokens[14].value).codepoint == U'p');
-    REQUIRE(get<CharacterToken>(tokens[15].value).codepoint == U't');
-    REQUIRE(get<CommandToken>(tokens[16].value).command_utf8
+    REQUIRE(get<CharacterToken>(tokens[11].value).codepoint == U' ');
+    REQUIRE(get<CharacterToken>(tokens[12].value).codepoint == U'0');
+    REQUIRE(get<CharacterToken>(tokens[13].value).codepoint == U'p');
+    REQUIRE(get<CharacterToken>(tokens[14].value).codepoint == U't');
+    REQUIRE(get<CommandToken>(tokens[15].value).command_utf8
         == "abovewithdelims");
-    REQUIRE(get<CharacterToken>(tokens[17].value).codepoint == U'(');
-    REQUIRE(get<CharacterToken>(tokens[18].value).codepoint == U')');
-    REQUIRE(get<CharacterToken>(tokens[19].value).codepoint == U' ');
-    REQUIRE(get<CharacterToken>(tokens[20].value).codepoint == U'0');
-    REQUIRE(get<CharacterToken>(tokens[21].value).codepoint == U'p');
-    REQUIRE(get<CharacterToken>(tokens[22].value).codepoint == U't');
-    REQUIRE(get<CommandToken>(tokens[23].value).command_utf8
+    REQUIRE(get<CharacterToken>(tokens[16].value).codepoint == U'(');
+    REQUIRE(get<CharacterToken>(tokens[17].value).codepoint == U')');
+    REQUIRE(get<CharacterToken>(tokens[18].value).codepoint == U' ');
+    REQUIRE(get<CharacterToken>(tokens[19].value).codepoint == U'0');
+    REQUIRE(get<CharacterToken>(tokens[20].value).codepoint == U'p');
+    REQUIRE(get<CharacterToken>(tokens[21].value).codepoint == U't');
+    REQUIRE(get<CommandToken>(tokens[22].value).command_utf8
         == "abovewithdelims");
+    REQUIRE(get<CharacterToken>(tokens[23].value).codepoint == U'.');
     REQUIRE(get<CharacterToken>(tokens[24].value).codepoint == U'.');
-    REQUIRE(get<CharacterToken>(tokens[25].value).codepoint == U'.');
-    REQUIRE(get<CharacterToken>(tokens[26].value).codepoint == U' ');
-    REQUIRE(get<CommandToken>(tokens[27].value).command_utf8
+    REQUIRE(get<CharacterToken>(tokens[25].value).codepoint == U' ');
+    REQUIRE(get<CommandToken>(tokens[26].value).command_utf8
         == "abovewithdelims");
-    REQUIRE(get<CharacterToken>(tokens[28].value).codepoint == U'(');
-    REQUIRE(get<CharacterToken>(tokens[29].value).codepoint == U')');
-    REQUIRE(get<CharacterToken>(tokens[30].value).codepoint == U' ');
-    REQUIRE(get<CharacterToken>(tokens[31].value).codepoint == U'0');
-    REQUIRE(get<CharacterToken>(tokens[32].value).codepoint == U'.');
-    REQUIRE(get<CharacterToken>(tokens[33].value).codepoint == U'4');
-    REQUIRE(get<CharacterToken>(tokens[34].value).codepoint == U'p');
-    REQUIRE(get<CharacterToken>(tokens[35].value).codepoint == U't');
-    REQUIRE(get<CommandToken>(tokens[36].value).command_utf8
+    REQUIRE(get<CharacterToken>(tokens[27].value).codepoint == U'(');
+    REQUIRE(get<CharacterToken>(tokens[28].value).codepoint == U')');
+    REQUIRE(get<CharacterToken>(tokens[29].value).codepoint == U' ');
+    REQUIRE(get<CharacterToken>(tokens[30].value).codepoint == U'-');
+    REQUIRE(get<CharacterToken>(tokens[31].value).codepoint == U'1');
+    REQUIRE(get<CharacterToken>(tokens[32].value).codepoint == U'p');
+    REQUIRE(get<CharacterToken>(tokens[33].value).codepoint == U't');
+    REQUIRE(get<CommandToken>(tokens[34].value).command_utf8
         == "abovewithdelims");
-    REQUIRE(get<CharacterToken>(tokens[37].value).codepoint == U'(');
-    REQUIRE(get<CharacterToken>(tokens[38].value).codepoint == U')');
-    REQUIRE(get<CharacterToken>(tokens[39].value).codepoint == U' ');
-    REQUIRE(get<CharacterToken>(tokens[40].value).codepoint == U'0');
-    REQUIRE(get<CharacterToken>(tokens[41].value).codepoint == U'p');
-    REQUIRE(get<CharacterToken>(tokens[42].value).codepoint == U't');
+    REQUIRE(get<CharacterToken>(tokens[35].value).codepoint == U'(');
+    REQUIRE(get<CharacterToken>(tokens[36].value).codepoint == U')');
+    REQUIRE(get<CharacterToken>(tokens[37].value).codepoint == U' ');
+    REQUIRE(get<CharacterToken>(tokens[38].value).codepoint == U'0');
+    REQUIRE(get<CharacterToken>(tokens[39].value).codepoint == U'p');
+    REQUIRE(get<CharacterToken>(tokens[40].value).codepoint == U't');
 }

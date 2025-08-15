@@ -21,6 +21,7 @@ namespace ganim::gex {
         int reference_box
     );
     Box box_from_glyphs(std::vector<PositionedGlyph> glyphs);
+    Box make_rule(double width, double height, double depth, int group_index);
     void scale_box(Box& box, double scale);
     void horizontal_shift_box(Box& box, double amount);
     void vertical_shift_box(Box& box, double amount);

@@ -36,7 +36,7 @@ class Processor {
         void process_group();
         void process_subscript();
         void process_superscript();
-        void process_generalized_fraction();
+        void process_generalized_fraction(int group);
 
         MathList get_result() {return std::move(result);}
 
@@ -107,7 +107,7 @@ void Processor::process_command_token(const CommandToken& tok)
         accent = 2;
     }
     else if (tok.command_utf8 == "abovewithdelims") {
-        process_generalized_fraction();
+        process_generalized_fraction(token.group);
     }
     else {
         add_noad(Noad(CommandNoad(
@@ -186,7 +186,7 @@ void Processor::process_superscript()
     superscript = true;
 }
 
-void Processor::process_generalized_fraction()
+void Processor::process_generalized_fraction(int group)
 {
     auto get_delim = [&] -> std::uint32_t {
         while (true) {
@@ -221,7 +221,8 @@ void Processor::process_generalized_fraction()
         make_math_list(denom_list),
         delim1,
         delim2,
-        rule_thickness
+        rule_thickness,
+        group
     );
     result = MathList{{noad}};
 }

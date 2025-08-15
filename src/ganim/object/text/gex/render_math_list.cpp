@@ -47,6 +47,7 @@ namespace {
             void render_atom_list(Atom& atom, AtomList& list, Style style);
             void render_atom_script(Atom& atom, Style style);
             void render_atom_accent(Atom& atom, AtomAccent& accent,Style style);
+            Noad render_fraction(FractionNoad& fraction, Style style);
 
             MathList& M_list;
             MathList M_rendered_list;
@@ -127,14 +128,22 @@ void Processor::do_rendering(Style style)
                 render_ords(ord_start, i);
                 ord_start = -1;
             }
-            if (auto atom = std::get_if<Atom>(&noad.value)) {
-                render_atom(*atom, style);
-                M_rendered_list.push_back(Noad(*atom));
-            }
-            else if (auto command = std::get_if<CommandNoad>(&noad.value)) {
-                check_style_change(*command, style, scaling);
-                M_rendered_list.push_back(noad);
-            }
+            std::visit(overloaded{
+                [&](Atom& atom)
+                {
+                    render_atom(atom, style);
+                    M_rendered_list.push_back(Noad(atom));
+                },
+                [&](CommandNoad& command)
+                {
+                    check_style_change(command, style, scaling);
+                    M_rendered_list.push_back(noad);
+                },
+                [&](FractionNoad& fraction)
+                {
+                    M_rendered_list.push_back(render_fraction(fraction, style));
+                }
+            }, noad.value);
         }
     }
     if (ord_start != -1) {
@@ -356,6 +365,73 @@ void Processor::render_atom_accent(Atom& atom, AtomAccent& accent, Style style)
     atom.box.depth = n.depth;
     atom.box.glyphs.append_range(a.glyphs);
     atom.box.glyphs.append_range(n.glyphs);
+}
+
+Noad Processor::render_fraction(FractionNoad& fraction, Style style)
+{
+    auto θ = fraction.rule_thickness;
+    if (θ < 0.0) θ = get_font_default_rule_thickness(M_font);
+    auto x = render_math_list(
+        fraction.numerator,
+        get_numerator_style(style)
+    );
+    auto z = render_math_list(
+        fraction.denominator,
+        get_denominator_style(style)
+    );
+    if (x.width > z.width) {
+        horizontal_shift_box(z, (x.width - z.width) / 2.0);
+    }
+    else if (z.width > x.width) {
+        horizontal_shift_box(x, (z.width - x.width) / 2.0);
+    }
+    auto u = 0.0;
+    auto v = 0.0;
+    bool display = style == Style::Display or style == Style::CrampedDisplay;
+    if (display) {
+        u = get_font_num1(M_font);
+        v = get_font_denom1(M_font);
+    }
+    else {
+        if (θ == 0) u = get_font_num3(M_font);
+        else u = get_font_num2(M_font);
+        v = get_font_denom2(M_font);
+    }
+    u /= 1.2;
+    v /= 1.05;
+    auto box = Box();
+    if (θ == 0) {
+        auto φ = get_font_default_rule_thickness(M_font);
+        if (display) φ *= 7;
+        else φ *= 3;
+        auto ψ = (u - x.depth) - (z.height - v);
+        if (ψ < φ) {
+            auto plus = (φ - ψ)/2;
+            u += plus;
+            v += plus;
+        }
+        auto distance = (x.height + u + z.depth + v)
+            - (x.height + x.depth + z.height + z.depth);
+        auto kern = Box(0, 0, distance, {});
+        box = combine_boxes_vertically({x, kern, z}, 0);
+        vertical_shift_box(box, (x.height + u) - box.height);
+    }
+    else {
+        auto φ = get_font_default_rule_thickness(M_font);
+        if (display) φ *= 3;
+        auto a = get_font_axis_height(M_font);
+        auto diff = (u - x.depth) - (a + θ/2);
+        if (diff < φ) u += φ - diff;
+        diff = (a - θ/2) - (z.height - v);
+        if (diff < φ) v += φ - diff;
+        auto kern1 = Box(0, 0, u - x.depth - a - θ/2, {});
+        auto rule = make_rule(x.width, θ, 0, fraction.group);
+        auto kern2 = Box(0, 0, a - θ/2 + (v - z.height), {});
+        box = combine_boxes_vertically({x, kern1, rule, kern2, z}, 0);
+        vertical_shift_box(box, (x.height + u) - box.height);
+    }
+    // TODO: delimeters
+    return {Atom(std::move(box), AtomType::Ord, AtomBox())};
 }
 
 Box Processor::do_combine(Style style)
