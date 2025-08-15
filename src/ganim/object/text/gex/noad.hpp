@@ -90,9 +90,12 @@ namespace ganim::gex {
         double rule_thickness = 0.0;
         int group = -1;
     };
+    struct GlueNoad {
+        double thickness = 0.0;
+    };
 
     struct Noad {
-        std::variant<Atom, CommandNoad, FractionNoad> value;
+        std::variant<Atom, CommandNoad, FractionNoad, GlueNoad> value;
     };
 }
 

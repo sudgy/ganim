@@ -109,6 +109,12 @@ void Processor::process_command_token(const CommandToken& tok)
     else if (tok.command_utf8 == "abovewithdelims") {
         process_generalized_fraction(token.group);
     }
+    else if (tok.command_utf8 == "mskip") {
+        ++token_index;
+        auto dimen = read_dimension();
+        --token_index;
+        add_noad(Noad(GlueNoad(dimen)));
+    }
     else {
         add_noad(Noad(CommandNoad(
             tok.command_utf8,
@@ -340,9 +346,10 @@ double Processor::read_dimension()
                     pushed = parser.push(parser.Space_token(' '));
                 }
                 else if (
-                    c == '.' or c == ','  or c == 'p' or c == 't' or c == 'c' or
-                    c == 'i' or c == 'n'  or c == 'b' or c == 'm' or c == 'd' or
-                    c == 's' or c == '\'' or c == '"' or c == '+' or c == '-')
+                    c == '.'  or c == ',' or c == 'p' or c == 't' or c == 'c' or
+                    c == 'i'  or c == 'n' or c == 'b' or c == 'm' or c == 'd' or
+                    c == 's'  or c == 'u' or
+                    c == '\'' or c == '"' or c == '+' or c == '-')
                 {
                     pushed = parser.push(
                         parser.builtin_token(std::string(1, c)));

@@ -363,3 +363,23 @@ TEST_CASE("GeX render_math_list fractions", "[object][text][gex]") {
     REQUIRE(get_mid(box.glyphs[4]) == get_mid(box.glyphs[8]));
     REQUIRE(get_mid(box.glyphs[4]) == get_mid(box.glyphs[9]));
 }
+
+TEST_CASE("GeX render_math_list mskip", "[object][text][gex]") {
+    // aa\,a\!a
+    auto list = MathList();
+    auto a = Atom(Box(), AtomType::Ord, AtomSymbol(U'a'));
+    list.emplace_back(a);
+    list.emplace_back(a);
+    list.emplace_back(GlueNoad(1));
+    list.emplace_back(a);
+    list.emplace_back(GlueNoad(-1));
+    list.emplace_back(a);
+    auto box = render_math_list(list, Style::Display);
+
+    auto dif = [&](int a, int b) {
+        return box.glyphs[a].x_pos - box.glyphs[b].x_pos;
+    };
+    REQUIRE(box.glyphs.size() == 4);
+    REQUIRE(dif(2, 1) > dif(1, 0));
+    REQUIRE(dif(3, 2) < dif(1, 0));
+}

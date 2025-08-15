@@ -142,6 +142,10 @@ void Processor::do_rendering(Style style)
                 [&](FractionNoad& fraction)
                 {
                     M_rendered_list.push_back(render_fraction(fraction, style));
+                },
+                [&](GlueNoad&)
+                {
+                    M_rendered_list.push_back(noad);
                 }
             }, noad.value);
         }
@@ -477,6 +481,9 @@ Box Processor::do_combine(Style style)
         }
         else if (auto command = std::get_if<CommandNoad>(&noad.value)) {
             check_style_change(*command, style, scaling);
+        }
+        else if (auto glue = std::get_if<GlueNoad>(&noad.value)) {
+            result_boxes.push_back(Box(glue->thickness, 0, 0, {}));
         }
     }
     return combine_boxes_horizontally(result_boxes);

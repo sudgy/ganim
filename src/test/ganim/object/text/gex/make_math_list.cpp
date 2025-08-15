@@ -175,7 +175,7 @@ TEST_CASE("GeX make_math_list accents", "[object][text][gex]") {
     REQUIRE(nucleus2.group == 8);
 }
 
-TEST_CASE("GeX make_math_list fractions", "[object][text][gexx]") {
+TEST_CASE("GeX make_math_list fractions", "[object][text][gex]") {
     auto tokens = TokenList();
     tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
     tokens.emplace_back(CharacterToken(U'b', CategoryCode::Other), 0, 1);
@@ -214,4 +214,34 @@ TEST_CASE("GeX make_math_list fractions", "[object][text][gexx]") {
     auto& symbol4 = get<AtomSymbol>(atom4.value);
     REQUIRE(symbol3.codepoint == U'c');
     REQUIRE(symbol4.codepoint == U'd');
+}
+
+TEST_CASE("GeX make_math_list mskip", "[object][text][gex]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CharacterToken(U'a'), 0, 0);
+    tokens.emplace_back(CommandToken(U"mskip", "mskip"), 0, 1);
+    tokens.emplace_back(CharacterToken(U'3'), 0, 2);
+    tokens.emplace_back(CharacterToken(U'm'), 0, 3);
+    tokens.emplace_back(CharacterToken(U'u'), 0, 4);
+    tokens.emplace_back(CharacterToken(U'b'), 0, 5);
+    tokens.emplace_back(CommandToken(U"mskip", "mskip"), 0, 6);
+    tokens.emplace_back(CharacterToken(U'-'), 0, 7);
+    tokens.emplace_back(CharacterToken(U'3'), 0, 8);
+    tokens.emplace_back(CharacterToken(U'm'), 0, 9);
+    tokens.emplace_back(CharacterToken(U'u'), 0, 10);
+    tokens.emplace_back(CharacterToken(U'c'), 0, 11);
+    auto list = make_math_list(tokens);
+
+    REQUIRE(list.size() == 5);
+    auto& symbol1 = get<AtomSymbol>(get<Atom>(list[0].value).value);
+    auto& symbol2 = get<AtomSymbol>(get<Atom>(list[2].value).value);
+    auto& symbol3 = get<AtomSymbol>(get<Atom>(list[4].value).value);
+    REQUIRE(symbol1.codepoint == U'a');
+    REQUIRE(symbol2.codepoint == U'b');
+    REQUIRE(symbol3.codepoint == U'c');
+
+    auto& glue1 = get<GlueNoad>(list[1].value);
+    auto& glue2 = get<GlueNoad>(list[3].value);
+    REQUIRE(glue1.thickness == 0.15);
+    REQUIRE(glue2.thickness == -0.15);
 }
