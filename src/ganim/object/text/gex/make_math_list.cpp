@@ -361,7 +361,7 @@ double Processor::read_dimension()
                 "Syntax error while parsing a dimension");
         }
     }
-    return parser.get_result();
+    return parser.get_result() / 10.0;
 }
 
 

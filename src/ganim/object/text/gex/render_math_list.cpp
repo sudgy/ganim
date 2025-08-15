@@ -430,8 +430,26 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
         box = combine_boxes_vertically({x, kern1, rule, kern2, z}, 0);
         vertical_shift_box(box, (x.height + u) - box.height);
     }
-    // TODO: delimeters
-    return {Atom(std::move(box), AtomType::Ord, AtomBox())};
+    auto a = get_font_axis_height(M_font);
+    auto fraction_height = std::max((box.height - a), (box.depth + a)) * 2 +0.1;
+    auto make_delim = [&](std::uint32_t codepoint){
+        // TODO: Add \nulldelimiterspace?
+        if (codepoint == 0) return Box(0.12, 0, 0, {});
+        // TODO: Use bigger characters
+        auto fake_atom_symbol = AtomSymbol(codepoint, fraction.group, -1);
+        auto fake_atom = Atom(Box(), AtomType::Ord, fake_atom_symbol);
+        render_atom_symbol(fake_atom, fake_atom_symbol, style);
+        auto delim_height = fake_atom.box.height + fake_atom.box.depth;
+        scale_box(fake_atom.box, fraction_height / delim_height);
+        auto height = fake_atom.box.height;
+        auto depth = fake_atom.box.depth;
+        vertical_shift_box(fake_atom.box, (depth - height) / 2 + a);
+        return fake_atom.box;
+    };
+    auto delim1 = make_delim(fraction.left_delim);
+    auto delim2 = make_delim(fraction.right_delim);
+    auto final_box = combine_boxes_horizontally({delim1, box, delim2});
+    return {Atom(std::move(final_box), AtomType::Ord, AtomBox())};
 }
 
 Box Processor::do_combine(Style style)
