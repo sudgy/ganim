@@ -308,3 +308,58 @@ TEST_CASE("GeX render_math_list accents", "[object][text][gex]") {
 
     REQUIRE(box.glyphs.size() == 4);
 }
+
+TEST_CASE("GeX render_math_list fractions", "[object][text][gex]") {
+    // a {a \over a} {a \abovewithdelims() 10pt a} =
+    auto list = MathList();
+    auto a = Atom(Box(), AtomType::Ord, AtomSymbol(U'a'));
+    list.emplace_back(a);
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomList({
+        {FractionNoad({{a}}, {{a}}, 0, 0, -1, 0)}
+    })));
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomList({
+        {FractionNoad({{a}}, {{a}}, U'(', U')', 1, 0)}
+    })));
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'=')));
+    auto box = render_math_list(list, Style::Display);
+
+    REQUIRE(box.glyphs.size() == 10);
+    REQUIRE(box.glyphs[0].texture_x == box.glyphs[1].texture_x);
+    REQUIRE(box.glyphs[0].texture_x == box.glyphs[3].texture_x);
+    REQUIRE(box.glyphs[0].texture_x == box.glyphs[5].texture_x);
+    REQUIRE(box.glyphs[0].texture_x == box.glyphs[7].texture_x);
+
+    REQUIRE(box.glyphs[2].texture_x == 0);
+    REQUIRE(box.glyphs[2].texture_y == 0);
+    REQUIRE(box.glyphs[6].texture_x == 0);
+    REQUIRE(box.glyphs[6].texture_y == 0);
+    REQUIRE(box.glyphs[2].height == 0.04);
+    REQUIRE(box.glyphs[6].height == 1);
+    REQUIRE(box.glyphs[2].width >= box.glyphs[1].width);
+    REQUIRE(box.glyphs[2].width >= box.glyphs[3].width);
+    REQUIRE(box.glyphs[6].width >= box.glyphs[5].width);
+    REQUIRE(box.glyphs[6].width >= box.glyphs[7].width);
+
+    REQUIRE(box.glyphs[0].x_pos < box.glyphs[1].x_pos);
+    REQUIRE(box.glyphs[0].x_pos < box.glyphs[2].x_pos);
+    REQUIRE(box.glyphs[0].x_pos < box.glyphs[3].x_pos);
+    REQUIRE(box.glyphs[1].x_pos < box.glyphs[4].x_pos);
+    REQUIRE(box.glyphs[2].x_pos < box.glyphs[4].x_pos);
+    REQUIRE(box.glyphs[3].x_pos < box.glyphs[4].x_pos);
+    REQUIRE(box.glyphs[4].x_pos < box.glyphs[5].x_pos);
+    REQUIRE(box.glyphs[4].x_pos < box.glyphs[6].x_pos);
+    REQUIRE(box.glyphs[4].x_pos < box.glyphs[7].x_pos);
+    REQUIRE(box.glyphs[5].x_pos < box.glyphs[8].x_pos);
+    REQUIRE(box.glyphs[6].x_pos < box.glyphs[8].x_pos);
+    REQUIRE(box.glyphs[7].x_pos < box.glyphs[8].x_pos);
+    REQUIRE(box.glyphs[8].x_pos < box.glyphs[9].x_pos);
+
+    REQUIRE(box.glyphs[1].y_pos > box.glyphs[2].y_pos);
+    REQUIRE(box.glyphs[2].y_pos > box.glyphs[3].y_pos);
+    REQUIRE(box.glyphs[5].y_pos > box.glyphs[6].y_pos);
+    REQUIRE(box.glyphs[6].y_pos > box.glyphs[7].y_pos);
+
+    auto get_mid = [](auto& glyph) {return glyph.draw_y - glyph.height / 2;};
+    REQUIRE(get_mid(box.glyphs[4]) == get_mid(box.glyphs[8]));
+    REQUIRE(get_mid(box.glyphs[4]) == get_mid(box.glyphs[9]));
+}

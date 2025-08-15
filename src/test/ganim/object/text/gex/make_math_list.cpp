@@ -197,7 +197,7 @@ TEST_CASE("GeX make_math_list fractions", "[object][text][gexx]") {
     auto& fraction = get<FractionNoad>(list[0].value);
     REQUIRE(fraction.left_delim == U'(');
     REQUIRE(fraction.right_delim == 0);
-    REQUIRE(fraction.rule_thickness == 1.0);
+    REQUIRE(fraction.rule_thickness == 0.1);
 
     REQUIRE(fraction.numerator.size() == 2);
     auto& atom1 = get<Atom>(fraction.numerator[0].value);
