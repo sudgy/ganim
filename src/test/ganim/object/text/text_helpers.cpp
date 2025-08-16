@@ -20,8 +20,8 @@ TEST_CASE("Text helpers", "[object][text]") {
     REQUIRE(shaped[0].height == 0.71875);
     REQUIRE(shaped[0].y_min == -0.25);
     REQUIRE(shaped[0].y_max == 0.75);
-    REQUIRE(shaped[0].texture_width == 0.126953125);
-    REQUIRE(shaped[0].texture_height == 0.08984375);
+    REQUIRE(shaped[0].texture_width == 0.125976562f);
+    REQUIRE(shaped[0].texture_height == 0.088867188f);
     REQUIRE(shaped[0].group_index == 0);
     // o
     REQUIRE(shaped[1].x_pos == 0.9449462890625);
@@ -32,8 +32,8 @@ TEST_CASE("Text helpers", "[object][text]") {
     REQUIRE(shaped[1].height == 0.46875);
     REQUIRE(shaped[1].y_min == -0.25);
     REQUIRE(shaped[1].y_max == 0.75);
-    REQUIRE(shaped[1].texture_width == 0.05859375);
-    REQUIRE(shaped[1].texture_height == 0.05859375);
+    REQUIRE(shaped[1].texture_width == 0.057617188f);
+    REQUIRE(shaped[1].texture_height == 0.057617188f);
     REQUIRE(shaped[1].group_index == 0);
     // r
     REQUIRE(shaped[2].x_pos == 1.4449462890625);
@@ -44,8 +44,8 @@ TEST_CASE("Text helpers", "[object][text]") {
     REQUIRE(shaped[2].height == 0.4609375);
     REQUIRE(shaped[2].y_min == -0.25);
     REQUIRE(shaped[2].y_max == 0.75);
-    REQUIRE(shaped[2].texture_width == 0.044921875);
-    REQUIRE(shaped[2].texture_height == 0.057617188f);
+    REQUIRE(shaped[2].texture_width == 0.043945312f);
+    REQUIRE(shaped[2].texture_height == 0.056640625f);
     REQUIRE(shaped[2].group_index == 1);
     // l
     REQUIRE(shaped[3].x_pos == 1.8369140625);
@@ -56,8 +56,8 @@ TEST_CASE("Text helpers", "[object][text]") {
     REQUIRE(shaped[3].height == 0.7109375);
     REQUIRE(shaped[3].y_min == -0.25);
     REQUIRE(shaped[3].y_max == 0.75);
-    REQUIRE(shaped[3].texture_width == 0.030273438f);
-    REQUIRE(shaped[3].texture_height == 0.088867188f);
+    REQUIRE(shaped[3].texture_width == 0.029296875f);
+    REQUIRE(shaped[3].texture_height == 0.087890625f);
     REQUIRE(shaped[3].group_index == 1);
     // d
     REQUIRE(shaped[4].x_pos == 2.1148681640625);
@@ -68,8 +68,8 @@ TEST_CASE("Text helpers", "[object][text]") {
     REQUIRE(shaped[4].height == 0.71875);
     REQUIRE(shaped[4].y_min == -0.25);
     REQUIRE(shaped[4].y_max == 0.75);
-    REQUIRE(shaped[4].texture_width == 0.064453125);
-    REQUIRE(shaped[4].texture_height == 0.08984375);
+    REQUIRE(shaped[4].texture_width == 0.063476562f);
+    REQUIRE(shaped[4].texture_height == 0.088867188f);
     REQUIRE(shaped[4].group_index == 1);
 }
 

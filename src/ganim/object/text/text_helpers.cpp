@@ -148,10 +148,10 @@ Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
             G_tt_x + 1, G_tt_y + 1, width, height,
             GL_RGBA, GL_UNSIGNED_BYTE, rgba_buffer.get());
 
-    result.texture_x = static_cast<double>(G_tt_x) / GC_default_text_texture_size;
-    result.texture_y = static_cast<double>(G_tt_y) / GC_default_text_texture_size;
-    result.texture_width = static_cast<double>(width + 2) / GC_default_text_texture_size;
-    result.texture_height = static_cast<double>(height + 2) / GC_default_text_texture_size;
+    result.texture_x = static_cast<double>(G_tt_x + 0.5) / GC_default_text_texture_size;
+    result.texture_y = static_cast<double>(G_tt_y + 0.5) / GC_default_text_texture_size;
+    result.texture_width = static_cast<double>(width + 1) / GC_default_text_texture_size;
+    result.texture_height = static_cast<double>(height + 1) / GC_default_text_texture_size;
     result.width = (bitmap.width + 2) / font.M_pixel_size;
     result.height = (bitmap.rows + 2) / font.M_pixel_size;
     result.bearing_x = (face->glyph->bitmap_left - 1) / font.M_pixel_size;
@@ -159,6 +159,7 @@ Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
 
     G_tt_x += width + 2;
     G_tt_h = std::max(G_tt_h, height + 2);
+
     return result;
 }
 
