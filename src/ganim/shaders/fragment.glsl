@@ -117,8 +117,18 @@ float psrdnoise(vec2 x, vec2 period, float alpha, out vec2 gradient)
 
 void main()
 {
+#ifdef TIME
+    // So for some reason, even when the t values passed in to the shader are
+    // all greater than or equal to zero, fs_in.t can be negative.  I'm thinking
+    // this is caused by triangles being drawn partway through a pixel, causing
+    // a pixel behind the start to be drawn, getting a negative t value in the
+    // process.  This causes those pixels to be always drawn even when this_t is
+    // zero, which shouldn't happen.  Thus, we have to clamp it here.
+    float real_in_t = fs_in.t;
+    if (real_in_t < 0) real_in_t = 0;
+#endif
 #ifdef CREATE
-    if (this_t < fs_in.t) discard;
+    if (this_t < real_in_t) discard;
 #endif
 #ifdef NOISE_CREATE
     vec2 unused_noise_gradient;
@@ -128,7 +138,7 @@ void main()
         0.0,
         unused_noise_gradient
     );
-    if (final_t < fs_in.t) discard;
+    if (final_t < real_in_t) discard;
 #endif
 #ifdef DASH
     float dash_t = mod(fs_in.t, dash_on_time + dash_off_time);

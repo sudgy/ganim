@@ -5,6 +5,7 @@
 
 #include "ganim/object/polygon_shape.hpp"
 #include "ganim/math.hpp"
+#include "ganim/animation/animation.hpp"
 
 using namespace ganim;
 using namespace vga2;
@@ -143,4 +144,23 @@ TEST_CASE("ArrowPath turning right at the end", "[object]") {
     group->set_visible(true);
 
     scene.check_draw_equivalent(path, group);
+}
+
+TEST_CASE("ArrowPath arrow showing up before creation", "[object]") {
+    auto scene = TestScene(20, 12, 16, 9, 15);
+    using namespace vga2;
+    auto problem = make_arrow_path({3*e1, 0*e2})[1];
+    problem->shift(3*e1);
+    problem->set_visible(true);
+    problem->set_creating(true);
+    problem->set_draw_fraction(0.0);
+    scene.add(problem);
+    animate(scene, problem).shift(-5*e1);
+    scene.frame_advance(7);
+    const auto black = Color("000000");
+    for (int x = 0; x < 20; ++x) {
+        for (int y = 0; y < 12; ++y) {
+            REQUIRE(scene.get_pixel(6, x, y) == black);
+        }
+    }
 }
