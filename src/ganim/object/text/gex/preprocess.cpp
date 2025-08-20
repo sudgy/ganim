@@ -5,9 +5,12 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-TokenList ganim::gex::preprocess(const std::vector<std::string_view>& input)
+TokenList ganim::gex::preprocess(
+    bool math,
+    const std::vector<std::string_view>& input
+)
 {
-    auto preprocessor = Preprocessor();
+    auto preprocessor = Preprocessor(math);
     preprocessor.process(input);
     return preprocessor.get_output();
 }

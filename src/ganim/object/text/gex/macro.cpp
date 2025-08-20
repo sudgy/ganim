@@ -45,7 +45,7 @@ MacroStack::MacroStack()
         S_base_frame[U"def"] = {};
         S_base_frame[U"expandafter"] = {};
         S_making_base_frame = true;
-        S_base_preprocessor = std::make_unique<Preprocessor>();
+        S_base_preprocessor = std::make_unique<Preprocessor>(false);
         for (auto s : macro_input) {
             add_base_macros(s);
         }

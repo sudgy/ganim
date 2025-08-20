@@ -72,79 +72,94 @@ namespace {
 }
 
 TEST_CASE("GeX Hello", "[object][text][gex]") {
-    auto tokens1 = preprocess({"He", "llo"});
+    auto tokens1 = preprocess(false, {"He", "llo"});
     auto tokens2 = get_tokens("Hello", {0, 0, 1, 1, 1}, {0, 1, 0, 1, 2});
 
     test_tokens(tokens1, tokens2);
 }
 
 TEST_CASE("Basic macros", "[object][text][gex]") {
-    auto tokens1 = preprocess({"A", "\\{\\%", "B\\relax C"});
+    auto tokens1 = preprocess(false, {"A", "\\{\\%", "B\\relax C"});
     auto tokens2 = get_tokens("A{%BC", {0, 1, 1, 2, 2}, {0, 0, 2, 0, 8});
 
     test_tokens(tokens1, tokens2);
 
-    REQUIRE_THROWS_WITH(preprocess({"\\oopsy"}), "GeX compilation error in "
-            "group 0 index 0: Undefined control sequence \"oopsy\"");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\oopsy"}),
+            "GeX compilation error in group 0 index 0: Undefined control "
+            "sequence \"oopsy\"");
 }
 
 TEST_CASE("Defining basic macros", "[object][text][gex]") {
-    auto tokens1 = preprocess({"a\\def\\aa{b}", "\\aa"});
+    auto tokens1 = preprocess(false, {"a\\def\\aa{b}", "\\aa"});
     auto tokens2 = get_tokens("ab", {0, 1}, {0, 0});
 
     test_tokens(tokens1, tokens2);
 
-    REQUIRE_THROWS_WITH(preprocess({"\\def"}), "GeX compilation error in group "
-            "0 index 4: Expected control sequence");
-    REQUIRE_THROWS_WITH(preprocess({"\\def aa"}), "GeX compilation error in "
-            "group 0 index 5: Expected control sequence");
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa"}), "GeX compilation error in "
-            "group 0 index 7: End of input reached while processing a "
-            "definition");
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa}"}), "GeX compilation error in "
-            "group 0 index 7: Unexpected end group token");
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa{"}), "GeX compilation error in "
-            "group 0 index 8: End of input reached while processing a "
-            "definition");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def"}),
+            "GeX compilation error in group 0 index 4: Expected control "
+            "sequence");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def aa"}),
+            "GeX compilation error in group 0 index 5: Expected control "
+            "sequence");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa"}),
+            "GeX compilation error in group 0 index 7: End of input reached "
+            "while processing a definition");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa}"}),
+            "GeX compilation error in group 0 index 7: Unexpected end group "
+            "token");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa{"}),
+            "GeX compilation error in group 0 index 8: End of input reached "
+            "while processing a definition");
 }
 
 TEST_CASE("Macro expansion order", "[object][text][gex]") {
-    auto tokens1 = preprocess({"\\def\\aa{a\\def\\aa{b}}", "\\aa", "\\aa"});
+    auto tokens1 = preprocess(false,
+        {"\\def\\aa{a\\def\\aa{b}}", "\\aa", "\\aa"});
     auto tokens2 = get_tokens("ab", {1, 2}, {0, 0});
 
     test_tokens(tokens1, tokens2);
 
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa{\\def b}\\aa"}), "GeX "
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa{\\def b}\\aa"}), "GeX "
         "compilation error in group 0 index 15: Error during macro expansion: "
         "Expected control sequence");
 }
 
 TEST_CASE("Macros with delimiters", "[object][text][gex]") {
-    auto tokens1 = preprocess({"a  \\def\\aa |  |{b}", "\\aa| |"});
+    auto tokens1 = preprocess(false, {"a  \\def\\aa |  |{b}", "\\aa| |"});
     auto tokens2 = get_tokens("a  b", {0, 0, 0, 1}, {0, 1, 2, 0});
 
     test_tokens(tokens1, tokens2);
 
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa|{b}\\aa"}), "GeX compilation "
-            "error in group 0 index 14: Input ended while processing macro "
-            "\"aa\"");
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa|{b}\\aa["}), "GeX compilation "
-            "error in group 0 index 14: Use of \\aa does not match its "
-            "definition");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa|{b}\\aa"}),
+            "GeX compilation error in group 0 index 14: Input ended while "
+            "processing macro \"aa\"");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa|{b}\\aa["}),
+            "GeX compilation error in group 0 index 14: Use of \\aa does not "
+            "match its definition");
 }
 
 TEST_CASE("Macros with parameters", "[object][text][gex]") {
-    auto gex1_tokens = preprocess({R"(\def\aa#1{a#1}\aa b)"});
-    auto gex2_tokens = preprocess({R"(\def\aa#1{a#1}\aa{b})"});
-    auto gex3_tokens = preprocess({R"(\def\aa#1{a#1}\aa{bb})"});
-    auto gex4_tokens = preprocess({R"(\def\aa#1#2{a#1b#2}\aa c d)"});
-    auto gex5_tokens = preprocess({R"(\def\aa#1#2{a#1b#2}\aa{cc}{dd})"});
-    auto gex6_tokens = preprocess({R"(\def\aa|#1 #2|{a#1b#2}\aa|cc dd|)"});
-    auto gex7_tokens = preprocess({R"(\def\aa|#1#2|{a#1b#2}\aa|cc dd|)"});
-    auto gex8_tokens = preprocess({R"(\def\aa|#1|{a#1b}\aa||)"});
-    auto gex9_tokens = preprocess({R"(\def\aa#1#2{a#1b#2c}\aa)", "{d}", "{e}"});
-    auto gex10_tokens = preprocess({R"(\def\aa#1,#2{a#1b#2}\aa{c,d},e)"});
-    auto gex11_tokens = preprocess({
+    auto gex1_tokens = preprocess(false,
+        {R"(\def\aa#1{a#1}\aa b)"});
+    auto gex2_tokens = preprocess(false,
+        {R"(\def\aa#1{a#1}\aa{b})"});
+    auto gex3_tokens = preprocess(false,
+        {R"(\def\aa#1{a#1}\aa{bb})"});
+    auto gex4_tokens = preprocess(false,
+        {R"(\def\aa#1#2{a#1b#2}\aa c d)"});
+    auto gex5_tokens = preprocess(false,
+        {R"(\def\aa#1#2{a#1b#2}\aa{cc}{dd})"});
+    auto gex6_tokens = preprocess(false,
+        {R"(\def\aa|#1 #2|{a#1b#2}\aa|cc dd|)"});
+    auto gex7_tokens = preprocess(false,
+        {R"(\def\aa|#1#2|{a#1b#2}\aa|cc dd|)"});
+    auto gex8_tokens = preprocess(false,
+        {R"(\def\aa|#1|{a#1b}\aa||)"});
+    auto gex9_tokens = preprocess(false,
+        {R"(\def\aa#1#2{a#1b#2c}\aa)", "{d}", "{e}"});
+    auto gex10_tokens = preprocess(false,
+        {R"(\def\aa#1,#2{a#1b#2}\aa{c,d},e)"});
+    auto gex11_tokens = preprocess(false, {
         R"(\def\aa#1{a#1a})"
         R"(\def\bb#1{\aa#1})"
         R"(\bb b )"
@@ -152,7 +167,7 @@ TEST_CASE("Macros with parameters", "[object][text][gex]") {
         R"(\bb{bb} )"
         R"(\bb{{bb}})"
     });
-    auto gex12_tokens = preprocess({
+    auto gex12_tokens = preprocess(false, {
         R"(\def\aa#1{a#1a})"
         R"(\def\bb#1|{\aa#1})"
         R"(\bb bb| )"
@@ -202,18 +217,19 @@ TEST_CASE("Macros with parameters", "[object][text][gex]") {
     test_tokens(gex11_tokens, tokens11);
     test_tokens(gex12_tokens, tokens12);
 
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa#2#1{b}"}), "GeX compilation "
-            "error in group 0 index 7: Parameters must be numbered "
-            "consecutively");
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa#1{#2}"}), "GeX compilation "
-            "error in group 0 index 10: Illegal parameter number");
-    REQUIRE_THROWS_WITH(preprocess({"\\def\\aa#1{#1}\\aa"}), "GeX compilation "
-            "error in group 0 index 16: Input ended while processing macro "
-            "\"aa\"");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa#2#1{b}"}),
+            "GeX compilation error in group 0 index 7: Parameters must be "
+            "numbered consecutively");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa#1{#2}"}),
+            "GeX compilation error in group 0 index 10: Illegal parameter "
+            "number");
+    REQUIRE_THROWS_WITH(preprocess(false, {"\\def\\aa#1{#1}\\aa"}),
+            "GeX compilation error in group 0 index 16: Input ended while "
+            "processing macro \"aa\"");
 }
 
 TEST_CASE("preprocess style commands", "[object][text][gex]") {
-    auto tokens = preprocess({"\\displaystyle", "\\scriptstyle"});
+    auto tokens = preprocess(false, {"\\displaystyle", "\\scriptstyle"});
     REQUIRE(tokens.size() == 2);
     REQUIRE(tokens[0].group == 0);
     REQUIRE(tokens[1].group == 1);
@@ -228,13 +244,13 @@ TEST_CASE("preprocess style commands", "[object][text][gex]") {
 }
 
 TEST_CASE("GeX preprocess expandafter", "[object][text][gex]") {
-    auto tokens1 = preprocess({
+    auto tokens1 = preprocess(false, {
         R"(\def\aa#1{a#1a})"
         R"(\def\bb{bb})"
         R"(\aa\bb\ )" // Expands to a\bb a -> abba
         R"(\expandafter\aa\bb)" // Expands to \aa bb -> abab
     });
-    auto tokens2 = preprocess({
+    auto tokens2 = preprocess(false, {
         R"(\def\aa#1{{a#1a}})"
         R"(\def\bb{bb})"
         // Expands to \expandafter\aa\aa bb -> \aa{aba}b -> {aabaa}b
@@ -247,7 +263,7 @@ TEST_CASE("GeX preprocess expandafter", "[object][text][gex]") {
         // Expands to {a\aa a}\bb -> {a{aaa}}\bb -> {a{aaa}}bb
         R"(\aa\aa\bb)"
     });
-    auto tokens3 = preprocess({
+    auto tokens3 = preprocess(false, {
         R"(\def\aa#1{{a#1a}})"
         R"(\def\bb{bb})"
         R"(\def\cc{\bb})"
@@ -256,14 +272,14 @@ TEST_CASE("GeX preprocess expandafter", "[object][text][gex]") {
         // Expands to \expandafter\aa\bb -> \aa bb -> {aba}b
         R"(\expandafter\expandafter\expandafter\aa\cc)"
     });
-    REQUIRE_THROWS(preprocess({
+    REQUIRE_THROWS(preprocess(false, {
         R"(\def\aa#1{{a#1a}})"
         R"(\def\bb{bb})"
         R"(\expandafter{\aa}\bb)"
     }));
     // Ensure no arguments doesn't break it, having only one of the two
     // arguments was already tested above
-    preprocess({"\\expandafter"});
+    preprocess(false, {"\\expandafter"});
     auto ttokens1 = get_tokens("abba abab", 9, catcode_map2);
     auto ttokens2 = get_tokens(
             "{aabaa}b {aabbaa} {aa}{abba} {a{aaa}}bb", 39, catcode_map2);
@@ -274,14 +290,14 @@ TEST_CASE("GeX preprocess expandafter", "[object][text][gex]") {
 }
 
 TEST_CASE("GeX default global macros", "[object][text][gex]") {
-    auto tokens1 = preprocess({"\\vec v"});
-    auto tokens2 = preprocess({"\\mathaccent →{v}"});
+    auto tokens1 = preprocess(false, {"\\vec v"});
+    auto tokens2 = preprocess(false, {"\\mathaccent →{v}"});
     REQUIRE(tokens1.size() == tokens2.size());
 }
 
 TEST_CASE("GeX macros add_base_macros", "[object][text][gex]") {
     MacroStack::add_base_macros(R"(\def\addbasemacrostest{a})");
-    auto tokens = preprocess({"\\addbasemacrostest"});
+    auto tokens = preprocess(false, {"\\addbasemacrostest"});
     REQUIRE(tokens.size() == 1);
     auto& character = get<CharacterToken>(tokens[0].value);
     REQUIRE(character.codepoint == U'a');
@@ -290,7 +306,7 @@ TEST_CASE("GeX macros add_base_macros", "[object][text][gex]") {
 }
 
 TEST_CASE("GeX \\def in groups", "[object][text][gex]") {
-    auto tokens1 = preprocess({
+    auto tokens1 = preprocess(false, {
         R"(\def\aa{a})"
         R"(\aa)"
         R"({\def\aa{b}\aa})"
@@ -301,7 +317,7 @@ TEST_CASE("GeX \\def in groups", "[object][text][gex]") {
 }
 
 TEST_CASE("GeX various fraction names", "[object][text][gex]") {
-    auto tokens = preprocess({
+    auto tokens = preprocess(false, {
         R"(\over \atop \choose \above \overwithdelims()\atopwithdelims())"
     });
     REQUIRE(tokens.size() == 41);

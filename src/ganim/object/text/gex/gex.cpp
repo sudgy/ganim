@@ -11,9 +11,9 @@ using namespace ganim;
 using namespace ganim::gex;
 
 std::vector<PositionedGlyph>
-ganim::gex_render(const std::vector<std::string_view>& input)
+ganim::gex_render(bool math, const std::vector<std::string_view>& input)
 {
-    auto tokens = preprocess(input);
+    auto tokens = preprocess(math, input);
     auto sections = split(tokens);
     auto rendered_sections = fmap(sections, section_render);
     return section_combine(rendered_sections);

@@ -12,7 +12,7 @@
 namespace ganim::gex {
     class Preprocessor {
         public:
-            Preprocessor();
+            Preprocessor(bool math);
             void process(const std::vector<std::string_view>& input);
             TokenList get_output();
 
@@ -50,6 +50,7 @@ namespace ganim::gex {
             int M_last_group_index = -1;
             int M_last_string_index = -1;
             bool M_expanding = false;
+            bool M_starting_math = false;
     };
 }
 

@@ -5,7 +5,7 @@
 
 namespace ganim {
     std::vector<PositionedGlyph>
-    gex_render(const std::vector<std::string_view>& input);
+    gex_render(bool math, const std::vector<std::string_view>& input);
 }
 
 #endif

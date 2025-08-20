@@ -11,7 +11,8 @@ namespace {
     struct overloaded : Ts... { using Ts::operator()...; };
 }
 
-Preprocessor::Preprocessor()
+Preprocessor::Preprocessor(bool math)
+:   M_starting_math(math)
 {
     M_catcodes.resize(16);
     M_catcodes[0] = {U'\\'};
@@ -40,6 +41,12 @@ void Preprocessor::process(const std::vector<std::string_view>& input)
     if (M_input.size() == 0) {
         throw std::runtime_error("No input passed to Preprocessor");
     }
+    auto shift_token
+        = Token(CharacterToken(U'$', CategoryCode::MathShift), -1, -1);
+    if (M_starting_math) {
+        M_output.push_back(shift_token);
+        M_output.push_back(shift_token);
+    }
     while (auto token = read_token()) {
         std::visit(overloaded{
             [&](CharacterToken& tok)
@@ -51,6 +58,10 @@ void Preprocessor::process(const std::vector<std::string_view>& input)
             [&](ParameterToken&)
                 {throw make_error("Unexpected parameter token");}
         }, token->value);
+    }
+    if (M_starting_math) {
+        M_output.push_back(shift_token);
+        M_output.push_back(shift_token);
     }
 }
 

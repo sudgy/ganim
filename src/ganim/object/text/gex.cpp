@@ -26,7 +26,8 @@ namespace {
     }
 }
 
-Gex::Gex(const std::vector<std::string_view>& strings)
+Gex::Gex(bool math, const std::vector<std::string_view>& strings)
+:   M_math(math)
 {
     M_tex_strings = split_tex_strings(strings);
     draw_together();
@@ -41,7 +42,7 @@ Gex::Gex(const std::vector<std::string_view>& strings)
 std::vector<PositionedGlyph> Gex::get_glyphs(
         const std::vector<std::string_view>& strings)
 {
-    auto result = gex_render(strings);
+    auto result = gex_render(M_math, strings);
     auto x_min = double(INFINITY);
     auto x_max = -double(INFINITY);
     for (auto& glyph : result) {

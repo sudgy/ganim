@@ -63,6 +63,10 @@ namespace ganim {
                 M_texture_vertices = std::move(texture_vertices);
                 this->make_invalid();
             }
+            const std::vector<TextureVertex> get_texture_vertices() const
+            {
+                return M_texture_vertices;
+            }
             /** @brief Set the texture used by this shape.
              *
              * This will not own the texture.
