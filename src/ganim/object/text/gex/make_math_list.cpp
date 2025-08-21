@@ -51,6 +51,8 @@ class Processor {
         bool subscript = false;
         bool superscript = false;
         int accent = 0;
+        bool math_atom = false;
+        AtomType math_atom_type = AtomType::Ord;
 };
 
 }
@@ -114,6 +116,38 @@ void Processor::process_command_token(const CommandToken& tok)
         auto dimen = read_dimension();
         --token_index;
         add_noad(Noad(GlueNoad(dimen)));
+    }
+    else if (tok.command_utf8 == "mathord") {
+        math_atom = true;
+        math_atom_type = AtomType::Ord;
+    }
+    else if (tok.command_utf8 == "mathop") {
+        math_atom = true;
+        math_atom_type = AtomType::Op;
+    }
+    else if (tok.command_utf8 == "mathbin") {
+        math_atom = true;
+        math_atom_type = AtomType::Bin;
+    }
+    else if (tok.command_utf8 == "mathrel") {
+        math_atom = true;
+        math_atom_type = AtomType::Rel;
+    }
+    else if (tok.command_utf8 == "mathopen") {
+        math_atom = true;
+        math_atom_type = AtomType::Open;
+    }
+    else if (tok.command_utf8 == "mathclose") {
+        math_atom = true;
+        math_atom_type = AtomType::Close;
+    }
+    else if (tok.command_utf8 == "mathpunct") {
+        math_atom = true;
+        math_atom_type = AtomType::Punct;
+    }
+    else if (tok.command_utf8 == "mathinner") {
+        math_atom = true;
+        math_atom_type = AtomType::Inner;
     }
     else {
         add_noad(Noad(CommandNoad(
@@ -308,6 +342,16 @@ void Processor::add_noad(Noad noad)
         }
         else {
             accent_atom.nucleus = std::make_unique<Atom>(get<Atom>(noad.value));
+        }
+    }
+    else if (math_atom) {
+        if (auto atom = get_if<Atom>(&noad.value)) {
+            atom->type = math_atom_type;
+            math_atom = false;
+            result.push_back(std::move(noad));
+        }
+        else {
+            throw GeXError(token.group, token.string_index, "Expected atom");
         }
     }
     else {

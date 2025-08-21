@@ -29,6 +29,22 @@ MacroStack::MacroStack()
             {{}, {{CommandToken(U"abovewithdelims", "abovewithdelims")}}, true};
         S_base_frame[U"mskip"] =
             {{}, {{CommandToken(U"mskip", "mskip")}}, true};
+        S_base_frame[U"mathord"] =
+            {{}, {{CommandToken(U"mathord", "mathord")}}, true};
+        S_base_frame[U"mathop"] =
+            {{}, {{CommandToken(U"mathop", "mathop")}}, true};
+        S_base_frame[U"mathbin"] =
+            {{}, {{CommandToken(U"mathbin", "mathbin")}}, true};
+        S_base_frame[U"mathrel"] =
+            {{}, {{CommandToken(U"mathrel", "mathrel")}}, true};
+        S_base_frame[U"mathopen"] =
+            {{}, {{CommandToken(U"mathopen", "mathopen")}}, true};
+        S_base_frame[U"mathclose"] =
+            {{}, {{CommandToken(U"mathclose", "mathclose")}}, true};
+        S_base_frame[U"mathpunct"] =
+            {{}, {{CommandToken(U"mathpunct", "mathpunct")}}, true};
+        S_base_frame[U"mathinner"] =
+            {{}, {{CommandToken(U"mathinner", "mathinner")}}, true};
         S_base_frame[U"{"] = {{}, {{CharacterToken(U'{',CategoryCode::Other)}}};
         S_base_frame[U"}"] = {{}, {{CharacterToken(U'}',CategoryCode::Other)}}};
         S_base_frame[U"$"] = {{}, {{CharacterToken(U'$',CategoryCode::Other)}}};

@@ -245,3 +245,50 @@ TEST_CASE("GeX make_math_list mskip", "[object][text][gex]") {
     REQUIRE(glue1.thickness == 0.15);
     REQUIRE(glue2.thickness == -0.15);
 }
+
+TEST_CASE("make_math_list atom types", "[object][text][gex]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CharacterToken(U'a'), 0, 0);
+    tokens.emplace_back(CommandToken(U"mathbin", "mathbin"), 0, 1);
+    tokens.emplace_back(CharacterToken(U'b'), 0, 2);
+    tokens.emplace_back(CharacterToken(U'c'), 0, 3);
+    tokens.emplace_back(CommandToken(U"mathrel", "mathbin"), 0, 4);
+    tokens.emplace_back(CharacterToken(U'{', CategoryCode::StartGroup), 0, 5);
+    tokens.emplace_back(CharacterToken(U'd'), 0, 6);
+    tokens.emplace_back(CharacterToken(U'e'), 0, 7);
+    tokens.emplace_back(CharacterToken(U'}', CategoryCode::EndGroup), 0, 8);
+    tokens.emplace_back(CharacterToken(U'f'), 0, 9);
+    auto list = make_math_list(tokens);
+
+    REQUIRE(list.size() == 5);
+    auto& atom1 = get<Atom>(list[0].value);
+    auto& atom2 = get<Atom>(list[1].value);
+    auto& atom3 = get<Atom>(list[2].value);
+    auto& atom4 = get<Atom>(list[3].value);
+    auto& atom5 = get<Atom>(list[4].value);
+    REQUIRE(atom1.type == AtomType::Ord);
+    REQUIRE(atom2.type == AtomType::Bin);
+    REQUIRE(atom3.type == AtomType::Ord);
+    REQUIRE(atom4.type == AtomType::Bin);
+    REQUIRE(atom5.type == AtomType::Ord);
+
+    auto& group = get<AtomList>(atom4.value);
+    REQUIRE(group.list.size() == 2);
+    auto& atom4_1 = get<Atom>(group.list[0].value);
+    auto& atom4_2 = get<Atom>(group.list[1].value);
+    REQUIRE(atom4_1.type == AtomType::Ord);
+    REQUIRE(atom4_2.type == AtomType::Ord);
+
+    auto& symbol1 = get<AtomSymbol>(atom1.value);
+    auto& symbol2 = get<AtomSymbol>(atom2.value);
+    auto& symbol3 = get<AtomSymbol>(atom3.value);
+    auto& symbol4 = get<AtomSymbol>(atom4_1.value);
+    auto& symbol5 = get<AtomSymbol>(atom4_2.value);
+    auto& symbol6 = get<AtomSymbol>(atom5.value);
+    REQUIRE(symbol1.codepoint == U'a');
+    REQUIRE(symbol2.codepoint == U'b');
+    REQUIRE(symbol3.codepoint == U'c');
+    REQUIRE(symbol4.codepoint == U'd');
+    REQUIRE(symbol5.codepoint == U'e');
+    REQUIRE(symbol6.codepoint == U'f');
+}
