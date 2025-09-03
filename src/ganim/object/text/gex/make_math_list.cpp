@@ -37,6 +37,7 @@ class Processor {
         void process_subscript();
         void process_superscript();
         void process_generalized_fraction(int group);
+        void process_radical();
 
         MathList get_result() {return std::move(result);}
 
@@ -51,6 +52,7 @@ class Processor {
         bool subscript = false;
         bool superscript = false;
         int accent = 0;
+        bool radical = false;
         bool math_atom = false;
         AtomType math_atom_type = AtomType::Ord;
 };
@@ -107,6 +109,9 @@ void Processor::process_command_token(const CommandToken& tok)
     if (tok.command_utf8 == "mathaccent") {
         add_noad(Noad(Atom(Box(), AtomType::Acc, AtomAccent())));
         accent = 2;
+    }
+    else if (tok.command_utf8 == "radical") {
+        process_radical();
     }
     else if (tok.command_utf8 == "abovewithdelims") {
         process_generalized_fraction(token.group);
@@ -267,6 +272,31 @@ void Processor::process_generalized_fraction(int group)
     result = MathList{{noad}};
 }
 
+void Processor::process_radical()
+{
+    auto radical = std::uint32_t(0);
+    while (true) {
+        ++token_index;
+        if (token_index == ssize(tokens)) {
+            throw GeXError(-1, -1, "Expected character token");
+        }
+        auto& token = current_token();
+        if (auto tok = get_if<CharacterToken>(&token.value)) {
+            if (tok->catcode == CategoryCode::Spacer) {
+                continue;
+            }
+            if (tok->catcode != CategoryCode::Other) {
+                throw GeXError(token.group, token.string_index,
+                    "Expected character token");
+            }
+            radical = tok->codepoint;
+            break;
+        }
+    }
+    add_noad(Noad(Atom(Box(), AtomType::Rad, AtomRadical({}, radical))));
+    this->radical = true;
+}
+
 void Processor::add_noad(Noad noad)
 {
     auto& token = current_token();
@@ -343,6 +373,13 @@ void Processor::add_noad(Noad noad)
         else {
             accent_atom.nucleus = std::make_unique<Atom>(get<Atom>(noad.value));
         }
+    }
+    else if (radical) {
+        auto& radical_noad = result.back();
+        auto& radical_atom
+            = get<AtomRadical>(get<Atom>(radical_noad.value).value);
+        radical_atom.nucleus = std::make_unique<Atom>(get<Atom>(noad.value));
+        radical = false;
     }
     else if (math_atom) {
         if (auto atom = get_if<Atom>(&noad.value)) {

@@ -62,6 +62,10 @@ namespace ganim::gex {
         copy_ptr<Atom> nucleus;
         copy_ptr<Atom> accent;
     };
+    struct AtomRadical {
+        copy_ptr<Atom> nucleus;
+        std::uint32_t radical = 0;
+    };
 
     struct Atom {
         Box box;
@@ -74,7 +78,8 @@ namespace ganim::gex {
             AtomSubscript,
             AtomSuperscript,
             AtomSubsuperscript,
-            AtomAccent
+            AtomAccent,
+            AtomRadical
         > value;
     };
     struct CommandNoad {

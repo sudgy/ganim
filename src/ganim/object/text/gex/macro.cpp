@@ -45,6 +45,9 @@ MacroStack::MacroStack()
             {{}, {{CommandToken(U"mathpunct", "mathpunct")}}, true};
         S_base_frame[U"mathinner"] =
             {{}, {{CommandToken(U"mathinner", "mathinner")}}, true};
+        S_base_frame[U"radical"] =
+            {{}, {{CommandToken(U"radical", "radical")}}, true};
+
         S_base_frame[U"{"] = {{}, {{CharacterToken(U'{',CategoryCode::Other)}}};
         S_base_frame[U"}"] = {{}, {{CharacterToken(U'}',CategoryCode::Other)}}};
         S_base_frame[U"$"] = {{}, {{CharacterToken(U'$',CategoryCode::Other)}}};

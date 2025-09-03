@@ -21,6 +21,8 @@ R"(\def\;{\mskip 5mu})",
 R"(\def\!{\mskip -3mu})",
 
 R"(\def\cdots{\mathinner{⋯}})",
+
+R"(\def\sqrt#1{\radical √{#1}})",
 };
 
 }
