@@ -94,7 +94,7 @@ Box gex::make_rule(double width, double height, double depth, int group_index)
     result.glyphs[0].x_pos = 0;
     result.glyphs[0].y_pos = 0;
     result.glyphs[0].draw_x = 0;
-    result.glyphs[0].draw_y = -depth;
+    result.glyphs[0].draw_y = height;
     result.glyphs[0].width = width;
     result.glyphs[0].height = height + depth;
     result.glyphs[0].y_min = -depth;

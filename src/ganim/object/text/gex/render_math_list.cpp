@@ -47,7 +47,11 @@ namespace {
             void render_atom_list(Atom& atom, AtomList& list, Style style);
             void render_atom_script(Atom& atom, Style style);
             void render_atom_accent(Atom& atom, AtomAccent& accent,Style style);
+            void render_atom_radical(
+                Atom& atom, AtomRadical& radical, Style style);
             Noad render_fraction(FractionNoad& fraction, Style style);
+            Box make_delimiter(
+                std::uint32_t codepoint, int group, double height, Style style);
 
             MathList& M_list;
             MathList M_rendered_list;
@@ -168,6 +172,8 @@ void Processor::render_atom(Atom& atom, Style style)
             {render_atom_script(atom, style);},
         [&](AtomAccent& accent)
             {render_atom_accent(atom, accent, style);},
+        [&](AtomRadical& radical)
+            {render_atom_radical(atom, radical, style);},
         [&](auto&) {}
     }, atom.value);
 }
@@ -371,6 +377,44 @@ void Processor::render_atom_accent(Atom& atom, AtomAccent& accent, Style style)
     atom.box.glyphs.append_range(n.glyphs);
 }
 
+void Processor::render_atom_radical(
+    Atom& atom,
+    AtomRadical& radical,
+    Style style
+)
+{
+    render_atom(*radical.nucleus, get_cramped_style(style));
+    auto& x = radical.nucleus->box;
+    auto θ = get_font_default_rule_thickness(M_font);
+    auto φ = 0.0;
+    if (style == Style::Display or style == Style::CrampedDisplay) {
+        φ = get_font_x_height(M_font);
+    }
+    else {
+        φ = θ;
+    }
+    auto ψ = θ + std::abs(φ)/4.0;
+    auto y = make_delimiter(
+        radical.radical,
+        radical.group,
+        x.height + x.depth + ψ + θ + 0.1,
+        style
+    );
+    y.glyphs[0].y_min = 0;
+    y.glyphs[0].y_max = 0;
+    θ = y.height;
+    if (y.depth > x.height + x.depth + ψ) {
+        ψ = 0.5*(ψ + y.depth - x.height - x.depth);
+    }
+    auto kernθ = Box(0, 0, θ, {});
+    auto rule = make_rule(x.width, θ*0.8, 0, radical.group);
+    auto kernψ = Box(0, 0, ψ, {});
+    auto vbox = combine_boxes_vertically({kernθ, rule, kernψ, x}, 3);
+    vertical_shift_box(y, x.height + ψ);
+    auto nkern = Box(-θ/2, 0, 0, {});
+    atom.box = combine_boxes_horizontally({y, nkern, vbox});
+}
+
 Noad Processor::render_fraction(FractionNoad& fraction, Style style)
 {
     auto θ = fraction.rule_thickness;
@@ -436,24 +480,34 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
     }
     auto a = get_font_axis_height(M_font);
     auto fraction_height = std::max((box.height - a), (box.depth + a)) * 2 +0.1;
-    auto make_delim = [&](std::uint32_t codepoint){
-        // TODO: Add \nulldelimiterspace?
-        if (codepoint == 0) return Box(0.12, 0, 0, {});
-        // TODO: Use bigger characters
-        auto fake_atom_symbol = AtomSymbol(codepoint, fraction.group, -1);
-        auto fake_atom = Atom(Box(), AtomType::Ord, fake_atom_symbol);
-        render_atom_symbol(fake_atom, fake_atom_symbol, style);
-        auto delim_height = fake_atom.box.height + fake_atom.box.depth;
-        scale_box(fake_atom.box, fraction_height / delim_height);
-        auto height = fake_atom.box.height;
-        auto depth = fake_atom.box.depth;
-        vertical_shift_box(fake_atom.box, (depth - height) / 2 + a);
-        return fake_atom.box;
+    auto make_delim = [&](std::uint32_t codepoint) {
+        auto box = make_delimiter(
+            codepoint, fraction.group, fraction_height, style);
+        auto final_height = box.height;
+        auto final_depth = box.depth;
+        vertical_shift_box(box, (final_depth - final_height) / 2 + a);
+        return box;
     };
     auto delim1 = make_delim(fraction.left_delim);
     auto delim2 = make_delim(fraction.right_delim);
     auto final_box = combine_boxes_horizontally({delim1, box, delim2});
     return {Atom(std::move(final_box), AtomType::Ord, AtomBox())};
+}
+
+Box Processor::make_delimiter(
+    std::uint32_t codepoint, int group, double height, Style style)
+{
+    // TODO: Add \nulldelimiterspace?
+    if (codepoint == 0) return Box(0.12, 0, 0, {});
+    // TODO: Use bigger characters
+    auto fake_atom_symbol = AtomSymbol(codepoint, group, -1);
+    auto fake_atom = Atom(Box(), AtomType::Ord, fake_atom_symbol);
+    render_atom_symbol(fake_atom, fake_atom_symbol, style);
+    auto delim_height = fake_atom.box.height + fake_atom.box.depth;
+    if (height > delim_height) {
+        scale_box(fake_atom.box, height / delim_height);
+    }
+    return fake_atom.box;
 }
 
 Box Processor::do_combine(Style style)

@@ -369,3 +369,8 @@ TEST_CASE("GeX various fraction names", "[object][text][gex]") {
     REQUIRE(get<CharacterToken>(tokens[39].value).codepoint == U'p');
     REQUIRE(get<CharacterToken>(tokens[40].value).codepoint == U't');
 }
+
+TEST_CASE("GeX preprocessor sqrt fraction", "[object][text][gex]") {
+    auto tokens = preprocess(false, {R"(\sqrt{{a \over b}})"});
+    REQUIRE(tokens.size() == 16);
+}

@@ -275,6 +275,7 @@ void Processor::process_generalized_fraction(int group)
 void Processor::process_radical()
 {
     auto radical = std::uint32_t(0);
+    int group = -1;
     while (true) {
         ++token_index;
         if (token_index == ssize(tokens)) {
@@ -290,10 +291,11 @@ void Processor::process_radical()
                     "Expected character token");
             }
             radical = tok->codepoint;
+            group = token.group;
             break;
         }
     }
-    add_noad(Noad(Atom(Box(), AtomType::Rad, AtomRadical({}, radical))));
+    add_noad(Noad(Atom(Box(), AtomType::Rad, AtomRadical({}, radical, group))));
     this->radical = true;
 }
 

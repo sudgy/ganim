@@ -383,3 +383,18 @@ TEST_CASE("GeX render_math_list mskip", "[object][text][gex]") {
     REQUIRE(dif(2, 1) > dif(1, 0));
     REQUIRE(dif(3, 2) < dif(1, 0));
 }
+
+TEST_CASE("GeX render_math_list radical", "[object][text][gex]") {
+    // \sqrt{a}
+    auto list = MathList();
+    list.emplace_back(Atom(Box(), AtomType::Rad, AtomRadical(
+        std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'a')),
+        U'√',
+        0
+    )));
+    auto box = render_math_list(list, Style::Display);
+    REQUIRE(box.glyphs.size() == 3);
+    REQUIRE(box.glyphs[0].x_pos < box.glyphs[1].x_pos);
+    REQUIRE(box.glyphs[0].x_pos < box.glyphs[2].x_pos);
+    REQUIRE(box.glyphs[1].y_pos > box.glyphs[2].y_pos);
+}

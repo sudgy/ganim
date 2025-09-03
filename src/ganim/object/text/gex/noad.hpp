@@ -65,6 +65,7 @@ namespace ganim::gex {
     struct AtomRadical {
         copy_ptr<Atom> nucleus;
         std::uint32_t radical = 0;
+        int group = -1;
     };
 
     struct Atom {

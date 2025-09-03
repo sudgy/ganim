@@ -319,9 +319,11 @@ TEST_CASE("GeX make_math_list radicals", "[object][text][gex]") {
     REQUIRE(nucleus2_list.size() == 1);
     auto& nucleus2 = get<AtomSymbol>(get<Atom>(nucleus2_list[0].value).value);
     REQUIRE(radical_atom1.radical == U'a');
+    REQUIRE(radical_atom1.group == 1);
     REQUIRE(nucleus1.codepoint == U'b');
     REQUIRE(nucleus1.group == 2);
     REQUIRE(radical_atom2.radical == U'c');
+    REQUIRE(radical_atom2.group == 4);
     REQUIRE(nucleus2.codepoint == U'd');
     REQUIRE(nucleus2.group == 6);
 }

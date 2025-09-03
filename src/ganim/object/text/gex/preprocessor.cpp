@@ -188,7 +188,7 @@ void Preprocessor::process_command_token(
                 auto token = common_process();
                 if (auto tok = std::get_if<CharacterToken>(&token.value)) {
                     if (tok->catcode == CategoryCode::Spacer) {
-                        parameter_tokens.clear();
+                        parameter_tokens.pop_back();
                     }
                 }
             } while (group_level != 0 and !parameter_tokens.empty());
