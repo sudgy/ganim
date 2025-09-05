@@ -14,39 +14,25 @@ MacroStack::MacroStack()
 {
     if (!S_base_preprocessor and !S_making_base_frame) {
         S_base_frame[U"relax"] = {};
-        S_base_frame[U"displaystyle"] =
-            {{}, {{CommandToken(U"displaystyle", "displaystyle")}}, true};
-        S_base_frame[U"textstyle"] =
-            {{}, {{CommandToken(U"textstyle", "textstyle")}}, true};
-        S_base_frame[U"scriptstyle"] =
-            {{}, {{CommandToken(U"scriptstyle", "scriptstyle")}}, true};
-        S_base_frame[U"scriptscriptstyle"] =
-            {{}, {{CommandToken(U"scriptscriptstyle", "scriptscriptstyle")}},
-                true};
-        S_base_frame[U"mathaccent"] =
-            {{}, {{CommandToken(U"mathaccent", "mathaccent")}}, true};
-        S_base_frame[U"abovewithdelims"] =
-            {{}, {{CommandToken(U"abovewithdelims", "abovewithdelims")}}, true};
-        S_base_frame[U"mskip"] =
-            {{}, {{CommandToken(U"mskip", "mskip")}}, true};
-        S_base_frame[U"mathord"] =
-            {{}, {{CommandToken(U"mathord", "mathord")}}, true};
-        S_base_frame[U"mathop"] =
-            {{}, {{CommandToken(U"mathop", "mathop")}}, true};
-        S_base_frame[U"mathbin"] =
-            {{}, {{CommandToken(U"mathbin", "mathbin")}}, true};
-        S_base_frame[U"mathrel"] =
-            {{}, {{CommandToken(U"mathrel", "mathrel")}}, true};
-        S_base_frame[U"mathopen"] =
-            {{}, {{CommandToken(U"mathopen", "mathopen")}}, true};
-        S_base_frame[U"mathclose"] =
-            {{}, {{CommandToken(U"mathclose", "mathclose")}}, true};
-        S_base_frame[U"mathpunct"] =
-            {{}, {{CommandToken(U"mathpunct", "mathpunct")}}, true};
-        S_base_frame[U"mathinner"] =
-            {{}, {{CommandToken(U"mathinner", "mathinner")}}, true};
-        S_base_frame[U"radical"] =
-            {{}, {{CommandToken(U"radical", "radical")}}, true};
+#define DECLARE_BUILTIN(name) \
+        S_base_frame[U ## name] = \
+            {{}, {{CommandToken(U ## name, name)}}, true}
+        DECLARE_BUILTIN("displaystyle");
+        DECLARE_BUILTIN("textstyle");
+        DECLARE_BUILTIN("scriptstyle");
+        DECLARE_BUILTIN("scriptscriptstyle");
+        DECLARE_BUILTIN("mathaccent");
+        DECLARE_BUILTIN("abovewithdelims");
+        DECLARE_BUILTIN("mskip");
+        DECLARE_BUILTIN("mathord");
+        DECLARE_BUILTIN("mathop");
+        DECLARE_BUILTIN("mathbin");
+        DECLARE_BUILTIN("mathrel");
+        DECLARE_BUILTIN("mathopen");
+        DECLARE_BUILTIN("mathclose");
+        DECLARE_BUILTIN("mathpunct");
+        DECLARE_BUILTIN("mathinner");
+        DECLARE_BUILTIN("radical");
 
         S_base_frame[U"{"] = {{}, {{CharacterToken(U'{',CategoryCode::Other)}}};
         S_base_frame[U"}"] = {{}, {{CharacterToken(U'}',CategoryCode::Other)}}};

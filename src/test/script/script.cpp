@@ -31,6 +31,7 @@ namespace {
 }
 
 TEST_CASE("Script basics") {
+    created = 0;
     auto script1 = Script("test;");
     auto script2 = Script("test; test;");
     REQUIRE(created == 0);
