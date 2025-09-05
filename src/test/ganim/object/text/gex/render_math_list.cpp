@@ -398,3 +398,16 @@ TEST_CASE("GeX render_math_list radical", "[object][text][gex]") {
     REQUIRE(box.glyphs[0].x_pos < box.glyphs[2].x_pos);
     REQUIRE(box.glyphs[1].y_pos > box.glyphs[2].y_pos);
 }
+
+TEST_CASE("GeX render_math_list \\text", "[object][text][gex]") {
+    // a \text a
+    auto list = MathList();
+    list.emplace_back(Atom({}, AtomType::Ord, AtomSymbol(U'a')));
+    list.emplace_back(Atom({}, AtomType::Ord, AtomTokens({
+        Token(CharacterToken(U'a'), 0, 0)
+    })));
+    auto box = render_math_list(list, Style::Display);
+    REQUIRE(box.glyphs.size() == 2);
+    REQUIRE((box.glyphs[0].x_pos != box.glyphs[1].x_pos or
+             box.glyphs[0].y_pos != box.glyphs[1].y_pos));
+}

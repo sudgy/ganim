@@ -2,8 +2,13 @@
 
 #include <algorithm>
 
+#include "ganim/fmap.hpp"
+
 #include "math_letter_map.hpp"
 #include "accent_offsets.hpp"
+#include "split.hpp"
+#include "section_render.hpp"
+#include "section_combine.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
@@ -49,6 +54,7 @@ namespace {
             void render_atom_accent(Atom& atom, AtomAccent& accent,Style style);
             void render_atom_radical(
                 Atom& atom, AtomRadical& radical, Style style);
+            void render_atom_tokens(Atom& atom, AtomTokens& tokens,Style style);
             Noad render_fraction(FractionNoad& fraction, Style style);
             Box make_delimiter(
                 std::uint32_t codepoint, int group, double height, Style style);
@@ -174,6 +180,8 @@ void Processor::render_atom(Atom& atom, Style style)
             {render_atom_accent(atom, accent, style);},
         [&](AtomRadical& radical)
             {render_atom_radical(atom, radical, style);},
+        [&](AtomTokens& tokens)
+            {render_atom_tokens(atom, tokens, style);},
         [&](auto&) {}
     }, atom.value);
 }
@@ -413,6 +421,20 @@ void Processor::render_atom_radical(
     vertical_shift_box(y, x.height + ψ);
     auto nkern = Box(-θ/2, 0, 0, {});
     atom.box = combine_boxes_horizontally({y, nkern, vbox});
+}
+
+void Processor::render_atom_tokens(
+    Atom& atom,
+    AtomTokens& tokens,
+    Style style
+)
+{
+    auto sections = split(tokens.list);
+    auto rendered_sections = fmap(
+        sections,
+        [&](const auto& section) {return section_render(section, style);}
+    );
+    atom.box = section_combine(rendered_sections);
 }
 
 Noad Processor::render_fraction(FractionNoad& fraction, Style style)

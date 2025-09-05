@@ -8,6 +8,7 @@
 
 #include "box.hpp"
 #include "ganim/copy_ptr.hpp"
+#include "token.hpp"
 
 namespace ganim::gex {
     enum class AtomType {
@@ -67,6 +68,9 @@ namespace ganim::gex {
         std::uint32_t radical = 0;
         int group = -1;
     };
+    struct AtomTokens {
+        TokenList list;
+    };
 
     struct Atom {
         Box box;
@@ -80,7 +84,8 @@ namespace ganim::gex {
             AtomSuperscript,
             AtomSubsuperscript,
             AtomAccent,
-            AtomRadical
+            AtomRadical,
+            AtomTokens
         > value;
     };
     struct CommandNoad {

@@ -191,6 +191,7 @@ std::vector<PositionedGlyph> ganim::shape_text(
     const std::vector<std::u32string>& text
 )
 {
+    if (text.empty()) return {};
     auto group_index = 0;
     auto new_text = std::vector<std::pair<std::u32string, int>>();
     new_text.reserve(text.size());
@@ -205,6 +206,7 @@ std::vector<PositionedGlyph> ganim::shape_text_manual_groups(
     const std::vector<std::pair<std::u32string, int>>& text
 )
 {
+    if (text.empty()) return {};
     auto buffer = hb_buffer_create();
     for (auto& [string, group_index] : text) {
         for (auto codepoint : string) {

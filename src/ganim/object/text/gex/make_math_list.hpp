@@ -3,9 +3,13 @@
 
 #include "section.hpp"
 #include "noad.hpp"
+#include "style.hpp"
 
 namespace ganim::gex {
-    MathList make_math_list(const TokenList& section);
+    MathList make_math_list(
+        const TokenList& section,
+        Style style = Style::Text
+    );
 }
 
 #endif

@@ -1,13 +1,13 @@
 #include "make_math_list.hpp"
 
-#include "ganim/fmap.hpp"
-
 #include "ganim/unicode_categories.hpp"
 #include "gex_error.hpp"
 #include "gex_dimension_parser.hpp"
+/*
 #include "split.hpp"
 #include "section_render.hpp"
 #include "section_combine.hpp"
+*/
 
 using namespace ganim;
 using namespace ganim::gex;
@@ -33,7 +33,8 @@ AtomType get_atom_type(std::int32_t codepoint)
 
 class Processor {
     public:
-        Processor(const TokenList& tokens) : tokens(tokens) {}
+        Processor(const TokenList& tokens, Style style)
+        : tokens(tokens), style(style) {}
         void process();
         void process_character_token(const CharacterToken& token);
         void process_command_token(const CommandToken& token);
@@ -61,6 +62,7 @@ class Processor {
         bool radical = false;
         bool math_atom = false;
         AtomType math_atom_type = AtomType::Ord;
+        Style style;
 };
 
 }
@@ -208,7 +210,7 @@ void Processor::process_group()
         Atom(
             Box(),
             AtomType::Ord,
-            AtomList(make_math_list(new_list))
+            AtomList(make_math_list(new_list, style))
         )
     );
     add_noad(std::move(noad));
@@ -272,7 +274,7 @@ void Processor::process_generalized_fraction(int group)
     }
     auto noad = FractionNoad(
         std::move(result),
-        make_math_list(denom_list),
+        make_math_list(denom_list, style),
         delim1,
         delim2,
         rule_thickness,
@@ -313,11 +315,13 @@ void Processor::process_box()
     ++token_index;
     auto start = token_index;
     int group = 0;
+    int found_group = 0;
     while (token_index < ssize(tokens)) {
         auto& token = current_token();
         if (auto tok = get_if<CharacterToken>(&token.value)) {
             if (tok->catcode == CategoryCode::StartGroup) {
                 ++group;
+                found_group = 1;
             }
             else if (tok->catcode == CategoryCode::EndGroup){
                 --group;
@@ -332,13 +336,10 @@ void Processor::process_box()
         throw GeXError(-1, -1, "Unexpected end of input");
     }
     auto new_tokens = TokenList(
-        tokens.begin() + start,
-        tokens.begin() + token_index + 1
+        tokens.begin() + start + found_group,
+        tokens.begin() + token_index + 1 - found_group
     );
-    auto sections = split(new_tokens);
-    auto rendered_sections = fmap(sections, section_render);
-    auto box = section_combine(rendered_sections);
-    add_noad(Noad(Atom(box, AtomType::Ord, AtomBox())));
+    add_noad(Noad(Atom({}, AtomType::Ord, AtomTokens(std::move(new_tokens)))));
 }
 
 void Processor::add_noad(Noad noad)
@@ -497,9 +498,9 @@ double Processor::read_dimension()
 }
 
 
-MathList gex::make_math_list(const TokenList& tokens)
+MathList gex::make_math_list(const TokenList& tokens, Style style)
 {
-    auto processor = Processor(tokens);
+    auto processor = Processor(tokens, style);
     processor.process();
     return processor.get_result();
 }

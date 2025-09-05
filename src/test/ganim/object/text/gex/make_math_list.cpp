@@ -341,12 +341,12 @@ TEST_CASE("GeX make_math_list \\text", "[object][text][gex]") {
     REQUIRE(list.size() == 2);
     auto& atom1 = get<Atom>(list[0].value);
     REQUIRE(atom1.type == AtomType::Ord);
-    REQUIRE(holds_alternative<AtomBox>(atom1.value));
-    REQUIRE(atom1.box.glyphs.size() == 2);
+    auto& tokens1 = get<AtomTokens>(atom1.value);
+    REQUIRE(tokens1.list.size() == 2);
     auto& atom2 = get<Atom>(list[1].value);
     REQUIRE(atom2.type == AtomType::Ord);
-    REQUIRE(holds_alternative<AtomBox>(atom2.value));
-    REQUIRE(atom2.box.glyphs.size() == 1);
+    auto& tokens2 = get<AtomTokens>(atom2.value);
+    REQUIRE(tokens2.list.size() == 1);
 
     tokens.resize(5);
     REQUIRE_NOTHROW(make_math_list(tokens));

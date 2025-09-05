@@ -296,6 +296,8 @@ TEST_CASE("GeX default global macros", "[object][text][gex]") {
 }
 
 TEST_CASE("GeX macros add_base_macros", "[object][text][gex]") {
+    // This initializes everything to make the next call not crash
+    auto _ = MacroStack();
     MacroStack::add_base_macros(R"(\def\addbasemacrostest{a})");
     auto tokens = preprocess(false, {"\\addbasemacrostest"});
     REQUIRE(tokens.size() == 1);

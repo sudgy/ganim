@@ -6,7 +6,7 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-Box gex::section_render(Section section)
+Box gex::section_render(Section section, Style style)
 {
     if (section.type == Section::Text) {
         auto& font = get_font("fonts/NewCM10-Regular.otf");
@@ -45,8 +45,8 @@ Box gex::section_render(Section section)
         return result;
     }
     else {
-        auto style = section.type == Section::InlineMath
-            ? Style::Text : Style::Display;
-        return render_math_list(make_math_list(section.tokens), style);
+        auto new_style = section.type == Section::InlineMath
+            ? style : Style::Display;
+        return render_math_list(make_math_list(section.tokens), new_style);
     }
 }
