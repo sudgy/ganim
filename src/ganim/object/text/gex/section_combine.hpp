@@ -4,9 +4,7 @@
 #include "section.hpp"
 
 namespace ganim::gex {
-    std::vector<PositionedGlyph> section_combine(
-        const std::vector<Box>& sections
-    );
+    Box section_combine(const std::vector<Box>& sections);
 }
 
 #endif

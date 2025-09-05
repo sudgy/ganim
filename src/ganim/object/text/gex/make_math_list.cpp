@@ -1,8 +1,13 @@
 #include "make_math_list.hpp"
 
+#include "ganim/fmap.hpp"
+
 #include "ganim/unicode_categories.hpp"
 #include "gex_error.hpp"
 #include "gex_dimension_parser.hpp"
+#include "split.hpp"
+#include "section_render.hpp"
+#include "section_combine.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
@@ -38,6 +43,7 @@ class Processor {
         void process_superscript();
         void process_generalized_fraction(int group);
         void process_radical();
+        void process_box();
 
         MathList get_result() {return std::move(result);}
 
@@ -153,6 +159,9 @@ void Processor::process_command_token(const CommandToken& tok)
     else if (tok.command_utf8 == "mathinner") {
         math_atom = true;
         math_atom_type = AtomType::Inner;
+    }
+    else if (tok.command_utf8 == "text") {
+        process_box();
     }
     else {
         add_noad(Noad(CommandNoad(
@@ -297,6 +306,39 @@ void Processor::process_radical()
     }
     add_noad(Noad(Atom(Box(), AtomType::Rad, AtomRadical({}, radical, group))));
     this->radical = true;
+}
+
+void Processor::process_box()
+{
+    ++token_index;
+    auto start = token_index;
+    int group = 0;
+    while (token_index < ssize(tokens)) {
+        auto& token = current_token();
+        if (auto tok = get_if<CharacterToken>(&token.value)) {
+            if (tok->catcode == CategoryCode::StartGroup) {
+                ++group;
+            }
+            else if (tok->catcode == CategoryCode::EndGroup){
+                --group;
+            }
+        }
+        if (group == 0) {
+            break;
+        }
+        ++token_index;
+    }
+    if (group > 0 or token_index >= ssize(tokens)) {
+        throw GeXError(-1, -1, "Unexpected end of input");
+    }
+    auto new_tokens = TokenList(
+        tokens.begin() + start,
+        tokens.begin() + token_index + 1
+    );
+    auto sections = split(new_tokens);
+    auto rendered_sections = fmap(sections, section_render);
+    auto box = section_combine(rendered_sections);
+    add_noad(Noad(Atom(box, AtomType::Ord, AtomBox())));
 }
 
 void Processor::add_noad(Noad noad)

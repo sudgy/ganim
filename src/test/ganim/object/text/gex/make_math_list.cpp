@@ -327,3 +327,32 @@ TEST_CASE("GeX make_math_list radicals", "[object][text][gex]") {
     REQUIRE(nucleus2.codepoint == U'd');
     REQUIRE(nucleus2.group == 6);
 }
+
+TEST_CASE("GeX make_math_list \\text", "[object][text][gex]") {
+    auto tokens = TokenList();
+    tokens.emplace_back(CommandToken(U"text", "text"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'{', CategoryCode::StartGroup), 0, 0);
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'b', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'}', CategoryCode::EndGroup), 0, 0);
+    tokens.emplace_back(CommandToken(U"text", "text"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
+    auto list = make_math_list(tokens);
+    REQUIRE(list.size() == 2);
+    auto& atom1 = get<Atom>(list[0].value);
+    REQUIRE(atom1.type == AtomType::Ord);
+    REQUIRE(holds_alternative<AtomBox>(atom1.value));
+    REQUIRE(atom1.box.glyphs.size() == 2);
+    auto& atom2 = get<Atom>(list[1].value);
+    REQUIRE(atom2.type == AtomType::Ord);
+    REQUIRE(holds_alternative<AtomBox>(atom2.value));
+    REQUIRE(atom2.box.glyphs.size() == 1);
+
+    tokens.resize(5);
+    REQUIRE_NOTHROW(make_math_list(tokens));
+
+    tokens.resize(2);
+    REQUIRE_THROWS(make_math_list(tokens));
+    tokens.resize(1);
+    REQUIRE_THROWS(make_math_list(tokens));
+}

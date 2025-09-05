@@ -16,5 +16,5 @@ ganim::gex_render(bool math, const std::vector<std::string_view>& input)
     auto tokens = preprocess(math, input);
     auto sections = split(tokens);
     auto rendered_sections = fmap(sections, section_render);
-    return section_combine(rendered_sections);
+    return section_combine(rendered_sections).glyphs;
 }

@@ -5,9 +5,7 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-std::vector<PositionedGlyph> gex::section_combine(
-    const std::vector<Box>& sections
-)
+Box gex::section_combine(const std::vector<Box>& sections)
 {
-    return combine_boxes_horizontally(sections, 0.1).glyphs;
+    return combine_boxes_horizontally(sections, 0.1);
 }
