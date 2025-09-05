@@ -33,6 +33,7 @@ MacroStack::MacroStack()
         DECLARE_BUILTIN("mathpunct");
         DECLARE_BUILTIN("mathinner");
         DECLARE_BUILTIN("radical");
+        DECLARE_BUILTIN("text");
 
         S_base_frame[U"{"] = {{}, {{CharacterToken(U'{',CategoryCode::Other)}}};
         S_base_frame[U"}"] = {{}, {{CharacterToken(U'}',CategoryCode::Other)}}};

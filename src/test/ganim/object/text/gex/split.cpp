@@ -72,3 +72,20 @@ TEST_CASE("GeX split mathaccent at start", "[object][text][gex]") {
     REQUIRE(split.size() == 1);
     REQUIRE(split[0].tokens.size() == 3);
 }
+
+TEST_CASE("GeX split with \\text", "[object][text][gex]") {
+    // $\text{$a$}$
+    auto tokens = TokenList();
+    auto dollar = Token(CharacterToken(U'$', CategoryCode::MathShift), 0, 0);
+    tokens.push_back(dollar);
+    tokens.emplace_back(CommandToken(U"text", "text"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'{', CategoryCode::StartGroup), 0, 0);
+    tokens.emplace_back(dollar);
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(dollar);
+    tokens.emplace_back(CharacterToken(U'}', CategoryCode::EndGroup), 0, 0);
+    tokens.emplace_back(dollar);
+    auto split = gex::split(tokens);
+    REQUIRE(split.size() == 1);
+    REQUIRE(split[0].tokens.size() == 6);
+}

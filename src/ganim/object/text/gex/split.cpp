@@ -12,6 +12,8 @@ std::vector<Section> gex::split(const TokenList& tokens)
     bool math_mode = false;
     bool display = false;
     int dollars_seen = 0;
+    bool in_box = false;
+    int box_group = 0;
     auto add_new_section = [&](int end){
         if (start == end) return;
         if (start == 0 and end == ssize(tokens)) {
@@ -31,8 +33,41 @@ std::vector<Section> gex::split(const TokenList& tokens)
     };
     for (int i = 0; i < ssize(tokens); ++i) {
         auto& token = tokens[i];
-        if (auto tok = std::get_if<CharacterToken>(&token.value)) {
+        if (box_group > 0) {
+            if (auto tok = std::get_if<CharacterToken>(&token.value)) {
+                if (tok->catcode == CategoryCode::StartGroup) {
+                    ++box_group;
+                }
+                else if (tok->catcode == CategoryCode::EndGroup) {
+                    --box_group;
+                }
+                if (box_group == 0) {
+                    in_box = false;
+                }
+            }
+            continue;
+        }
+        if (auto tok = std::get_if<CommandToken>(&token.value)) {
+            if (in_box) {
+                throw GeXError(
+                    token.group,
+                    token.string_index,
+                    "Unexpected control sequence"
+                );
+            }
+            if (tok->command_utf8 == "text") {
+                in_box = true;
+            }
+        }
+        else if (auto tok = std::get_if<CharacterToken>(&token.value)) {
             if (tok->catcode == CategoryCode::MathShift) {
+                if (in_box) {
+                    throw GeXError(
+                        token.group,
+                        token.string_index,
+                        "Unexpected math shift character"
+                    );
+                }
                 if (dollars_seen == 0) {
                     add_new_section(i);
                 }
@@ -46,6 +81,9 @@ std::vector<Section> gex::split(const TokenList& tokens)
                     );
                 }
                 continue;
+            }
+            else if (in_box and tok->catcode == CategoryCode::StartGroup) {
+                box_group = 1;
             }
         }
         if (dollars_seen != 0) {
