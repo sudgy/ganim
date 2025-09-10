@@ -41,7 +41,7 @@ namespace {
         public:
             Processor(MathList& list) :
                 M_list(list),
-                M_font(get_font("fonts/NewCMMath-Regular.otf")) {}
+                M_font(&get_font("fonts/NewCMMath-Regular.otf")) {}
             void do_preprocessing();
             void do_rendering(Style style);
             Box do_combine(Style style);
@@ -61,7 +61,7 @@ namespace {
 
             MathList& M_list;
             MathList M_rendered_list;
-            Font& M_font;
+            Font* M_font = nullptr;
     };
 }
 
@@ -117,7 +117,7 @@ void Processor::do_rendering(Style style)
                 : it->second;
             text.emplace_back(std::u32string(1, codepoint), atom_symbol.group);
         }
-        auto glyphs = shape_text_manual_groups(M_font, text);
+        auto glyphs = shape_text_manual_groups(*M_font, text);
         auto box = box_from_glyphs(glyphs);
         scale_box(box, scaling);
         auto new_atom = Atom(box, Ord, AtomBox());
@@ -194,7 +194,7 @@ void Processor::render_atom_symbol(Atom& atom, AtomSymbol& symbol, Style style)
         : it->second;
     auto scaling = get_style_scaling(style);
     auto glyphs = shape_text_manual_groups(
-        M_font,
+        *M_font,
         {{std::u32string(1, codepoint), symbol.group}}
     );
     atom.box = box_from_glyphs(glyphs);
@@ -243,16 +243,16 @@ void Processor::render_atom_script(
         render_atom(*superscript, superstyle);
     }
 
-    const double scriptspace = get_font_em(M_font) / 20.0;
-    const double σ5 = get_font_x_height(M_font);
-    const double σ13 = get_font_sup1(M_font);
-    const double σ14 = get_font_sup2(M_font);
-    const double σ15 = get_font_sup3(M_font);
-    const double σ16 = get_font_sub1(M_font);
-    const double σ17 = get_font_sub2(M_font);
-    const double σ18 = get_font_sup_drop(M_font);
-    const double σ19 = get_font_sub_drop(M_font);
-    const auto θ = get_font_default_rule_thickness(M_font);
+    const double scriptspace = get_font_em(*M_font) / 20.0;
+    const double σ5 = get_font_x_height(*M_font);
+    const double σ13 = get_font_sup1(*M_font);
+    const double σ14 = get_font_sup2(*M_font);
+    const double σ15 = get_font_sup3(*M_font);
+    const double σ16 = get_font_sub1(*M_font);
+    const double σ17 = get_font_sub2(*M_font);
+    const double σ18 = get_font_sup_drop(*M_font);
+    const double σ19 = get_font_sub_drop(*M_font);
+    const auto θ = get_font_default_rule_thickness(*M_font);
 
     double u = 0.0;
     double v = 0.0;
@@ -350,7 +350,7 @@ void Processor::render_atom_accent(Atom& atom, AtomAccent& accent, Style style)
     render_atom(*accent.nucleus, get_cramped_style(style));
     auto& a = accent.accent->box;
     auto& n = accent.nucleus->box;
-    auto height = std::max(n.height, get_font_x_height(M_font)) + 0.05;
+    auto height = std::max(n.height, get_font_x_height(*M_font)) + 0.05;
     for (auto& glyph : a.glyphs) {
         glyph.y_pos += height;
         glyph.draw_y += height;
@@ -393,10 +393,10 @@ void Processor::render_atom_radical(
 {
     render_atom(*radical.nucleus, get_cramped_style(style));
     auto& x = radical.nucleus->box;
-    auto θ = get_font_default_rule_thickness(M_font);
+    auto θ = get_font_default_rule_thickness(*M_font);
     auto φ = 0.0;
     if (style == Style::Display or style == Style::CrampedDisplay) {
-        φ = get_font_x_height(M_font);
+        φ = get_font_x_height(*M_font);
     }
     else {
         φ = θ;
@@ -415,11 +415,11 @@ void Processor::render_atom_radical(
         ψ = 0.5*(ψ + y.depth - x.height - x.depth);
     }
     auto kernθ = Box(0, 0, θ, {});
-    auto rule = make_rule(x.width, θ*0.8, 0, radical.group);
+    auto rule = make_rule(x.width, θ - 0.0025, 0, radical.group);
     auto kernψ = Box(0, 0, ψ, {});
     auto vbox = combine_boxes_vertically({kernθ, rule, kernψ, x}, 3);
     vertical_shift_box(y, x.height + ψ);
-    auto nkern = Box(-θ/2, 0, 0, {});
+    auto nkern = Box(-θ*0.6, 0, 0, {});
     atom.box = combine_boxes_horizontally({y, nkern, vbox});
 }
 
@@ -440,7 +440,7 @@ void Processor::render_atom_tokens(
 Noad Processor::render_fraction(FractionNoad& fraction, Style style)
 {
     auto θ = fraction.rule_thickness;
-    if (θ < 0.0) θ = get_font_default_rule_thickness(M_font);
+    if (θ < 0.0) θ = get_font_default_rule_thickness(*M_font);
     auto x = render_math_list(
         fraction.numerator,
         get_numerator_style(style)
@@ -459,19 +459,19 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
     auto v = 0.0;
     bool display = style == Style::Display or style == Style::CrampedDisplay;
     if (display) {
-        u = get_font_num1(M_font);
-        v = get_font_denom1(M_font);
+        u = get_font_num1(*M_font);
+        v = get_font_denom1(*M_font);
     }
     else {
-        if (θ == 0) u = get_font_num3(M_font);
-        else u = get_font_num2(M_font);
-        v = get_font_denom2(M_font);
+        if (θ == 0) u = get_font_num3(*M_font);
+        else u = get_font_num2(*M_font);
+        v = get_font_denom2(*M_font);
     }
     u /= 1.2;
     v /= 1.05;
     auto box = Box();
     if (θ == 0) {
-        auto φ = get_font_default_rule_thickness(M_font);
+        auto φ = get_font_default_rule_thickness(*M_font);
         if (display) φ *= 7;
         else φ *= 3;
         auto ψ = (u - x.depth) - (z.height - v);
@@ -487,9 +487,9 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
         vertical_shift_box(box, (x.height + u) - box.height);
     }
     else {
-        auto φ = get_font_default_rule_thickness(M_font);
+        auto φ = get_font_default_rule_thickness(*M_font);
         if (display) φ *= 3;
-        auto a = get_font_axis_height(M_font);
+        auto a = get_font_axis_height(*M_font);
         auto diff = (u - x.depth) - (a + θ/2);
         if (diff < φ) u += φ - diff;
         diff = (a - θ/2) - (z.height - v);
@@ -500,7 +500,7 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
         box = combine_boxes_vertically({x, kern1, rule, kern2, z}, 0);
         vertical_shift_box(box, (x.height + u) - box.height);
     }
-    auto a = get_font_axis_height(M_font);
+    auto a = get_font_axis_height(*M_font);
     auto fraction_height = std::max((box.height - a), (box.depth + a)) * 2 +0.1;
     auto make_delim = [&](std::uint32_t codepoint) {
         auto box = make_delimiter(
@@ -527,7 +527,24 @@ Box Processor::make_delimiter(
     render_atom_symbol(fake_atom, fake_atom_symbol, style);
     auto delim_height = fake_atom.box.height + fake_atom.box.depth;
     if (height > delim_height) {
-        scale_box(fake_atom.box, height / delim_height);
+        const auto big_size = 1.2;
+        const auto Big_size = 1.5 * big_size;
+        const auto bigg_size = 2.0 * big_size;
+        const auto Bigg_size = 2.5 * big_size;
+        double scale_size = big_size;
+        double scale_needed = height / delim_height;
+        if (scale_needed > big_size) scale_size = Big_size;
+        if (scale_needed > Big_size) scale_size = bigg_size;
+        if (scale_needed > bigg_size) scale_size = Bigg_size;
+        if (scale_needed > Bigg_size) {
+            // TODO: delimiters with pieces
+            scale_size = scale_needed;
+        }
+        auto old_font = M_font;
+        M_font = &scale_font(*M_font, scale_size);
+        render_atom_symbol(fake_atom, fake_atom_symbol, style);
+        M_font = old_font;
+        scale_box(fake_atom.box, scale_size);
     }
     return fake_atom.box;
 }
@@ -535,7 +552,7 @@ Box Processor::make_delimiter(
 Box Processor::do_combine(Style style)
 {
     auto scaling = get_style_scaling(style);
-    const auto quad = get_font_quad(M_font);
+    const auto quad = get_font_quad(*M_font);
     auto result_boxes = std::vector<Box>();
     auto last_type = AtomType(-1);
     for (int i = 0; i < ssize(M_rendered_list); ++i) {

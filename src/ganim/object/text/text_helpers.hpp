@@ -84,6 +84,7 @@ namespace ganim {
      * reason.
      */
     Font& get_font(const std::string& filename, int pixel_size = 128);
+    Font& scale_font(const Font& font, double scale);
     /** @brief Get a glyph.
      *
      * You probably don't need to call this function, use @ref shape_text

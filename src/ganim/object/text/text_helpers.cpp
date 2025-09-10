@@ -37,9 +37,11 @@ struct ganim::Font {
     FT_Face M_ft_face;
     hb_font_t* M_hb_font = nullptr;
     std::unordered_map<glyph_t, Glyph> M_glyphs;
+    std::string M_filename;
     double M_pixel_size = 0;
     Font(const std::string& filename, int pixel_size)
-        : M_pixel_size(pixel_size)
+        : M_filename(filename),
+          M_pixel_size(pixel_size)
     {
         if (S_count == 0) {
             G_text_texture = gl::Texture();
@@ -78,6 +80,7 @@ struct ganim::Font {
     Font(Font&& other) : M_pixel_size(other.M_pixel_size)
     {
         ++S_count;
+        M_filename = std::move(other.M_filename);
         M_ft_face = other.M_ft_face;
         other.M_ft_face = nullptr;
         M_hb_font = other.M_hb_font;
@@ -86,6 +89,7 @@ struct ganim::Font {
     Font& operator=(Font&& other)
     {
         if (this != &other) {
+            M_filename = std::move(other.M_filename);
             M_pixel_size = other.M_pixel_size;
             if (M_hb_font) hb_font_destroy(M_hb_font);
             M_ft_face = other.M_ft_face;
@@ -111,7 +115,15 @@ struct ganim::Font {
 
 Font& ganim::get_font(const std::string& filename, int pixel_size)
 {
-    return G_fonts.emplace(std::make_pair(filename, pixel_size), Font(filename, pixel_size)).first->second;
+    return G_fonts.emplace(
+        std::make_pair(filename, pixel_size),
+        Font(filename, pixel_size)
+    ).first->second;
+}
+
+Font& ganim::scale_font(const Font& font, double scale)
+{
+    return get_font(font.M_filename, font.M_pixel_size * scale);
 }
 
 Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
