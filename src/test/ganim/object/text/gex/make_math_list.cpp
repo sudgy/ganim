@@ -105,7 +105,7 @@ TEST_CASE("GeX make_math_list subscripts/superscripts", "[object][text][gex]") {
     auto& atom2 = get<Atom>(list[1].value);
     REQUIRE(atom1.type == AtomType::Ord);
     REQUIRE(atom2.type == AtomType::Ord);
-    auto& base = get<AtomSubsuperscript>(atom1.value);
+    auto& base = get<AtomScript>(atom1.value);
     REQUIRE(base.nucleus->type == AtomType::Ord);
     REQUIRE(base.subscript->type == AtomType::Ord);
     REQUIRE(base.superscript->type == AtomType::Ord);

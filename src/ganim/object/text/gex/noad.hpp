@@ -46,15 +46,7 @@ namespace ganim::gex {
     struct AtomList {
         MathList list;
     };
-    struct AtomSubscript {
-        copy_ptr<Atom> nucleus;
-        copy_ptr<Atom> subscript;
-    };
-    struct AtomSuperscript {
-        copy_ptr<Atom> nucleus;
-        copy_ptr<Atom> superscript;
-    };
-    struct AtomSubsuperscript {
+    struct AtomScript {
         copy_ptr<Atom> nucleus;
         copy_ptr<Atom> subscript;
         copy_ptr<Atom> superscript;
@@ -80,9 +72,7 @@ namespace ganim::gex {
             AtomSymbol,
             AtomBox,
             AtomList,
-            AtomSubscript,
-            AtomSuperscript,
-            AtomSubsuperscript,
+            AtomScript,
             AtomAccent,
             AtomRadical,
             AtomTokens

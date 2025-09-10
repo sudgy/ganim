@@ -50,7 +50,7 @@ namespace {
             void render_atom(Atom& atom, Style style);
             void render_atom_symbol(Atom& atom, AtomSymbol& symbol,Style style);
             void render_atom_list(Atom& atom, AtomList& list, Style style);
-            void render_atom_script(Atom& atom, Style style);
+            void render_atom_script(Atom& atom, AtomScript& script,Style style);
             void render_atom_accent(Atom& atom, AtomAccent& accent,Style style);
             void render_atom_radical(
                 Atom& atom, AtomRadical& radical, Style style);
@@ -170,12 +170,8 @@ void Processor::render_atom(Atom& atom, Style style)
     std::visit(overloaded{
         [&](AtomSymbol& tok) {render_atom_symbol(atom, tok, style);},
         [&](AtomList& tok) {render_atom_list(atom, tok, style);},
-        [&](AtomSubscript&)
-            {render_atom_script(atom, style);},
-        [&](AtomSuperscript&)
-            {render_atom_script(atom, style);},
-        [&](AtomSubsuperscript&)
-            {render_atom_script(atom, style);},
+        [&](AtomScript& script)
+            {render_atom_script(atom, script, style);},
         [&](AtomAccent& accent)
             {render_atom_accent(atom, accent, style);},
         [&](AtomRadical& radical)
@@ -209,25 +205,13 @@ void Processor::render_atom_list(Atom& atom, AtomList& list, Style style)
 
 void Processor::render_atom_script(
     Atom& atom,
+    AtomScript& script,
     Style style
 )
 {
-    Atom* nucleus = nullptr;
-    Atom* subscript = nullptr;
-    Atom* superscript = nullptr;
-    if (auto atom2 = get_if<AtomSubscript>(&atom.value)) {
-        nucleus = atom2->nucleus.get();
-        subscript = atom2->subscript.get();
-    }
-    else if (auto atom2 = get_if<AtomSuperscript>(&atom.value)) {
-        nucleus = atom2->nucleus.get();
-        superscript = atom2->superscript.get();
-    }
-    else if (auto atom2 = get_if<AtomSubsuperscript>(&atom.value)) {
-        nucleus = atom2->nucleus.get();
-        subscript = atom2->subscript.get();
-        superscript = atom2->superscript.get();
-    }
+    Atom* nucleus = script.nucleus.get();
+    Atom* subscript = script.subscript.get();
+    Atom* superscript = script.superscript.get();
     auto substyle = get_subscript_style(style);
     auto superstyle = get_superscript_style(style);
     auto subscaling = get_style_scaling(substyle);

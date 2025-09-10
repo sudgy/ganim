@@ -361,23 +361,19 @@ void Processor::add_noad(Noad noad)
         auto old_noad = std::move(result.back());
         result.pop_back();
         auto& atom = get<Atom>(old_noad.value);
-        if (holds_alternative<AtomSubscript>(atom.value)) {
-            throw GeXError(token.group, token.string_index, "Double subscript");
-        }
-        else if (holds_alternative<AtomSubsuperscript>(atom.value)) {
-            throw GeXError(token.group, token.string_index, "Double subscript");
-        }
-        else if (auto super = get_if<AtomSuperscript>(&atom.value)) {
-            add_noad(Noad(Atom(Box(), super->nucleus->type, AtomSubsuperscript(
-                std::move(super->nucleus),
-                std::make_unique<Atom>(get<Atom>(noad.value)),
-                std::move(super->superscript)
-            ))));
+        if (auto script = get_if<AtomScript>(&atom.value)) {
+            if (script->subscript) {
+                throw GeXError(token.group, token.string_index,
+                    "Double subscript");
+            }
+            script->subscript = std::make_unique<Atom>(get<Atom>(noad.value));
+            add_noad(old_noad);
         }
         else {
-            add_noad(Noad(Atom(Box(), atom.type, AtomSubscript(
+            add_noad(Noad(Atom(Box(), atom.type, AtomScript(
                 std::make_unique<Atom>(std::move(atom)),
-                std::make_unique<Atom>(get<Atom>(noad.value))
+                std::make_unique<Atom>(get<Atom>(noad.value)),
+                nullptr
             ))));
         }
     }
@@ -386,24 +382,19 @@ void Processor::add_noad(Noad noad)
         auto old_noad = std::move(result.back());
         result.pop_back();
         auto& atom = get<Atom>(old_noad.value);
-        if (holds_alternative<AtomSuperscript>(atom.value)) {
-            throw GeXError(token.group, token.string_index,
+        if (auto script = get_if<AtomScript>(&atom.value)) {
+            if (script->superscript) {
+                throw GeXError(token.group, token.string_index,
                     "Double superscript");
-        }
-        else if (holds_alternative<AtomSubsuperscript>(atom.value)) {
-            throw GeXError(token.group, token.string_index,
-                    "Double superscript");
-        }
-        else if (auto sub = get_if<AtomSubscript>(&atom.value)) {
-            add_noad(Noad(Atom(Box(), sub->nucleus->type, AtomSubsuperscript(
-                std::move(sub->nucleus),
-                std::move(sub->subscript),
-                std::make_unique<Atom>(get<Atom>(noad.value))
-            ))));
+            }
+            script->superscript
+                = std::make_unique<Atom>(get<Atom>(noad.value));
+            add_noad(old_noad);
         }
         else {
-            add_noad(Noad(Atom(Box(), atom.type, AtomSuperscript(
+            add_noad(Noad(Atom(Box(), atom.type, AtomScript(
                 std::make_unique<Atom>(std::move(atom)),
+                nullptr,
                 std::make_unique<Atom>(get<Atom>(noad.value))
             ))));
         }

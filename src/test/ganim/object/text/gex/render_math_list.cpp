@@ -221,15 +221,17 @@ TEST_CASE("GeX render_math_list sub/superscripts", "[object][text][gex]") {
     list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'1')));
     list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'2')));
     list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'e')));
-    list.emplace_back(Atom(Box(), AtomType::Ord, AtomSubscript(
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomScript(
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'e')),
-        std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'1'))
+        std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'1')),
+        nullptr
     )));
-    list.emplace_back(Atom(Box(), AtomType::Ord, AtomSuperscript(
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomScript(
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'e')),
+        nullptr,
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'2'))
     )));
-    list.emplace_back(Atom(Box(), AtomType::Ord, AtomSubsuperscript(
+    list.emplace_back(Atom(Box(), AtomType::Ord, AtomScript(
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'e')),
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'1')),
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'2'))
