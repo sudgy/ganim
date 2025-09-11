@@ -469,9 +469,10 @@ void ganim::texture_transform(
 )
 {
     if (from->is_animating()) {
-        throw std::invalid_argument(
-            "Attempting to animate an object that is already being animated."
-        );
+        throw std::invalid_argument(std::format(
+            "Attempting to animate an object that is already being "
+            "animated.  Stacktrace:\n{}", std::stacktrace::current()
+        ));
     }
     to->set_animating(true);
     scene.add(to);
@@ -533,10 +534,10 @@ struct TransformAnimation {
         M_direction(args.direction)
     {
         if (M_from->is_animating()) {
-            throw std::invalid_argument(
+            throw std::invalid_argument(std::format(
                 "Attempting to animate an object that is already being "
-                "animated."
-            );
+                "animated.  Stacktrace:\n{}", std::stacktrace::current()
+            ));
         }
         M_to->set_animating(true);
         if (!args.copy) M_from->set_visible(false);

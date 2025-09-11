@@ -9,6 +9,7 @@
 #include <cmath>
 #include <concepts>
 #include <iostream>
+#include <stacktrace>
 
 #include "ganim/object/bases/animatable.hpp"
 #include "ganim/object/bases/group.hpp"
@@ -83,10 +84,10 @@ class Animation {
             M_scene(scene)
         {
             if (object->is_animating()) {
-                throw std::invalid_argument(
+                throw std::invalid_argument(std::format(
                     "Attempting to animate an object that is already being "
-                    "animated."
-                );
+                    "animated.  Stacktrace:\n{}", std::stacktrace::current()
+                ));
             }
             else {
                 object->set_animating(true);
