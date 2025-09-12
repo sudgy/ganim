@@ -1,0 +1,47 @@
+$namespace ganim::syntax
+$class_name ScriptParser
+$header_guard GANIM_SCRIPT_PARSER_HPP
+$include "script/syntax/token.hpp"
+$include "script/syntax/grammar_types.hpp"
+
+$token Int IntToken
+$token Double DoubleToken
+$token Boolean BooleanToken
+$token String StringToken
+$token Identifier IdentifierToken
+
+$nterm statement_list std::vector<Statement>
+$nterm statement Statement
+$nterm print_statement PrintStatement
+$nterm var_statement VarStatement
+$nterm expression Expression
+$nterm constant Constant
+$nterm identifier Identifier
+
+$grammar
+
+statement_list =
+    statement { std::vector<Statement>{std::move($1)} }
+  | statement_list statement { $1.push_back(std::move($2)), std::move($1) } ;
+statement =
+    print_statement { std::move($1) }
+  | var_statement { std::move($1) } ;
+print_statement =
+    "print" expression { PrintStatement(std::move($2)) } ;
+var_statement =
+    "var" identifier "=" expression
+        { VarStatement(std::move($2), std::move($4)) } ;
+expression =
+    constant {
+        Expression(std::move($1), $1.line_number, $1.column_number)
+    }
+  | identifier {
+        Expression(std::move($1), $1.line_number, $1.column_number)
+    } ;
+constant =
+    Int { Constant($1.value, $1.line_number, $1.column_number) }
+  | Double { Constant($1.value, $1.line_number, $1.column_number) }
+  | Boolean { Constant($1.value, $1.line_number, $1.column_number) }
+  | String { Constant($1.value, $1.line_number, $1.column_number) } ;
+identifier =
+    Identifier { Identifier($1.value, $1.line_number, $1.column_number) } ;
