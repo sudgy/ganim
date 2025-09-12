@@ -165,6 +165,7 @@ using LR1Set = std::unordered_set<ItemLR1>;
 std::string namespace_name;
 std::string class_name;
 std::string header_guard;
+std::vector<std::string> includes;
 
 std::unordered_map<SymbolID, std::string> tokens;
 
@@ -463,6 +464,10 @@ void read_grammar_file(std::istream& file)
         }
         else if (input == "$header_guard") {
             file >> header_guard;
+        }
+        else if (input == "$include") {
+            auto& new_include = includes.emplace_back();
+            std::getline(file, new_include);
         }
         else if (input == "$token") {
             std::string new_token;
@@ -807,6 +812,12 @@ int main(int argc, char* argv[])
             }
             else if (line_view.starts_with("$SYMBOL_TYPE")) {
                 line.replace(dollar_pos, sizeof("$SYMBOL_TYPE")-1, symbol_type);
+            }
+            else if (line_view.starts_with("$INCLUDES")) {
+                line = "";
+                for (auto& include : includes) {
+                    file << "#include " << include << "\n";
+                }
             }
             else if (line_view.starts_with("$TOKEN_FUNC_DECLS")) {
                 line = "";

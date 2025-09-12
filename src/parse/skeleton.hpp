@@ -5,6 +5,8 @@
 #include <variant>
 #include <string>
 
+$INCLUDES
+
 namespace $NAMESPACE {
     class $CLASS_NAME {
         public:
