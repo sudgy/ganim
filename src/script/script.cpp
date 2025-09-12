@@ -104,7 +104,7 @@ std::vector<Script::Piece> Script::get_expression_pieces()
         }
         auto c = token.string[0];
         ++M_index;
-        if (token.is_identifier) {
+        if (token.type == Token::Identifier) {
             if (token.string == "true" or token.string == "false") {
                 result.emplace_back(
                     token.line_number,

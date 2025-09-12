@@ -276,14 +276,14 @@ TEST_CASE("tokenize floating-point", "[script]") {
             get_compile_error_message(0, 0, "Invalid floating-point literal"));
 }
 
-TEST_CASE("Token is_identifier") {
+TEST_CASE("Token types") {
     auto tokens = tokenize("a abc abc012 123 1.5 + \"abc\"");
     REQUIRE(tokens.size() == 7);
-    REQUIRE(tokens[0].is_identifier);
-    REQUIRE(tokens[1].is_identifier);
-    REQUIRE(tokens[2].is_identifier);
-    REQUIRE(!tokens[3].is_identifier);
-    REQUIRE(!tokens[4].is_identifier);
-    REQUIRE(!tokens[5].is_identifier);
-    REQUIRE(!tokens[6].is_identifier);
+    REQUIRE(tokens[0].type == Token::Identifier);
+    REQUIRE(tokens[1].type == Token::Identifier);
+    REQUIRE(tokens[2].type == Token::Identifier);
+    REQUIRE(tokens[3].type == Token::Int);
+    REQUIRE(tokens[4].type == Token::Double);
+    REQUIRE(tokens[5].type == Token::Else);
+    REQUIRE(tokens[6].type == Token::String);
 }

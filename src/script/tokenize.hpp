@@ -10,7 +10,7 @@ namespace ganim {
         int line_number = -1;
         int column_number = -1;
         int byte_number = -1;
-        bool is_identifier = false;
+        enum Type {Int, Double, Boolean, String, Identifier, Else} type;
     };
     std::vector<Token> tokenize(std::string_view string);
 }

@@ -10,7 +10,7 @@ using namespace ganim::commands;
 DeclareVariable::DeclareVariable(Script& script)
 {
     auto name_token = script.consume_token();
-    if (!name_token.is_identifier) {
+    if (name_token.type != Token::Identifier) {
         throw CompileError(
             name_token.line_number, name_token.column_number,
             "Expected identifier");
