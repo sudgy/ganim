@@ -4,14 +4,13 @@
 #include "command.hpp"
 
 #include "script/value.hpp"
+#include "script/syntax/grammar_types.hpp"
 
 namespace ganim::commands {
-    class DeclareVariable : public CommandFactoryBase<DeclareVariable> {
+    class DeclareVariable : public Command {
         public:
-            DeclareVariable(Script& script);
+            DeclareVariable(Script& script, const syntax::VarStatement& ast);
             virtual void execute() const override;
-
-            inline static std::string command_name = "var";
 
         private:
             mutable std::move_only_function<void()> M_on_execute;

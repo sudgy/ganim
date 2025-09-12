@@ -131,7 +131,8 @@ std::vector<Token> ganim::tokenize(std::string_view string)
             break;
         case String:
             if (codepoint == '"') {
-                add_token(true, Token::String);
+                ++token_start;
+                add_token(false, Token::String);
                 state = None;
             }
             break;

@@ -15,15 +15,15 @@ TEST_CASE("Print", "[script]") {
         results.emplace_back(s);
     });
     auto script = Script(R"(
-print "Hello, world!";
-print "Another one!";
-print 42;
-print true;
-print false;
-print 1e2;
-print 1e100;
-print 6.28;
-print .5;
+print "Hello, world!"
+print "Another one!"
+print 42
+print true
+print false
+print 1e2
+print 1e100
+print 6.28
+print .5
     )");
     script.compile();
     script.execute();
@@ -40,14 +40,11 @@ print .5;
 }
 
 TEST_CASE("Print error handling", "[script]") {
-    auto script = Script("print;");
+    auto script = Script("print");
     REQUIRE_THROWS_AS(script.compile(), CompileError);
 
-    auto script2 = Script("print \"Two\" \"Things\";");
+    auto script2 = Script("print \"Two\" \"Things\"");
     REQUIRE_THROWS_AS(script2.compile(), CompileError);
-
-    auto script3 = Script("print \"foo\"");
-    REQUIRE_THROWS_AS(script3.compile(), CompileError);
 }
 
 TEST_CASE("Print variables", "[script]") {
@@ -56,15 +53,15 @@ TEST_CASE("Print variables", "[script]") {
         results.emplace_back(s);
     });
     auto script = Script(R"(
-var a = 5;
-print a;
+var a = 5
+print a
     )");
     script.compile();
     script.execute();
     REQUIRE(results.size() == 1);
     REQUIRE(results[0] == "5");
 
-    auto script2 = Script("print a;");
+    auto script2 = Script("print a");
     REQUIRE_THROWS_WITH(script2.compile(),
             get_compile_error_message(0, 6, "Unknown identifier \"a\""));
 }

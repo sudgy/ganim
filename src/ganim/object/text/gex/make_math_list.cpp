@@ -3,11 +3,6 @@
 #include "ganim/unicode_categories.hpp"
 #include "gex_error.hpp"
 #include "gex_dimension_parser.hpp"
-/*
-#include "split.hpp"
-#include "section_render.hpp"
-#include "section_combine.hpp"
-*/
 
 using namespace ganim;
 using namespace ganim::gex;

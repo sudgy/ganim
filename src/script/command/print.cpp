@@ -19,12 +19,12 @@ void Print::set_print_function(std::function<void(std::string_view)> func)
     S_print_function = std::move(func);
 }
 
-Print::Print(Script& script)
+Print::Print(Script& script, const syntax::PrintStatement& ast)
 {
     // Uncomment everything in this function when get types that you don't know
     // how to print
     //auto& token = script.get_token();
-    M_expr = script.get_expression();
+    M_expr = Expression::from_ast(script, ast.value);
     //if (M_expr->type() != TypeID::String
     //        and M_expr->type() != TypeID::Integer) {
     //    throw CompileError(

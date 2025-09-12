@@ -9,7 +9,7 @@
 using namespace ganim;
 
 TEST_CASE("DeclareVariable", "[script]") {
-    auto script = Script("var a = 5;");
+    auto script = Script("var a = 5");
     script.compile();
     auto v1 = script.get_variable("a");
     auto v2 = script.get_variable("b");

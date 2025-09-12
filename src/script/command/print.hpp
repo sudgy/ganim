@@ -4,14 +4,13 @@
 #include "command.hpp"
 
 #include "script/expression/expression.hpp"
+#include "script/syntax/grammar_types.hpp"
 
 namespace ganim::commands {
-    class Print : public CommandFactoryBase<Print> {
+    class Print : public Command {
         public:
-            Print(Script& script);
+            Print(Script& script, const syntax::PrintStatement& ast);
             virtual void execute() const override;
-
-            inline static std::string command_name = "print";
 
             static void set_print_function(
                     std::function<void(std::string_view)>);

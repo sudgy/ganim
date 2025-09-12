@@ -7,20 +7,13 @@
 using namespace ganim;
 using namespace ganim::commands;
 
-DeclareVariable::DeclareVariable(Script& script)
+DeclareVariable::DeclareVariable(
+    Script& script,
+    const syntax::VarStatement& ast
+)
 {
-    auto name_token = script.consume_token();
-    if (name_token.type != Token::Identifier) {
-        throw CompileError(
-            name_token.line_number, name_token.column_number,
-            "Expected identifier");
-    }
-    auto equals = script.consume_token();
-    if (equals.string != "=") {
-        throw CompileError(
-            equals.line_number, equals.column_number, "Expected '='");
-    }
-    auto expression = script.get_expression();
+    auto name = ast.variable;
+    auto expression = Expression::from_ast(script, ast.value);
     auto variable = std::unique_ptr<Value>();
     if (false) {}
 #define X(T) \
@@ -34,10 +27,10 @@ DeclareVariable::DeclareVariable(Script& script)
 #include "script/x_macro_type.hpp"
 #undef X
     script.add_variable(
-        name_token.string,
+        name.name,
         std::move(variable),
-        name_token.line_number,
-        name_token.column_number
+        name.line_number,
+        name.column_number
     );
     // TODO: Implement this
     //auto maybe_colon = script.get_token();

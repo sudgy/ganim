@@ -39,6 +39,7 @@ namespace ganim::expressions {
             int M_line_number;
             int M_column_number;
     };
+    std::unique_ptr<Expression> constant_from_ast(const syntax::Constant& ast);
 }
 
 #endif

@@ -8,6 +8,10 @@
 namespace ganim::expressions {
     class Variable : public Expression {
         public:
+            static std::unique_ptr<Variable> from_ast(
+                Script& script,
+                const syntax::Identifier& ast
+            );
             Variable(
                 Value& variable,
                 int line_number,
