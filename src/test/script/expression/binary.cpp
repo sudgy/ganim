@@ -6,247 +6,68 @@
 using namespace ganim;
 using namespace ganim::expressions;
 
-TEST_CASE("Sum expressions", "[script]") {
-    auto script = Script("");
-    // Expression 1: 3 + 4
-    // Expression 2: 5.0 + 6.0
-    // Expression 3: "foo" + "bar"
-    // Expression 4: true + false
-    // Expression 5: 3 + "foo"
-    auto expression1 = syntax::Expression(
-        std::make_unique<syntax::Expression>(
-            nullptr,
-            syntax::Term(
-                nullptr,
-                syntax::Factor(
-                    syntax::Constant(3L, 1, 2),
-                    1, 2
-                ),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Term(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant(4L, 1, 4),
-                1, 4
-            ),
-            1, 4
-        ),
-        1, 2
-    );
-    auto expression2 = syntax::Expression(
-        std::make_unique<syntax::Expression>(
-            nullptr,
-            syntax::Term(
-                nullptr,
-                syntax::Factor(
-                    syntax::Constant(5.0, 1, 2),
-                    1, 2
-                ),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Term(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant(6.0, 1, 4),
-                1, 4
-            ),
-            1, 4
-        ),
-        1, 2
-    );
-    auto expression3 = syntax::Expression(
-        std::make_unique<syntax::Expression>(
-            nullptr,
-            syntax::Term(
-                nullptr,
-                syntax::Factor(
-                    syntax::Constant("foo", 1, 2),
-                    1, 2
-                ),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Term(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant("bar", 1, 4),
-                1, 4
-            ),
-            1, 4
-        ),
-        1, 2
-    );
-    auto expression4 = syntax::Expression(
-        std::make_unique<syntax::Expression>(
-            nullptr,
-            syntax::Term(
-                nullptr,
-                syntax::Factor(
-                    syntax::Constant(true, 1, 2),
-                    1, 2
-                ),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Term(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant(false, 1, 4),
-                1, 4
-            ),
-            1, 4
-        ),
-        1, 2
-    );
-    auto expression5 = syntax::Expression(
-        std::make_unique<syntax::Expression>(
-            nullptr,
-            syntax::Term(
-                nullptr,
-                syntax::Factor(
-                    syntax::Constant(3L, 1, 2),
-                    1, 2
-                ),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Term(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant("foo", 1, 4),
-                1, 4
-            ),
-            1, 4
-        ),
-        1, 2
-    );
+TEST_CASE("Binary expressions", "[script]") {
+    auto script = Script(R"(
+var a = 3 + 4
+var b = 5.0 + 6.0
+var c = "foo" + "bar"
+var d = 3 * 4
+var e = 5.0 * 6.0
+var f = 4 / 3
+var g = 5.0 / 2.0
+var h = 2 - 3
+var i = 3.0 - 5.0
+var j = 5 % 2
+    )");
+    script.compile();
+    script.execute();
+    auto bad_script1 = Script("var a = true + false");
+    auto bad_script2 = Script("var a = 3 + \"foo\"");
+    auto bad_script3 = Script("var a = \"foo\" * \"bar\"");
+    auto bad_script4 = Script("var a = 3.0 % 2.0");
+    REQUIRE_THROWS(bad_script1.compile());
+    REQUIRE_THROWS(bad_script2.compile());
+    REQUIRE_THROWS(bad_script3.compile());
+    REQUIRE_THROWS(bad_script4.compile());
 
-    auto test1 = Sum::from_ast(script, expression1);
-    auto test2 = Sum::from_ast(script, expression2);
-    auto test3 = Sum::from_ast(script, expression3);
-    REQUIRE_THROWS(Sum::from_ast(script, expression4));
-    REQUIRE_THROWS(Sum::from_ast(script, expression5));
+    auto test1 = script.get_variable("a");
+    auto test2 = script.get_variable("b");
+    auto test3 = script.get_variable("c");
+    auto test4 = script.get_variable("d");
+    auto test5 = script.get_variable("e");
+    auto test6 = script.get_variable("f");
+    auto test7 = script.get_variable("g");
+    auto test8 = script.get_variable("h");
+    auto test9 = script.get_variable("i");
+    auto test10 = script.get_variable("j");
 
     REQUIRE(test1->value().get_as<std::int64_t>());
     REQUIRE(*test1->value().get_as<std::int64_t>() == 7);
-    REQUIRE(test1->line_number() == 1);
-    REQUIRE(test1->column_number() == 2);
 
     REQUIRE(test2->value().get_as<double>());
     REQUIRE(*test2->value().get_as<double>() == 11.0);
-    REQUIRE(test2->line_number() == 1);
-    REQUIRE(test2->column_number() == 2);
 
     REQUIRE(test3->value().get_as<std::string>());
     REQUIRE(*test3->value().get_as<std::string>() == "foobar");
-    REQUIRE(test3->line_number() == 1);
-    REQUIRE(test3->column_number() == 2);
-}
 
-TEST_CASE("Product expressions", "[script]") {
-    auto script = Script("");
-    // Expression 1: 3 * 4
-    // Expression 2: 5.0 * 6.0
-    // Expression 3: "foo" * "bar"
-    // Expression 4: true * false
-    // Expression 5: 3 * "foo"
-    auto term1 = syntax::Term(
-        std::make_unique<syntax::Term>(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant(3L, 1, 2),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Factor(
-            syntax::Constant(4L, 1, 4),
-            1, 4
-        ),
-        1, 2
-    );
-    auto term2 = syntax::Term(
-        std::make_unique<syntax::Term>(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant(5.0, 1, 2),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Factor(
-            syntax::Constant(6.0, 1, 4),
-            1, 4
-        ),
-        1, 2
-    );
-    auto term3 = syntax::Term(
-        std::make_unique<syntax::Term>(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant("foo", 1, 2),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Factor(
-            syntax::Constant("bar", 1, 4),
-            1, 4
-        ),
-        1, 2
-    );
-    auto term4 = syntax::Term(
-        std::make_unique<syntax::Term>(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant(true, 1, 2),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Factor(
-            syntax::Constant(false, 1, 4),
-            1, 4
-        ),
-        1, 2
-    );
-    auto term5 = syntax::Term(
-        std::make_unique<syntax::Term>(
-            nullptr,
-            syntax::Factor(
-                syntax::Constant(3L, 1, 2),
-                1, 2
-            ),
-            1, 2
-        ),
-        syntax::Factor(
-            syntax::Constant("foo", 1, 4),
-            1, 4
-        ),
-        1, 2
-    );
+    REQUIRE(test4->value().get_as<std::int64_t>());
+    REQUIRE(*test4->value().get_as<std::int64_t>() == 12);
 
-    auto test1 = Product::from_ast(script, term1);
-    auto test2 = Product::from_ast(script, term2);
-    REQUIRE_THROWS(Product::from_ast(script, term3));
-    REQUIRE_THROWS(Product::from_ast(script, term4));
-    REQUIRE_THROWS(Product::from_ast(script, term5));
+    REQUIRE(test5->value().get_as<double>());
+    REQUIRE(*test5->value().get_as<double>() == 30.0);
 
-    REQUIRE(test1->value().get_as<std::int64_t>());
-    REQUIRE(*test1->value().get_as<std::int64_t>() == 12);
-    REQUIRE(test1->line_number() == 1);
-    REQUIRE(test1->column_number() == 2);
+    REQUIRE(test6->value().get_as<std::int64_t>());
+    REQUIRE(*test6->value().get_as<std::int64_t>() == 1);
 
-    REQUIRE(test2->value().get_as<double>());
-    REQUIRE(*test2->value().get_as<double>() == 30.0);
-    REQUIRE(test2->line_number() == 1);
-    REQUIRE(test2->column_number() == 2);
+    REQUIRE(test7->value().get_as<double>());
+    REQUIRE(*test7->value().get_as<double>() == 2.5);
+
+    REQUIRE(test8->value().get_as<std::int64_t>());
+    REQUIRE(*test8->value().get_as<std::int64_t>() == -1);
+
+    REQUIRE(test9->value().get_as<double>());
+    REQUIRE(*test9->value().get_as<double>() == -2.0);
+
+    REQUIRE(test10->value().get_as<std::int64_t>());
+    REQUIRE(*test10->value().get_as<std::int64_t>() == 1);
 }

@@ -34,12 +34,14 @@ namespace ganim::syntax {
         Factor factor;
         int line_number = -1;
         int column_number = -1;
+        enum Operation {Times, Divide, Modulo} op = Times;
     };
     struct Expression {
         std::unique_ptr<Expression> subexpression;
         Term term;
         int line_number = -1;
         int column_number = -1;
+        enum Operation {Plus, Minus} op = Plus;
     };
     struct PrintStatement {
         Expression value;

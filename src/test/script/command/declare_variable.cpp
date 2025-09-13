@@ -28,14 +28,14 @@ TEST_CASE("Complicated arithmetic expressions", "[script]") {
     auto script = Script(R"(
 var a = 5
 var b = 3
-var c = b + (a + 3) * b + 4
+var c = b + (a + 3) * b + 4 / (5 % 3) - 3
     )");
     script.compile();
     script.execute();
     auto test = script.get_variable("c");
     REQUIRE(test);
     REQUIRE(test->value().get_as<std::int64_t>());
-    REQUIRE(*test->value().get_as<std::int64_t>() == 31);
+    REQUIRE(*test->value().get_as<std::int64_t>() == 26);
 }
 
 TEST_CASE("Unary plus/minus", "[script]") {

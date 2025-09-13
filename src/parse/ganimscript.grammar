@@ -42,11 +42,19 @@ print_statement =
 var_statement =
     "var" identifier "=" expression
         { VarStatement(std::move($2), std::move($4)) } ;
+
+
 expression =
     expression "+" term {
         Expression(
             std::make_unique<Expression>(std::move($1)),
-            std::move($3), $1.line_number, $1.column_number
+            std::move($3), $1.line_number, $1.column_number, Expression::Plus
+        )
+    }
+  | expression "-" term {
+        Expression(
+            std::make_unique<Expression>(std::move($1)),
+            std::move($3), $1.line_number, $1.column_number, Expression::Minus
         )
     }
   | term {
@@ -56,7 +64,19 @@ term =
     term "*" factor {
         Term(
             std::make_unique<Term>(std::move($1)),
-            std::move($3), $1.line_number, $1.column_number
+            std::move($3), $1.line_number, $1.column_number, Term::Times
+        )
+    }
+  | term "/" factor {
+        Term(
+            std::make_unique<Term>(std::move($1)),
+            std::move($3), $1.line_number, $1.column_number, Term::Divide
+        )
+    }
+  | term "%" factor {
+        Term(
+            std::make_unique<Term>(std::move($1)),
+            std::move($3), $1.line_number, $1.column_number, Term::Modulo
         )
     }
   | factor {
@@ -93,6 +113,7 @@ factor =
             false
         )
     } ;
+
 constant =
     Int { Constant($1.value, $1.line_number, $1.column_number) }
   | Double { Constant($1.value, $1.line_number, $1.column_number) }
