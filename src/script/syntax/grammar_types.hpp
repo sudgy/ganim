@@ -19,9 +19,15 @@ namespace ganim::syntax {
     };
     struct Expression;
     struct Factor {
-        std::variant<Constant, Identifier, std::unique_ptr<Expression>> value;
+        std::variant<
+            Constant,
+            Identifier,
+            std::unique_ptr<Factor>,
+            std::unique_ptr<Expression>
+        > value;
         int line_number = -1;
         int column_number = -1;
+        bool plus_sign = true;
     };
     struct Term {
         std::unique_ptr<Term> subterm;

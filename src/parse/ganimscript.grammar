@@ -64,16 +64,33 @@ term =
     } ;
 factor =
     constant {
-        Factor(std::move($1), $1.line_number, $1.column_number)
+        Factor(std::move($1), $1.line_number, $1.column_number, false)
     }
   | identifier {
-        Factor(std::move($1), $1.line_number, $1.column_number)
+        Factor(std::move($1), $1.line_number, $1.column_number, false)
+    }
+  | "+" factor {
+        Factor(
+            std::make_unique<Factor>(std::move($2)),
+            $2.line_number,
+            $2.column_number,
+            true
+        )
+    }
+  | "-" factor {
+        Factor(
+            std::make_unique<Factor>(std::move($2)),
+            $2.line_number,
+            $2.column_number,
+            false
+        )
     }
   | "(" expression ")" {
         Factor(
             std::make_unique<Expression>(std::move($2)),
             $2.line_number,
-            $2.column_number
+            $2.column_number,
+            false
         )
     } ;
 constant =
