@@ -15,13 +15,24 @@ $nterm statement Statement
 $nterm print_statement PrintStatement
 $nterm var_statement VarStatement
 $nterm expression Expression
+$nterm term Term
+$nterm factor Factor
 $nterm constant Constant
 $nterm identifier Identifier
 
 $grammar
 
 statement_list =
-    statement { std::vector<Statement>{std::move($1)} }
+    statement {
+        /* I can't find any other single expression way to initialize a vector
+         * with rvalues
+         */
+        [&]{
+            auto result = std::vector<Statement>();
+            result.emplace_back(std::move($1));
+            return result;
+        }()
+    }
   | statement_list statement { $1.push_back(std::move($2)), std::move($1) } ;
 statement =
     print_statement { std::move($1) }
@@ -32,11 +43,38 @@ var_statement =
     "var" identifier "=" expression
         { VarStatement(std::move($2), std::move($4)) } ;
 expression =
+    expression "+" term {
+        Expression(
+            std::make_unique<Expression>(std::move($1)),
+            std::move($3), $1.line_number, $1.column_number
+        )
+    }
+  | term {
+        Expression(nullptr, std::move($1), $1.line_number, $1.column_number)
+    } ;
+term =
+    term "*" factor {
+        Term(
+            std::make_unique<Term>(std::move($1)),
+            std::move($3), $1.line_number, $1.column_number
+        )
+    }
+  | factor {
+        Term(nullptr, std::move($1), $1.line_number, $1.column_number)
+    } ;
+factor =
     constant {
-        Expression(std::move($1), $1.line_number, $1.column_number)
+        Factor(std::move($1), $1.line_number, $1.column_number)
     }
   | identifier {
-        Expression(std::move($1), $1.line_number, $1.column_number)
+        Factor(std::move($1), $1.line_number, $1.column_number)
+    }
+  | "(" expression ")" {
+        Factor(
+            std::make_unique<Expression>(std::move($2)),
+            $2.line_number,
+            $2.column_number
+        )
     } ;
 constant =
     Int { Constant($1.value, $1.line_number, $1.column_number) }

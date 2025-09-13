@@ -88,7 +88,7 @@ void Script::compile()
         }
         ++token_index;
     }
-    auto statements = parser.get_result();
+    auto& statements = parser.get_result();
     M_commands.reserve(statements.size());
     for (auto& statement : statements) {
         std::visit(overloaded{

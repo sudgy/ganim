@@ -23,3 +23,17 @@ TEST_CASE("DeclareVariable", "[script]") {
     REQUIRE(v1->value().get_as<std::int64_t>() != nullptr);
     REQUIRE(*v1->value().get_as<std::int64_t>() == 5);
 }
+
+TEST_CASE("DeclareVariable more complicated expressions", "[script]") {
+    auto script = Script(R"(
+var a = 5
+var b = 3
+var c = b + (a + 3) * b + 4
+    )");
+    script.compile();
+    script.execute();
+    auto test = script.get_variable("c");
+    REQUIRE(test);
+    REQUIRE(test->value().get_as<std::int64_t>());
+    REQUIRE(*test->value().get_as<std::int64_t>() == 31);
+}

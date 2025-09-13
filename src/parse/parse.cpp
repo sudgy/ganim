@@ -543,7 +543,7 @@ void read_grammar_file(std::istream& file)
                 auto brace_level = 1;
                 file >> std::ws;
                 char c;
-                while (file >> c) {
+                while (file.get(c)) {
                     if (c == '{') ++brace_level;
                     if (c == '}') {
                         --brace_level;
@@ -930,7 +930,7 @@ int main(int argc, char* argv[])
                         file << sp3 << "auto new_state = gotos.at(encoded);\n";
                         file << sp3 << "M_states.emplace_back("
                             "new_state, std::move(var0));\n";
-                        file << sp3 << "return push(token);\n";
+                        file << sp3 << "return push(std::move(token));\n";
                         file << sp2 << "}\n";
                     },
                     [&](ActionAccept&) {

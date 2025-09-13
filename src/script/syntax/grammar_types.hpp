@@ -4,6 +4,7 @@
 #include <variant>
 #include <cstdint>
 #include <string>
+#include <memory>
 
 namespace ganim::syntax {
     struct Constant {
@@ -16,8 +17,21 @@ namespace ganim::syntax {
         int line_number = -1;
         int column_number = -1;
     };
+    struct Expression;
+    struct Factor {
+        std::variant<Constant, Identifier, std::unique_ptr<Expression>> value;
+        int line_number = -1;
+        int column_number = -1;
+    };
+    struct Term {
+        std::unique_ptr<Term> subterm;
+        Factor factor;
+        int line_number = -1;
+        int column_number = -1;
+    };
     struct Expression {
-        std::variant<Constant, Identifier> value;
+        std::unique_ptr<Expression> subexpression;
+        Term term;
         int line_number = -1;
         int column_number = -1;
     };

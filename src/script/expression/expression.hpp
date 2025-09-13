@@ -15,6 +15,10 @@ namespace ganim {
                 Script& script,
                 const syntax::Expression& ast
             );
+            static std::unique_ptr<Expression> from_ast(
+                Script& script,
+                const syntax::Factor& ast
+            );
             virtual int line_number() const=0;
             virtual int column_number() const=0;
     };

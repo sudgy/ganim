@@ -27,7 +27,7 @@ bool $CLASS_NAME::push(token_type token)
     }
 }
 
-$CLASS_NAME::result_type $CLASS_NAME::get_result() const
+const $CLASS_NAME::result_type& $CLASS_NAME::get_result() const
 {
     return get<result_type>(M_states.back().value);
 }
