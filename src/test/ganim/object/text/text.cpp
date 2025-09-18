@@ -15,6 +15,8 @@ TEST_CASE("Text", "[object][text]") {
     auto do_test = []{
         auto text1 = make_text("Wo", "rld");
         REQUIRE(text1->size() == 2);
+        REQUIRE(text1[0]->size() == 2);
+        REQUIRE(text1[1]->size() == 3);
         text1[1]->set_color("FF0000");
         auto text2 = make_text("W", "o", "r", "l", "d");
         REQUIRE(text2->size() == 5);

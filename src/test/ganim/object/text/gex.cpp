@@ -10,8 +10,8 @@ TEST_CASE("make_gex", "[object][text]") {
     REQUIRE(test1->size() == 2);
     REQUIRE(test2->size() == 2);
 
-    auto shape1 = dynamic_cast<TextureShape<Shape>&>(*test1[0]);
-    auto shape2 = dynamic_cast<TextureShape<Shape>&>(*test2[0]);
+    auto shape1 = dynamic_cast<TextureShape<Shape>&>(*test1[0][0]);
+    auto shape2 = dynamic_cast<TextureShape<Shape>&>(*test2[0][0]);
     auto& vertices1 = shape1.get_texture_vertices();
     auto& vertices2 = shape2.get_texture_vertices();
     REQUIRE((vertices1[0].x != vertices2[0].x or
