@@ -9,6 +9,7 @@ Text::Text(const std::vector<std::string_view>& strings) : Text({}, strings) {}
 Text::Text(TextArgs args, const std::vector<std::string_view>& strings)
 {
     draw_together();
+    set_draw_subobject_ratio(0.2);
     M_font = &get_font(std::string(args.font_filename), args.font_pixel_size);
     M_newline_buff = args.newline_buff;
     create(strings);

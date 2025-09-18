@@ -279,11 +279,45 @@ void Group::set_draw_fraction(double value)
     Object::set_draw_fraction(value);
     const auto s = size();
     if (s == 0) return;
-    const auto total_t = 1 + M_ratio * (s - 1);
-    for (auto i = 0; i < s; ++i) {
-        auto this_value = value * total_t - i * M_ratio;
-        M_subobjects[i]->set_draw_fraction(std::clamp(this_value, 0.0, 1.0));
+    if (M_ratio == 0.0) {
+        for (auto i = 0; i < s; ++i) {
+            M_subobjects[i]->set_draw_fraction(value);
+        }
+        return;
     }
+
+    auto total_weight = 0.0;
+    for (auto i = 0; i < s; ++i) {
+        total_weight += M_subobjects[i]->get_weight();
+    }
+    const auto total_t = total_weight - (1.0 - M_ratio) * (s - 1);
+    const auto adjusted_value = total_t * value;
+    auto weight_lost = 0.0;
+    for (auto i = 0; i < s; ++i) {
+        auto this_value = 0.0;
+        auto this_weight = M_subobjects[i]->get_weight();
+        if (weight_lost + this_weight < adjusted_value) {
+            this_value = 1.0;
+        }
+        else if (weight_lost > adjusted_value) {
+            this_value = 0.0;
+        }
+        else {
+            this_value = (adjusted_value - weight_lost) / this_weight;
+        }
+        M_subobjects[i]->set_draw_fraction(std::clamp(this_value, 0.0, 1.0));
+        weight_lost += this_weight - (1.0 - M_ratio);
+    }
+}
+
+double Group::get_weight() const
+{
+    double result = 0.0;
+    for (int i = 0; i < size(); ++i) {
+        result += M_subobjects[i]->get_weight();
+    }
+    if (size() > 1 and M_ratio != 0) return result / (M_ratio * (size() - 1));
+    else return result;
 }
 
 Group& Group::set_depth_z(double depth_z)

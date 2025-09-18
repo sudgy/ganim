@@ -31,6 +31,7 @@ Gex::Gex(bool math, const std::vector<std::string_view>& strings)
 {
     M_tex_strings = split_tex_strings(strings);
     draw_together();
+    set_draw_subobject_ratio(0.2);
     M_font = &get_font("fonts/NewCM10-Regular.otf", 128);
     auto string_views = std::vector<std::string_view>();
     string_views.reserve(M_tex_strings.size());

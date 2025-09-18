@@ -159,6 +159,7 @@ namespace ganim {
              * subclasses to use this value to do something interesting.
              */
             double get_draw_fraction() const {return M_draw_fraction;}
+            virtual double get_weight() const {return 1.0;}
 
             /** @brief Set what value to add to the z value when writing to the
              * depth buffer

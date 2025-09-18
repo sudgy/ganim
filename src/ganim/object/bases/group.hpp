@@ -174,6 +174,7 @@ class Group : public Object {
             override;
         virtual Group& set_visible(bool visible) override;
         virtual void set_draw_fraction(double value) override;
+        virtual double get_weight() const override;
         virtual Group& set_depth_z(double depth_z) override;
         virtual void set_creating(bool creating) override;
         virtual void set_noise_creating(double noise_creating) override;

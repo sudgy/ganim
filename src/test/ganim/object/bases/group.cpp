@@ -25,7 +25,12 @@ namespace {
             {
                 if (draws) draws->emplace_back(this, true);
             }
+            virtual double get_weight() const override
+            {
+                return weight;
+            }
             int draw_count = 0;
+            double weight = 1.0;
             std::vector<std::pair<TestObject*, bool>>* draws = nullptr;
             virtual Box get_original_true_bounding_box() const override
                 {return true_bounding_box;}
@@ -207,6 +212,10 @@ TEST_CASE("Group draw fraction", "[object]") {
     auto obj2 = ObjectPtr<TestObject>();
     auto obj3 = ObjectPtr<TestObject>();
     auto obj4 = ObjectPtr<TestObject>();
+    obj1->weight = 0.5;
+    obj2->weight = 0.5;
+    obj3->weight = 0.5;
+    obj4->weight = 0.5;
     auto group1 = make_group(obj1, obj2);
     auto group2 = make_group(obj3, obj4);
     auto test = make_group(group1, group2);
@@ -262,6 +271,10 @@ TEST_CASE("Group draw fraction", "[object]") {
     REQUIRE(obj4->get_draw_fraction() == 1);
 
     test = make_group(obj1, obj2, obj3, obj4);
+    obj1->weight = 1.0;
+    obj2->weight = 1.0;
+    obj3->weight = 1.0;
+    obj4->weight = 1.0;
     test->set_draw_subobject_ratio(0.5);
     test->set_draw_fraction(0.5);
     REQUIRE(obj1->get_draw_fraction() == 1);
@@ -773,4 +786,51 @@ TEST_CASE("Group color stack animations", "[object]") {
     scene.frame_advance();
     REQUIRE(obj1->get_color() == "FF0000");
     REQUIRE(obj2->get_color() == "00FF00");
+}
+
+TEST_CASE("Group drawing weighting", "[object]") {
+    auto obj1 = ObjectPtr<TestObject>();
+    auto obj2 = ObjectPtr<TestObject>();
+    auto obj3 = ObjectPtr<TestObject>();
+    auto group1 = make_group(obj1, obj2);
+    auto test = make_group(group1, obj3);
+    test->set_draw_fraction(1.0/3.0);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 0);
+    REQUIRE(obj3->get_draw_fraction() == 0);
+    test->set_draw_fraction(2.0/3.0);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 1);
+    REQUIRE(obj3->get_draw_fraction() == 0);
+    test->set_draw_fraction(1);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 1);
+    REQUIRE(obj3->get_draw_fraction() == 1);
+
+    test->set_draw_subobject_ratio(0.5);
+    test->set_draw_fraction(0.2);
+    REQUIRE(obj1->get_draw_fraction() == 0.5);
+    REQUIRE(obj2->get_draw_fraction() == 0);
+    REQUIRE(obj3->get_draw_fraction() == 0);
+    test->set_draw_fraction(0.4);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 0);
+    REQUIRE(obj3->get_draw_fraction() == 0);
+    test->set_draw_fraction(0.6);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 0.5);
+    REQUIRE(obj3->get_draw_fraction() == 0);
+    test->set_draw_fraction(0.7);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 0.75);
+    REQUIRE(obj3->get_draw_fraction() == 0.25);
+    test->set_draw_fraction(0.8);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 1);
+    REQUIRE(obj3->get_draw_fraction() == 0.5);
+    test->set_draw_fraction(1.0);
+    REQUIRE(obj1->get_draw_fraction() == 1);
+    REQUIRE(obj2->get_draw_fraction() == 1);
+    REQUIRE(obj3->get_draw_fraction() == 1);
 }
