@@ -311,6 +311,10 @@ void Vector::draw(const Camera& camera)
         glUniform1f(shader.get_uniform("this_t"), actual_draw_fraction);
         glUniform1f(shader.get_uniform("noise_scale"), noise);
     }
+    if (get_squish_amount() != 1.0) {
+        glUniform1f(shader.get_uniform("squish_amount"), get_squish_amount());
+        shader.set_plane_uniform("squish_axis", get_squish_axis());
+    }
 
     auto length = (get_end_vga3() - get_start_vga3()).norm();
     glUniform1f(shader.get_uniform("end_pos"), length);
@@ -345,6 +349,7 @@ gl::Shader* Vector::get_shader()
     if (M_do_shading) flags |= FaceShading;
     if (is_creating()) flags |= Create;
     else if (noise_creating()) flags |= NoiseCreate;
+    if (get_squish_amount() != 1.0) flags |= Squish;
     return &ganim::get_shader(flags);
 }
 

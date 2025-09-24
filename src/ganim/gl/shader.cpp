@@ -174,3 +174,15 @@ void Shader::set_rotor_uniform(const char* name, const pga3::Even& rotor)
     };
     glUniform4fv(pos, 2, vals.data());
 }
+
+void Shader::set_plane_uniform(const char* name, const pga3::Vec& plane)
+{
+    using namespace pga3;
+    glUniform4f(
+        get_uniform(name),
+        static_cast<float>(plane.blade_project<e1>()),
+        static_cast<float>(plane.blade_project<e2>()),
+        static_cast<float>(plane.blade_project<e3>()),
+        static_cast<float>(plane.blade_project<e0>())
+    );
+}

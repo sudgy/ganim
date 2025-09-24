@@ -88,6 +88,11 @@ gl::Shader& get_shader(ShaderFeature features)
         geometry.add_source("#define PIXELATE\n");
         fragment.add_source("#define PIXELATE\n");
     }
+    if (features & Squish) {
+        vertex.add_source("#define SQUISH\n");
+        geometry.add_source("#define SQUISH\n");
+        fragment.add_source("#define SQUISH\n");
+    }
 
     vertex.add_source(
 #include "ganim/shaders/vertex.glsl"

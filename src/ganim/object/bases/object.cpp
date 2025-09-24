@@ -72,6 +72,26 @@ double Object::get_scale() const
     return M_scale;
 }
 
+void Object::set_squish(
+    double amount,
+    const vga3::Vec& direction,
+    const vga3::Vec& about_point
+)
+{
+    auto A = to_pga3(about_point);
+    auto D = A & (to_pga3(direction) - e123);
+    set_squish(amount, A | D);
+}
+
+void Object::set_squish(
+    double amount,
+    const pga3::Vec& axis
+)
+{
+    M_squish_amount = amount;
+    M_squish_axis = axis.normalized();
+}
+
 ObjectPtr<Object> Object::polymorphic_copy() const
 {
     return ObjectPtr<Object>::from_new(polymorphic_copy_impl());
@@ -140,6 +160,9 @@ void Object::interpolate(
     else {
         scale(current_scale / M_scale);
     }
+    set_squish(start2->M_squish_amount +
+            (end2->M_squish_amount - start2->M_squish_amount) * t,
+            end2->M_squish_axis);
     set_draw_fraction(start2->M_draw_fraction
             + (end2->M_draw_fraction - start2->M_draw_fraction) * t);
     set_depth_z(start2->M_depth_z + (end2->M_depth_z - start2->M_depth_z) * t);

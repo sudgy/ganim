@@ -120,6 +120,10 @@ void Shape::draw(const Camera& camera)
     if (M_pixelate_size) {
         glUniform1i(shader.get_uniform("pixel_size"), M_pixelate_size);
     }
+    if (get_squish_amount() != 1.0) {
+        glUniform1f(shader.get_uniform("squish_amount"), get_squish_amount());
+        shader.set_plane_uniform("squish_axis", get_squish_axis());
+    }
     glBindVertexArray(M_vertex_array);
     glDrawElements(GL_TRIANGLES, M_indices.size(), GL_UNSIGNED_INT, nullptr);
     glBindVertexArray(0);
@@ -211,6 +215,7 @@ ShaderFeature Shape::get_shader_flags()
     else if (noise_creating()) flags |= NoiseCreate;
     if (M_do_shading) flags |= FaceShading;
     if (M_pixelate_size) flags |= Pixelate;
+    if (get_squish_amount() != 1.0) flags |= Squish;
     return flags;
 }
 

@@ -36,6 +36,7 @@ void SingleObject::draw_outline(const Camera& camera)
 
     auto features = ShaderFeature::Outline;
     if (peeling_depth_buffer()) features |= ShaderFeature::DepthPeeling;
+    if (get_squish_amount() != 1.0) features |= ShaderFeature::Squish;
     auto& shader = get_shader(features);
     glUseProgram(shader);
     if (auto buffer = peeling_depth_buffer()) {
@@ -64,6 +65,10 @@ void SingleObject::draw_outline(const Camera& camera)
     color.a = get_color().a * get_opacity();
     glUniform4f(shader.get_uniform("object_color"),
             color.r / 255.0, color.g / 255.0, color.b / 255.0, color.a / 255.0);
+    if (get_squish_amount() != 1.0) {
+        glUniform1f(shader.get_uniform("squish_amount"), get_squish_amount());
+        shader.set_plane_uniform("squish_axis", get_squish_axis());
+    }
     glUniform1f(shader.get_uniform("thickness"), thickness);
     glBindVertexArray(M_outline_vertex_array);
     glActiveTexture(GL_TEXTURE0);

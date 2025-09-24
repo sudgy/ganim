@@ -137,6 +137,47 @@ namespace ganim {
              * around non-origin points is *not* reset.
              */
             void reset_scale() {M_scale = 1.0;}
+
+            /** @brief Set how this object should be "squished/stretched"
+             *
+             * It basically sets the parameters for a non-uniform scale.
+             * This non-uniform scale is applied completely independently of any
+             * other transformations.  It happens after the main rotor and
+             * scaling transformations.
+             *
+             * @param amount The amount to scale by.  Values smaller than one
+             * squish the object, while values larger than one stretch the
+             * object.
+             * @param direction The direction that the non-uniform scale will
+             * happen in.  For example, if this is e1, the object's width will
+             * change.
+             * @param about_point The center of the non-uniform scaling.
+             */
+            void set_squish(
+                double amount,
+                const vga3::Vec& direction,
+                const vga3::Vec& about_point
+            );
+            virtual void set_squish(
+                double amount,
+                const pga3::Vec& axis
+            );
+            /** @brief Get the amount this object is being squished/stretched
+             *
+             * @see set_squish
+             */
+            double get_squish_amount() const {return M_squish_amount;}
+            /** @brief Get the plane this object is being squished/stretched
+             * through
+             *
+             * This is the plane that is not affected by the uniform scaling,
+             * hence why it's called the axis, despite representing a plane.
+             *
+             * @see set_squish
+             */
+            const pga3::Vec& get_squish_axis() const
+                {return M_squish_axis;}
+
             /** @brief Set whether this object is visible */
             virtual Object& set_visible(bool visible);
             /** @brief See whether this object is visible */
@@ -501,6 +542,8 @@ namespace ganim {
             double M_depth_z = 0.0;
             std::vector<Color> M_color = {{255, 255, 255, 255}};
             double M_opacity = 1;
+            double M_squish_amount = 1.0;
+            pga3::Vec M_squish_axis;
             bool M_visible = false;
             bool M_creating = false;
             bool M_fixed_in_frame = false;

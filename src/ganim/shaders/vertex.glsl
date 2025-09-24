@@ -48,6 +48,10 @@ uniform float mid_pos;
 uniform float end_pos;
 uniform float tip_size;
 #endif
+#ifdef SQUISH
+uniform float squish_amount;
+uniform vec4 squish_axis; // This is assumed to be normalized
+#endif
 
 uniform vec2 camera_scale;
 uniform vec4 view[2];
@@ -88,6 +92,32 @@ vec4[2] rotor_mult(vec4 m[2], vec4 n[2])
     );
 }
 
+#ifdef SQUISH
+vec4 squish(vec4 P)
+{
+    vec4 L = squish_axis;
+    // This is (L | P) ^ L
+    float L0 = L.w;
+    float L1 = L.x;
+    float L2 = L.y;
+    float L3 = L.z;
+    float P1 = P.x;
+    float P2 = P.y;
+    float P3 = P.z;
+    vec4 B = vec4(
+        (1 - L1*L1)*P1 - L1*(L0 + L2*P2 + L3*P3),
+        (1 - L2*L2)*P2 - L2*(L0 + L3*P3 + L1*P1),
+        (1 - L3*L3)*P3 - L3*(L0 + L1*P1 + L2*P2),
+        1
+    );
+    B /= B.w;
+    P -= B;
+    P *= squish_amount;
+    P += B;
+    return P;
+}
+#endif
+
 void main()
 {
     vec3 m_in_pos = in_pos;
@@ -102,6 +132,9 @@ void main()
 
     vec4[2] r = rotor_mult(model, view);
     vec4 pos = vec4(rotor_trivector_sandwich(r, m_in_pos*scale), 1.0);
+#ifdef SQUISH
+    pos = squish(pos);
+#endif
 #ifdef FACE_SHADING
     vs_out.true_position = pos.xyz;
 #endif

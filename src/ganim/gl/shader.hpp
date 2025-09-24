@@ -73,6 +73,7 @@ namespace ganim::gl {
              * setting a 3D PGA rotor uniform.
              */
             void set_rotor_uniform(const char* name, const pga3::Even& rotor);
+            void set_plane_uniform(const char* name, const pga3::Vec& plane);
 
         private:
             unsigned M_program_id = 0;

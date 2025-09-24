@@ -12,6 +12,7 @@ void bivectors();
 void paths_3d();
 void polyhedra();
 void scene_object();
+void non_uniform_scaling();
 
 int main()
 {
@@ -27,7 +28,8 @@ int main()
               << "9: Bivectors\n"
               << "10: 3D Paths\n"
               << "11: Polyhedra\n"
-              << "12: scene_object\n";
+              << "12: scene_object\n"
+              << "13: Non-uniform scaling\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -66,6 +68,9 @@ int main()
             break;
         case 12:
             scene_object();
+            break;
+        case 13:
+            non_uniform_scaling();
             break;
         default:
             std::cout << "Invalid input\n";

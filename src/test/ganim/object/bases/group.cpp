@@ -834,3 +834,16 @@ TEST_CASE("Group drawing weighting", "[object]") {
     REQUIRE(obj2->get_draw_fraction() == 1);
     REQUIRE(obj3->get_draw_fraction() == 1);
 }
+
+TEST_CASE("Group squishing", "[object]") {
+    using namespace vga3;
+    auto obj1 = ObjectPtr<TestObject>();
+    auto obj2 = ObjectPtr<TestObject>();
+    obj2->shift(2*e1);
+    auto group = make_group(obj1, obj2);
+    group->set_squish(1.5, 2.5*e1, 3.5*e2);
+    REQUIRE(obj1->get_squish_amount() == 1.5);
+    REQUIRE(obj2->get_squish_amount() == 1.5);
+    REQUIRE_THAT(obj1->get_squish_axis(), GAEquals(group->get_squish_axis()));
+    REQUIRE_THAT(obj2->get_squish_axis(), GAEquals(group->get_squish_axis()));
+}

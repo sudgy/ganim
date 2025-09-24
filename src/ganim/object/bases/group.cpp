@@ -263,6 +263,19 @@ Group& Group::scale(double amount, const pga3::Trivec& about_point)
     return *this;
 }
 
+void Group::set_squish(
+    double amount,
+    const pga3::Vec& axis
+)
+{
+    Object::set_squish(amount, axis);
+    if (M_propogate) {
+        for (auto obj : M_subobjects) {
+            obj->set_squish(amount, axis);
+        }
+    }
+}
+
 Group& Group::set_visible(bool visible)
 {
     Object::set_visible(visible);

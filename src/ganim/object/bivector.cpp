@@ -152,9 +152,6 @@ Bivector::Bivector(vga2::Bivec b, BivectorArgs args)
     args
 )
 {
-    if (b.blade_project<vga2::e12>() < 0) {
-
-    }
 }
 
 Bivector::Bivector(vga3::Bivec b, BivectorArgs args)

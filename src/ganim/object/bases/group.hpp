@@ -172,6 +172,11 @@ class Group : public Object {
         virtual Group& set_opacity(double opacity) override;
         virtual Group& scale(double amount, const pga3::Trivec& about_point)
             override;
+        using Object::set_squish;
+        virtual void set_squish(
+            double amount,
+            const pga3::Vec& axis
+        ) override;
         virtual Group& set_visible(bool visible) override;
         virtual void set_draw_fraction(double value) override;
         virtual double get_weight() const override;

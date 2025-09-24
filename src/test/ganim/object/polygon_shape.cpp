@@ -113,3 +113,22 @@ TEST_CASE("fixed_orientation", "[object]") {
     scene.get_camera()->shift(e1);
     scene.check_draw_equivalent(shape1, shape2, "5");
 }
+
+TEST_CASE("squishing", "[object]") {
+    auto scene = TestScene(8, 8, 8, 8, 1);
+    using namespace vga2;
+    auto shape1 = make_polygon_shape({
+        0*e1,
+        2*e1 + 2*e2,
+        4*e2,
+        -2*e1 + 2*e2
+    });
+    auto shape2 = make_polygon_shape({
+        0*e1,
+        1*e1 + 1*e2,
+        -e1 + 3*e2,
+        -2*e1 + 2*e2
+    });
+    shape1->set_squish(0.5, to_vga3(e1 + e2), 0*vga3::e1);
+    scene.check_draw_equivalent(shape1, shape2);
+}
