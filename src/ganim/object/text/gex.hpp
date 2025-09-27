@@ -19,6 +19,10 @@ class Gex : public TextBase {
 
         ObjectPtr<Gex> polymorphic_copy() const;
 
+        inline thread_local static auto default_color_map
+            = std::unordered_map<std::string, Color>();
+        inline thread_local static auto default_scale = 1.0;
+
     private:
         virtual Gex* polymorphic_copy_impl() const override;
 

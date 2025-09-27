@@ -37,6 +37,9 @@ Gex::Gex(bool math, const std::vector<std::string_view>& strings)
     string_views.reserve(M_tex_strings.size());
     for (auto& str : M_tex_strings) string_views.push_back(str);
     create(string_views);
+
+    set_colors(default_color_map);
+    scale(default_scale);
 }
 
 std::vector<PositionedGlyph> Gex::get_glyphs(
