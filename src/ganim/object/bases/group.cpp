@@ -329,7 +329,7 @@ double Group::get_weight() const
     for (int i = 0; i < size(); ++i) {
         result += M_subobjects[i]->get_weight();
     }
-    if (size() > 1 and M_ratio != 0) return result / (M_ratio * (size() - 1));
+    if (size() > 1) return result - ((1 - M_ratio) * (size() - 1));
     else return result;
 }
 

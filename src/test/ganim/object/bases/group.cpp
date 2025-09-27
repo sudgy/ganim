@@ -212,8 +212,8 @@ TEST_CASE("Group draw fraction", "[object]") {
     auto obj2 = ObjectPtr<TestObject>();
     auto obj3 = ObjectPtr<TestObject>();
     auto obj4 = ObjectPtr<TestObject>();
-    obj1->weight = 0.5;
-    obj2->weight = 0.5;
+    obj1->weight = 1.0;
+    obj2->weight = 1.0;
     obj3->weight = 0.5;
     obj4->weight = 0.5;
     auto group1 = make_group(obj1, obj2);
