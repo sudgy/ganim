@@ -299,6 +299,27 @@ auto to_vga2(const pga3::Multivector<bases...>& in)
 }
 
 template <std::uint64_t... bases>
+auto to_vga2(const std::vector<vga2::Multivector<bases...>>& in)
+{
+    return in;
+}
+template <std::uint64_t... bases>
+auto to_vga2(const std::vector<vga3::Multivector<bases...>>& in)
+{
+    return vga3_to_vga2(in);
+}
+template <std::uint64_t... bases>
+auto to_vga2(const std::vector<pga2::Multivector<bases...>>& in)
+{
+    return pga2_to_vga2(in);
+}
+template <std::uint64_t... bases>
+auto to_vga2(const std::vector<pga3::Multivector<bases...>>& in)
+{
+    return pga3_to_vga2(in);
+}
+
+template <std::uint64_t... bases>
 auto to_vga3(const vga2::Multivector<bases...>& in)
 {
     return vga2_to_vga3(in);
@@ -315,6 +336,27 @@ auto to_vga3(const pga2::Multivector<bases...>& in)
 }
 template <std::uint64_t... bases>
 auto to_vga3(const pga3::Multivector<bases...>& in)
+{
+    return pga3_to_vga3(in);
+}
+
+template <std::uint64_t... bases>
+auto to_vga3(const std::vector<vga2::Multivector<bases...>>& in)
+{
+    return vga2_to_vga3(in);
+}
+template <std::uint64_t... bases>
+auto to_vga3(const std::vector<vga3::Multivector<bases...>>& in)
+{
+    return in;
+}
+template <std::uint64_t... bases>
+auto to_vga3(const std::vector<pga2::Multivector<bases...>>& in)
+{
+    return pga2_to_vga3(in);
+}
+template <std::uint64_t... bases>
+auto to_vga3(const std::vector<pga3::Multivector<bases...>>& in)
 {
     return pga3_to_vga3(in);
 }
@@ -341,6 +383,27 @@ auto to_pga2(const pga3::Multivector<bases...>& in)
 }
 
 template <std::uint64_t... bases>
+auto to_pga2(const std::vector<vga2::Multivector<bases...>>& in)
+{
+    return vga2_to_pga2(in);
+}
+template <std::uint64_t... bases>
+auto to_pga2(const std::vector<vga3::Multivector<bases...>>& in)
+{
+    return vga2_to_pga2(vga3_to_vga2(in));
+}
+template <std::uint64_t... bases>
+auto to_pga2(const std::vector<pga2::Multivector<bases...>>& in)
+{
+    return in;
+}
+template <std::uint64_t... bases>
+auto to_pga2(const std::vector<pga3::Multivector<bases...>>& in)
+{
+    return pga3_to_pga2(in);
+}
+
+template <std::uint64_t... bases>
 auto to_pga3(const vga2::Multivector<bases...>& in)
 {
     return vga2_to_pga3(in);
@@ -357,6 +420,27 @@ auto to_pga3(const pga2::Multivector<bases...>& in)
 }
 template <std::uint64_t... bases>
 auto to_pga3(const pga3::Multivector<bases...>& in)
+{
+    return in;
+}
+
+template <std::uint64_t... bases>
+auto to_pga3(const std::vector<vga2::Multivector<bases...>>& in)
+{
+    return vga2_to_pga3(in);
+}
+template <std::uint64_t... bases>
+auto to_pga3(const std::vector<vga3::Multivector<bases...>>& in)
+{
+    return vga3_to_pga3(in);
+}
+template <std::uint64_t... bases>
+auto to_pga3(const std::vector<pga2::Multivector<bases...>>& in)
+{
+    return pga2_to_pga3(in);
+}
+template <std::uint64_t... bases>
+auto to_pga3(const std::vector<pga3::Multivector<bases...>>& in)
 {
     return in;
 }
