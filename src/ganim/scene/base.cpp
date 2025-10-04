@@ -189,6 +189,7 @@ void SceneBase::frame_advance()
                             }
                             object->draw_outline(*M_camera);
                             object->draw(*M_camera);
+                            object->set_peeling_depth_buffer(nullptr);
                         }
                     }
                 }

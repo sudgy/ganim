@@ -4,6 +4,8 @@
 #include "test/ganim/approx_color.hpp"
 #include "ganim/object/bases/single_object.hpp"
 #include "ganim/object/shaders.hpp"
+#include "ganim/object/polygon_shape.hpp"
+#include "ganim/animation/fading.hpp"
 
 using namespace ganim;
 
@@ -227,4 +229,21 @@ TEST_CASE("Scene objects in multiple groups", "[scene]") {
     REQUIRE(test2->draw_count == 1);
     REQUIRE(updated1 == 1);
     REQUIRE(updated2 == 1);
+}
+
+TEST_CASE("Scene transparency layers/temp groups bug", "[scene]") {
+    auto scene = TestScene(2, 2, 2, 2, 2);
+    scene.set_transparency_layers(2);
+    using namespace vga2;
+    auto shape = make_polygon_shape({
+        -e1 - e2,
+        +e1 - e2,
+        +e1 + e2,
+        -e1 + e2,
+    });
+    shape->set_fixed_in_frame(true);
+    auto group = make_group(shape);
+    fade_in(scene, group);
+    scene.wait(1);
+    REQUIRE(scene.get_pixel(1, 0, 0) == Color("FFFFFF"));
 }
