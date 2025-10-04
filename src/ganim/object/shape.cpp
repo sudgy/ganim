@@ -167,6 +167,7 @@ void Shape::interpolate(
         M_opengl_valid = false;
         M_changed_after_construction = true;
     }
+    if (start2->M_do_shading) M_do_shading = true;
 }
 
 ObjectPtr<Shape> Shape::polymorphic_copy() const

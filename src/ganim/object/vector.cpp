@@ -422,4 +422,5 @@ void Vector::interpolate(
     M_tip_size = (1 - t) * start2->M_tip_size + t * end2->M_tip_size;
     M_vector_scale = (1 - t) * start2->M_vector_scale + t * end2->M_vector_scale;
     if (t == 1.0) set_start_and_end(end2->get_start_pga3(), end2->get_end_pga3());
+    if (start2->M_do_shading) M_do_shading = true;
 }
