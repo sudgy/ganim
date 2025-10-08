@@ -93,7 +93,7 @@ vec4[2] rotor_mult(vec4 m[2], vec4 n[2])
 }
 
 #ifdef SQUISH
-vec4 squish(vec4 P)
+vec3 squish(vec3 P)
 {
     vec4 L = squish_axis;
     // This is (L | P) ^ L
@@ -111,9 +111,9 @@ vec4 squish(vec4 P)
         1
     );
     B /= B.w;
-    P -= B;
+    P -= B.xyz;
     P *= squish_amount;
-    P += B;
+    P += B.xyz;
     return P;
 }
 #endif
@@ -130,10 +130,13 @@ void main()
     else if (m_in_pos.x == 1.0) m_in_pos.x = end_pos;
 #endif
 
+#ifdef SQUISH
+    vec3 pos_base = rotor_trivector_sandwich(model, m_in_pos*scale);
+    pos_base = squish(pos_base);
+    vec4 pos = vec4(rotor_trivector_sandwich(view, pos_base), 1.0);
+#else
     vec4[2] r = rotor_mult(model, view);
     vec4 pos = vec4(rotor_trivector_sandwich(r, m_in_pos*scale), 1.0);
-#ifdef SQUISH
-    pos = squish(pos);
 #endif
 #ifdef FACE_SHADING
     vs_out.true_position = pos.xyz;
