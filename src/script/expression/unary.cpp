@@ -12,8 +12,8 @@ UnaryPlus::UnaryPlus(
     M_line_number(M_base_value->line_number()),
     M_column_number(M_base_value->column_number())
 {
-    if (M_base_value->type() != any_pointer::get_tag<std::int64_t>() and
-        M_base_value->type() != any_pointer::get_tag<double>())
+    if (M_base_value->type_id() != any_pointer::get_tag<std::int64_t>() and
+        M_base_value->type_id() != any_pointer::get_tag<double>())
     {
         throw CompileError(M_line_number, M_column_number,
             "Unary plus is not supported for this type");
@@ -23,11 +23,11 @@ UnaryPlus::UnaryPlus(
 any_pointer UnaryPlus::value()
 {
     auto val = M_base_value->value();
-    if (M_base_value->type() == any_pointer::get_tag<std::int64_t>()) {
+    if (M_base_value->type_id() == any_pointer::get_tag<std::int64_t>()) {
         M_value = *val.get_as<std::int64_t>();
         return any_cast<std::int64_t>(&M_value);
     }
-    else if (M_base_value->type() == any_pointer::get_tag<double>()) {
+    else if (M_base_value->type_id() == any_pointer::get_tag<double>()) {
         M_value = *val.get_as<double>();
         return any_cast<double>(&M_value);
     }
@@ -38,9 +38,14 @@ any_pointer UnaryPlus::value()
     }
 }
 
-TypeID UnaryPlus::type() const
+Type UnaryPlus::type() const
 {
     return M_base_value->type();
+}
+
+TypeID UnaryPlus::type_id() const
+{
+    return M_base_value->type_id();
 }
 
 std::unique_ptr<Expression> UnaryPlus::from_ast(
@@ -58,8 +63,8 @@ UnaryMinus::UnaryMinus(
     M_line_number(M_base_value->line_number()),
     M_column_number(M_base_value->column_number())
 {
-    if (M_base_value->type() != any_pointer::get_tag<std::int64_t>() and
-        M_base_value->type() != any_pointer::get_tag<double>())
+    if (M_base_value->type_id() != any_pointer::get_tag<std::int64_t>() and
+        M_base_value->type_id() != any_pointer::get_tag<double>())
     {
         throw CompileError(M_line_number, M_column_number,
             "Unary minus is not supported for this type");
@@ -69,11 +74,11 @@ UnaryMinus::UnaryMinus(
 any_pointer UnaryMinus::value()
 {
     auto val = M_base_value->value();
-    if (M_base_value->type() == any_pointer::get_tag<std::int64_t>()) {
+    if (M_base_value->type_id() == any_pointer::get_tag<std::int64_t>()) {
         M_value = -*val.get_as<std::int64_t>();
         return any_cast<std::int64_t>(&M_value);
     }
-    else if (M_base_value->type() == any_pointer::get_tag<double>()) {
+    else if (M_base_value->type_id() == any_pointer::get_tag<double>()) {
         M_value = -*val.get_as<double>();
         return any_cast<double>(&M_value);
     }
@@ -84,9 +89,14 @@ any_pointer UnaryMinus::value()
     }
 }
 
-TypeID UnaryMinus::type() const
+Type UnaryMinus::type() const
 {
     return M_base_value->type();
+}
+
+TypeID UnaryMinus::type_id() const
+{
+    return M_base_value->type_id();
 }
 
 std::unique_ptr<Expression> UnaryMinus::from_ast(

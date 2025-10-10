@@ -15,7 +15,7 @@ TEST_CASE("DeclareVariable", "[script]") {
     auto v2 = script.get_variable("b");
     REQUIRE(v1 != nullptr);
     REQUIRE(v2 == nullptr);
-    REQUIRE(v1->type() == any_pointer::get_tag<std::int64_t>());
+    REQUIRE(v1->type_id() == any_pointer::get_tag<std::int64_t>());
     REQUIRE(v1->value().get_tag() == any_pointer::get_tag<std::int64_t>());
     REQUIRE(v1->value().get_as<std::int64_t>() == nullptr);
 

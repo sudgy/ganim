@@ -9,7 +9,8 @@ namespace ganim {
             virtual ~Value()=default;
 
             virtual any_pointer value()=0;
-            virtual TypeID type() const=0;
+            virtual TypeID type_id() const=0;
+            virtual Type type() const=0;
     };
 }
 

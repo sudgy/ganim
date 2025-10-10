@@ -15,7 +15,8 @@ namespace ganim::expressions {
             UnaryPlus(std::unique_ptr<Expression> base_value);
 
             virtual any_pointer value() override;
-            virtual TypeID type() const override;
+            virtual TypeID type_id() const override;
+            virtual Type type() const override;
             virtual int line_number() const override
             {
                 return M_line_number;
@@ -40,7 +41,8 @@ namespace ganim::expressions {
             UnaryMinus(std::unique_ptr<Expression> base_value);
 
             virtual any_pointer value() override;
-            virtual TypeID type() const override;
+            virtual TypeID type_id() const override;
+            virtual Type type() const override;
             virtual int line_number() const override
             {
                 return M_line_number;

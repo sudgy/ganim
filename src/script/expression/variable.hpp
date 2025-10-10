@@ -24,7 +24,11 @@ namespace ganim::expressions {
             {
                 return M_variable->value();
             }
-            virtual TypeID type() const override
+            virtual TypeID type_id() const override
+            {
+                return M_variable->type_id();
+            }
+            virtual Type type() const override
             {
                 return M_variable->type();
             }
