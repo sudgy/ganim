@@ -68,7 +68,7 @@ namespace ganim {
             ObjectPtr& operator=(const ObjectPtr<U>& other)
                 requires(std::convertible_to<U*, T*>)
             {
-                M_ptr = other;
+                M_ptr = other.M_ptr;
                 return *this;
             }
             /** @brief Move an ObjectPtr of a different but convertible type */
