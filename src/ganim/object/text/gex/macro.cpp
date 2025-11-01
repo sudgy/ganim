@@ -22,6 +22,7 @@ MacroStack::MacroStack()
         DECLARE_BUILTIN("scriptstyle");
         DECLARE_BUILTIN("scriptscriptstyle");
         DECLARE_BUILTIN("mathaccent");
+        DECLARE_BUILTIN("mathaccentscale");
         DECLARE_BUILTIN("abovewithdelims");
         DECLARE_BUILTIN("mskip");
         DECLARE_BUILTIN("mathord");

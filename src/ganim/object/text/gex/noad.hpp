@@ -54,6 +54,7 @@ namespace ganim::gex {
     struct AtomAccent {
         copy_ptr<Atom> nucleus;
         copy_ptr<Atom> accent;
+        double scale = 0.5;
     };
     struct AtomRadical {
         copy_ptr<Atom> nucleus;

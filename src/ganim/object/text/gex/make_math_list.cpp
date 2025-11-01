@@ -3,6 +3,7 @@
 #include "ganim/unicode_categories.hpp"
 #include "gex_error.hpp"
 #include "gex_dimension_parser.hpp"
+#include "gex_number_parser.hpp"
 
 using namespace ganim;
 using namespace ganim::gex;
@@ -47,6 +48,7 @@ class Processor {
         const Token& current_token() {return tokens[token_index];}
         void add_noad(Noad noad);
         double read_dimension();
+        double read_number();
 
         const TokenList& tokens;
         int token_index = 0;
@@ -112,6 +114,10 @@ void Processor::process_command_token(const CommandToken& tok)
     if (tok.command_utf8 == "mathaccent") {
         add_noad(Noad(Atom(Box(), AtomType::Acc, AtomAccent())));
         accent = 2;
+    }
+    else if (tok.command_utf8 == "mathaccentscale") {
+        add_noad(Noad(Atom(Box(), AtomType::Acc, AtomAccent())));
+        accent = 3;
     }
     else if (tok.command_utf8 == "radical") {
         process_radical();
@@ -398,7 +404,11 @@ void Processor::add_noad(Noad noad)
         auto& accent_noad = result.back();
         auto& accent_atom = get<AtomAccent>(get<Atom>(accent_noad.value).value);
         --accent;
-        if (!accent_atom.accent) {
+        if (accent == 2) {
+            accent_atom.scale = read_number();
+            --token_index;
+        }
+        else if (!accent_atom.accent) {
             accent_atom.accent = std::make_unique<Atom>(get<Atom>(noad.value));
         }
         else {
@@ -481,6 +491,60 @@ double Processor::read_dimension()
         }
     }
     return parser.get_result() / 10.0;
+}
+
+double Processor::read_number()
+{
+    auto parser = NumberParser();
+    while (!parser.finished()) {
+        try {
+            if (token_index == ssize(tokens)) {
+                parser.push(parser.end_token());
+                break;
+            }
+        }
+        catch (std::invalid_argument&) {
+            throw GeXError(-1, -1, "Syntax error while reading a dimension");
+        }
+        auto& token = current_token();
+        try {
+            bool pushed = false;
+            if (auto tok = get_if<CharacterToken>(&token.value)) {
+                auto c = tok->codepoint;
+                if (c >= '0' and c <= '7') {
+                    pushed = parser.push(parser.OctalDigit_token(c));
+                }
+                else if (c >= '8' and c <= '9') {
+                    pushed = parser.push(parser.DecimalDigit_token(c));
+                }
+                else if (c >= 'A' and c <= 'F') {
+                    pushed = parser.push(parser.HexDigit_token(c));
+                }
+                else if (c == ' ') {
+                    pushed = parser.push(parser.Space_token(' '));
+                }
+                else if (
+                    c == '.'  or c == ',' or
+                    c == '\'' or c == '"' or c == '+' or c == '-')
+                {
+                    pushed = parser.push(
+                        parser.builtin_token(std::string(1, c)));
+                }
+                else {
+                    pushed = parser.push(parser.end_token());
+                }
+            }
+            else {
+                pushed = parser.push(parser.end_token());
+            }
+            if (pushed) ++token_index;
+        }
+        catch (std::invalid_argument&) {
+            throw GeXError(token.group, token.string_index,
+                "Syntax error while parsing a dimension");
+        }
+    }
+    return parser.get_result();
 }
 
 

@@ -7,6 +7,7 @@ std::vector<std::string_view> macro_input = {
 R"(\def\vec#1{\mathaccent →{#1}})",
 R"(\def\bvec#1{\mathaccent ⇒{#1}})",
 R"(\def\tvec#1{\mathaccent ⇛{#1}})",
+R"(\def\hat#1{\mathaccentscale 0.8 ‸{#1}})",
 
 R"(\def\over{\abovewithdelims.. -1pt})",
 R"(\def\atop{\abovewithdelims.. 0pt})",
@@ -24,6 +25,8 @@ R"(\def\cdots{\mathinner{⋯}})",
 R"(\def\ldots{\mathinner{…}})",
 
 R"(\def\sqrt#1{\radical √{#1}})",
+
+R"(\def\cdot{⋅})",
 };
 
 }

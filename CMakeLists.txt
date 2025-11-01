@@ -58,6 +58,15 @@ add_custom_command(
 )
 
 add_custom_command(
+    OUTPUT ${PROJECT_BINARY_DIR}/gex_number_parser.cpp
+           ${PROJECT_BINARY_DIR}/gex_number_parser.hpp
+    DEPENDS sample_parse src/parse/gex_number.grammar
+    COMMAND sample_parse ${PROJECT_SOURCE_DIR}/src/parse/gex_number.grammar
+                         ${PROJECT_SOURCE_DIR}/src/parse/skeleton
+                         ${PROJECT_BINARY_DIR}/gex_number_parser
+)
+
+add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/ganimscript_parser.cpp
            ${PROJECT_BINARY_DIR}/ganimscript_parser.hpp
     DEPENDS sample_parse src/parse/ganimscript.grammar
@@ -86,7 +95,8 @@ file(GLOB_RECURSE TEST_FILES CONFIGURE_DEPENDS src/test/*.cpp)
 file(GLOB_RECURSE EXAMPLE_FILES CONFIGURE_DEPENDS src/examples/*.cpp)
 
 add_library(ganim STATIC ${GANIM_FILES}
-                         ${PROJECT_BINARY_DIR}/gex_dimension_parser.cpp)
+                         ${PROJECT_BINARY_DIR}/gex_dimension_parser.cpp
+                         ${PROJECT_BINARY_DIR}/gex_number_parser.cpp)
 add_library(ganimscript OBJECT ${GANIM_SCRIPT_FILES}
                          ${PROJECT_BINARY_DIR}/ganimscript_parser.cpp)
 add_library(ganimeditor OBJECT ${GANIM_EDITOR_FILES})

@@ -8,3 +8,4 @@
 #include "ganim/math.hpp"
 #include "ganim/rate_functions.hpp"
 #include "ganim/unicode_categories.hpp"
+#include "ganim/fmap.hpp"

@@ -330,14 +330,14 @@ void Processor::render_atom_accent(Atom& atom, AtomAccent& accent, Style style)
     }
 
     render_atom(*accent.accent, style);
-    scale_box(accent.accent->box, 0.5);
+    scale_box(accent.accent->box, accent.scale);
     render_atom(*accent.nucleus, get_cramped_style(style));
     auto& a = accent.accent->box;
     auto& n = accent.nucleus->box;
     auto height = std::max(n.height, get_font_x_height(*M_font)) + 0.05;
     for (auto& glyph : a.glyphs) {
         glyph.y_pos += height;
-        glyph.draw_y += height;
+        glyph.draw_y = glyph.y_pos + glyph.height;
         glyph.y_min += height;
         glyph.y_max += height;
     }

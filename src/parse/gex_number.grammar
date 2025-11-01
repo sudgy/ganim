@@ -1,0 +1,76 @@
+$namespace ganim::gex
+$class_name NumberParser
+$header_guard GANIM_GEX_NUMBER_PARSER_HPP
+
+$token OctalDigit char
+$token DecimalDigit char
+$token HexDigit char
+$token Space char
+
+$nterm factor double
+$nterm decimal_constant double
+$nterm optional_digits std::string
+$nterm decimal_separator std::monostate
+
+$nterm optional_signs int
+$nterm normal_integer int
+$nterm integer_constant std::string
+$nterm octal_constant std::string
+$nterm hexadecimal_constant std::string
+$nterm octal_digit char
+$nterm digit char
+$nterm hex_digit char
+$nterm one_optional_space std::monostate
+
+$nterm optional_spaces std::monostate
+$nterm plus_or_minus int
+
+$grammar
+
+factor =
+    normal_integer { $1 }
+  | decimal_constant { $1 } ;
+decimal_constant =
+    optional_digits decimal_separator optional_digits one_optional_space
+        { std::stod($1 + "." + $3) };
+optional_digits =
+    integer_constant { $1 }
+  | { "0" } ;
+decimal_separator =
+    "." { std::monostate() }
+  | "," { std::monostate() } ;
+
+optional_signs =
+    optional_spaces { 1 }
+  | optional_signs plus_or_minus optional_spaces { $1 * $2 } ;
+normal_integer =
+    integer_constant one_optional_space { std::stoi($1) }
+  | "'" octal_constant one_optional_space { std::stoi($2, nullptr, 8) }
+  | """ hexadecimal_constant one_optional_space { std::stoi($2, nullptr, 16) } ;
+integer_constant =
+    digit { std::string(1, $1) }
+  | digit integer_constant { $1 + $2 } ;
+octal_constant =
+    octal_digit { std::string(1, $1) }
+  | octal_digit octal_constant { $1 + $2 } ;
+hexadecimal_constant =
+    hex_digit { std::string(1, $1) }
+  | hex_digit hexadecimal_constant { $1 + $2 } ;
+octal_digit =
+    OctalDigit { $1 } ;
+digit =
+    octal_digit { $1 }
+  | DecimalDigit { $1 } ;
+hex_digit =
+    digit { $1 }
+  | HexDigit { $1 } ;
+one_optional_space =
+    Space { std::monostate() }
+  | { std::monostate() } ;
+
+optional_spaces =
+    Space optional_spaces { std::monostate() }
+  | { std::monostate() } ;
+plus_or_minus =
+    "+" { 1 }
+  | "-" { -1 } ;
