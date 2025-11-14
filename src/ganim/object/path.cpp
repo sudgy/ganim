@@ -38,7 +38,7 @@ namespace {
         auto orientation = (join1 ^ join2).blade_project<e12>();
         auto direction = (join1 | join2).blade_project<e>();
         // The three points are roughly collinear
-        if (std::abs(orientation) < 0.5) {
+        if (std::abs(orientation) < 0.1) {
             auto b = midpoint | join2;
             add_vertex((join2 - d*e0) ^ b);
             add_vertex((join2 + d*e0) ^ b);
@@ -61,22 +61,8 @@ namespace {
             auto m2 = join1 + d*e0;
             auto n1 = join2 - d*e0;
             auto n2 = join2 + d*e0;
-            // The line passing through b, perpendicular to the bisector of
-            // the two line segments ending on this point
-            auto l = pga2::Vec();
-            // The outside points are generally on opposite ends of the middle
-            // point
-            if (direction > 0) {
-                auto a = b - join1*e0;
-                auto c = b + join2*e0;
-                l = ((a & c) | b) | -b;
-            }
-            // The outside points are generally on the same side of the middle
-            // point
-            else {
-                l = b | (join1 - join2);
-                if (orientation > 0) l *= -1;
-            }
+            auto l = (b | (join1 - join2)).normalized();
+            if (orientation > 0) l *= -1;
             // Turn left
             if (orientation > 0) {
                 add_vertex(m2 ^ (l + d*e0));

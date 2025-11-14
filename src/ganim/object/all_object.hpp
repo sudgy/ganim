@@ -17,6 +17,7 @@
 #include "ganim/object/brace.hpp"
 #include "ganim/object/polyhedron.hpp"
 #include "ganim/object/trivector.hpp"
+#include "ganim/object/image.hpp"
 #include "ganim/object/text/character_old.hpp"
 #include "ganim/object/text/text.hpp"
 #include "ganim/object/text/tex.hpp"

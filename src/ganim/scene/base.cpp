@@ -7,9 +7,8 @@
 #include <SFML/Window.hpp>
 
 #include "ganim/gl/gl.hpp"
-#include "ganim/util/stb_image.h"
 
-#include "ganim/object/texture_shape.hpp"
+#include "ganim/object/image.hpp"
 
 using namespace ganim;
 
@@ -445,30 +444,5 @@ void SceneBase::set_transparency_layers(int layers)
 
 void SceneBase::set_background_image(const std::string& filename)
 {
-    // TODO: When you make image objects use those instead
-    int width, height, channels;
-    auto image = stbi_load(filename.c_str(), &width, &height, &channels, 4);
-    if (image == nullptr) {
-        throw std::runtime_error("Error loading background image " + filename);
-    }
-    M_background_texture = gl::Texture(image, width, height);
-    stbi_image_free(image);
-    auto w = static_cast<float>(M_camera->get_starting_width()/2);
-    auto h = static_cast<float>(M_camera->get_starting_height()/2);
-    auto background_object = std::make_unique<TextureShape<Shape>>(
-        std::vector<Shape::Vertex>{{ w,  h, 0},
-         { w, -h, 0},
-         {-w, -h, 0},
-         {-w,  h, 0}},
-         std::vector<unsigned>{0, 1, 2, 0, 2, 3}
-    );
-    background_object->set_texture_vertices(
-        {{ 0,  0},
-         { 0, -1},
-         {-1, -1},
-         {-1,  0}}
-    );
-    background_object->set_texture(M_background_texture);
-    background_object->set_visible(true);
-    M_background_object = std::move(background_object);
+    M_background_object = std::make_unique<Image>(filename);
 }
