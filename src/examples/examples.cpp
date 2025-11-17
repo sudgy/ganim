@@ -13,6 +13,7 @@ void paths_3d();
 void polyhedra();
 void scene_object();
 void non_uniform_scaling();
+void video();
 
 int main()
 {
@@ -29,7 +30,8 @@ int main()
               << "10: 3D Paths\n"
               << "11: Polyhedra\n"
               << "12: scene_object\n"
-              << "13: Non-uniform scaling\n";
+              << "13: Non-uniform scaling\n"
+              << "14: Video objects\n";
     int input = 0;
     std::cin >> input;
     switch (input) {
@@ -71,6 +73,9 @@ int main()
             break;
         case 13:
             non_uniform_scaling();
+            break;
+        case 14:
+            video();
             break;
         default:
             std::cout << "Invalid input\n";
