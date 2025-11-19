@@ -16,8 +16,6 @@ struct Video::Impl {
     AVRational time_base;
     std::int64_t next_pts = 0;
 
-    bool first_frame = true;
-
     gl::Texture texture;
 };
 
@@ -63,6 +61,37 @@ Video::Video(const std::string& filename)
         throw std::runtime_error("Unable to open codec");
     }
     add_updater([this]{update();});
+
+    auto width = codec_params->width;
+    auto height = codec_params->height;
+    glBindTexture(GL_TEXTURE_2D, M_impl->texture);
+    glTexParameteri(
+        GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR
+    );
+    glTexParameteri(
+        GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
+    );
+    glTexImage2D(
+        GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0,
+        GL_RGB, GL_UNSIGNED_BYTE, nullptr
+    );
+    glGenerateMipmap(GL_TEXTURE_2D);
+    auto w = width / 240.0f;
+    auto h = height / 240.0f;
+    set_vertices(
+        {{ w,  h, 0},
+         { w, -h, 0},
+         {-w, -h, 0},
+         {-w,  h, 0}},
+         std::vector<unsigned>{0, 1, 2, 0, 2, 3}
+    );
+    set_texture_vertices(
+        {{ 0,  0},
+         { 0, +1},
+         {-1, +1},
+         {-1,  0}}
+    );
+    set_texture(M_impl->texture);
 }
 
 void Video::update()
@@ -123,61 +152,19 @@ void Video::update()
     sws_scale_frame(M_impl->sws_context, M_impl->rgb_frame, M_impl->frame);
 
     auto data = M_impl->rgb_frame->data[0];
-    auto linesize = M_impl->rgb_frame->linesize[0];
-    auto byte_size = linesize / width;
-    auto format = GL_RGB;
-    if (byte_size == 4) format = GL_RGBA;
-    else if (byte_size == 1) format = GL_RED;
-    else if (byte_size != 3) {
-        throw std::runtime_error(std::format(
-            "Unknown byte size {} encountered while decoding.", byte_size));
-    }
-    if (M_impl->first_frame) {
-        M_impl->first_frame = false;
-        glBindTexture(GL_TEXTURE_2D, M_impl->texture);
-        glTexParameteri(
-            GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR
-        );
-        glTexParameteri(
-            GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR
-        );
-        glTexImage2D(
-            GL_TEXTURE_2D, 0, GL_RGBA32F, width, height, 0,
-            format, GL_UNSIGNED_BYTE, data
-        );
-        glGenerateMipmap(GL_TEXTURE_2D);
-        auto w = width / 240.0f;
-        auto h = height / 240.0f;
-        set_vertices(
-            {{ w,  h, 0},
-             { w, -h, 0},
-             {-w, -h, 0},
-             {-w,  h, 0}},
-             std::vector<unsigned>{0, 1, 2, 0, 2, 3}
-        );
-        set_texture_vertices(
-            {{ 0,  0},
-             { 0, +1},
-             {-1, +1},
-             {-1,  0}}
-        );
-        set_texture(M_impl->texture);
-    }
-    else {
-        glBindTexture(GL_TEXTURE_2D, M_impl->texture);
-        glTexSubImage2D(
-            GL_TEXTURE_2D, 0, 0, 0, width, height,
-            format, GL_UNSIGNED_BYTE, data
-        );
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
+    glBindTexture(GL_TEXTURE_2D, M_impl->texture);
+    glTexSubImage2D(
+        GL_TEXTURE_2D, 0, 0, 0, width, height,
+        GL_RGB, GL_UNSIGNED_BYTE, data
+    );
+    glGenerateMipmap(GL_TEXTURE_2D);
 }
 
 bool Video::send_packet()
 {
     while (av_read_frame(M_impl->fcontext, M_impl->packet) >= 0) {
         if (M_impl->packet->stream_index == M_impl->video_index) {
-            auto ret = avcodec_send_packet(M_impl->ccontext,M_impl->packet);
+            auto ret = avcodec_send_packet(M_impl->ccontext, M_impl->packet);
             av_packet_unref(M_impl->packet);
             if (ret < 0) {
                 throw std::runtime_error(

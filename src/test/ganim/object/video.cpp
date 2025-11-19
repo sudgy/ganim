@@ -1,15 +1,18 @@
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_floating_point.hpp>
 
 #include "ganim/object/video.hpp"
 #include "test/ganim/scene/test_scene.hpp"
 #include "test/ganim/approx_color.hpp"
 
 using namespace ganim;
+using namespace Catch::Matchers;
 
 TEST_CASE("Video drawing", "[object]") {
     auto scene = TestScene(4, 4, 4, 4, 4);
     auto test = make_video("test_files/test_video.mp4");
     test->scale(120.0/32.0);
+    REQUIRE_THAT(test->get_width(), WithinRel(2, 1e-5));
     test->set_visible(true);
     scene.add(test);
     scene.frame_advance(7);
