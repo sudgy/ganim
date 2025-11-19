@@ -101,7 +101,7 @@ void Video::update()
         * M_impl->time_base.den / M_impl->time_base.num);
     auto end_pts = static_cast<int64_t>((double(M_frames) + 0.5) / get_fps()
         * M_impl->time_base.den / M_impl->time_base.num);
-    ++M_frames;
+    M_frames += M_speed;
     // Video is playing slowly enough that we need to stay on the same frame
     if (M_impl->next_pts > end_pts) return;
 
@@ -190,3 +190,8 @@ Video::~Video()
 
 Video::Video(Video&&) noexcept=default;
 Video& Video::operator=(Video&&) noexcept=default;
+
+void Video::set_speed(double speed)
+{
+    M_speed = speed;
+}

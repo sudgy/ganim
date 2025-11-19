@@ -12,6 +12,7 @@ namespace ganim {
             Video& operator=(const Video&)=delete;
             Video(Video&&) noexcept;
             Video& operator=(Video&&) noexcept;
+            void set_speed(double speed);
 
         private:
             void update();
@@ -20,6 +21,7 @@ namespace ganim {
             struct Impl;
             std::unique_ptr<Impl> M_impl;
             int M_frames = 0;
+            double M_speed = 1.0;
     };
 
     inline ObjectPtr<Video> make_video(const std::string& filename)
