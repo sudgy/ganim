@@ -1,16 +1,11 @@
 #include "video.hpp"
 
 #include <fstream>
-#include <iostream>
 
 #include "ganim/gl/gl.hpp"
 #include "ganim/video_writer/libav.h"
 
 using namespace ganim;
-
-namespace {
-    constexpr std::size_t buffer_size = 1024*1024;
-}
 
 struct Video::Impl {
     AVFormatContext* fcontext = nullptr;
@@ -20,12 +15,6 @@ struct Video::Impl {
     AVFrame* rgb_frame = nullptr;
     SwsContext* sws_context = nullptr;
     int video_index = -1;
-
-    std::ifstream file;
-    std::array<std::uint8_t, buffer_size + AV_INPUT_BUFFER_PADDING_SIZE>
-        buffer {0};
-    std::size_t buffer_index = 0;
-    std::size_t data_size = 0;
 
     bool first_frame = true;
 
