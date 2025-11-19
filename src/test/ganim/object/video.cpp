@@ -8,6 +8,61 @@
 using namespace ganim;
 using namespace Catch::Matchers;
 
+#if 0
+
+This is the scene that was used to make test_files/test_video.mp4 that the
+following tests use.  It is included here as a reference so you know what is in
+the video.
+
+void video()
+{
+    auto scene = Scene("test_video.mp4", 64, 64, 2, 2, 4);
+    using namespace vga2;
+    auto shape1 = make_polygon_shape({0*e1, e1, e1 + e2, e2});
+    auto shape2 = shape1->polymorphic_copy();
+    auto shape3 = shape1->polymorphic_copy();
+    auto shape4 = shape1->polymorphic_copy();
+    shape1->shift(-e1);
+    shape3->shift(-e1 - e2);
+    shape4->shift(-e2);
+    shape1->set_color("FF0000");
+    shape2->set_color("00FF00");
+    shape3->set_color("0000FF");
+    shape4->set_color("FFFFFF");
+    shape1->set_visible(true);
+    shape2->set_visible(true);
+    shape3->set_visible(true);
+    shape4->set_visible(true);
+    scene.add(shape1, shape2, shape3, shape4);
+    scene.frame_advance();
+    scene.frame_advance();
+    shape1->set_color("FFFF00");
+    shape2->set_color("00FFFF");
+    shape3->set_color("FF00FF");
+    shape4->set_color("000000");
+    scene.frame_advance();
+    scene.frame_advance();
+    shape1->set_color("800000");
+    shape2->set_color("008000");
+    shape3->set_color("000080");
+    shape4->set_color("808080");
+    scene.frame_advance();
+    shape1->set_color("808000");
+    shape2->set_color("008080");
+    shape3->set_color("800080");
+    shape4->set_color("000000");
+    scene.frame_advance();
+    // I don't seem to be catching the final frame, which might be fine?  For
+    // now I'll just do this to make a fake final frame
+    shape1->set_color("000000");
+    shape2->set_color("000000");
+    shape3->set_color("000000");
+    shape4->set_color("000000");
+    scene.frame_advance();
+}
+
+#endif
+
 TEST_CASE("Video drawing", "[object]") {
     auto scene = TestScene(4, 4, 4, 4, 4);
     auto test = make_video("test_files/test_video.mp4");
