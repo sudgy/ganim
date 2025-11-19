@@ -19,6 +19,7 @@ namespace ganim {
 
             struct Impl;
             std::unique_ptr<Impl> M_impl;
+            int M_frames = 0;
     };
 
     inline ObjectPtr<Video> make_video(const std::string& filename)

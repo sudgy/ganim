@@ -1,7 +1,5 @@
 #include "video.hpp"
 
-#include <fstream>
-
 #include "ganim/gl/gl.hpp"
 #include "ganim/video_writer/libav.h"
 
@@ -15,6 +13,8 @@ struct Video::Impl {
     AVFrame* rgb_frame = nullptr;
     SwsContext* sws_context = nullptr;
     int video_index = -1;
+    AVRational time_base;
+    std::int64_t next_pts = 0;
 
     bool first_frame = true;
 
@@ -42,6 +42,7 @@ Video::Video(const std::string& filename)
     for (auto i = 0U; i < M_impl->fcontext->nb_streams; ++i) {
         auto this_codec_params = M_impl->fcontext->streams[i]->codecpar;
         if (this_codec_params->codec_type == AVMEDIA_TYPE_VIDEO) {
+            M_impl->time_base = M_impl->fcontext->streams[i]->time_base;
             codec = avcodec_find_decoder(this_codec_params->codec_id);
             codec_params = this_codec_params;
             M_impl->video_index = i;
@@ -61,30 +62,53 @@ Video::Video(const std::string& filename)
     if (avcodec_open2(M_impl->ccontext, codec, nullptr) < 0) {
         throw std::runtime_error("Unable to open codec");
     }
-    //M_impl->file = std::ifstream(filename, std::ios::binary);
-    //if (!M_impl->file) {
-    //    throw std::runtime_error("Unable to open file " + filename);
-    //}
     add_updater([this]{update();});
 }
 
 void Video::update()
 {
     if (!is_visible()) return;
+    auto middle_pts = static_cast<int64_t>(double(M_frames) / get_fps()
+        * M_impl->time_base.den / M_impl->time_base.num);
+    auto end_pts = static_cast<int64_t>((double(M_frames) + 0.5) / get_fps()
+        * M_impl->time_base.den / M_impl->time_base.num);
+    ++M_frames;
+    // Video is playing slowly enough that we need to stay on the same frame
+    if (M_impl->next_pts > end_pts) return;
 
-    auto ret = avcodec_receive_frame(M_impl->ccontext, M_impl->frame);
-    while (ret == AVERROR(EAGAIN)) {
-        if (!send_packet()) {
-            set_visible(false);
-            return;
+    // Keep getting frames until the next one is what we should be showing
+    // (this will only run once if the input and output fps are synced)
+    while (true) {
+        auto ret = avcodec_receive_frame(M_impl->ccontext, M_impl->frame);
+        while (ret == AVERROR(EAGAIN)) {
+            if (!send_packet()) {
+                set_visible(false);
+                return;
+            }
+            ret = avcodec_receive_frame(M_impl->ccontext, M_impl->frame);
         }
-        ret = avcodec_receive_frame(M_impl->ccontext, M_impl->frame);
-    }
-    if (ret == AVERROR_EOF) {
-        set_visible(false);
-    }
-    else if (ret < 0) {
-        throw std::runtime_error("Error receiving a frame during decoding");
+        if (ret == AVERROR_EOF) {
+            set_visible(false);
+        }
+        else if (ret < 0) {
+            throw std::runtime_error("Error receiving a frame during decoding");
+        }
+        if (M_impl->frame->duration == 0) {
+            throw std::runtime_error(
+                "The current algorithm I'm using for video timing doesn't "
+                "work for videos that don't have frame durations.  Let me "
+                "see this video so I can try to find an alternative.  But "
+                "for now, I can't play this video.");
+        }
+        auto frame_pts = M_impl->frame->pts;
+        auto next_pts = frame_pts + M_impl->frame->duration;
+        if (next_pts < middle_pts) continue;
+        auto frame_dif = std::abs(frame_pts - middle_pts);
+        auto next_dif = std::abs(next_pts - middle_pts);
+        if (frame_dif < next_dif) {
+            M_impl->next_pts = next_pts;
+            break;
+        }
     }
 
     auto width = M_impl->frame->width;
