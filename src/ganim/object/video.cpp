@@ -195,3 +195,27 @@ void Video::set_speed(double speed)
 {
     M_speed = speed;
 }
+
+void Video::seek(double time)
+{
+    if (get_fps() == -1) {
+        throw std::runtime_error("For technical reasons, you must add a video "
+            "object to the scene before calling seek.");
+    }
+    auto pts = static_cast<std::int64_t>(
+        time * M_impl->time_base.den / M_impl->time_base.num);
+    avcodec_flush_buffers(M_impl->ccontext);
+    if (avformat_seek_file(
+        M_impl->fcontext,
+        M_impl->video_index,
+        0, pts, pts,
+        0
+    ) < 0)
+    {
+        throw std::runtime_error(
+            std::format("Unable to seek to timestamp {}", time));
+    }
+    M_impl->next_pts = pts;
+    M_frames = time * get_fps();
+    set_visible(true);
+}

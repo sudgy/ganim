@@ -13,6 +13,7 @@ namespace ganim {
             Video(Video&&) noexcept;
             Video& operator=(Video&&) noexcept;
             void set_speed(double speed);
+            void seek(double time); // Time in seconds
 
         private:
             void update();
