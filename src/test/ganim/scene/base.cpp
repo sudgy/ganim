@@ -247,3 +247,29 @@ TEST_CASE("Scene transparency layers/temp groups bug", "[scene]") {
     scene.wait(1);
     REQUIRE(scene.get_pixel(1, 0, 0) == Color("FFFFFF"));
 }
+
+TEST_CASE("Scene depth_z object sorting", "[scene]") {
+    auto scene = TestScene(2, 2, 2, 2, 1);
+    using namespace vga2;
+    auto shape1 = make_polygon_shape({
+        -e1 - e2,
+        +e1 - e2,
+        +e1 + e2,
+        -e1 + e2,
+    });
+    auto shape2 = make_polygon_shape({
+        -e1 - e2,
+        +e1 - e2,
+        +e1 + e2,
+        -e1 + e2,
+    });
+    shape1->set_color("FF0000");
+    shape2->set_color("00FF00");
+    shape1->set_visible(true);
+    shape2->set_visible(true);
+    shape1->set_depth_z(1);
+    shape1->set_opacity(0.5);
+    scene.add(shape1, shape2);
+    scene.frame_advance();
+    REQUIRE(scene.get_pixel(0, 0, 0).g != 0);
+}

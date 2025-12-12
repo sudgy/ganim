@@ -166,6 +166,12 @@ void SceneBase::frame_advance()
         }
     }
     clean_up();
+    auto drawables = M_objects;
+    std::ranges::stable_sort(
+        drawables,
+        std::less{},
+        [&](auto& obj) {return obj->get_depth_z();}
+    );
     if (M_animating) {
         glViewport(0, 0, M_pixel_width, M_pixel_height);
         if (!M_depth_layers.empty()) {
@@ -175,7 +181,7 @@ void SceneBase::frame_advance()
                 glBindFramebuffer(GL_FRAMEBUFFER, l.framebuffer);
                 glClearColor(0, 0, 0, 0);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-                for (auto object : M_objects) {
+                for (auto object : drawables) {
                     if (object->is_visible()) {
                         if (!object->is_fixed_in_frame()) {
                             if (i == 0) {
@@ -219,7 +225,7 @@ void SceneBase::frame_advance()
             }
         }
         else {
-            for (auto object : M_objects) {
+            for (auto object : drawables) {
                 object->set_peeling_depth_buffer(nullptr);
                 if (object->is_visible()) {
                     if (!object->is_fixed_in_frame()) {
@@ -230,7 +236,7 @@ void SceneBase::frame_advance()
             }
         }
         glClear(GL_DEPTH_BUFFER_BIT);
-        for (auto object : M_objects) {
+        for (auto object : drawables) {
             if (object->is_visible()) {
                 if (object->is_fixed_in_frame()) {
                     object->draw_outline(M_static_camera);
