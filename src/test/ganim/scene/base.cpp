@@ -10,8 +10,10 @@
 using namespace ganim;
 
 namespace {
+    int destructed = 0;
     class TestDrawable : public SingleObject {
         public:
+            ~TestDrawable() {++destructed;}
             virtual void draw(const Camera&) override
             {
                 ++draw_count;
@@ -272,4 +274,16 @@ TEST_CASE("Scene depth_z object sorting", "[scene]") {
     scene.add(shape1, shape2);
     scene.frame_advance();
     REQUIRE(scene.get_pixel(0, 0, 0).g != 0);
+}
+
+TEST_CASE("Scene resetting to remove", "[scene]") {
+    auto scene = TestScene(1, 1, 1, 1, 1);
+    auto obj = ObjectPtr<TestDrawable>();
+    scene.add(obj);
+    scene.frame_advance();
+    auto old_destructed = destructed;
+    obj.reset();
+    REQUIRE(destructed == old_destructed);
+    scene.frame_advance();
+    REQUIRE(destructed == old_destructed + 1);
 }

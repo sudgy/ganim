@@ -6,7 +6,27 @@
 #include "text_helpers.hpp"
 
 namespace ganim {
-class TextBase : public TypedGroup<TypedGroup<TextureShape<Shape>>> {
+class TextGlyph : public TextureShape<Shape> {
+    private:
+        friend class TextBase;
+
+        using TextureShape<Shape>::TextureShape;
+        virtual Box get_original_logical_bounding_box() const override;
+        Box logical_bounding_box;
+
+    public:
+        ObjectPtr<TextGlyph> polymorphic_copy() const;
+        virtual TextGlyph* polymorphic_copy_impl() const;
+};
+class TextPiece : public TypedGroup<TextGlyph> {
+    private:
+        friend class TextBase;
+
+    public:
+        ObjectPtr<TextPiece> polymorphic_copy() const;
+        virtual TextPiece* polymorphic_copy_impl() const;
+};
+class TextBase : public TypedGroup<TextPiece> {
     public:
         TextBase()=default;
 
@@ -16,16 +36,6 @@ class TextBase : public TypedGroup<TypedGroup<TextureShape<Shape>>> {
     private:
         virtual std::vector<PositionedGlyph> get_glyphs(
                 const std::vector<std::string_view>& strings)=0;
-
-        class TextPiece : public TextureShape<Shape> {
-            public:
-                using TextureShape<Shape>::TextureShape;
-                virtual Box get_original_logical_bounding_box() const override;
-                Box logical_bounding_box;
-
-                ObjectPtr<TextPiece> polymorphic_copy() const;
-                virtual TextPiece* polymorphic_copy_impl() const;
-        };
 };
 }
 

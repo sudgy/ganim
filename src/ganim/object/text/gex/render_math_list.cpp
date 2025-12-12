@@ -539,6 +539,7 @@ Box Processor::do_combine(Style style)
     const auto quad = get_font_quad(*M_font);
     auto result_boxes = std::vector<Box>();
     auto last_type = AtomType(-1);
+    bool phantom = false;
     for (int i = 0; i < ssize(M_rendered_list); ++i) {
         auto& noad = M_rendered_list[i];
         if (auto atom = get_if<Atom>(&noad.value)) {
@@ -553,11 +554,20 @@ Box Processor::do_combine(Style style)
                 result_boxes.push_back(
                     Box(scaling*quad*spacing.first/18.0, 0, 0, {}));
             }
+            if (phantom) {
+                for (auto& glyph : atom->box.glyphs) {
+                    glyph.invisible = true;
+                }
+                phantom = false;
+            }
             result_boxes.push_back(atom->box);
             last_type = atom->type;
         }
         else if (auto command = std::get_if<CommandNoad>(&noad.value)) {
             check_style_change(*command, style, scaling);
+            if (command->command == "phantom") {
+                phantom = true;
+            }
         }
         else if (auto glue = std::get_if<GlueNoad>(&noad.value)) {
             result_boxes.push_back(Box(glue->thickness, 0, 0, {}));

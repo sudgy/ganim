@@ -57,6 +57,7 @@ namespace ganim {
         float texture_width = 0; ///< The width in the texture
         float texture_height = 0; ///< The height in the texture
         int group_index = -1;
+        bool invisible = false;
     };
     /** @brief A type to keep track of fonts.
      *

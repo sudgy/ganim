@@ -413,3 +413,55 @@ TEST_CASE("GeX render_math_list \\text", "[object][text][gex]") {
     REQUIRE((box.glyphs[0].x_pos != box.glyphs[1].x_pos or
              box.glyphs[0].y_pos != box.glyphs[1].y_pos));
 }
+
+TEST_CASE("GeX render_math_list \\phantom", "[object][text][gex]") {
+    auto a_noad = Noad(
+        Atom(Box(), AtomType::Ord, AtomSymbol(U'a',0,0))
+    );
+    auto b_noad = Noad(
+        Atom(Box(), AtomType::Ord, AtomSymbol(U'a',0,0))
+    );
+    auto bb_noad = Noad(Atom(
+        Box(),
+        AtomType::Ord,
+        AtomList({b_noad, b_noad})
+    ));
+    // a{bb}a
+    auto list1 = MathList();
+    list1.emplace_back(a_noad);
+    list1.emplace_back(bb_noad);
+    list1.emplace_back(a_noad);
+    // a\phantom{bb}a
+    auto list2 = MathList();
+    list2.emplace_back(a_noad);
+    list2.emplace_back(CommandNoad("phantom", 0, 0));
+    list2.emplace_back(bb_noad);
+    list2.emplace_back(a_noad);
+
+    auto box1 = render_math_list(list1, Style::Text);
+    auto box2 = render_math_list(list2, Style::Text);
+    REQUIRE(box1.glyphs.size() == 4);
+    REQUIRE(box2.glyphs.size() == 4);
+    REQUIRE(box2.glyphs[1].invisible);
+    REQUIRE(box2.glyphs[2].invisible);
+    REQUIRE(box1.glyphs[0].x_pos == box2.glyphs[0].x_pos);
+    REQUIRE(box1.glyphs[0].y_pos == box2.glyphs[0].y_pos);
+    REQUIRE(box1.glyphs[0].draw_x == box2.glyphs[0].draw_x);
+    REQUIRE(box1.glyphs[0].draw_y == box2.glyphs[0].draw_y);
+    REQUIRE(box1.glyphs[0].width == box2.glyphs[0].width);
+    REQUIRE(box1.glyphs[0].height == box2.glyphs[0].height);
+    REQUIRE(box1.glyphs[0].texture_x == box2.glyphs[0].texture_x);
+    REQUIRE(box1.glyphs[0].texture_y == box2.glyphs[0].texture_y);
+    REQUIRE(box1.glyphs[0].texture_width == box2.glyphs[0].texture_width);
+    REQUIRE(box1.glyphs[0].texture_height == box2.glyphs[0].texture_height);
+    REQUIRE(box1.glyphs[3].x_pos == box2.glyphs[3].x_pos);
+    REQUIRE(box1.glyphs[3].y_pos == box2.glyphs[3].y_pos);
+    REQUIRE(box1.glyphs[3].draw_x == box2.glyphs[3].draw_x);
+    REQUIRE(box1.glyphs[3].draw_y == box2.glyphs[3].draw_y);
+    REQUIRE(box1.glyphs[3].width == box2.glyphs[3].width);
+    REQUIRE(box1.glyphs[3].height == box2.glyphs[3].height);
+    REQUIRE(box1.glyphs[3].texture_x == box2.glyphs[3].texture_x);
+    REQUIRE(box1.glyphs[3].texture_y == box2.glyphs[3].texture_y);
+    REQUIRE(box1.glyphs[3].texture_width == box2.glyphs[3].texture_width);
+    REQUIRE(box1.glyphs[3].texture_height == box2.glyphs[3].texture_height);
+}

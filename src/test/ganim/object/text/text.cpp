@@ -118,3 +118,12 @@ TEST_CASE("Text transform", "[object][text]") {
         }
     }
 }
+
+TEST_CASE("Text bounding boxes", "[object][text]") {
+    using namespace vga2;
+    auto test = make_text("A  B");
+    auto box1 = test[0]->get_logical_bounding_box();
+    test->shift(e1);
+    auto box2 = test[0]->get_logical_bounding_box();
+    REQUIRE(box1.get_x() < box2.get_x());
+}
