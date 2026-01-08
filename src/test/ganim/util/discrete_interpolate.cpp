@@ -101,3 +101,17 @@ TEST_CASE("discrete_interpolate complicated cases", "[util]") {
     check(23, 5);
     check(25, 5);
 }
+
+TEST_CASE("discrete_interpolate bug", "[util]") {
+    auto test = discrete_interpolate(11, 15);
+    auto found = false;
+    for (auto vec : test) {
+        for (auto i : vec) {
+            if (i == 14) {
+                found = true;
+                break;
+            }
+        }
+    }
+    REQUIRE(found);
+}

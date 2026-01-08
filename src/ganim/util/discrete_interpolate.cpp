@@ -13,8 +13,8 @@ ganim::discrete_interpolate(int from_size, int to_size)
     result.resize(from_size);
     auto frac = double(to_size) / double(from_size);
     for (int i = 0; i < from_size; ++i) {
-        auto this_i = int(i * frac);
-        auto next_i = int((i+1) * frac);
+        auto this_i = int(i * frac + 1e-5);
+        auto next_i = int((i+1) * frac + 1e-5);
         result[i].push_back(this_i);
         for (int j = this_i + 1; j < next_i; ++j) result[i].push_back(j);
     }
