@@ -435,9 +435,11 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
     );
     if (x.width > z.width) {
         horizontal_shift_box(z, (x.width - z.width) / 2.0);
+        z.width = x.width;
     }
     else if (z.width > x.width) {
         horizontal_shift_box(x, (z.width - x.width) / 2.0);
+        x.width = z.width;
     }
     auto u = 0.0;
     auto v = 0.0;

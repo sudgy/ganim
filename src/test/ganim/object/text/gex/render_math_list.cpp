@@ -465,3 +465,19 @@ TEST_CASE("GeX render_math_list \\phantom", "[object][text][gex]") {
     REQUIRE(box1.glyphs[3].texture_width == box2.glyphs[3].texture_width);
     REQUIRE(box1.glyphs[3].texture_height == box2.glyphs[3].texture_height);
 }
+
+TEST_CASE("GeX render_math_list fraction line bug", "[object][text][gex]") {
+    auto one_noad = Noad(Atom(Box(), AtomType::Ord, AtomSymbol(U'1', 0, 0)));
+    auto plus_noad = Noad(Atom(Box(), AtomType::Rel, AtomSymbol(U'+', 0, 0)));
+    auto num = MathList();
+    auto den = MathList();
+    num.emplace_back(one_noad);
+    den.emplace_back(one_noad);
+    den.emplace_back(plus_noad);
+    den.emplace_back(one_noad);
+    auto list = MathList();
+    list.emplace_back(FractionNoad(num, den, 0, 0, 0.1));
+    auto box = render_math_list(list, Style::Display);
+
+    REQUIRE(box.glyphs[1].x_pos + box.glyphs[1].width > box.glyphs[4].x_pos);
+}
