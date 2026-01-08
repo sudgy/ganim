@@ -451,8 +451,6 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
         else u = get_font_num2(*M_font);
         v = get_font_denom2(*M_font);
     }
-    u /= 1.2;
-    v /= 1.05;
     auto box = Box();
     if (θ == 0) {
         auto φ = get_font_default_rule_thickness(*M_font);
