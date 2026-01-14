@@ -256,6 +256,15 @@ bool Preprocessor::process_built_in(const std::u32string& command, int group)
         process_expandafter();
         return true;
     }
+    // I'm putting this as a built-in because I don't yet have a way to input
+    // arbitrary characters with arbitrary catcodes
+    else if (command == U"backslash") {
+        M_next_tokens.emplace_front(
+            CharacterToken('\\', CategoryCode::Letter),
+            M_last_group_index,
+            M_last_string_index
+        );
+    }
     return false;
 }
 

@@ -28,6 +28,7 @@ R"(\def\sqrt#1{\radical √{#1}})",
 
 R"(\def\pm{±})",
 R"(\def\mp{∓})",
+R"(\def\neq{≠})",
 R"(\def\cdot{⋅})",
 R"(\def\wedge{∧})",
 R"(\def\vee{∨})",

@@ -52,6 +52,7 @@ MacroStack::MacroStack()
         // match up to one of these
         S_base_frame[U"def"] = {};
         S_base_frame[U"expandafter"] = {};
+        S_base_frame[U"backslash"] = {};
         S_making_base_frame = true;
         S_base_preprocessor = std::make_unique<Preprocessor>(false);
         for (auto s : macro_input) {
