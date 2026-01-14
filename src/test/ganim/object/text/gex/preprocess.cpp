@@ -376,3 +376,17 @@ TEST_CASE("GeX preprocessor sqrt fraction", "[object][text][gex]") {
     auto tokens = preprocess(false, {R"(\sqrt{{a \over b}})"});
     REQUIRE(tokens.size() == 16);
 }
+
+TEST_CASE("GeX preprocessor boundaries", "[object][text][gex]") {
+    auto tokens = preprocess(false, {R"(\left(\left[a\right.\right))"});
+    REQUIRE(tokens.size() == 9);
+    REQUIRE(get<CommandToken>(tokens[0].value).command_utf8 == "left");
+    REQUIRE(get<CharacterToken>(tokens[1].value).codepoint == U'(');
+    REQUIRE(get<CommandToken>(tokens[2].value).command_utf8 == "left");
+    REQUIRE(get<CharacterToken>(tokens[3].value).codepoint == U'[');
+    REQUIRE(get<CharacterToken>(tokens[4].value).codepoint == U'a');
+    REQUIRE(get<CommandToken>(tokens[5].value).command_utf8 == "right");
+    REQUIRE(get<CharacterToken>(tokens[6].value).codepoint == U'.');
+    REQUIRE(get<CommandToken>(tokens[7].value).command_utf8 == "right");
+    REQUIRE(get<CharacterToken>(tokens[8].value).codepoint == U')');
+}

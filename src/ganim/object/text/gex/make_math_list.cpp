@@ -39,6 +39,7 @@ class Processor {
         void process_subscript();
         void process_superscript();
         void process_generalized_fraction(int group);
+        void process_boundary();
         void process_radical();
         void process_box();
 
@@ -49,6 +50,9 @@ class Processor {
         void add_noad(Noad noad);
         double read_dimension();
         double read_number();
+        // Codepoint and group
+        std::pair<std::uint32_t, int> read_delim();
+        MathList read_group(bool has_boundary);
 
         const TokenList& tokens;
         int token_index = 0;
@@ -125,6 +129,12 @@ void Processor::process_command_token(const CommandToken& tok)
     else if (tok.command_utf8 == "abovewithdelims") {
         process_generalized_fraction(token.group);
     }
+    else if (tok.command_utf8 == "left") {
+        process_boundary();
+    }
+    else if (tok.command_utf8 == "right") {
+        throw GeXError(token.group, token.string_index, "Unmatched \\right");
+    }
     else if (tok.command_utf8 == "mskip") {
         ++token_index;
         auto dimen = read_dimension();
@@ -190,32 +200,14 @@ void Processor::process_normal(std::uint32_t codepoint)
 
 void Processor::process_group()
 {
-    int group_level = 1;
-    int i = token_index + 1;
-    for (; i < ssize(tokens); ++i) {
-        if (auto tok = get_if<CharacterToken>(&tokens[i].value)) {
-            if (tok->catcode == CategoryCode::StartGroup) {
-                ++group_level;
-            }
-            else if (tok->catcode == CategoryCode::EndGroup) {
-                --group_level;
-                if (group_level == 0) break;
-            }
-        }
-    }
-    auto new_list = TokenList();
-    for (int j = token_index + 1; j < i; ++j) {
-        new_list.push_back(tokens[j]);
-    }
     auto noad = Noad(
         Atom(
             Box(),
             AtomType::Ord,
-            AtomList(make_math_list(new_list, style))
+            AtomList(read_group(false))
         )
     );
     add_noad(std::move(noad));
-    token_index = i;
 }
 
 void Processor::process_subscript()
@@ -245,28 +237,8 @@ void Processor::process_superscript()
 
 void Processor::process_generalized_fraction(int group)
 {
-    auto get_delim = [&] -> std::uint32_t {
-        while (true) {
-            ++token_index;
-            if (token_index == ssize(tokens)) {
-                throw GeXError(-1, -1, "Expected character token");
-            }
-            auto& token = current_token();
-            if (auto tok = get_if<CharacterToken>(&token.value)) {
-                if (tok->catcode == CategoryCode::Spacer) {
-                    continue;
-                }
-                if (tok->catcode != CategoryCode::Other) {
-                    throw GeXError(token.group, token.string_index,
-                        "Expected character token");
-                }
-                if (tok->codepoint == U'.') return 0;
-                else return tok->codepoint;
-            }
-        }
-    };
-    auto delim1 = get_delim();
-    auto delim2 = get_delim();
+    auto [delim1, _1] = read_delim();
+    auto [delim2, _2] = read_delim();
     ++token_index;
     auto rule_thickness = read_dimension();
     auto denom_list = TokenList();
@@ -282,6 +254,22 @@ void Processor::process_generalized_fraction(int group)
         group
     );
     result = MathList{{noad}};
+}
+
+void Processor::process_boundary()
+{
+    auto [left_delim, left_group] = read_delim();
+    auto inside_list = read_group(true);
+    auto [right_delim, right_group] = read_delim();
+    add_noad(Noad(
+        BoundaryNoad(
+            std::move(inside_list),
+            left_delim,
+            right_delim,
+            left_group,
+            right_group
+        )
+    ));
 }
 
 void Processor::process_radical()
@@ -545,6 +533,72 @@ double Processor::read_number()
         }
     }
     return parser.get_result();
+}
+
+std::pair<std::uint32_t, int> Processor::read_delim()
+{
+    while (true) {
+        ++token_index;
+        if (token_index >= ssize(tokens)) {
+            throw GeXError(-1, -1, "Expected character token");
+        }
+        auto& token = current_token();
+        if (auto tok = get_if<CharacterToken>(&token.value)) {
+            if (tok->catcode == CategoryCode::Spacer) {
+                continue;
+            }
+            if (tok->catcode != CategoryCode::Other) {
+                throw GeXError(token.group, token.string_index,
+                    "Expected character token");
+            }
+            if (tok->codepoint == U'.') return {0, token.group};
+            else return {tok->codepoint, token.group};
+        }
+    }
+}
+
+MathList Processor::read_group(bool has_boundary)
+{
+    int group_level = 1;
+    int i = token_index + 1;
+    for (; i < ssize(tokens); ++i) {
+        if (auto tok = get_if<CharacterToken>(&tokens[i].value)) {
+            if (tok->catcode == CategoryCode::StartGroup) {
+                ++group_level;
+            }
+            else if (tok->catcode == CategoryCode::EndGroup) {
+                --group_level;
+                if (group_level == 0) {
+                    if (has_boundary) {
+                        throw GeXError(tokens[i].group, tokens[i].string_index,
+                            "Expected }, not \\right");
+                    }
+                    break;
+                }
+            }
+        }
+        if (auto tok = get_if<CommandToken>(&tokens[i].value)) {
+            if (tok->command_utf8 == "left") {
+                ++group_level;
+            }
+            else if (tok->command_utf8 == "right") {
+                --group_level;
+                if (group_level == 0) {
+                    if (!has_boundary) {
+                        throw GeXError(tokens[i].group, tokens[i].string_index,
+                            "Expected \\right, not }");
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    auto new_list = TokenList();
+    for (int j = token_index + 1; j < i; ++j) {
+        new_list.push_back(tokens[j]);
+    }
+    token_index = i;
+    return make_math_list(new_list, style);
 }
 
 

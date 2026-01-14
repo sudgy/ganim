@@ -56,6 +56,7 @@ namespace {
                 Atom& atom, AtomRadical& radical, Style style);
             void render_atom_tokens(Atom& atom, AtomTokens& tokens,Style style);
             Noad render_fraction(FractionNoad& fraction, Style style);
+            Noad render_boundary(BoundaryNoad& boundary, Style style);
             Box make_delimiter(
                 std::uint32_t codepoint, int group, double height, Style style);
 
@@ -152,6 +153,10 @@ void Processor::do_rendering(Style style)
                 [&](FractionNoad& fraction)
                 {
                     M_rendered_list.push_back(render_fraction(fraction, style));
+                },
+                [&](BoundaryNoad& boundary)
+                {
+                    M_rendered_list.push_back(render_boundary(boundary, style));
                 },
                 [&](GlueNoad&)
                 {
@@ -497,6 +502,28 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
     auto delim1 = make_delim(fraction.left_delim);
     auto delim2 = make_delim(fraction.right_delim);
     auto final_box = combine_boxes_horizontally({delim1, box, delim2});
+    return {Atom(std::move(final_box), AtomType::Ord, AtomBox())};
+}
+
+Noad Processor::render_boundary(BoundaryNoad& boundary, Style style)
+{
+    auto inside = render_math_list(
+        boundary.inside,
+        style
+    );
+    auto a = get_font_axis_height(*M_font);
+    auto height = std::max((inside.height - a), (inside.depth + a)) * 2 + 0.1;
+    auto make_delim = [&](std::uint32_t codepoint, int group) {
+        auto box = make_delimiter(
+            codepoint, group, height, style);
+        auto final_height = box.height;
+        auto final_depth = box.depth;
+        vertical_shift_box(box, (final_depth - final_height) / 2 + a);
+        return box;
+    };
+    auto delim1 = make_delim(boundary.left_delim, boundary.left_group);
+    auto delim2 = make_delim(boundary.right_delim, boundary.right_group);
+    auto final_box = combine_boxes_horizontally({delim1, inside, delim2});
     return {Atom(std::move(final_box), AtomType::Ord, AtomBox())};
 }
 

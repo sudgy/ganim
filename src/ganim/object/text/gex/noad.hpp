@@ -92,12 +92,25 @@ namespace ganim::gex {
         double rule_thickness = 0.0;
         int group = -1;
     };
+    struct BoundaryNoad {
+        MathList inside;
+        std::uint32_t left_delim = 0;
+        std::uint32_t right_delim = 0;
+        int left_group = -1;
+        int right_group = -1;
+    };
     struct GlueNoad {
         double thickness = 0.0;
     };
 
     struct Noad {
-        std::variant<Atom, CommandNoad, FractionNoad, GlueNoad> value;
+        std::variant<
+            Atom,
+            CommandNoad,
+            FractionNoad,
+            BoundaryNoad,
+            GlueNoad
+        > value;
     };
 }
 

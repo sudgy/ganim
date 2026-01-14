@@ -36,6 +36,8 @@ MacroStack::MacroStack()
         DECLARE_BUILTIN("radical");
         DECLARE_BUILTIN("text");
         DECLARE_BUILTIN("phantom");
+        DECLARE_BUILTIN("left");
+        DECLARE_BUILTIN("right");
 
         S_base_frame[U"{"] = {{}, {{CharacterToken(U'{',CategoryCode::Other)}}};
         S_base_frame[U"}"] = {{}, {{CharacterToken(U'}',CategoryCode::Other)}}};

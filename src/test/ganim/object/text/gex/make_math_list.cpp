@@ -356,3 +356,61 @@ TEST_CASE("GeX make_math_list \\text", "[object][text][gex]") {
     tokens.resize(1);
     REQUIRE_THROWS(make_math_list(tokens));
 }
+
+TEST_CASE("GeX make_math_list boundaries", "[object][text][gex]") {
+    auto tokens = TokenList();
+    // a \left( \left[ b \right. 1 \over 2 \right)
+    tokens.emplace_back(CharacterToken(U'a', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CommandToken(U"left", "left"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'(', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CommandToken(U"left", "left"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'[', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'b', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CommandToken(U"right", "right"), 0, 0);
+    tokens.emplace_back(CharacterToken(U'.', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'1', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CommandToken(U"abovewithdelims","abovewithdelims"),0,0);
+    tokens.emplace_back(CharacterToken(U'.', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'.', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'0', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'p', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U't', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CharacterToken(U'2', CategoryCode::Other), 0, 0);
+    tokens.emplace_back(CommandToken(U"right", "right"), 0, 0);
+    tokens.emplace_back(CharacterToken(U')', CategoryCode::Other), 0, 0);
+    auto list = make_math_list(tokens);
+    REQUIRE(list.size() == 2);
+
+    auto& atom1 = get<Atom>(list[0].value);
+    REQUIRE(get<AtomSymbol>(atom1.value).codepoint == U'a');
+
+    auto& boundary1 = get<BoundaryNoad>(list[1].value);
+    REQUIRE(boundary1.left_delim == U'(');
+    REQUIRE(boundary1.right_delim == U')');
+    REQUIRE(boundary1.inside.size() == 1);
+
+    auto& fraction = get<FractionNoad>(boundary1.inside[0].value);
+    REQUIRE(fraction.numerator.size() == 2);
+    REQUIRE(fraction.denominator.size() == 1);
+
+    auto& boundary2 = get<BoundaryNoad>(fraction.numerator[0].value);
+    REQUIRE(boundary2.left_delim == U'[');
+    REQUIRE(boundary2.right_delim == 0);
+    REQUIRE(boundary2.inside.size() == 1);
+    auto& atom2 = get<Atom>(boundary2.inside[0].value);
+    REQUIRE(get<AtomSymbol>(atom2.value).codepoint == U'b');
+
+    auto& atom3 = get<Atom>(fraction.numerator[1].value);
+    REQUIRE(get<AtomSymbol>(atom3.value).codepoint == U'1');
+
+    auto& atom4 = get<Atom>(fraction.denominator[0].value);
+    REQUIRE(get<AtomSymbol>(atom4.value).codepoint == U'2');
+
+    tokens.pop_back();
+    REQUIRE_THROWS(make_math_list(tokens));
+    tokens.pop_back();
+    REQUIRE_THROWS(make_math_list(tokens));
+    tokens.resize(8);
+    tokens.insert(tokens.begin() + 7, tokens[6]);
+    REQUIRE_THROWS(make_math_list(tokens));
+}

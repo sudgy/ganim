@@ -481,3 +481,44 @@ TEST_CASE("GeX render_math_list fraction line bug", "[object][text][gex]") {
 
     REQUIRE(box.glyphs[1].x_pos + box.glyphs[1].width > box.glyphs[4].x_pos);
 }
+
+TEST_CASE("GeX render_math_list boundaries", "[object][text][gex]") {
+    // Technically not \over, it's just them on top of each other
+    // \left( \left( a \right. {1 \over 2} \right)
+    auto list = MathList();
+    list.push_back(Noad(
+        BoundaryNoad(
+            {
+                Noad(BoundaryNoad(
+                    {
+                        Noad(Atom(Box(), AtomType::Ord, AtomSymbol(U'a', 0, 0)))
+                    },
+                    U'(',
+                    0
+                )),
+                Noad(FractionNoad(
+                    {
+                        Noad(Atom(Box(), AtomType::Ord, AtomSymbol(U'1', 0, 0)))
+                    },
+                    {
+                        Noad(Atom(Box(), AtomType::Ord, AtomSymbol(U'2', 0, 0)))
+                    }
+                ))
+            },
+            U'(',
+            U')'
+        )
+    ));
+    auto box = render_math_list(list, Style::Display);
+
+    REQUIRE(box.glyphs.size() == 6);
+    REQUIRE(box.glyphs[0].x_pos < box.glyphs[1].x_pos);
+    REQUIRE(box.glyphs[1].x_pos < box.glyphs[2].x_pos);
+    REQUIRE(box.glyphs[2].x_pos < box.glyphs[3].x_pos);
+    REQUIRE(box.glyphs[2].x_pos < box.glyphs[4].x_pos);
+    REQUIRE(box.glyphs[3].x_pos < box.glyphs[5].x_pos);
+    REQUIRE(box.glyphs[4].x_pos < box.glyphs[5].x_pos);
+    REQUIRE(box.glyphs[3].y_pos > box.glyphs[4].y_pos);
+
+    REQUIRE(box.glyphs[0].height > box.glyphs[1].height);
+}
