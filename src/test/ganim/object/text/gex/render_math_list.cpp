@@ -522,3 +522,23 @@ TEST_CASE("GeX render_math_list boundaries", "[object][text][gex]") {
 
     REQUIRE(box.glyphs[0].height > box.glyphs[1].height);
 }
+
+TEST_CASE("GeX render_math_list boundary atom spacing", "[object][text][gex]") {
+    auto a = Noad(Atom(Box(), AtomType::Ord, AtomSymbol(U'a', 0, 0)));
+    auto plus = Noad(Atom(Box(), AtomType::Bin, AtomSymbol(U'+', 0, 0)));
+    auto plus_ord = Noad(Atom(Box(), AtomType::Ord, AtomSymbol(U'+', 0, 0)));
+    auto boundary = Noad(BoundaryNoad({a}, U'(', U')'));
+    auto list1 = MathList{
+        boundary,
+        plus,
+        a
+    };
+    auto list2 = MathList{
+        boundary,
+        plus_ord,
+        a
+    };
+    auto box1 = render_math_list(list1, Style::Display);
+    auto box2 = render_math_list(list2, Style::Display);
+    REQUIRE(box1.glyphs[3].x_pos > box2.glyphs[3].x_pos);
+}

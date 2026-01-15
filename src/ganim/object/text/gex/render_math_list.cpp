@@ -100,6 +100,12 @@ void Processor::do_preprocessing()
             last_type = atom->type;
             last_atom = atom;
         }
+        else if (holds_alternative<FractionNoad>(noad.value)) {
+            last_type = AtomType::Ord;
+        }
+        else if (holds_alternative<BoundaryNoad>(noad.value)) {
+            last_type = AtomType::Ord;
+        }
     }
     if (last_type == Bin) {
         last_atom->type = Ord;
