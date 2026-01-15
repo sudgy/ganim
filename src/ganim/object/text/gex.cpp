@@ -42,7 +42,7 @@ Gex::Gex(bool math, const std::vector<std::string_view>& strings)
     scale(default_scale);
 }
 
-std::vector<PositionedGlyph> Gex::get_glyphs(
+std::vector<Glyph> Gex::get_glyphs(
         const std::vector<std::string_view>& strings)
 {
     auto result = gex_render(M_math, strings);

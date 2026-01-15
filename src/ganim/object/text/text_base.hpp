@@ -34,7 +34,7 @@ class TextBase : public TypedGroup<TextPiece> {
         void create(const std::vector<std::string_view>& strings);
 
     private:
-        virtual std::vector<PositionedGlyph> get_glyphs(
+        virtual std::vector<Glyph> get_glyphs(
                 const std::vector<std::string_view>& strings)=0;
 };
 }

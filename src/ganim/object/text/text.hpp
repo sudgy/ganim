@@ -41,7 +41,7 @@ namespace ganim {
         private:
             virtual Text* polymorphic_copy_impl() const override;
 
-            virtual std::vector<PositionedGlyph> get_glyphs(
+            virtual std::vector<Glyph> get_glyphs(
                     const std::vector<std::string_view>& strings) override;
             Font* M_font = nullptr;
             double M_newline_buff = 0.0;

@@ -6,7 +6,7 @@ using namespace ganim;
 using namespace ganim::gex;
 
 TEST_CASE("combine_boxes_horizontally", "[object][text][gex]") {
-    auto glyph = std::vector<PositionedGlyph>{{.x_pos = 0, .y_pos = 0}};
+    auto glyph = std::vector<Glyph>{{.x_pos = 0, .y_pos = 0}};
     auto test1 = combine_boxes_horizontally({});
     auto test2 = combine_boxes_horizontally({Box(1, 2, 3, glyph)});
     auto test3 = combine_boxes_horizontally(
@@ -46,7 +46,7 @@ TEST_CASE("combine_boxes_horizontally", "[object][text][gex]") {
 }
 
 TEST_CASE("combine_boxes_vertically", "[object][text][gex]") {
-    auto glyph = std::vector<PositionedGlyph>{{.x_pos = 0, .y_pos = 0}};
+    auto glyph = std::vector<Glyph>{{.x_pos = 0, .y_pos = 0}};
     auto test1 = combine_boxes_vertically({}, 0);
     auto test2 = combine_boxes_vertically({Box(1, 2, 3, glyph)}, 0);
     auto test3 = combine_boxes_vertically(
@@ -110,9 +110,9 @@ TEST_CASE("combine_boxes_vertically", "[object][text][gex]") {
 TEST_CASE("combine_boxes_vertically overlapping objects?",
         "[object][text][gex]")
 {
-    auto glyph1 = PositionedGlyph();
-    auto glyph2 = PositionedGlyph();
-    auto glyph3 = PositionedGlyph();
+    auto glyph1 = Glyph();
+    auto glyph2 = Glyph();
+    auto glyph3 = Glyph();
     glyph1.draw_y = 0.5;
     glyph2.draw_y = 0.1;
     glyph3.draw_y = 0.7;

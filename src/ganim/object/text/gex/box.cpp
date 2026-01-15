@@ -62,7 +62,7 @@ Box gex::combine_boxes_vertically(
     return result;
 }
 
-Box gex::box_from_glyphs(std::vector<PositionedGlyph> glyphs)
+Box gex::box_from_glyphs(std::vector<Glyph> glyphs)
 {
     if (glyphs.empty()) {
         return {};

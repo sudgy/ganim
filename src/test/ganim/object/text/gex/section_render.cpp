@@ -20,8 +20,8 @@ namespace {
         return result;
     }
     void check_glyphs(
-        const std::vector<PositionedGlyph>& glyphs1,
-        const std::vector<PositionedGlyph>& glyphs2
+        const std::vector<Glyph>& glyphs1,
+        const std::vector<Glyph>& glyphs2
     )
     {
         REQUIRE(glyphs1.size() == glyphs2.size());

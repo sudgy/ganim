@@ -10,7 +10,7 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-std::vector<PositionedGlyph>
+std::vector<Glyph>
 ganim::gex_render(bool math, const std::vector<std::string_view>& input)
 {
     auto tokens = preprocess(math, input);

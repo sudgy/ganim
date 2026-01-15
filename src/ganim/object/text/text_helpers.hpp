@@ -8,42 +8,7 @@
 #include "ganim/unicode.hpp"
 
 namespace ganim {
-    /** @brief A struct representing all of the data needed to draw a particular
-     * glyph.
-     *
-     * This is a POD struct with a bunch of numerical values giving texture data
-     * and glyph positioning.  The texture data can be used directly in the
-     * texture returned by @ref get_text_texture.  For the rest of the values,
-     * they correspond to the FreeType values.  However, ganim adds a one pixel
-     * buffer to glyphs, so they won't quite match up with the values that
-     * FreeType gives.  If you don't call the FreeType functions yourself though
-     * you'll be fine just using these values.
-     *
-     * Note that this struct does not contain data about where on the screen to
-     * position the glyph.  It only tells you where to draw a glyph relative to
-     * a particular cursor position.  If you don't know what the FreeType values
-     * represent and just want to know how to draw text, use this process:
-     *
-     * 1. Pick an origin.  This will be roughly the bottom left side of the
-     * glyph.  Note that this corresponds to the base line, not the beard line.
-     * This means that a glyphs like "g" will go below this y coordinate.
-     * 2. The bottom left of your glyphs will be at the point `(origin_x +
-     * bearing_x, origin_y + bearing_y - height)`, and its width and height will
-     * be the width and height members.
-     */
     struct Glyph {
-        float texture_x = 0; ///< The x coordinate in the texture
-        float texture_y = 0; ///< The y coordinate in the texture
-        float texture_width = 0; ///< The width in the texture
-        float texture_height = 0; ///< The height in the texture
-        double width = 0; ///< The width of the glyph, in ganim units
-        double height = 0; ///< The height of the glyph, in ganim units
-        double bearing_x = 0; ///< @brief The x coordinate of the left side of
-                              ///< the glyph, in ganim units
-        double bearing_y = 0; ///< @brief The y coordinate of the top side of
-                              ///< the glyph, in ganim units
-    };
-    struct PositionedGlyph {
         double x_pos = 0;
         double y_pos = 0;
         double draw_x = 0;
@@ -86,18 +51,6 @@ namespace ganim {
      */
     Font& get_font(const std::string& filename, int pixel_size = 128);
     Font& scale_font(const Font& font, double scale);
-    /** @brief Get a glyph.
-     *
-     * You probably don't need to call this function, use @ref shape_text
-     * instead.
-     *
-     * @param font A font previously returned by @ref get_font.
-     * @param glyph_index The glyph index in the font of the glyph you want.
-     * @return A @ref Glyph with the information needed to draw the glyph passed
-     * in.
-     */
-    Glyph& get_glyph(Font& font, glyph_t glyph_index);
-    Glyph& get_glyph_by_codepoint(Font& font, glyph_t glyph_index);
     /** @brief Shape a list of strings.
      *
      * The strings will all be concatenated and shaped at once.  The input is a
@@ -107,7 +60,7 @@ namespace ganim {
      * `shape_text({"ab", "c"}), the result will contain three glyphs, with "a"
      * and "b" having a group_index of 0, and "c" having a group_index of 1.
      */
-    std::vector<PositionedGlyph> shape_text(
+    std::vector<Glyph> shape_text(
         Font& font,
         const std::vector<std::u32string>& text
     );
@@ -118,9 +71,15 @@ namespace ganim {
      * passed manually into the function.  Each element of the input vector is a
      * pair of the string and the input group.
      */
-    std::vector<PositionedGlyph> shape_text_manual_groups(
+    std::vector<Glyph> shape_text_manual_groups(
         Font& font,
         const std::vector<std::pair<std::u32string, int>>& text
+    );
+    std::vector<Glyph> shape_delimiter(
+        Font& font,
+        std::uint32_t codepoint,
+        int group,
+        double height
     );
     /** @brief Get the OpenGL texture ID used for text.
      */

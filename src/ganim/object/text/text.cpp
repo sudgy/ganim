@@ -15,7 +15,7 @@ Text::Text(TextArgs args, const std::vector<std::string_view>& strings)
     create(strings);
 }
 
-std::vector<PositionedGlyph> Text::get_glyphs(
+std::vector<Glyph> Text::get_glyphs(
         const std::vector<std::string_view>& strings)
 {
     auto codepoint_strings = std::vector<std::u32string>();
@@ -29,7 +29,7 @@ std::vector<PositionedGlyph> Text::get_glyphs(
         }
     }
 
-    auto shaped_glyphs_per_line = std::vector<std::vector<PositionedGlyph>>();
+    auto shaped_glyphs_per_line = std::vector<std::vector<Glyph>>();
     auto& later_strings = codepoint_strings;
     later_strings.push_back(U"\n");
     for (int i = 0; i < ssize(later_strings); ++i) {
@@ -48,7 +48,7 @@ std::vector<PositionedGlyph> Text::get_glyphs(
         }
     }
 
-    auto result = std::vector<PositionedGlyph>();
+    auto result = std::vector<Glyph>();
     auto y_plus = 0.0;
     const auto ascender = get_font_ascender(*M_font);
     const auto descender = get_font_descender(*M_font);

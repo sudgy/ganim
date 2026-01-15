@@ -48,7 +48,11 @@ namespace {
 
         private:
             void render_atom(Atom& atom, Style style);
-            void render_atom_symbol(Atom& atom, AtomSymbol& symbol,Style style);
+            void render_atom_symbol(
+                Atom& atom,
+                AtomSymbol& symbol,
+                Style style
+            );
             void render_atom_list(Atom& atom, AtomList& list, Style style);
             void render_atom_script(Atom& atom, AtomScript& script,Style style);
             void render_atom_accent(Atom& atom, AtomAccent& accent,Style style);
@@ -187,7 +191,11 @@ void Processor::render_atom(Atom& atom, Style style)
     }, atom.value);
 }
 
-void Processor::render_atom_symbol(Atom& atom, AtomSymbol& symbol, Style style)
+void Processor::render_atom_symbol(
+    Atom& atom,
+    AtomSymbol& symbol,
+    Style style
+)
 {
     auto it = math_letter_map.find(symbol.codepoint);
     auto codepoint = it == math_letter_map.end()
@@ -394,7 +402,7 @@ void Processor::render_atom_radical(
     auto y = make_delimiter(
         radical.radical,
         radical.group,
-        x.height + x.depth + ψ + θ + 0.1,
+        x.height + x.depth + ψ + θ,
         style
     );
     y.glyphs[0].y_min = 0;
@@ -512,10 +520,9 @@ Noad Processor::render_boundary(BoundaryNoad& boundary, Style style)
         style
     );
     auto a = get_font_axis_height(*M_font);
-    auto height = std::max((inside.height - a), (inside.depth + a)) * 2 + 0.1;
+    auto height = std::max((inside.height - a), (inside.depth + a)) * 2;
     auto make_delim = [&](std::uint32_t codepoint, int group) {
-        auto box = make_delimiter(
-            codepoint, group, height, style);
+        auto box = make_delimiter(codepoint, group, height, style);
         auto final_height = box.height;
         auto final_depth = box.depth;
         vertical_shift_box(box, (final_depth - final_height) / 2 + a);
@@ -523,7 +530,10 @@ Noad Processor::render_boundary(BoundaryNoad& boundary, Style style)
     };
     auto delim1 = make_delim(boundary.left_delim, boundary.left_group);
     auto delim2 = make_delim(boundary.right_delim, boundary.right_group);
-    auto final_box = combine_boxes_horizontally({delim1, inside, delim2});
+    auto kern = Box(delim1.width / 3.0, 0, 0, {});
+    auto final_box = combine_boxes_horizontally(
+        {kern, delim1, inside, delim2, kern}
+    );
     return {Atom(std::move(final_box), AtomType::Ord, AtomBox())};
 }
 
@@ -532,32 +542,9 @@ Box Processor::make_delimiter(
 {
     // TODO: Add \nulldelimiterspace?
     if (codepoint == 0) return Box(0.12, 0, 0, {});
-    // TODO: Use bigger characters
-    auto fake_atom_symbol = AtomSymbol(codepoint, group, -1);
-    auto fake_atom = Atom(Box(), AtomType::Ord, fake_atom_symbol);
-    render_atom_symbol(fake_atom, fake_atom_symbol, style);
-    auto delim_height = fake_atom.box.height + fake_atom.box.depth;
-    if (height > delim_height) {
-        const auto big_size = 1.2;
-        const auto Big_size = 1.5 * big_size;
-        const auto bigg_size = 2.0 * big_size;
-        const auto Bigg_size = 2.5 * big_size;
-        double scale_size = big_size;
-        double scale_needed = height / delim_height;
-        if (scale_needed > big_size) scale_size = Big_size;
-        if (scale_needed > Big_size) scale_size = bigg_size;
-        if (scale_needed > bigg_size) scale_size = Bigg_size;
-        if (scale_needed > Bigg_size) {
-            // TODO: delimiters with pieces
-            scale_size = scale_needed;
-        }
-        auto old_font = M_font;
-        M_font = &scale_font(*M_font, scale_size);
-        render_atom_symbol(fake_atom, fake_atom_symbol, style);
-        M_font = old_font;
-        scale_box(fake_atom.box, scale_size);
-    }
-    return fake_atom.box;
+    (void)style; // Is this bad?
+    auto glyphs = shape_delimiter(*M_font, codepoint, group, height);
+    return box_from_glyphs(glyphs);
 }
 
 Box Processor::do_combine(Style style)

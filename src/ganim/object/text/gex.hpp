@@ -26,7 +26,7 @@ class Gex : public TextBase {
     private:
         virtual Gex* polymorphic_copy_impl() const override;
 
-        virtual std::vector<PositionedGlyph> get_glyphs(
+        virtual std::vector<Glyph> get_glyphs(
                 const std::vector<std::string_view>& strings) override;
 
         Font* M_font = nullptr;

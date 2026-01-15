@@ -10,7 +10,7 @@ namespace ganim::gex {
         double width = 0;
         double height = 0;
         double depth = 0;
-        std::vector<PositionedGlyph> glyphs;
+        std::vector<Glyph> glyphs;
     };
     Box combine_boxes_horizontally(
         const std::vector<Box>& boxes,
@@ -20,7 +20,7 @@ namespace ganim::gex {
         const std::vector<Box>& boxes,
         int reference_box
     );
-    Box box_from_glyphs(std::vector<PositionedGlyph> glyphs);
+    Box box_from_glyphs(std::vector<Glyph> glyphs);
     Box make_rule(double width, double height, double depth, int group_index);
     void scale_box(Box& box, double scale);
     void horizontal_shift_box(Box& box, double amount);

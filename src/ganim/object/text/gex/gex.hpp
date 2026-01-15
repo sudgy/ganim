@@ -4,7 +4,7 @@
 #include "ganim/object/text/text_helpers.hpp"
 
 namespace ganim {
-    std::vector<PositionedGlyph>
+    std::vector<Glyph>
     gex_render(bool math, const std::vector<std::string_view>& input);
 }
 

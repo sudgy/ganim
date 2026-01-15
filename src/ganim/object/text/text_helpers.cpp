@@ -9,6 +9,7 @@
 #include FT_ADVANCES_H
 #include <hb.h>
 #include <hb-ft.h>
+#include <hb-ot.h>
 #include "ganim/gl/gl.hpp"
 
 #include "ganim/gl/texture.hpp"
@@ -30,13 +31,25 @@ namespace {
     int G_tt_x = 2; // A single white pixel is placed on the corner for rules
     int G_tt_y = 0;
     int G_tt_h = 2;
+    struct GlyphData {
+        float texture_x = 0; ///< The x coordinate in the texture
+        float texture_y = 0; ///< The y coordinate in the texture
+        float texture_width = 0; ///< The width in the texture
+        float texture_height = 0; ///< The height in the texture
+        double width = 0; ///< The width of the glyph, in ganim units
+        double height = 0; ///< The height of the glyph, in ganim units
+        double bearing_x = 0; ///< @brief The x coordinate of the left side of
+                              ///< the glyph, in ganim units
+        double bearing_y = 0; ///< @brief The y coordinate of the top side of
+                              ///< the glyph, in ganim units
+    };
 }
 
 struct ganim::Font {
     inline static int S_count = 0;
     FT_Face M_ft_face;
     hb_font_t* M_hb_font = nullptr;
-    std::unordered_map<glyph_t, Glyph> M_glyphs;
+    std::unordered_map<glyph_t, GlyphData> M_glyphs;
     std::string M_filename;
     double M_pixel_size = 0;
     Font(const std::string& filename, int pixel_size)
@@ -126,7 +139,46 @@ Font& ganim::scale_font(const Font& font, double scale)
     return get_font(font.M_filename, font.M_pixel_size * scale);
 }
 
-Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
+double ganim::get_font_ascender(Font& font)
+{
+    auto face = font.M_ft_face;
+    auto glyph_index = FT_Get_Char_Index(face, '|');
+    FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+    if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
+        FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+    }
+    return face->glyph->bitmap_top / font.M_pixel_size;
+}
+
+double ganim::get_font_descender(Font& font)
+{
+    auto face = font.M_ft_face;
+    auto glyph_index = FT_Get_Char_Index(face, '|');
+    FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
+    if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
+        FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
+    }
+    return (face->glyph->bitmap_top - int(face->glyph->bitmap.rows))
+        / font.M_pixel_size;
+}
+
+std::vector<Glyph> ganim::shape_text(
+    Font& font,
+    const std::vector<std::u32string>& text
+)
+{
+    if (text.empty()) return {};
+    auto group_index = 0;
+    auto new_text = std::vector<std::pair<std::u32string, int>>();
+    new_text.reserve(text.size());
+    for (auto& string : text) {
+        new_text.emplace_back(string, group_index++);
+    }
+    return shape_text_manual_groups(font, new_text);
+}
+
+namespace {
+GlyphData& get_glyph(Font& font, glyph_t glyph_index)
 {
     auto face = font.M_ft_face;
     auto& result = font.M_glyphs[glyph_index];
@@ -134,7 +186,8 @@ Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
     auto error = FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
     if (error) {
         throw std::runtime_error(std::format(
-                    "Error loading glyph with glyph index {}", glyph_index));
+                    "Error {} loading glyph with glyph index {}",
+                    error, glyph_index));
     }
     if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
         error = FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
@@ -174,46 +227,9 @@ Glyph& ganim::get_glyph(Font& font, glyph_t glyph_index)
 
     return result;
 }
-
-double ganim::get_font_ascender(Font& font)
-{
-    auto face = font.M_ft_face;
-    auto glyph_index = FT_Get_Char_Index(face, '|');
-    FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
-    if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
-        FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
-    }
-    return face->glyph->bitmap_top / font.M_pixel_size;
 }
 
-double ganim::get_font_descender(Font& font)
-{
-    auto face = font.M_ft_face;
-    auto glyph_index = FT_Get_Char_Index(face, '|');
-    FT_Load_Glyph(face, glyph_index, FT_LOAD_DEFAULT);
-    if (face->glyph->format != FT_GLYPH_FORMAT_BITMAP) {
-        FT_Render_Glyph(face->glyph, FT_RENDER_MODE_NORMAL);
-    }
-    return (face->glyph->bitmap_top - int(face->glyph->bitmap.rows))
-        / font.M_pixel_size;
-}
-
-std::vector<PositionedGlyph> ganim::shape_text(
-    Font& font,
-    const std::vector<std::u32string>& text
-)
-{
-    if (text.empty()) return {};
-    auto group_index = 0;
-    auto new_text = std::vector<std::pair<std::u32string, int>>();
-    new_text.reserve(text.size());
-    for (auto& string : text) {
-        new_text.emplace_back(string, group_index++);
-    }
-    return shape_text_manual_groups(font, new_text);
-}
-
-std::vector<PositionedGlyph> ganim::shape_text_manual_groups(
+std::vector<Glyph> ganim::shape_text_manual_groups(
     Font& font,
     const std::vector<std::pair<std::u32string, int>>& text
 )
@@ -227,13 +243,14 @@ std::vector<PositionedGlyph> ganim::shape_text_manual_groups(
     }
     hb_buffer_set_content_type(buffer, HB_BUFFER_CONTENT_TYPE_UNICODE);
     hb_buffer_guess_segment_properties(buffer);
+
     hb_shape(font.M_hb_font, buffer, nullptr, 0);
 
     auto glyph_count = 0U;
     auto glyph_infos = hb_buffer_get_glyph_infos(buffer, &glyph_count);
     auto glyph_positions = hb_buffer_get_glyph_positions(buffer, &glyph_count);
 
-    auto result = std::vector<PositionedGlyph>();
+    auto result = std::vector<Glyph>();
     result.resize(glyph_count);
 
     auto cursor_x = 0;
@@ -266,6 +283,68 @@ std::vector<PositionedGlyph> ganim::shape_text_manual_groups(
         result[i].draw_x -= shift;
     }
     hb_buffer_destroy(buffer);
+    return result;
+}
+
+std::vector<Glyph> ganim::shape_delimiter(
+    Font& font,
+    std::uint32_t codepoint,
+    int group,
+    double height
+)
+{
+    auto variant = 0;
+    auto delim_height = 0;
+    auto base_glyph_index = 0U;
+    if (!hb_font_get_nominal_glyph(
+        font.M_hb_font, codepoint, &base_glyph_index)
+    ) {
+        throw std::runtime_error(std::format(
+                    "Error loading glyph with codepoint {}", codepoint));
+    }
+    auto glyph_index = base_glyph_index;
+    auto glyph_data = (GlyphData*)nullptr;
+    while (true) {
+        glyph_data = &get_glyph(font, glyph_index);
+        delim_height = glyph_data->height;
+
+        if (delim_height > height) break;
+
+        ++variant;
+        auto glyph_variant = hb_ot_math_glyph_variant_t();
+        auto variant_count = 1U;
+        if (hb_ot_math_get_glyph_variants(
+            font.M_hb_font,
+            base_glyph_index,
+            HB_DIRECTION_TTB,
+            variant,
+            &variant_count,
+            &glyph_variant
+        ) == 0) {
+            // Do piece thingy
+            throw std::runtime_error("Delimiters of a very large size are not "
+                "yet supported.");
+        }
+        else {
+            glyph_index = glyph_variant.glyph;
+        }
+    }
+
+    auto result = std::vector<Glyph>();
+    auto& glyph = result.emplace_back(1);
+    glyph.x_pos = 0;
+    glyph.y_pos = 0;
+    glyph.draw_x = 0;
+    glyph.draw_y = glyph_data->bearing_y;
+    glyph.width = glyph_data->width;
+    glyph.height = glyph_data->height;
+    glyph.y_min = glyph.draw_y - glyph.height;
+    glyph.y_max = glyph.draw_y;
+    glyph.texture_x = glyph_data->texture_x;
+    glyph.texture_y = glyph_data->texture_y;
+    glyph.texture_width = glyph_data->texture_width;
+    glyph.texture_height = glyph_data->texture_height;
+    glyph.group_index = group;
     return result;
 }
 
