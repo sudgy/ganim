@@ -10,6 +10,9 @@
 #include "command/print.hpp"
 #include "command/declare_variable.hpp"
 
+#include "function/binary.hpp"
+#include "function/unary.hpp"
+
 using namespace ganim;
 
 namespace {
@@ -18,7 +21,28 @@ namespace {
 }
 
 Script::Script(std::string script)
-: M_script(std::move(script)) {}
+: M_script(std::move(script))
+{
+    add_function("__plus__", std::make_unique<functions::Add<std::int64_t>>());
+    add_function("__plus__", std::make_unique<functions::Add<double>>());
+    add_function("__plus__", std::make_unique<functions::Add<std::string>>());
+    add_function("__minus__", std::make_unique<functions::Subtract<std::int64_t>>());
+    add_function("__minus__", std::make_unique<functions::Subtract<double>>());
+    add_function("__mult__", std::make_unique<functions::Multiply<std::int64_t>>());
+    add_function("__mult__", std::make_unique<functions::Multiply<double>>());
+    add_function("__div__", std::make_unique<functions::Divide<std::int64_t>>());
+    add_function("__div__", std::make_unique<functions::Divide<double>>());
+    add_function("__mod__", std::make_unique<functions::Modulo<std::int64_t>>());
+
+    add_function("__unary_plus__",
+                 std::make_unique<functions::UnaryPlus<std::int64_t>>());
+    add_function("__unary_plus__",
+                 std::make_unique<functions::UnaryPlus<double>>());
+    add_function("__unary_minus__",
+                 std::make_unique<functions::UnaryMinus<std::int64_t>>());
+    add_function("__unary_minus__",
+                 std::make_unique<functions::UnaryMinus<double>>());
+}
 
 void Script::compile()
 {
@@ -129,9 +153,40 @@ void Script::add_variable(
     M_variables[name_string] = std::move(variable);
 }
 
+void Script::add_function(
+    std::string_view name,
+    std::unique_ptr<Function> function,
+    int line_number,
+    int column_number
+)
+{
+    auto name_string = std::string(name);
+    auto& functions = M_functions[name_string];
+    for (auto& f : functions) {
+        if (f->get_result_type() == function->get_result_type() and
+            f->get_input_types() == function->get_input_types())
+        {
+            throw CompileError(line_number, column_number, std::format(
+                    "A function by the name \"{}\" already exists.", name));
+        }
+    }
+    functions.emplace_back(std::move(function));
+}
+
 Value* Script::get_variable(const std::string& name)
 {
     auto it = M_variables.find(name);
     if (it == M_variables.end()) return nullptr;
     else return it->second.get();
+}
+
+std::vector<Function*> Script::get_functions(const std::string& name)
+{
+    auto& results = M_functions[name];
+    auto result = std::vector<Function*>();
+    result.resize(results.size());
+    for (int i = 0; i < ssize(results); ++i) {
+        result[i] = results[i].get();
+    }
+    return result;
 }

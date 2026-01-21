@@ -47,7 +47,7 @@ DelayedOwningValue ganim::make_delayed_owning_value_from(
             }
             std::unreachable();
         },
-        [&](const std::unique_ptr<FunctionType>&) -> DelayedOwningValue
+        [&](const FunctionType*) -> DelayedOwningValue
         {
             // TODO: Implement these
             std::unreachable();

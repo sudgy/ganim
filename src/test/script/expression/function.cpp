@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-#include "script/expression/binary.hpp"
+#include "script/expression/function.hpp"
 #include "script/script.hpp"
 
 using namespace ganim;
@@ -70,4 +70,44 @@ var j = 5 % 2
 
     REQUIRE(test10->value().get_as<std::int64_t>());
     REQUIRE(*test10->value().get_as<std::int64_t>() == 1);
+}
+
+TEST_CASE("UnaryPlus expressions", "[script]") {
+    auto script = Script(R"(
+var a = +3
+var b = +4.0
+    )");
+    script.compile();
+    script.execute();
+    auto bad_script = Script("var a = +\"foo\"");
+    REQUIRE_THROWS(bad_script.compile());
+
+    auto test1 = script.get_variable("a");
+    auto test2 = script.get_variable("b");
+
+    REQUIRE(test1->value().get_as<std::int64_t>());
+    REQUIRE(*test1->value().get_as<std::int64_t>() == 3L);
+
+    REQUIRE(test2->value().get_as<double>());
+    REQUIRE(*test2->value().get_as<double>() == 4.0);
+}
+
+TEST_CASE("UnaryMinus expressions", "[script]") {
+    auto script = Script(R"(
+var a = -3
+var b = -4.0
+    )");
+    script.compile();
+    script.execute();
+    auto bad_script = Script("var a = -\"foo\"");
+    REQUIRE_THROWS(bad_script.compile());
+
+    auto test1 = script.get_variable("a");
+    auto test2 = script.get_variable("b");
+
+    REQUIRE(test1->value().get_as<std::int64_t>());
+    REQUIRE(*test1->value().get_as<std::int64_t>() == -3L);
+
+    REQUIRE(test2->value().get_as<double>());
+    REQUIRE(*test2->value().get_as<double>() == -4.0);
 }

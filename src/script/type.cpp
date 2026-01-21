@@ -17,16 +17,16 @@ bool ganim::operator==(const Type& lhs, const Type& rhs)
             }
             return false;
         },
-        [&](const std::unique_ptr<FunctionType>& lhs_val)
+        [&](const FunctionType* lhs_val)
         {
-            if (auto rhs_val = get_if<std::unique_ptr<FunctionType>>(&rhs.value)) {
-                return *lhs_val == **rhs_val;
+            if (auto rhs_val = get_if<const FunctionType*>(&rhs.value)) {
+                return lhs_val == *rhs_val;
             }
             return false;
         },
         [&](const CustomType* lhs_val)
         {
-            if (auto rhs_val = get_if<CustomType*>(&rhs.value)) {
+            if (auto rhs_val = get_if<const CustomType*>(&rhs.value)) {
                 return lhs_val == *rhs_val;
             }
             return false;

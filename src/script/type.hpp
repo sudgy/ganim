@@ -15,8 +15,8 @@ namespace ganim {
     struct Type {
         std::variant<
             TypeID,
-            std::unique_ptr<FunctionType>,
-            CustomType*
+            const FunctionType*,
+            const CustomType*
         > value;
     };
 
