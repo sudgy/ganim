@@ -22,10 +22,6 @@ namespace ganim {
             {
                 return M_value.get();
             }
-            virtual TypeID type_id() const override
-            {
-                return any_pointer::get_tag<T>();
-            }
             virtual Type type() const override
             {
                 // TODO: Figure out how to make this work with other types

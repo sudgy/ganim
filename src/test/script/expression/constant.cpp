@@ -7,7 +7,7 @@ using namespace ganim::expressions;
 
 TEST_CASE("Constant", "[script]") {
     auto expr = Constant(1, 2, 3);
-    REQUIRE(expr.type_id() == any_pointer::get_tag<int>());
+    REQUIRE(expr.type() == Type{any_pointer::get_tag<int>()});
     REQUIRE(expr.value());
     REQUIRE(expr.value().get_as<int>());
     REQUIRE(*expr.value().get_as<int>() == 1);

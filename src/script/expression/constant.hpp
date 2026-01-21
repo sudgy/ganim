@@ -21,10 +21,6 @@ namespace ganim::expressions {
             {
                 return &M_value;
             }
-            virtual TypeID type_id() const override
-            {
-                return any_pointer::get_tag<T>();
-            }
             virtual Type type() const override
             {
                 return {any_pointer::get_tag<T>()};

@@ -21,13 +21,13 @@ Binary::Binary(
             "Unable to do this operation on different types");
     }
     bool valid = false;
-    if (M_lhs->type_id() == any_pointer::get_tag<std::int64_t>()) valid = true;
-    if (M_lhs->type_id() == any_pointer::get_tag<double>()) {
+    if (M_lhs->type() == Type{any_pointer::get_tag<std::int64_t>()}) valid = true;
+    if (M_lhs->type() == Type{any_pointer::get_tag<double>()}) {
         if (M_operation != Modulo) {
             valid = true;
         }
     }
-    if (M_lhs->type_id() == any_pointer::get_tag<std::string>()) {
+    if (M_lhs->type() == Type{any_pointer::get_tag<std::string>()}) {
         if (M_operation == Plus) {
             valid = true;
         }
@@ -60,7 +60,7 @@ any_pointer Binary::value()
 {
     auto val1 = M_lhs->value();
     auto val2 = M_rhs->value();
-    if (M_lhs->type_id() == any_pointer::get_tag<std::int64_t>()) {
+    if (M_lhs->type() == Type{any_pointer::get_tag<std::int64_t>()}) {
         if (M_operation == Modulo) {
             M_value = *val1.get_as<std::int64_t>()
                     % *val2.get_as<std::int64_t>();
@@ -74,7 +74,7 @@ any_pointer Binary::value()
         }
         return any_cast<std::int64_t>(&M_value);
     }
-    else if (M_lhs->type_id() == any_pointer::get_tag<double>()) {
+    else if (M_lhs->type() == Type{any_pointer::get_tag<double>()}) {
         M_value = calc(
             *val1.get_as<double>(),
             *val2.get_as<double>(),
@@ -82,7 +82,7 @@ any_pointer Binary::value()
         );
         return any_cast<double>(&M_value);
     }
-    else if (M_lhs->type_id() == any_pointer::get_tag<std::string>()) {
+    else if (M_lhs->type() == Type{any_pointer::get_tag<std::string>()}) {
         if (M_operation == Plus) {
             M_value = *val1.get_as<std::string>() + *val2.get_as<std::string>();
             return any_cast<std::string>(&M_value);
@@ -96,11 +96,6 @@ any_pointer Binary::value()
 Type Binary::type() const
 {
     return M_lhs->type();
-}
-
-TypeID Binary::type_id() const
-{
-    return M_lhs->type_id();
 }
 
 

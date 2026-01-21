@@ -24,7 +24,6 @@ namespace ganim::expressions {
             );
 
             virtual any_pointer value() override;
-            virtual TypeID type_id() const override;
             virtual Type type() const override;
             virtual int line_number() const override
             {
