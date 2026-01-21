@@ -12,11 +12,13 @@ $token Identifier IdentifierToken
 
 $nterm statement_list std::vector<Statement>
 $nterm statement Statement
-$nterm print_statement PrintStatement
+$nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
 $nterm expression Expression
 $nterm term Term
 $nterm factor Factor
+$nterm expression_list std::vector<std::unique_ptr<Expression>>
+$nterm nonempty_expression_list std::vector<std::unique_ptr<Expression>>
 $nterm constant Constant
 $nterm identifier Identifier
 
@@ -35,12 +37,12 @@ statement_list =
     }
   | statement_list statement { $1.push_back(std::move($2)), std::move($1) } ;
 statement =
-    print_statement { std::move($1) }
+    expr_statement { std::move($1) }
   | var_statement { std::move($1) } ;
-print_statement =
-    "print" expression { PrintStatement(std::move($2)) } ;
+expr_statement =
+    expression ";" { ExprStatement(std::move($1)) } ;
 var_statement =
-    "var" identifier "=" expression
+    "var" identifier "=" expression ";"
         { VarStatement(std::move($2), std::move($4)) } ;
 
 
@@ -89,6 +91,14 @@ factor =
   | identifier {
         Factor(std::move($1), $1.line_number, $1.column_number, false)
     }
+  | identifier "(" expression_list ")" {
+        Factor(
+            Function($1, std::move($3)),
+            $1.line_number,
+            $1.column_number,
+            true
+        )
+    }
   | "+" factor {
         Factor(
             std::make_unique<Factor>(std::move($2)),
@@ -112,6 +122,21 @@ factor =
             $2.column_number,
             false
         )
+    } ;
+expression_list =
+    nonempty_expression_list { std::move($1) }
+  | { std::vector<std::unique_ptr<Expression>>() } ;
+nonempty_expression_list =
+    expression {
+        /* See above */
+        [&]{
+            auto result = std::vector<std::unique_ptr<Expression>>();
+            result.emplace_back(std::make_unique<Expression>(std::move($1)));
+            return result;
+        }()
+    }
+  | expression_list "," expression {
+        $1.push_back(std::make_unique<Expression>(std::move($3))), std::move($1)
     } ;
 
 constant =

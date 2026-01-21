@@ -35,6 +35,10 @@ std::unique_ptr<Expression> Expression::from_ast(
         {
             return expressions::Variable::from_ast(script, ast);
         },
+        [&](const syntax::Function& ast) -> std::unique_ptr<Expression>
+        {
+            return expressions::Function::from_ast(script, ast);
+        },
         [&](const std::unique_ptr<syntax::Factor>& factor)
             -> std::unique_ptr<Expression>
         {

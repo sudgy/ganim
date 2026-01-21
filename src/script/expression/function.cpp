@@ -27,7 +27,8 @@ any_pointer expressions::Function::value()
         inputs[i] = M_inputs[i].get();
     }
     M_value = M_f->execute(inputs);
-    return M_value->value();
+    if (M_value) return M_value->value();
+    else return nullptr;
 }
 
 Type expressions::Function::type() const
@@ -132,4 +133,30 @@ std::unique_ptr<Expression> expressions::Function::from_ast(
             "Unable to find this operation for this type");
     }
     return Expression::from_ast(script, ast.factor);
+}
+
+std::unique_ptr<Expression> expressions::Function::from_ast(
+    Script& script,
+    const syntax::Function& ast
+)
+{
+    auto params = std::vector<std::unique_ptr<Expression>>();
+    auto param_types = std::vector<Type>();
+    for (auto& exp : ast.parameters) {
+        params.push_back(Expression::from_ast(script, *exp));
+        param_types.push_back(params.back()->type());
+    }
+    auto fs = script.get_functions(static_cast<std::string>(ast.name.name));
+    for (auto& f : fs) {
+        if (f->get_input_types() == param_types) {
+            return std::make_unique<expressions::Function>(
+                *f,
+                std::move(params),
+                ast.name.line_number,
+                ast.name.column_number
+            );
+        }
+    }
+    throw CompileError(ast.name.line_number, ast.name.column_number,
+        std::format("No matching function \"{}\"", ast.name.name));
 }

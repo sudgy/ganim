@@ -7,7 +7,7 @@ using namespace ganim;
 using namespace ganim::expressions;
 
 TEST_CASE("Variable from ast", "[script]") {
-    auto script = Script("var a = 5");
+    auto script = Script("var a = 5;");
     script.compile();
     script.execute();
     auto identifier = syntax::Identifier("a", 1, 2);

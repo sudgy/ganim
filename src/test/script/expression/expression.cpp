@@ -6,7 +6,7 @@
 using namespace ganim;
 
 TEST_CASE("Expression from ast", "[script]") {
-    auto script = Script("var foo = 2.0");
+    auto script = Script("var foo = 2.0;");
     script.compile();
     script.execute();
     auto constant = syntax::Constant(5L, 1, 2);

@@ -18,6 +18,10 @@ namespace ganim {
             const FunctionType*,
             const CustomType*
         > value;
+        Type(TypeID value) : value(value) {}
+        Type(const FunctionType* value) : value(value) {}
+        Type(const CustomType* value) : value(value) {}
+        Type(std::nullptr_t) : value({TypeID(nullptr)}) {}
     };
 
     struct FunctionType {

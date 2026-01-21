@@ -15,6 +15,10 @@ namespace ganim::expressions {
                 Script& script,
                 const syntax::Term& ast
             );
+            static std::unique_ptr<Expression> from_ast(
+                Script& script,
+                const syntax::Function& ast
+            );
             Function(
                 const ganim::Function& f,
                 std::vector<std::unique_ptr<Expression>> inputs,

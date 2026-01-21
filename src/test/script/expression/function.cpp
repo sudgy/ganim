@@ -8,23 +8,23 @@ using namespace ganim::expressions;
 
 TEST_CASE("Binary expressions", "[script]") {
     auto script = Script(R"(
-var a = 3 + 4
-var b = 5.0 + 6.0
-var c = "foo" + "bar"
-var d = 3 * 4
-var e = 5.0 * 6.0
-var f = 4 / 3
-var g = 5.0 / 2.0
-var h = 2 - 3
-var i = 3.0 - 5.0
-var j = 5 % 2
+var a = 3 + 4;
+var b = 5.0 + 6.0;
+var c = "foo" + "bar";
+var d = 3 * 4;
+var e = 5.0 * 6.0;
+var f = 4 / 3;
+var g = 5.0 / 2.0;
+var h = 2 - 3;
+var i = 3.0 - 5.0;
+var j = 5 % 2;
     )");
     script.compile();
     script.execute();
-    auto bad_script1 = Script("var a = true + false");
-    auto bad_script2 = Script("var a = 3 + \"foo\"");
-    auto bad_script3 = Script("var a = \"foo\" * \"bar\"");
-    auto bad_script4 = Script("var a = 3.0 % 2.0");
+    auto bad_script1 = Script("var a = true + false;");
+    auto bad_script2 = Script("var a = 3 + \"foo\";");
+    auto bad_script3 = Script("var a = \"foo\" * \"bar\";");
+    auto bad_script4 = Script("var a = 3.0 % 2.0;");
     REQUIRE_THROWS(bad_script1.compile());
     REQUIRE_THROWS(bad_script2.compile());
     REQUIRE_THROWS(bad_script3.compile());
@@ -74,12 +74,12 @@ var j = 5 % 2
 
 TEST_CASE("UnaryPlus expressions", "[script]") {
     auto script = Script(R"(
-var a = +3
-var b = +4.0
+var a = +3;
+var b = +4.0;
     )");
     script.compile();
     script.execute();
-    auto bad_script = Script("var a = +\"foo\"");
+    auto bad_script = Script("var a = +\"foo\";");
     REQUIRE_THROWS(bad_script.compile());
 
     auto test1 = script.get_variable("a");
@@ -94,12 +94,12 @@ var b = +4.0
 
 TEST_CASE("UnaryMinus expressions", "[script]") {
     auto script = Script(R"(
-var a = -3
-var b = -4.0
+var a = -3;
+var b = -4.0;
     )");
     script.compile();
     script.execute();
-    auto bad_script = Script("var a = -\"foo\"");
+    auto bad_script = Script("var a = -\"foo\";");
     REQUIRE_THROWS(bad_script.compile());
 
     auto test1 = script.get_variable("a");

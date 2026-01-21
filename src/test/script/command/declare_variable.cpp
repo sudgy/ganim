@@ -9,7 +9,7 @@
 using namespace ganim;
 
 TEST_CASE("DeclareVariable", "[script]") {
-    auto script = Script("var a = 5");
+    auto script = Script("var a = 5;");
     script.compile();
     auto v1 = script.get_variable("a");
     auto v2 = script.get_variable("b");
@@ -26,9 +26,9 @@ TEST_CASE("DeclareVariable", "[script]") {
 
 TEST_CASE("Complicated arithmetic expressions", "[script]") {
     auto script = Script(R"(
-var a = 5
-var b = 3
-var c = b + (a + 3) * b + 4 / (5 % 3) - 3
+var a = 5;
+var b = 3;
+var c = b + (a + 3) * b + 4 / (5 % 3) - 3;
     )");
     script.compile();
     script.execute();
@@ -40,10 +40,10 @@ var c = b + (a + 3) * b + 4 / (5 % 3) - 3
 
 TEST_CASE("Unary plus/minus", "[script]") {
     auto script = Script(R"(
-var a = +5
-var b = -3
-var c = 3 + - 4
-var d = 3 ++--+4
+var a = +5;
+var b = -3;
+var c = 3 + - 4;
+var d = 3 ++--+4;
     )");
     script.compile();
     script.execute();

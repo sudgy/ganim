@@ -7,11 +7,12 @@
 
 #include "ganimscript_parser.hpp"
 
-#include "command/print.hpp"
+#include "command/expression.hpp"
 #include "command/declare_variable.hpp"
 
 #include "function/binary.hpp"
 #include "function/unary.hpp"
+#include "function/print.hpp"
 
 using namespace ganim;
 
@@ -42,6 +43,11 @@ Script::Script(std::string script)
                  std::make_unique<functions::UnaryMinus<std::int64_t>>());
     add_function("__unary_minus__",
                  std::make_unique<functions::UnaryMinus<double>>());
+
+    add_function("print", std::make_unique<functions::PrintInt>());
+    add_function("print", std::make_unique<functions::PrintDouble>());
+    add_function("print", std::make_unique<functions::PrintString>());
+    add_function("print", std::make_unique<functions::PrintBool>());
 }
 
 void Script::compile()
@@ -84,7 +90,6 @@ void Script::compile()
                 break;
             case Token::Identifier:
                 auto keywords = std::unordered_set<std::string_view>{
-                    "print",
                     "var"
                 };
                 if (keywords.contains(token.string)) {
@@ -116,10 +121,11 @@ void Script::compile()
     M_commands.reserve(statements.size());
     for (auto& statement : statements) {
         std::visit(overloaded{
-            [&](const syntax::PrintStatement& value)
+            [&](const syntax::ExprStatement& value)
             {
                 M_commands.push_back(std::make_unique<
-                    commands::Print>(*this, value));
+                    commands::Expression>(
+                        Expression::from_ast(*this, value.expression)));
             },
             [&](const syntax::VarStatement& value)
             {

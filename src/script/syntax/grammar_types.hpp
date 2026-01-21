@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace ganim::syntax {
     struct Constant {
@@ -18,12 +19,17 @@ namespace ganim::syntax {
         int column_number = -1;
     };
     struct Expression;
+    struct Function {
+        Identifier name;
+        std::vector<std::unique_ptr<Expression>> parameters;
+    };
     struct Factor {
         std::variant<
             Constant,
             Identifier,
             std::unique_ptr<Factor>,
-            std::unique_ptr<Expression>
+            std::unique_ptr<Expression>,
+            Function
         > value;
         int line_number = -1;
         int column_number = -1;
@@ -43,15 +49,15 @@ namespace ganim::syntax {
         int column_number = -1;
         enum Operation {Plus, Minus} op = Plus;
     };
-    struct PrintStatement {
-        Expression value;
+    struct ExprStatement {
+        Expression expression;
     };
     struct VarStatement {
         Identifier variable;
         Expression value;
     };
     struct Statement {
-        std::variant<PrintStatement, VarStatement> value;
+        std::variant<ExprStatement, VarStatement> value;
     };
 }
 
