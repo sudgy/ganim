@@ -39,7 +39,10 @@ namespace ganim::expressions {
             int M_line_number;
             int M_column_number;
     };
-    std::unique_ptr<Expression> constant_from_ast(const syntax::Constant& ast);
+    // This is outside the class to make the template argument unnecessary
+    std::unique_ptr<Expression> constant_from_ast(
+        const syntax::ConstantExpression& ast
+    );
 }
 
 #endif

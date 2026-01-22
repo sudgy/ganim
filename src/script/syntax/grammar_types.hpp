@@ -8,52 +8,68 @@
 #include <vector>
 
 namespace ganim::syntax {
-    struct Constant {
+    struct ConstantExpression {
         std::variant<std::int64_t, double, bool, std::string_view> value = 0L;
         int line_number = -1;
         int column_number = -1;
     };
-    struct Identifier {
+    struct IdentifierExpression {
         std::string_view name;
         int line_number = -1;
         int column_number = -1;
     };
     struct Expression;
-    struct Function {
-        Identifier name;
+    struct FunctionExpression {
+        std::unique_ptr<Expression> name;
         std::vector<std::unique_ptr<Expression>> parameters;
+        int line_number = -1;
+        int column_number = -1;
+
+        FunctionExpression(
+            std::unique_ptr<Expression> in_name,
+            std::vector<std::unique_ptr<Expression>> in_parameters
+        );
     };
-    struct Factor {
+    struct UnaryExpression {
+        std::unique_ptr<Expression> subexpression;
+        bool plus_sign = true;
+        int line_number = -1;
+        int column_number = -1;
+
+        UnaryExpression(
+            std::unique_ptr<Expression> in_subexpression,
+            bool in_plus_sign
+        );
+    };
+    struct BinaryExpression {
+        std::unique_ptr<Expression> lhs;
+        std::unique_ptr<Expression> rhs;
+        enum Operation {Plus, Minus, Times, Divide, Modulo} op = Plus;
+        int line_number = -1;
+        int column_number = -1;
+
+        BinaryExpression(
+            std::unique_ptr<Expression> in_lhs,
+            std::unique_ptr<Expression> in_rhs,
+            Operation in_op
+        );
+    };
+    struct Expression {
         std::variant<
-            Constant,
-            Identifier,
-            std::unique_ptr<Factor>,
-            std::unique_ptr<Expression>,
-            Function
+            ConstantExpression,
+            IdentifierExpression,
+            FunctionExpression,
+            UnaryExpression,
+            BinaryExpression
         > value;
         int line_number = -1;
         int column_number = -1;
-        bool plus_sign = true;
-    };
-    struct Term {
-        std::unique_ptr<Term> subterm;
-        Factor factor;
-        int line_number = -1;
-        int column_number = -1;
-        enum Operation {Times, Divide, Modulo} op = Times;
-    };
-    struct Expression {
-        std::unique_ptr<Expression> subexpression;
-        Term term;
-        int line_number = -1;
-        int column_number = -1;
-        enum Operation {Plus, Minus} op = Plus;
     };
     struct ExprStatement {
         Expression expression;
     };
     struct VarStatement {
-        Identifier variable;
+        IdentifierExpression variable;
         Expression value;
     };
     struct Statement {

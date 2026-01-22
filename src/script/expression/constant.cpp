@@ -9,7 +9,7 @@ namespace {
 }
 
 std::unique_ptr<Expression> expressions::constant_from_ast(
-    const syntax::Constant& ast
+    const syntax::ConstantExpression& ast
 )
 {
     return visit(overloaded{

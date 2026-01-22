@@ -8,7 +8,7 @@ using namespace ganim::expressions;
 
 std::unique_ptr<Variable> Variable::from_ast(
     Script& script,
-    const syntax::Identifier& ast
+    const syntax::IdentifierExpression& ast
 )
 {
     auto value = script.get_variable(std::string(ast.name));

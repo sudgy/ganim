@@ -10,7 +10,7 @@ TEST_CASE("Variable from ast", "[script]") {
     auto script = Script("var a = 5;");
     script.compile();
     script.execute();
-    auto identifier = syntax::Identifier("a", 1, 2);
+    auto identifier = syntax::IdentifierExpression("a", 1, 2);
     auto test = Variable::from_ast(script, identifier);
     REQUIRE(test->value().get_as<std::int64_t>());
     REQUIRE(*test->value().get_as<std::int64_t>() == 5);

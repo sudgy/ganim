@@ -16,10 +16,10 @@ TEST_CASE("Constant", "[script]") {
 }
 
 TEST_CASE("Constant from ast", "[script]") {
-    auto int_ast = syntax::Constant(5L, 1, 2);
-    auto double_ast = syntax::Constant(3.0, 2, 3);
-    auto bool_ast = syntax::Constant(true, 3, 4);
-    auto string_ast = syntax::Constant("test", 4, 5);
+    auto int_ast = syntax::ConstantExpression(5L, 1, 2);
+    auto double_ast = syntax::ConstantExpression(3.0, 2, 3);
+    auto bool_ast = syntax::ConstantExpression(true, 3, 4);
+    auto string_ast = syntax::ConstantExpression("test", 4, 5);
     auto test1 = constant_from_ast(int_ast);
     auto test2 = constant_from_ast(double_ast);
     auto test3 = constant_from_ast(bool_ast);

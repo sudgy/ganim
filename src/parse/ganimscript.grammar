@@ -14,13 +14,14 @@ $nterm statement_list std::vector<Statement>
 $nterm statement Statement
 $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
-$nterm expression Expression
-$nterm term Term
-$nterm factor Factor
+$nterm expression std::unique_ptr<Expression>
+$nterm term std::unique_ptr<Expression>
+$nterm factor std::unique_ptr<Expression>
 $nterm expression_list std::vector<std::unique_ptr<Expression>>
 $nterm nonempty_expression_list std::vector<std::unique_ptr<Expression>>
-$nterm constant Constant
-$nterm identifier Identifier
+$nterm constant_expression std::unique_ptr<Expression>
+$nterm identifier_expression std::unique_ptr<Expression>
+$nterm identifier IdentifierExpression
 
 $grammar
 
@@ -40,89 +41,89 @@ statement =
     expr_statement { std::move($1) }
   | var_statement { std::move($1) } ;
 expr_statement =
-    expression ";" { ExprStatement(std::move($1)) } ;
+    expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
     "var" identifier "=" expression ";"
-        { VarStatement(std::move($2), std::move($4)) } ;
+        { VarStatement($2, std::move(*$4)) } ;
 
 
 expression =
     expression "+" term {
-        Expression(
-            std::make_unique<Expression>(std::move($1)),
-            std::move($3), $1.line_number, $1.column_number, Expression::Plus
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::Plus
+            )
         )
     }
   | expression "-" term {
-        Expression(
-            std::make_unique<Expression>(std::move($1)),
-            std::move($3), $1.line_number, $1.column_number, Expression::Minus
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::Minus
+            )
         )
     }
-  | term {
-        Expression(nullptr, std::move($1), $1.line_number, $1.column_number)
-    } ;
+  | term { std::move($1) } ;
 term =
     term "*" factor {
-        Term(
-            std::make_unique<Term>(std::move($1)),
-            std::move($3), $1.line_number, $1.column_number, Term::Times
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::Times
+            )
         )
     }
   | term "/" factor {
-        Term(
-            std::make_unique<Term>(std::move($1)),
-            std::move($3), $1.line_number, $1.column_number, Term::Divide
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::Divide
+            )
         )
     }
   | term "%" factor {
-        Term(
-            std::make_unique<Term>(std::move($1)),
-            std::move($3), $1.line_number, $1.column_number, Term::Modulo
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::Modulo
+            )
         )
     }
-  | factor {
-        Term(nullptr, std::move($1), $1.line_number, $1.column_number)
-    } ;
+  | factor { std::move($1) } ;
 factor =
-    constant {
-        Factor(std::move($1), $1.line_number, $1.column_number, false)
-    }
-  | identifier {
-        Factor(std::move($1), $1.line_number, $1.column_number, false)
-    }
-  | identifier "(" expression_list ")" {
-        Factor(
-            Function($1, std::move($3)),
-            $1.line_number,
-            $1.column_number,
-            true
+    constant_expression { std::move($1) }
+  | identifier_expression { std::move($1) }
+  | identifier_expression "(" expression_list ")" {
+        std::make_unique<Expression>(
+            FunctionExpression(
+                std::move($1),
+                std::move($3)
+            )
         )
     }
   | "+" factor {
-        Factor(
-            std::make_unique<Factor>(std::move($2)),
-            $2.line_number,
-            $2.column_number,
-            true
+        std::make_unique<Expression>(
+            UnaryExpression(
+                std::move($2),
+                true
+            )
         )
     }
   | "-" factor {
-        Factor(
-            std::make_unique<Factor>(std::move($2)),
-            $2.line_number,
-            $2.column_number,
-            false
+        std::make_unique<Expression>(
+            UnaryExpression(
+                std::move($2),
+                false
+            )
         )
     }
-  | "(" expression ")" {
-        Factor(
-            std::make_unique<Expression>(std::move($2)),
-            $2.line_number,
-            $2.column_number,
-            false
-        )
-    } ;
+  | "(" expression ")" { std::move($2) } ;
 expression_list =
     nonempty_expression_list { std::move($1) }
   | { std::vector<std::unique_ptr<Expression>>() } ;
@@ -131,18 +132,51 @@ nonempty_expression_list =
         /* See above */
         [&]{
             auto result = std::vector<std::unique_ptr<Expression>>();
-            result.emplace_back(std::make_unique<Expression>(std::move($1)));
+            result.emplace_back(std::move($1));
             return result;
         }()
     }
   | expression_list "," expression {
-        $1.push_back(std::make_unique<Expression>(std::move($3))), std::move($1)
+        $1.emplace_back(std::move($3)), std::move($1)
     } ;
 
-constant =
-    Int { Constant($1.value, $1.line_number, $1.column_number) }
-  | Double { Constant($1.value, $1.line_number, $1.column_number) }
-  | Boolean { Constant($1.value, $1.line_number, $1.column_number) }
-  | String { Constant($1.value, $1.line_number, $1.column_number) } ;
-identifier =
-    Identifier { Identifier($1.value, $1.line_number, $1.column_number) } ;
+constant_expression =
+    Int {
+        std::make_unique<Expression>(
+            ConstantExpression($1.value, $1.line_number, $1.column_number),
+            $1.line_number,
+            $1.column_number
+        )
+    }
+  | Double {
+        std::make_unique<Expression>(
+            ConstantExpression($1.value, $1.line_number, $1.column_number),
+            $1.line_number,
+            $1.column_number
+        )
+    }
+  | Boolean {
+        std::make_unique<Expression>(
+            ConstantExpression($1.value, $1.line_number, $1.column_number),
+            $1.line_number,
+            $1.column_number
+        )
+    }
+  | String {
+        std::make_unique<Expression>(
+            ConstantExpression($1.value, $1.line_number, $1.column_number),
+            $1.line_number,
+            $1.column_number
+        )
+    } ;
+identifier_expression =
+    Identifier {
+        std::make_unique<Expression>(
+            IdentifierExpression($1.value, $1.line_number, $1.column_number),
+            $1.line_number,
+            $1.column_number
+        )
+    } ;
+identifier = Identifier {
+    IdentifierExpression($1.value, $1.line_number, $1.column_number)
+}
