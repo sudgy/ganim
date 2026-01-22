@@ -32,13 +32,13 @@ namespace ganim::syntax {
     };
     struct UnaryExpression {
         std::unique_ptr<Expression> subexpression;
-        bool plus_sign = true;
+        enum Operation {Plus, Minus, Not} op = Plus;
         int line_number = -1;
         int column_number = -1;
 
         UnaryExpression(
             std::unique_ptr<Expression> in_subexpression,
-            bool in_plus_sign
+            Operation in_op
         );
     };
     struct BinaryExpression {
@@ -46,7 +46,8 @@ namespace ganim::syntax {
         std::unique_ptr<Expression> rhs;
         enum Operation {
             Plus, Minus, Times, Divide, Modulo,
-            LT, LE, GT, GE, Equal, NotEqual
+            LT, LE, GT, GE, Equal, NotEqual,
+            And, Or, Xor, Nand, Nor
         } op = Plus;
         int line_number = -1;
         int column_number = -1;

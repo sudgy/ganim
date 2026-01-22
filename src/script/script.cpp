@@ -15,6 +15,7 @@
 #include "function/print.hpp"
 #include "function/equality.hpp"
 #include "function/comparison.hpp"
+#include "function/boolean.hpp"
 
 using namespace ganim;
 
@@ -72,6 +73,13 @@ Script::Script(std::string script)
     add_function("__ge__",
                  std::make_unique<functions::GreaterThanOrEqual<double>>());
 
+    add_function("__and__", std::make_unique<functions::And>());
+    add_function("__or__", std::make_unique<functions::Or>());
+    add_function("__xor__", std::make_unique<functions::Xor>());
+    add_function("__nand__", std::make_unique<functions::Nand>());
+    add_function("__nor__", std::make_unique<functions::Nor>());
+    add_function("__not__", std::make_unique<functions::Not>());
+
     add_function("print", std::make_unique<functions::PrintInt>());
     add_function("print", std::make_unique<functions::PrintDouble>());
     add_function("print", std::make_unique<functions::PrintString>());
@@ -118,7 +126,13 @@ void Script::compile()
                 break;
             case Token::Identifier:
                 auto keywords = std::unordered_set<std::string_view>{
-                    "var"
+                    "var",
+                    "and",
+                    "not",
+                    "or",
+                    "xor",
+                    "nor",
+                    "nand"
                 };
                 if (keywords.contains(token.string)) {
                     pushed = parser.push(parser.builtin_token(token.string));

@@ -6,33 +6,23 @@
 #include "script/owning_value.hpp"
 
 namespace ganim::functions {
-    template <typename T>
-    class UnaryPlus : public Function {
-        inline static Type TType = Type{any_pointer::get_tag<T>()};
-        public:
-            UnaryPlus() : Function(FunctionType(TType, {TType})) {}
-
-            virtual std::unique_ptr<Value> execute(std::vector<Value*> vs)
-                const override
-            {
-                return std::make_unique<OwningValue<T>>(
-                    +(*vs[0]->value().get_as<T>()));
-            }
+#define DECL(name, op)                                                         \
+    template <typename T>                                                      \
+    class name : public Function {                                             \
+        inline static Type TType = Type{any_pointer::get_tag<T>()};            \
+        public:                                                                \
+            name() : Function(FunctionType(TType, {TType})) {}                 \
+                                                                               \
+            virtual std::unique_ptr<Value> execute(std::vector<Value*> vs)     \
+                const override                                                 \
+            {                                                                  \
+                return std::make_unique<OwningValue<T>>(                       \
+                    op(*vs[0]->value().get_as<T>()));                          \
+            }                                                                  \
     };
-
-    template <typename T>
-    class UnaryMinus : public Function {
-        inline static Type TType = Type{any_pointer::get_tag<T>()};
-        public:
-            UnaryMinus() : Function(FunctionType(TType, {TType})) {}
-
-            virtual std::unique_ptr<Value> execute(std::vector<Value*> vs)
-                const override
-            {
-                return std::make_unique<OwningValue<T>>(
-                    -(*vs[0]->value().get_as<T>()));
-            }
-    };
+DECL(UnaryPlus, +)
+DECL(UnaryMinus, -)
+#undef DECL
 }
 
 #endif

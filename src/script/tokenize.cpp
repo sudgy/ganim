@@ -293,6 +293,8 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 if (last_two == "!=") compound = true;
                 if (last_two == "<=") compound = true;
                 if (last_two == ">=") compound = true;
+                if (last_two == "&&") compound = true;
+                if (last_two == "||") compound = true;
                 if (compound) {
                     add_token(true, Token::Else);
                     state = None;

@@ -15,10 +15,10 @@ FunctionExpression::FunctionExpression(
 
 UnaryExpression::UnaryExpression(
     std::unique_ptr<Expression> in_subexpression,
-    bool in_plus_sign
+    Operation in_op
 )
 :   subexpression(std::move(in_subexpression)),
-    plus_sign(in_plus_sign)
+    op(in_op)
 {
     line_number = subexpression->line_number;
     column_number = subexpression->column_number;

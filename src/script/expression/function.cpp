@@ -111,6 +111,16 @@ std::unique_ptr<Expression> expressions::Function::from_ast(
             return script.get_functions("__gt__");
         case syntax::BinaryExpression::GE:
             return script.get_functions("__ge__");
+        case syntax::BinaryExpression::And:
+            return script.get_functions("__and__");
+        case syntax::BinaryExpression::Nand:
+            return script.get_functions("__nand__");
+        case syntax::BinaryExpression::Nor:
+            return script.get_functions("__nor__");
+        case syntax::BinaryExpression::Or:
+            return script.get_functions("__or__");
+        case syntax::BinaryExpression::Xor:
+            return script.get_functions("__xor__");
         }
         return {};
     }();
@@ -142,12 +152,15 @@ std::unique_ptr<Expression> expressions::Function::from_ast(
     auto line_number = sub->line_number();
     auto column_number = sub->column_number();
     auto fs = [&] -> std::vector<ganim::Function*> {
-        if (ast.plus_sign) {
+        switch (ast.op) {
+        case syntax::UnaryExpression::Plus:
             return script.get_functions("__unary_plus__");
-        }
-        else {
+        case syntax::UnaryExpression::Minus:
             return script.get_functions("__unary_minus__");
+        case syntax::UnaryExpression::Not:
+            return script.get_functions("__not__");
         }
+        return {};
     }();
     for (auto f : fs) {
         if (f->get_input_types()[0] == sub->type()) {
