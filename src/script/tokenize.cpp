@@ -57,7 +57,8 @@ std::vector<Token> ganim::tokenize(std::string_view string)
         Identifier,
         Integer10,
         MaybeFloat,
-        Float
+        Float,
+        Operator
     };
     enum FloatState {
         BeforePoint,
@@ -79,9 +80,10 @@ std::vector<Token> ganim::tokenize(std::string_view string)
     auto full_string_view = std::string_view(string);
 
     auto add_token = [&](
-            bool include_current_character,
-            Token::Type type
-        ) {
+        bool include_current_character,
+        Token::Type type
+    )
+    {
         auto size = byte_number - token_start;
         if (include_current_character) size += byte_size;
         result.push_back({
@@ -125,7 +127,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
             case Else:
                 if (codepoint == '"') state = String;
                 else if (codepoint == '.') state = MaybeFloat;
-                else add_token(true, Token::Else);
+                else state = Operator;
                 break;
             }
             break;
@@ -153,7 +155,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 state = None;
                 if (codepoint == '"') state = String;
                 else if (codepoint == '.') state = MaybeFloat;
-                else add_token(true, Token::Else);
+                else state = Operator;
                 break;
             }
             break;
@@ -184,7 +186,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                     token_column = column_number;
                     state = None;
                     if (codepoint == '"') state = String;
-                    else add_token(true, Token::Else);
+                    else state = Operator;
                 }
                 break;
             }
@@ -211,7 +213,7 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                 token_column = column_number;
                 state = None;
                 if (codepoint == '"') state = String;
-                else add_token(true, Token::Else);
+                else state = Operator;
                 break;
             }
             break;
@@ -256,8 +258,53 @@ std::vector<Token> ganim::tokenize(std::string_view string)
                     token_column = column_number;
                     state = None;
                     if (codepoint == '"') state = String;
-                    else add_token(true, Token::Else);
+                    else state = Operator;
                 }
+            }
+            break;
+        case Operator:
+            switch (type) {
+            case Whitespace:
+                add_token(false, Token::Else);
+                state = None;
+                break;
+            case IdentifierStart:
+                add_token(false, Token::Else);
+                token_start = byte_number;
+                token_column = column_number;
+                state = Identifier;
+                break;
+            case IdentifierContinue:
+                throw CompileError(line_number, column_number,
+                        "Invalid identifier");
+            case Number:
+                add_token(false, Token::Else);
+                token_start = byte_number;
+                token_column = column_number;
+                state = Integer10;
+                break;
+            case Else:
+                bool compound = false;
+                auto last_two = full_string_view.substr(
+                    token_start,
+                    byte_number + byte_size - token_start
+                );
+                if (last_two == "==") compound = true;
+                if (last_two == "!=") compound = true;
+                if (last_two == "<=") compound = true;
+                if (last_two == ">=") compound = true;
+                if (compound) {
+                    add_token(true, Token::Else);
+                    state = None;
+                }
+                else {
+                    add_token(false, Token::Else);
+                    token_start = byte_number;
+                    token_column = column_number;
+                    if (codepoint == '"') state = String;
+                    else if (codepoint == '.') state = MaybeFloat;
+                }
+                break;
             }
             break;
         }

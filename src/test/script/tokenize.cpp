@@ -236,6 +236,7 @@ TEST_CASE("tokenize floating-point", "[script]") {
     auto tokens8 = tokenize("1.e2");
     auto tokens9 = tokenize("1.5e2");
     auto tokens10 = tokenize(".5e2");
+    auto tokens11 = tokenize("print(.5)");
 
     REQUIRE(tokens1.size() == 1);
     REQUIRE(tokens1[0].string == "0.");
@@ -257,6 +258,11 @@ TEST_CASE("tokenize floating-point", "[script]") {
     REQUIRE(tokens9[0].string == "1.5e2");
     REQUIRE(tokens10.size() == 1);
     REQUIRE(tokens10[0].string == ".5e2");
+    REQUIRE(tokens11.size() == 4);
+    REQUIRE(tokens11[0].string == "print");
+    REQUIRE(tokens11[1].string == "(");
+    REQUIRE(tokens11[2].string == ".5");
+    REQUIRE(tokens11[3].string == ")");
 
     REQUIRE_THROWS_WITH(tokenize("1.5.1"),
             get_compile_error_message(0, 0, "Invalid floating-point literal"));
@@ -286,4 +292,18 @@ TEST_CASE("Token types") {
     REQUIRE(tokens[4].type == Token::Double);
     REQUIRE(tokens[5].type == Token::Else);
     REQUIRE(tokens[6].type == Token::String);
+}
+
+TEST_CASE("Tokenize compound operators") {
+    auto tokens = tokenize("= == <= >= != >! ===");
+    REQUIRE(tokens.size() == 9);
+    REQUIRE(tokens[0].string == "=");
+    REQUIRE(tokens[1].string == "==");
+    REQUIRE(tokens[2].string == "<=");
+    REQUIRE(tokens[3].string == ">=");
+    REQUIRE(tokens[4].string == "!=");
+    REQUIRE(tokens[5].string == ">");
+    REQUIRE(tokens[6].string == "!");
+    REQUIRE(tokens[7].string == "==");
+    REQUIRE(tokens[8].string == "=");
 }
