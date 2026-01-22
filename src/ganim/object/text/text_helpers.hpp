@@ -84,12 +84,7 @@ namespace ganim {
     /** @brief Get the OpenGL texture ID used for text.
      */
     unsigned get_text_texture();
-    /** @brief The default size of the texture used for text.
-     *
-     * The text texture is a square of this size.  If you want to change the
-     * size, use @ref set_text_texture_size.
-     */
-    inline constexpr int GC_default_text_texture_size = 1024;
+    int get_text_texture_size();
     /** @brief Set the size for the texture used for text.
      *
      * It will be a square with this size.  Powers of two are recommended.  If

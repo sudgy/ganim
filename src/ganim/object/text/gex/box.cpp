@@ -89,7 +89,7 @@ Box gex::box_from_glyphs(std::vector<Glyph> glyphs)
 Box gex::make_rule(double width, double height, double depth, int group_index)
 {
     auto result = Box(width, height, depth, {});
-    const auto td = 1.0f / GC_default_text_texture_size / 2;
+    const auto td = 1.0f / get_text_texture_size() / 2;
     result.glyphs.resize(1);
     result.glyphs[0].x_pos = 0;
     result.glyphs[0].y_pos = 0;

@@ -31,7 +31,7 @@ namespace {
     int G_tt_x = 2; // A single white pixel is placed on the corner for rules
     int G_tt_y = 0;
     int G_tt_h = 2;
-    int G_text_texture_size = GC_default_text_texture_size;
+    int G_text_texture_size = 1024;
     struct GlyphData {
         float texture_x = 0; ///< The x coordinate in the texture
         float texture_y = 0; ///< The y coordinate in the texture
@@ -352,6 +352,11 @@ std::vector<Glyph> ganim::shape_delimiter(
 unsigned ganim::get_text_texture()
 {
     return G_text_texture;
+}
+
+int ganim::get_text_texture_size()
+{
+    return G_text_texture_size;
 }
 
 void ganim::set_text_texture_size(int size)
