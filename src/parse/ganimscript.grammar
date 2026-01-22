@@ -15,8 +15,11 @@ $nterm statement Statement
 $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
 $nterm expression std::unique_ptr<Expression>
-$nterm term std::unique_ptr<Expression>
-$nterm factor std::unique_ptr<Expression>
+$nterm eq_expression std::unique_ptr<Expression>
+$nterm rel_expression std::unique_ptr<Expression>
+$nterm sum_expression std::unique_ptr<Expression>
+$nterm prod_expression std::unique_ptr<Expression>
+$nterm base_expression std::unique_ptr<Expression>
 $nterm expression_list std::vector<std::unique_ptr<Expression>>
 $nterm nonempty_expression_list std::vector<std::unique_ptr<Expression>>
 $nterm constant_expression std::unique_ptr<Expression>
@@ -47,8 +50,67 @@ var_statement =
         { VarStatement($2, std::move(*$4)) } ;
 
 
-expression =
-    expression "+" term {
+expression = eq_expression { std::move($1) } ;
+eq_expression =
+    rel_expression "==" rel_expression {
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::Equal
+            )
+        )
+    }
+  | rel_expression "!=" rel_expression {
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::NotEqual
+            )
+        )
+    }
+  | rel_expression { std::move($1) } ;
+rel_expression =
+    sum_expression "<" sum_expression {
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::LT
+            )
+        )
+    }
+  | sum_expression "<=" sum_expression {
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::LE
+            )
+        )
+    }
+  | sum_expression ">" sum_expression {
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::GT
+            )
+        )
+    }
+  | sum_expression ">=" sum_expression {
+        std::make_unique<Expression>(
+            BinaryExpression(
+                std::move($1),
+                std::move($3),
+                BinaryExpression::GE
+            )
+        )
+    }
+  | sum_expression { std::move($1) } ;
+sum_expression =
+    sum_expression "+" prod_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -57,7 +119,7 @@ expression =
             )
         )
     }
-  | expression "-" term {
+  | sum_expression "-" prod_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -66,9 +128,9 @@ expression =
             )
         )
     }
-  | term { std::move($1) } ;
-term =
-    term "*" factor {
+  | prod_expression { std::move($1) } ;
+prod_expression =
+    prod_expression "*" base_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -77,7 +139,7 @@ term =
             )
         )
     }
-  | term "/" factor {
+  | prod_expression "/" base_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -86,7 +148,7 @@ term =
             )
         )
     }
-  | term "%" factor {
+  | prod_expression "%" base_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -95,8 +157,8 @@ term =
             )
         )
     }
-  | factor { std::move($1) } ;
-factor =
+  | base_expression { std::move($1) } ;
+base_expression =
     constant_expression { std::move($1) }
   | identifier_expression { std::move($1) }
   | identifier_expression "(" expression_list ")" {
@@ -107,7 +169,7 @@ factor =
             )
         )
     }
-  | "+" factor {
+  | "+" base_expression {
         std::make_unique<Expression>(
             UnaryExpression(
                 std::move($2),
@@ -115,7 +177,7 @@ factor =
             )
         )
     }
-  | "-" factor {
+  | "-" base_expression {
         std::make_unique<Expression>(
             UnaryExpression(
                 std::move($2),

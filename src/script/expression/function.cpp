@@ -99,6 +99,18 @@ std::unique_ptr<Expression> expressions::Function::from_ast(
             return script.get_functions("__div__");
         case syntax::BinaryExpression::Modulo:
             return script.get_functions("__mod__");
+        case syntax::BinaryExpression::Equal:
+            return script.get_functions("__eq__");
+        case syntax::BinaryExpression::NotEqual:
+            return script.get_functions("__neq__");
+        case syntax::BinaryExpression::LT:
+            return script.get_functions("__lt__");
+        case syntax::BinaryExpression::LE:
+            return script.get_functions("__le__");
+        case syntax::BinaryExpression::GT:
+            return script.get_functions("__gt__");
+        case syntax::BinaryExpression::GE:
+            return script.get_functions("__ge__");
         }
         return {};
     }();

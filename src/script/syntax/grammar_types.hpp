@@ -44,7 +44,10 @@ namespace ganim::syntax {
     struct BinaryExpression {
         std::unique_ptr<Expression> lhs;
         std::unique_ptr<Expression> rhs;
-        enum Operation {Plus, Minus, Times, Divide, Modulo} op = Plus;
+        enum Operation {
+            Plus, Minus, Times, Divide, Modulo,
+            LT, LE, GT, GE, Equal, NotEqual
+        } op = Plus;
         int line_number = -1;
         int column_number = -1;
 

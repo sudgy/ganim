@@ -13,6 +13,8 @@
 #include "function/binary.hpp"
 #include "function/unary.hpp"
 #include "function/print.hpp"
+#include "function/equality.hpp"
+#include "function/comparison.hpp"
 
 using namespace ganim;
 
@@ -43,6 +45,32 @@ Script::Script(std::string script)
                  std::make_unique<functions::UnaryMinus<std::int64_t>>());
     add_function("__unary_minus__",
                  std::make_unique<functions::UnaryMinus<double>>());
+
+    add_function("__eq__", std::make_unique<functions::Equal<std::int64_t>>());
+    add_function("__eq__", std::make_unique<functions::Equal<double>>());
+    add_function("__eq__", std::make_unique<functions::Equal<bool>>());
+    add_function("__eq__", std::make_unique<functions::Equal<std::string>>());
+    add_function("__neq__", std::make_unique<functions::NotEqual<std::int64_t>>());
+    add_function("__neq__", std::make_unique<functions::NotEqual<double>>());
+    add_function("__neq__", std::make_unique<functions::NotEqual<bool>>());
+    add_function("__neq__", std::make_unique<functions::NotEqual<std::string>>());
+
+    add_function("__lt__",
+                 std::make_unique<functions::LessThan<std::int64_t>>());
+    add_function("__lt__",
+                 std::make_unique<functions::LessThan<double>>());
+    add_function("__le__",
+                 std::make_unique<functions::LessThanOrEqual<std::int64_t>>());
+    add_function("__le__",
+                 std::make_unique<functions::LessThanOrEqual<double>>());
+    add_function("__gt__",
+                 std::make_unique<functions::GreaterThan<std::int64_t>>());
+    add_function("__gt__",
+                 std::make_unique<functions::GreaterThan<double>>());
+    add_function("__ge__",
+                 std::make_unique<functions::GreaterThanOrEqual<std::int64_t>>());
+    add_function("__ge__",
+                 std::make_unique<functions::GreaterThanOrEqual<double>>());
 
     add_function("print", std::make_unique<functions::PrintInt>());
     add_function("print", std::make_unique<functions::PrintDouble>());
