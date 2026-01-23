@@ -76,8 +76,12 @@ namespace ganim::syntax {
         IdentifierExpression variable;
         Expression value;
     };
+    struct SetStatement {
+        Expression lhs;
+        Expression value;
+    };
     struct Statement {
-        std::variant<ExprStatement, VarStatement> value;
+        std::variant<ExprStatement, VarStatement, SetStatement> value;
     };
 }
 

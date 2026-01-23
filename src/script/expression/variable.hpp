@@ -28,6 +28,14 @@ namespace ganim::expressions {
             {
                 return M_variable->type();
             }
+            virtual bool modifiable() const override
+            {
+                return M_variable->modifiable();
+            }
+            virtual void modify(Value& value) override
+            {
+                M_variable->modify(value);
+            }
             virtual int line_number() const override
             {
                 return M_line_number;

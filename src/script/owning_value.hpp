@@ -27,17 +27,23 @@ namespace ganim {
                 // TODO: Figure out how to make this work with other types
                 return {any_pointer::get_tag<T>()};
             }
+            void set_modifiable(bool modifiable)
+            {
+                M_modifiable = modifiable;
+            }
+            virtual bool modifiable() const
+            {
+                return M_modifiable;
+            }
+            virtual void modify(Value& value)
+            {
+                *M_value = *value.value().get_as<T>();
+            }
 
         private:
             std::unique_ptr<T> M_value;
+            bool M_modifiable = false;
     };
-    struct DelayedOwningValue {
-        std::unique_ptr<Value> value;
-        std::move_only_function<void()> initialize;
-    };
-    DelayedOwningValue make_delayed_owning_value_from(
-        std::unique_ptr<Value> value
-    );
 }
 
 #endif

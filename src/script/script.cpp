@@ -9,6 +9,7 @@
 
 #include "command/expression.hpp"
 #include "command/declare_variable.hpp"
+#include "command/set.hpp"
 
 #include "function/binary.hpp"
 #include "function/unary.hpp"
@@ -173,6 +174,11 @@ void Script::compile()
             {
                 M_commands.push_back(std::make_unique<
                     commands::DeclareVariable>(*this, value));
+            },
+            [&](const syntax::SetStatement& value)
+            {
+                M_commands.push_back(std::make_unique<
+                    commands::Set>(*this, value));
             }
         }, statement.value);
     }

@@ -14,6 +14,7 @@ $nterm statement_list std::vector<Statement>
 $nterm statement Statement
 $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
+$nterm set_statement SetStatement
 $nterm expression std::unique_ptr<Expression>
 $nterm or_expression std::unique_ptr<Expression>
 $nterm and_expression std::unique_ptr<Expression>
@@ -54,12 +55,16 @@ statement_list =
   | statement_list statement { $1.push_back(std::move($2)), std::move($1) } ;
 statement =
     expr_statement { std::move($1) }
-  | var_statement { std::move($1) } ;
+  | var_statement { std::move($1) }
+  | set_statement { std::move($1) } ;
 expr_statement =
     expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
     "var" identifier "=" expression ";"
         { VarStatement($2, std::move(*$4)) } ;
+set_statement =
+    expression "=" expression ";"
+        { SetStatement(std::move(*$1), std::move(*$3)) } ;
 
 
 expression = or_expression { std::move($1) } ;

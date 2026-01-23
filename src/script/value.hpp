@@ -10,6 +10,8 @@ namespace ganim {
 
             virtual any_pointer value()=0;
             virtual Type type() const=0;
+            virtual bool modifiable() const {return false;}
+            virtual void modify(Value&) {}
     };
 }
 
