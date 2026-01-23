@@ -84,6 +84,15 @@ if_statement =
     } ;
 optional_else =
     "else" "{" optional_statement_list "}" { std::move($3) }
+  | "else" "if" expression "{" optional_statement_list "}" optional_else {
+        [&]{
+            auto result = std::vector<Statement>();
+            result.emplace_back(
+                IfStatement(std::move(*$3), std::move($5), std::move($7))
+            );
+            return result;
+        }()
+    }
   | { std::vector<Statement>() } ;
 
 

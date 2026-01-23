@@ -70,3 +70,43 @@ else {
     REQUIRE( c->value().get_as<std::int64_t>());
     REQUIRE(*c->value().get_as<std::int64_t>() == 7);
 }
+
+TEST_CASE("Else if", "[script]") {
+    auto script = Script(R"(
+var a = 5;
+if true {
+    a = 6;
+}
+else if true {
+    a = 7;
+}
+var b = 5;
+if false {
+    b = 6;
+}
+else if true {
+    b = 7;
+}
+var c = 5;
+if false {
+    c = 6;
+}
+else if false {
+    c = 7;
+}
+else {
+    c = 8;
+}
+    )");
+    script.compile();
+    script.execute();
+    auto a = script.symbol_table().get_variable("a");
+    REQUIRE( a->value().get_as<std::int64_t>());
+    REQUIRE(*a->value().get_as<std::int64_t>() == 6);
+    auto b = script.symbol_table().get_variable("b");
+    REQUIRE( b->value().get_as<std::int64_t>());
+    REQUIRE(*b->value().get_as<std::int64_t>() == 7);
+    auto c = script.symbol_table().get_variable("c");
+    REQUIRE( c->value().get_as<std::int64_t>());
+    REQUIRE(*c->value().get_as<std::int64_t>() == 8);
+}
