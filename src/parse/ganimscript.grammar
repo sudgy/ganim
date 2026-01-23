@@ -17,6 +17,7 @@ $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
 $nterm set_statement SetStatement
 $nterm if_statement IfStatement
+$nterm optional_else std::vector<Statement>
 $nterm expression std::unique_ptr<Expression>
 $nterm or_expression std::unique_ptr<Expression>
 $nterm and_expression std::unique_ptr<Expression>
@@ -78,9 +79,12 @@ set_statement =
     expression "=" expression ";"
         { SetStatement(std::move(*$1), std::move(*$3)) } ;
 if_statement =
-    "if" expression "{" optional_statement_list "}" {
-        IfStatement(std::move(*$2), std::move($4))
+    "if" expression "{" optional_statement_list "}" optional_else {
+        IfStatement(std::move(*$2), std::move($4), std::move($6))
     } ;
+optional_else =
+    "else" "{" optional_statement_list "}" { std::move($3) }
+  | { std::vector<Statement>() } ;
 
 
 expression = or_expression { std::move($1) } ;

@@ -90,7 +90,8 @@ namespace ganim::syntax {
     };
     struct IfStatement {
         Expression condition;
-        std::vector<Statement> statements;
+        std::vector<Statement> true_statements;
+        std::vector<Statement> false_statements;
     };
     struct Statement {
         std::variant<

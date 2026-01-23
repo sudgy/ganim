@@ -13,7 +13,8 @@ namespace ganim::commands {
 
         private:
             std::unique_ptr<Expression> M_condition;
-            std::vector<std::unique_ptr<Command>> M_statements;
+            std::vector<std::unique_ptr<Command>> M_true_commands;
+            std::vector<std::unique_ptr<Command>> M_false_commands;
     };
 }
 

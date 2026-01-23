@@ -14,17 +14,26 @@ If::If(SymbolTable& table, const syntax::IfStatement& ast)
             "Expected boolean expression"
         );
     }
-    M_statements.reserve(ast.statements.size());
-    for (auto& statement : ast.statements) {
-        M_statements.push_back(Command::from_ast(table, statement));
+    M_true_commands.reserve(ast.true_statements.size());
+    for (auto& statement : ast.true_statements) {
+        M_true_commands.push_back(Command::from_ast(table, statement));
+    }
+    M_false_commands.reserve(ast.false_statements.size());
+    for (auto& statement : ast.false_statements) {
+        M_false_commands.push_back(Command::from_ast(table, statement));
     }
 }
 
 void If::execute() const
 {
     if (*M_condition->value().get_as<bool>()) {
-        for (auto& statement : M_statements) {
-            statement->execute();
+        for (auto& command : M_true_commands) {
+            command->execute();
+        }
+    }
+    else {
+        for (auto& command : M_false_commands) {
+            command->execute();
         }
     }
 }

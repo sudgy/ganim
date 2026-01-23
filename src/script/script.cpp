@@ -55,6 +55,7 @@ void Script::compile()
                     "var",
                     "let",
                     "if",
+                    "else",
                     "and",
                     "not",
                     "or",
