@@ -75,6 +75,7 @@ namespace ganim::syntax {
     struct VarStatement {
         IdentifierExpression variable;
         Expression value;
+        bool constant = false;
     };
     struct SetStatement {
         Expression lhs;

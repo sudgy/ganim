@@ -61,7 +61,9 @@ expr_statement =
     expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
     "var" identifier "=" expression ";"
-        { VarStatement($2, std::move(*$4)) } ;
+        { VarStatement($2, std::move(*$4), false) }
+  | "let" identifier "=" expression ";"
+        { VarStatement($2, std::move(*$4), true) } ;
 set_statement =
     expression "=" expression ";"
         { SetStatement(std::move(*$1), std::move(*$3)) } ;

@@ -128,6 +128,7 @@ void Script::compile()
             case Token::Identifier:
                 auto keywords = std::unordered_set<std::string_view>{
                     "var",
+                    "let",
                     "and",
                     "not",
                     "or",

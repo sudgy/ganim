@@ -27,7 +27,7 @@ DeclareVariable::DeclareVariable(
         {
             if (type == any_pointer::get_tag<std::int64_t>()) {
                 auto result = std::make_unique<OwningValue<std::int64_t>>();
-                result->set_modifiable(true);
+                result->set_modifiable(!ast.constant);
                 M_on_execute = [value = std::move(expression), &r = *result] {
                     r.initialize(*value->value().get_as<std::int64_t>());
                 };
@@ -35,7 +35,7 @@ DeclareVariable::DeclareVariable(
             }
             if (type == any_pointer::get_tag<double>()) {
                 auto result = std::make_unique<OwningValue<double>>();
-                result->set_modifiable(true);
+                result->set_modifiable(!ast.constant);
                 M_on_execute = [value = std::move(expression), &r = *result] {
                     r.initialize(*value->value().get_as<double>());
                 };
@@ -43,7 +43,7 @@ DeclareVariable::DeclareVariable(
             }
             if (type == any_pointer::get_tag<bool>()) {
                 auto result = std::make_unique<OwningValue<bool>>();
-                result->set_modifiable(true);
+                result->set_modifiable(!ast.constant);
                 M_on_execute = [value = std::move(expression), &r = *result] {
                     r.initialize(*value->value().get_as<bool>());
                 };
@@ -51,7 +51,7 @@ DeclareVariable::DeclareVariable(
             }
             if (type == any_pointer::get_tag<std::string>()) {
                 auto result = std::make_unique<OwningValue<std::string>>();
-                result->set_modifiable(true);
+                result->set_modifiable(!ast.constant);
                 M_on_execute = [value = std::move(expression), &r = *result] {
                     r.initialize(*value->value().get_as<std::string>());
                 };
