@@ -2,7 +2,7 @@ $namespace ganim::syntax
 $class_name ScriptParser
 $header_guard GANIM_SCRIPT_PARSER_HPP
 $include "script/syntax/token.hpp"
-$include "script/syntax/grammar_types.hpp"
+$include "script/syntax/statement.hpp"
 
 $token Int IntToken
 $token Double DoubleToken

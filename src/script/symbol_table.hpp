@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "script/function/function.hpp"
-#include "script/syntax/grammar_types.hpp"
+#include "script/syntax/type.hpp"
 
 namespace ganim {
     class SymbolTable {

@@ -4,7 +4,7 @@
 #include "command.hpp"
 
 #include "script/value.hpp"
-#include "script/syntax/grammar_types.hpp"
+#include "script/syntax/statement.hpp"
 
 namespace ganim::commands {
     class DeclareVariable : public Command {

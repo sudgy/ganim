@@ -1,12 +1,11 @@
-#ifndef GANIM_SCRIPT_SYNTAX_GRAMMAR_TYPES_HPP
-#define GANIM_SCRIPT_SYNTAX_GRAMMAR_TYPES_HPP
+#ifndef GANIM_SCRIPT_SYNTAX_EXPRESSION_HPP
+#define GANIM_SCRIPT_SYNTAX_EXPRESSION_HPP
 
 #include <variant>
 #include <cstdint>
 #include <string>
 #include <memory>
 #include <vector>
-#include <optional>
 
 namespace ganim::syntax {
     struct ConstantExpression {
@@ -69,37 +68,6 @@ namespace ganim::syntax {
         > value;
         int line_number = -1;
         int column_number = -1;
-    };
-    struct Type {
-        IdentifierExpression name;
-    };
-
-    class Statement;
-    struct ExprStatement {
-        Expression expression;
-    };
-    struct VarStatement {
-        IdentifierExpression variable;
-        Expression value;
-        std::optional<Type> type;
-        bool constant = false;
-    };
-    struct SetStatement {
-        Expression lhs;
-        Expression value;
-    };
-    struct IfStatement {
-        Expression condition;
-        std::vector<Statement> true_statements;
-        std::vector<Statement> false_statements;
-    };
-    struct Statement {
-        std::variant<
-            ExprStatement,
-            VarStatement,
-            SetStatement,
-            IfStatement
-        > value;
     };
 }
 

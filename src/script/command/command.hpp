@@ -6,7 +6,7 @@
 #include <functional>
 #include <memory>
 
-#include "script/syntax/grammar_types.hpp"
+#include "script/syntax/statement.hpp"
 
 namespace ganim {
     class SymbolTable;
