@@ -7,16 +7,7 @@
 
 #include "ganimscript_parser.hpp"
 
-#include "command/expression.hpp"
-#include "command/declare_variable.hpp"
-#include "command/set.hpp"
-
 using namespace ganim;
-
-namespace {
-    template<class... Ts>
-    struct overloaded : Ts... { using Ts::operator()...; };
-}
 
 Script::Script(std::string script)
 : M_script(std::move(script)) {}
@@ -63,6 +54,7 @@ void Script::compile()
                 auto keywords = std::unordered_set<std::string_view>{
                     "var",
                     "let",
+                    "if",
                     "and",
                     "not",
                     "or",
@@ -98,24 +90,7 @@ void Script::compile()
     auto& statements = parser.get_result();
     M_commands.reserve(statements.size());
     for (auto& statement : statements) {
-        std::visit(overloaded{
-            [&](const syntax::ExprStatement& value)
-            {
-                M_commands.push_back(std::make_unique<
-                    commands::Expression>(
-                        Expression::from_ast(M_table, value.expression)));
-            },
-            [&](const syntax::VarStatement& value)
-            {
-                M_commands.push_back(std::make_unique<
-                    commands::DeclareVariable>(M_table, value));
-            },
-            [&](const syntax::SetStatement& value)
-            {
-                M_commands.push_back(std::make_unique<
-                    commands::Set>(M_table, value));
-            }
-        }, statement.value);
+        M_commands.push_back(Command::from_ast(M_table, statement));
     }
 }
 

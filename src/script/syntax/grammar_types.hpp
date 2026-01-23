@@ -73,6 +73,8 @@ namespace ganim::syntax {
     struct Type {
         IdentifierExpression name;
     };
+
+    class Statement;
     struct ExprStatement {
         Expression expression;
     };
@@ -86,8 +88,17 @@ namespace ganim::syntax {
         Expression lhs;
         Expression value;
     };
+    struct IfStatement {
+        Expression condition;
+        std::vector<Statement> statements;
+    };
     struct Statement {
-        std::variant<ExprStatement, VarStatement, SetStatement> value;
+        std::variant<
+            ExprStatement,
+            VarStatement,
+            SetStatement,
+            IfStatement
+        > value;
     };
 }
 

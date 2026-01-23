@@ -11,10 +11,12 @@ $token String StringToken
 $token Identifier IdentifierToken
 
 $nterm statement_list std::vector<Statement>
+$nterm optional_statement_list std::vector<Statement>
 $nterm statement Statement
 $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
 $nterm set_statement SetStatement
+$nterm if_statement IfStatement
 $nterm expression std::unique_ptr<Expression>
 $nterm or_expression std::unique_ptr<Expression>
 $nterm and_expression std::unique_ptr<Expression>
@@ -57,10 +59,14 @@ statement_list =
         }()
     }
   | statement_list statement { $1.push_back(std::move($2)), std::move($1) } ;
+optional_statement_list =
+    statement_list { std::move($1) }
+  | { std::vector<Statement>() } ;
 statement =
     expr_statement { std::move($1) }
   | var_statement { std::move($1) }
-  | set_statement { std::move($1) } ;
+  | set_statement { std::move($1) }
+  | if_statement { std::move($1) } ;
 expr_statement =
     expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
@@ -71,6 +77,10 @@ var_statement =
 set_statement =
     expression "=" expression ";"
         { SetStatement(std::move(*$1), std::move(*$3)) } ;
+if_statement =
+    "if" expression "{" optional_statement_list "}" {
+        IfStatement(std::move(*$2), std::move($4))
+    } ;
 
 
 expression = or_expression { std::move($1) } ;
