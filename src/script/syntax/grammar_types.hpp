@@ -6,6 +6,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <optional>
 
 namespace ganim::syntax {
     struct ConstantExpression {
@@ -69,12 +70,16 @@ namespace ganim::syntax {
         int line_number = -1;
         int column_number = -1;
     };
+    struct Type {
+        IdentifierExpression name;
+    };
     struct ExprStatement {
         Expression expression;
     };
     struct VarStatement {
         IdentifierExpression variable;
         Expression value;
+        std::optional<Type> type;
         bool constant = false;
     };
     struct SetStatement {

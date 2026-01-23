@@ -26,6 +26,7 @@ namespace ganim {
                 int line_number = -1,
                 int column_number = -1
             );
+            Type get_type(const syntax::Type& type);
             Value* get_variable(const std::string& name);
             std::vector<Function*> get_functions(const std::string& name);
 

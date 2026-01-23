@@ -32,6 +32,10 @@ $nterm nonempty_expression_list std::vector<std::unique_ptr<Expression>>
 
 $nterm identifier IdentifierExpression
 
+$nterm type Type
+$nterm type_specifier Type
+$nterm optional_type_specifier std::optional<Type>
+
 $nterm and_symbol std::monostate
 $nterm or_symbol std::monostate
 $nterm not_symbol std::monostate
@@ -60,10 +64,10 @@ statement =
 expr_statement =
     expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
-    "var" identifier "=" expression ";"
-        { VarStatement($2, std::move(*$4), false) }
-  | "let" identifier "=" expression ";"
-        { VarStatement($2, std::move(*$4), true) } ;
+    "var" identifier "=" expression optional_type_specifier ";"
+        { VarStatement($2, std::move(*$4), std::move($5), false) }
+  | "let" identifier "=" expression optional_type_specifier ";"
+        { VarStatement($2, std::move(*$4), std::move($5), true) } ;
 set_statement =
     expression "=" expression ";"
         { SetStatement(std::move(*$1), std::move(*$3)) } ;
@@ -320,6 +324,18 @@ identifier_expression =
 identifier = Identifier {
     IdentifierExpression($1.value, $1.line_number, $1.column_number)
 } ;
+
+
+type = Identifier {
+    Type(IdentifierExpression($1.value, $1.line_number, $1.column_number))
+} ;
+type_specifier = ":" type {
+    std::move($2)
+} ;
+optional_type_specifier =
+    type_specifier { std::move($1) }
+  | { std::nullopt } ;
+
 
 and_symbol =
     "and" { std::monostate() }

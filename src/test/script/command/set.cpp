@@ -21,21 +21,3 @@ a = 10;
     REQUIRE_THROWS(bad_script1.compile());
     REQUIRE_THROWS(bad_script2.compile());
 }
-
-TEST_CASE("Constants", "[script]") {
-    auto script = Script(R"(
-let a = 5;
-let b = a + 3;
-    )");
-    script.compile();
-    script.execute();
-    auto a = script.get_variable("a");
-    auto b = script.get_variable("b");
-    REQUIRE( a->value().get_as<std::int64_t>());
-    REQUIRE(*a->value().get_as<std::int64_t>() == 5);
-    REQUIRE( b->value().get_as<std::int64_t>());
-    REQUIRE(*b->value().get_as<std::int64_t>() == 8);
-
-    auto bad_script = Script("let a = 5; a = 10;");
-    REQUIRE_THROWS(bad_script.compile());
-}

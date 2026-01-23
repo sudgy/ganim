@@ -228,6 +228,25 @@ void Script::add_function(
     functions.emplace_back(std::move(function));
 }
 
+Type Script::get_type(const syntax::Type& type)
+{
+    // This function will change later
+    if (type.name.name == "int") {
+        return Type{any_pointer::get_tag<std::int64_t>()};
+    }
+    else if (type.name.name == "double") {
+        return Type{any_pointer::get_tag<double>()};
+    }
+    else if (type.name.name == "string") {
+        return Type{any_pointer::get_tag<std::string>()};
+    }
+    else if (type.name.name == "bool") {
+        return Type{any_pointer::get_tag<bool>()};
+    }
+    throw CompileError(type.name.line_number, type.name.column_number,
+        std::format("Unknown type \"{}\"", type.name.name));
+}
+
 Value* Script::get_variable(const std::string& name)
 {
     auto it = M_variables.find(name);

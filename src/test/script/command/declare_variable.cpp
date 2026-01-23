@@ -57,3 +57,35 @@ var d = 3 ++--+4;
     REQUIRE(*test3->value().get_as<std::int64_t>() == -1);
     REQUIRE(*test4->value().get_as<std::int64_t>() == 7);
 }
+
+TEST_CASE("Constants", "[script]") {
+    auto script = Script(R"(
+let a = 5;
+let b = a + 3;
+    )");
+    script.compile();
+    script.execute();
+    auto a = script.get_variable("a");
+    auto b = script.get_variable("b");
+    REQUIRE( a->value().get_as<std::int64_t>());
+    REQUIRE(*a->value().get_as<std::int64_t>() == 5);
+    REQUIRE( b->value().get_as<std::int64_t>());
+    REQUIRE(*b->value().get_as<std::int64_t>() == 8);
+
+    auto bad_script = Script("let a = 5; a = 10;");
+    REQUIRE_THROWS(bad_script.compile());
+}
+
+TEST_CASE("Type specifiers", "[script]") {
+    auto script = Script(R"(
+let a = 5 : int;
+let b = 4.0 : double;
+let c = "foo" : string;
+let d = true : bool;
+    )");
+    auto bad_script1 = Script("let a = 5 : string;");
+    auto bad_script2 = Script("let a = 5 : foo;");
+    REQUIRE_NOTHROW(script.compile());
+    REQUIRE_THROWS(bad_script1.compile());
+    REQUIRE_THROWS(bad_script2.compile());
+}

@@ -21,6 +21,15 @@ DeclareVariable::DeclareVariable(
 {
     auto name = ast.variable;
     auto expression = Expression::from_ast(script, ast.value);
+    if (ast.type) {
+        if (script.get_type(*ast.type) != expression->type()) {
+            throw CompileError(
+                ast.type->name.line_number,
+                ast.type->name.column_number,
+                "Type specifier does not match expression"
+            );
+        }
+    }
 
     auto value = std::visit(overloaded{
         [&](const TypeID& type) -> std::unique_ptr<Value>
