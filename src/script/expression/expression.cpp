@@ -15,7 +15,7 @@ namespace {
 }
 
 std::unique_ptr<Expression> Expression::from_ast(
-    Script& script,
+    SymbolTable& table,
     const syntax::Expression& ast
 )
 {
@@ -26,21 +26,21 @@ std::unique_ptr<Expression> Expression::from_ast(
         },
         [&](const syntax::IdentifierExpression& ast) -> std::unique_ptr<Expression>
         {
-            return expressions::Variable::from_ast(script, ast);
+            return expressions::Variable::from_ast(table, ast);
         },
         [&](const syntax::FunctionExpression& ast) -> std::unique_ptr<Expression>
         {
-            return expressions::Function::from_ast(script, ast);
+            return expressions::Function::from_ast(table, ast);
         },
         [&](const syntax::UnaryExpression& ast)
             -> std::unique_ptr<Expression>
         {
-            return expressions::Function::from_ast(script, ast);
+            return expressions::Function::from_ast(table, ast);
         },
         [&](const syntax::BinaryExpression& ast)
             -> std::unique_ptr<Expression>
         {
-            return expressions::Function::from_ast(script, ast);
+            return expressions::Function::from_ast(table, ast);
         }
     }, ast.value);
 }

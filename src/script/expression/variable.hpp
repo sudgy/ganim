@@ -9,7 +9,7 @@ namespace ganim::expressions {
     class Variable : public Expression {
         public:
             static std::unique_ptr<Variable> from_ast(
-                Script& script,
+                SymbolTable& table,
                 const syntax::IdentifierExpression& ast
             );
             Variable(

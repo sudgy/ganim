@@ -8,11 +8,11 @@
 #include "script/syntax/grammar_types.hpp"
 
 namespace ganim {
-    class Script;
+    class SymbolTable;
     class Expression : public Value {
         public:
             static std::unique_ptr<Expression> from_ast(
-                Script& script,
+                SymbolTable& table,
                 const syntax::Expression& ast
             );
             virtual int line_number() const=0;

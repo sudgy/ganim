@@ -12,7 +12,7 @@ a = 10;
     )");
     script.compile();
     script.execute();
-    auto a = script.get_variable("a");
+    auto a = script.symbol_table().get_variable("a");
     REQUIRE( a->value().get_as<std::int64_t>());
     REQUIRE(*a->value().get_as<std::int64_t>() == 10);
 

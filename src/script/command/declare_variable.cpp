@@ -2,7 +2,8 @@
 
 #include <utility>
 
-#include "script/script.hpp"
+#include "script/symbol_table.hpp"
+#include "script/expression/expression.hpp"
 #include "script/script_exception.hpp"
 #include "script/owning_value.hpp"
 
@@ -15,14 +16,14 @@ namespace {
 }
 
 DeclareVariable::DeclareVariable(
-    Script& script,
+    SymbolTable& table,
     const syntax::VarStatement& ast
 )
 {
     auto name = ast.variable;
-    auto expression = Expression::from_ast(script, ast.value);
+    auto expression = Expression::from_ast(table, ast.value);
     if (ast.type) {
-        if (script.get_type(*ast.type) != expression->type()) {
+        if (table.get_type(*ast.type) != expression->type()) {
             throw CompileError(
                 ast.type->name.line_number,
                 ast.type->name.column_number,
@@ -79,7 +80,7 @@ DeclareVariable::DeclareVariable(
             std::unreachable();
         }
     }, expression->type().value);
-    script.add_variable(
+    table.add_variable(
         name.name,
         std::move(value),
         name.line_number,

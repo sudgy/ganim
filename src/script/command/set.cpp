@@ -1,6 +1,6 @@
 #include "set.hpp"
 
-#include "script/script.hpp"
+#include "script/symbol_table.hpp"
 #include "script/script_exception.hpp"
 #include "script/owning_value.hpp"
 
@@ -8,12 +8,12 @@ using namespace ganim;
 using namespace ganim::commands;
 
 Set::Set(
-    Script& script,
+    SymbolTable& table,
     const syntax::SetStatement& ast
 )
 {
-    M_lhs = Expression::from_ast(script, ast.lhs);
-    M_value = Expression::from_ast(script, ast.value);
+    M_lhs = Expression::from_ast(table, ast.lhs);
+    M_value = Expression::from_ast(table, ast.value);
     if (M_lhs->type() != M_value->type()) {
         throw CompileError(ast.lhs.line_number, ast.lhs.column_number,
             "Attempt to set an incorrect type");

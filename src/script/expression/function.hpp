@@ -8,15 +8,15 @@ namespace ganim::expressions {
     class Function : public Expression {
         public:
             static std::unique_ptr<Expression> from_ast(
-                Script& script,
+                SymbolTable& table,
                 const syntax::FunctionExpression& ast
             );
             static std::unique_ptr<Expression> from_ast(
-                Script& script,
+                SymbolTable& table,
                 const syntax::BinaryExpression& ast
             );
             static std::unique_ptr<Expression> from_ast(
-                Script& script,
+                SymbolTable& table,
                 const syntax::UnaryExpression& ast
             );
             Function(

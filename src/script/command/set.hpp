@@ -10,7 +10,7 @@
 namespace ganim::commands {
     class Set : public Command {
         public:
-            Set(Script& script, const syntax::SetStatement& ast);
+            Set(SymbolTable& table, const syntax::SetStatement& ast);
             virtual void execute() const override;
 
         private:

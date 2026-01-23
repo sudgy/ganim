@@ -7,7 +7,7 @@
 #include <memory>
 
 namespace ganim {
-    class Script;
+    class SymbolTable;
     class Command {
         public:
             Command()=default;

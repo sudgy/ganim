@@ -1,6 +1,6 @@
 #include "function.hpp"
 
-#include "script/script.hpp"
+#include "script/symbol_table.hpp"
 #include "script/script_exception.hpp"
 
 using namespace ganim;
@@ -47,19 +47,19 @@ int expressions::Function::column_number() const
 }
 
 std::unique_ptr<Expression> expressions::Function::from_ast(
-    Script& script,
+    SymbolTable& table,
     const syntax::FunctionExpression& ast
 )
 {
     auto params = std::vector<std::unique_ptr<Expression>>();
     auto param_types = std::vector<Type>();
     for (auto& exp : ast.parameters) {
-        params.push_back(Expression::from_ast(script, *exp));
+        params.push_back(Expression::from_ast(table, *exp));
         param_types.push_back(params.back()->type());
     }
     // For now, function lookup will get more complicated later
     auto name = get<syntax::IdentifierExpression>(ast.name->value);
-    auto fs = script.get_functions(static_cast<std::string>(name.name));
+    auto fs = table.get_functions(static_cast<std::string>(name.name));
     for (auto& f : fs) {
         if (f->get_input_types() == param_types) {
             return std::make_unique<expressions::Function>(
@@ -75,12 +75,12 @@ std::unique_ptr<Expression> expressions::Function::from_ast(
 }
 
 std::unique_ptr<Expression> expressions::Function::from_ast(
-    Script& script,
+    SymbolTable& table,
     const syntax::BinaryExpression& ast
 )
 {
-    auto lhs = Expression::from_ast(script, *ast.lhs);
-    auto rhs = Expression::from_ast(script, *ast.rhs);
+    auto lhs = Expression::from_ast(table, *ast.lhs);
+    auto rhs = Expression::from_ast(table, *ast.rhs);
     auto line_number = lhs->line_number();
     auto column_number = lhs->column_number();
     if (lhs->type() != rhs->type()) {
@@ -90,37 +90,37 @@ std::unique_ptr<Expression> expressions::Function::from_ast(
     auto fs = [&] -> std::vector<ganim::Function*> {
         switch (ast.op) {
         case syntax::BinaryExpression::Plus:
-            return script.get_functions("__plus__");
+            return table.get_functions("__plus__");
         case syntax::BinaryExpression::Minus:
-            return script.get_functions("__minus__");
+            return table.get_functions("__minus__");
         case syntax::BinaryExpression::Times:
-            return script.get_functions("__mult__");
+            return table.get_functions("__mult__");
         case syntax::BinaryExpression::Divide:
-            return script.get_functions("__div__");
+            return table.get_functions("__div__");
         case syntax::BinaryExpression::Modulo:
-            return script.get_functions("__mod__");
+            return table.get_functions("__mod__");
         case syntax::BinaryExpression::Equal:
-            return script.get_functions("__eq__");
+            return table.get_functions("__eq__");
         case syntax::BinaryExpression::NotEqual:
-            return script.get_functions("__neq__");
+            return table.get_functions("__neq__");
         case syntax::BinaryExpression::LT:
-            return script.get_functions("__lt__");
+            return table.get_functions("__lt__");
         case syntax::BinaryExpression::LE:
-            return script.get_functions("__le__");
+            return table.get_functions("__le__");
         case syntax::BinaryExpression::GT:
-            return script.get_functions("__gt__");
+            return table.get_functions("__gt__");
         case syntax::BinaryExpression::GE:
-            return script.get_functions("__ge__");
+            return table.get_functions("__ge__");
         case syntax::BinaryExpression::And:
-            return script.get_functions("__and__");
+            return table.get_functions("__and__");
         case syntax::BinaryExpression::Nand:
-            return script.get_functions("__nand__");
+            return table.get_functions("__nand__");
         case syntax::BinaryExpression::Nor:
-            return script.get_functions("__nor__");
+            return table.get_functions("__nor__");
         case syntax::BinaryExpression::Or:
-            return script.get_functions("__or__");
+            return table.get_functions("__or__");
         case syntax::BinaryExpression::Xor:
-            return script.get_functions("__xor__");
+            return table.get_functions("__xor__");
         }
         return {};
     }();
@@ -144,21 +144,21 @@ std::unique_ptr<Expression> expressions::Function::from_ast(
 }
 
 std::unique_ptr<Expression> expressions::Function::from_ast(
-    Script& script,
+    SymbolTable& table,
     const syntax::UnaryExpression& ast
 )
 {
-    auto sub = Expression::from_ast(script, *ast.subexpression);
+    auto sub = Expression::from_ast(table, *ast.subexpression);
     auto line_number = sub->line_number();
     auto column_number = sub->column_number();
     auto fs = [&] -> std::vector<ganim::Function*> {
         switch (ast.op) {
         case syntax::UnaryExpression::Plus:
-            return script.get_functions("__unary_plus__");
+            return table.get_functions("__unary_plus__");
         case syntax::UnaryExpression::Minus:
-            return script.get_functions("__unary_minus__");
+            return table.get_functions("__unary_minus__");
         case syntax::UnaryExpression::Not:
-            return script.get_functions("__not__");
+            return table.get_functions("__not__");
         }
         return {};
     }();

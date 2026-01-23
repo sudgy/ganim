@@ -9,7 +9,10 @@
 namespace ganim::commands {
     class DeclareVariable : public Command {
         public:
-            DeclareVariable(Script& script, const syntax::VarStatement& ast);
+            DeclareVariable(
+                SymbolTable& table,
+                const syntax::VarStatement& ast
+            );
             virtual void execute() const override;
 
         private:

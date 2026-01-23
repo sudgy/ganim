@@ -30,16 +30,16 @@ var j = 5 % 2;
     REQUIRE_THROWS(bad_script3.compile());
     REQUIRE_THROWS(bad_script4.compile());
 
-    auto test1 = script.get_variable("a");
-    auto test2 = script.get_variable("b");
-    auto test3 = script.get_variable("c");
-    auto test4 = script.get_variable("d");
-    auto test5 = script.get_variable("e");
-    auto test6 = script.get_variable("f");
-    auto test7 = script.get_variable("g");
-    auto test8 = script.get_variable("h");
-    auto test9 = script.get_variable("i");
-    auto test10 = script.get_variable("j");
+    auto test1 = script.symbol_table().get_variable("a");
+    auto test2 = script.symbol_table().get_variable("b");
+    auto test3 = script.symbol_table().get_variable("c");
+    auto test4 = script.symbol_table().get_variable("d");
+    auto test5 = script.symbol_table().get_variable("e");
+    auto test6 = script.symbol_table().get_variable("f");
+    auto test7 = script.symbol_table().get_variable("g");
+    auto test8 = script.symbol_table().get_variable("h");
+    auto test9 = script.symbol_table().get_variable("i");
+    auto test10 = script.symbol_table().get_variable("j");
 
     REQUIRE(test1->value().get_as<std::int64_t>());
     REQUIRE(*test1->value().get_as<std::int64_t>() == 7);
@@ -82,8 +82,8 @@ var b = +4.0;
     auto bad_script = Script("var a = +\"foo\";");
     REQUIRE_THROWS(bad_script.compile());
 
-    auto test1 = script.get_variable("a");
-    auto test2 = script.get_variable("b");
+    auto test1 = script.symbol_table().get_variable("a");
+    auto test2 = script.symbol_table().get_variable("b");
 
     REQUIRE(test1->value().get_as<std::int64_t>());
     REQUIRE(*test1->value().get_as<std::int64_t>() == 3L);
@@ -102,8 +102,8 @@ var b = -4.0;
     auto bad_script = Script("var a = -\"foo\";");
     REQUIRE_THROWS(bad_script.compile());
 
-    auto test1 = script.get_variable("a");
-    auto test2 = script.get_variable("b");
+    auto test1 = script.symbol_table().get_variable("a");
+    auto test2 = script.symbol_table().get_variable("b");
 
     REQUIRE(test1->value().get_as<std::int64_t>());
     REQUIRE(*test1->value().get_as<std::int64_t>() == -3L);

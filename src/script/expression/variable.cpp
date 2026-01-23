@@ -1,17 +1,17 @@
 #include "variable.hpp"
 
-#include "script/script.hpp"
+#include "script/symbol_table.hpp"
 #include "script/script_exception.hpp"
 
 using namespace ganim;
 using namespace ganim::expressions;
 
 std::unique_ptr<Variable> Variable::from_ast(
-    Script& script,
+    SymbolTable& table,
     const syntax::IdentifierExpression& ast
 )
 {
-    auto value = script.get_variable(std::string(ast.name));
+    auto value = table.get_variable(std::string(ast.name));
     if (!value) {
         throw CompileError(ast.line_number, ast.column_number, std::format(
             "Unknown identifier \"{}\"", ast.name));
