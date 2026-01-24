@@ -14,7 +14,7 @@ namespace $NAMESPACE {
 
             struct token_type {
                 int token_id = -3;
-                $SYMBOL_TYPE value;
+                $TOKEN_TYPE value;
             };
             using result_type = $RESULT_TYPE;
             // True if it ate the token, false otherwise
@@ -28,6 +28,7 @@ namespace $NAMESPACE {
                 int state_id = -1;
                 $SYMBOL_TYPE value;
             };
+            $SYMBOL_TYPE convert_to_symbol_type($TOKEN_TYPE token);
             std::vector<State> M_states;
             bool M_finished = false;
     };

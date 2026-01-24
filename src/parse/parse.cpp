@@ -877,7 +877,7 @@ int main(int argc, char* argv[])
                     [&](ActionShift& shift) {
                         file << sp3 << "M_states.emplace_back("
                              << shift.new_state << ", "
-                             << "std::move(token.value));\n"
+                             << "convert_to_symbol_type(token.value));\n"
                              << sp3 << "return true;\n";
                     },
                     [&](ActionReduce& reduce) {

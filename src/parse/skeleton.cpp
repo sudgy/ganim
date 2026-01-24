@@ -33,3 +33,8 @@ const $CLASS_NAME::result_type& $CLASS_NAME::get_result() const
 }
 
 $TOKEN_FUNC_DEFS
+
+$SYMBOL_TYPE $CLASS_NAME::convert_to_symbol_type($TOKEN_TYPE token)
+{
+    return std::visit([](auto&& token) {return $SYMBOL_TYPE(token);}, token);
+}
