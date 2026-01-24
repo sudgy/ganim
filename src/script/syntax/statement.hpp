@@ -21,6 +21,7 @@ namespace ganim::syntax {
     struct SetStatement {
         Expression lhs;
         Expression value;
+        enum Operation {None, Plus, Minus, Times, Divide} op;
     };
     struct IfStatement {
         Expression condition;

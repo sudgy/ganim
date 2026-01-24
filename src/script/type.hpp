@@ -24,6 +24,8 @@ namespace ganim {
         Type(std::nullptr_t) : value({TypeID(nullptr)}) {}
     };
 
+    const Type void_type = Type({TypeID(nullptr)});
+
     struct FunctionType {
         Type result_type;
         std::vector<Type> input_types;

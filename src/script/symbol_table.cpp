@@ -2,6 +2,7 @@
 
 #include "script_exception.hpp"
 
+#include "function/assignment.hpp"
 #include "function/binary.hpp"
 #include "function/unary.hpp"
 #include "function/print.hpp"
@@ -28,6 +29,16 @@ SymbolTable::SymbolTable()
     add_function("__div__", std::make_unique<functions::Divide<std::int64_t>>());
     add_function("__div__", std::make_unique<functions::Divide<double>>());
     add_function("__mod__", std::make_unique<functions::Modulo<std::int64_t>>());
+
+    add_function("__plus_eq__", std::make_unique<functions::AddEq<std::int64_t>>());
+    add_function("__plus_eq__", std::make_unique<functions::AddEq<double>>());
+    add_function("__plus_eq__", std::make_unique<functions::AddEq<std::string>>());
+    add_function("__minus_eq__", std::make_unique<functions::SubtractEq<std::int64_t>>());
+    add_function("__minus_eq__", std::make_unique<functions::SubtractEq<double>>());
+    add_function("__mult_eq__", std::make_unique<functions::MultiplyEq<std::int64_t>>());
+    add_function("__mult_eq__", std::make_unique<functions::MultiplyEq<double>>());
+    add_function("__div_eq__", std::make_unique<functions::DivideEq<std::int64_t>>());
+    add_function("__div_eq__", std::make_unique<functions::DivideEq<double>>());
 
     add_function("__unary_plus__",
                  std::make_unique<functions::UnaryPlus<std::int64_t>>());
