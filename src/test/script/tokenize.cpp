@@ -142,6 +142,11 @@ TEST_CASE("Tokenize", "[script]") {
     REQUIRE(tokens10[1].line_number == 1);
     REQUIRE(tokens10[1].column_number == 0);
     REQUIRE(tokens10[1].byte_number == 2);
+
+    // Using wide numeric characters so that it doesn't start trying to read it
+    // as a number
+    REQUIRE_THROWS_WITH(tokenize("abc ab１ １ab"),
+            get_compile_error_message(0, 8, "Invalid identifier"));
 }
 
 TEST_CASE("tokenize with strings", "[script]") {
@@ -149,16 +154,17 @@ TEST_CASE("tokenize with strings", "[script]") {
     auto tokens2 = tokenize("ab\"c\"");
     auto tokens3 = tokenize("ab\"c\n\"");
     auto tokens4 = tokenize("ab\"c\nd\" e");
+    auto tokens5 = tokenize(R"("ab\"c")");
 
     REQUIRE(tokens1.size() == 3);
     REQUIRE(tokens1[0].string == "a");
     REQUIRE(tokens1[0].line_number == 0);
     REQUIRE(tokens1[0].column_number == 0);
     REQUIRE(tokens1[0].byte_number == 0);
-    REQUIRE(tokens1[1].string == "b");
+    REQUIRE(tokens1[1].string == "\"b\"");
     REQUIRE(tokens1[1].line_number == 0);
     REQUIRE(tokens1[1].column_number == 2);
-    REQUIRE(tokens1[1].byte_number == 3);
+    REQUIRE(tokens1[1].byte_number == 2);
     REQUIRE(tokens1[2].string == "c");
     REQUIRE(tokens1[2].line_number == 0);
     REQUIRE(tokens1[2].column_number == 6);
@@ -169,39 +175,37 @@ TEST_CASE("tokenize with strings", "[script]") {
     REQUIRE(tokens2[0].line_number == 0);
     REQUIRE(tokens2[0].column_number == 0);
     REQUIRE(tokens2[0].byte_number == 0);
-    REQUIRE(tokens2[1].string == "c");
+    REQUIRE(tokens2[1].string == "\"c\"");
     REQUIRE(tokens2[1].line_number == 0);
     REQUIRE(tokens2[1].column_number == 2);
-    REQUIRE(tokens2[1].byte_number == 3);
+    REQUIRE(tokens2[1].byte_number == 2);
 
     REQUIRE(tokens3.size() == 2);
     REQUIRE(tokens3[0].string == "ab");
     REQUIRE(tokens3[0].line_number == 0);
     REQUIRE(tokens3[0].column_number == 0);
     REQUIRE(tokens3[0].byte_number == 0);
-    REQUIRE(tokens3[1].string == "c\n");
+    REQUIRE(tokens3[1].string == "\"c\n\"");
     REQUIRE(tokens3[1].line_number == 0);
     REQUIRE(tokens3[1].column_number == 2);
-    REQUIRE(tokens3[1].byte_number == 3);
+    REQUIRE(tokens3[1].byte_number == 2);
 
     REQUIRE(tokens4.size() == 3);
     REQUIRE(tokens4[0].string == "ab");
     REQUIRE(tokens4[0].line_number == 0);
     REQUIRE(tokens4[0].column_number == 0);
     REQUIRE(tokens4[0].byte_number == 0);
-    REQUIRE(tokens4[1].string == "c\nd");
+    REQUIRE(tokens4[1].string == "\"c\nd\"");
     REQUIRE(tokens4[1].line_number == 0);
     REQUIRE(tokens4[1].column_number == 2);
-    REQUIRE(tokens4[1].byte_number == 3);
+    REQUIRE(tokens4[1].byte_number == 2);
     REQUIRE(tokens4[2].string == "e");
     REQUIRE(tokens4[2].line_number == 1);
     REQUIRE(tokens4[2].column_number == 3);
     REQUIRE(tokens4[2].byte_number == 8);
 
-    // Using wide numeric characters so that it doesn't start trying to read it
-    // as a number
-    REQUIRE_THROWS_WITH(tokenize("abc ab１ １ab"),
-            get_compile_error_message(0, 8, "Invalid identifier"));
+    REQUIRE(tokens5.size() == 1);
+    REQUIRE(tokens5[0].string == "\"ab\\\"c\"");
 }
 
 TEST_CASE("tokenize numbers", "[script]") {
@@ -222,7 +226,7 @@ TEST_CASE("tokenize numbers", "[script]") {
     REQUIRE(tokens1[2].byte_number == 8);
 
     REQUIRE_THROWS_WITH(tokenize("ab 1ab"),
-            get_compile_error_message(0, 3, "Invalid numeric literal"));
+            get_compile_error_message(0, 3, "Invalid decimal literal"));
 }
 
 TEST_CASE("tokenize floating-point", "[script]") {
@@ -288,7 +292,7 @@ TEST_CASE("Token types") {
     REQUIRE(tokens[0].type == Token::Identifier);
     REQUIRE(tokens[1].type == Token::Identifier);
     REQUIRE(tokens[2].type == Token::Identifier);
-    REQUIRE(tokens[3].type == Token::Int);
+    REQUIRE(tokens[3].type == Token::Decimal);
     REQUIRE(tokens[4].type == Token::Double);
     REQUIRE(tokens[5].type == Token::Else);
     REQUIRE(tokens[6].type == Token::String);

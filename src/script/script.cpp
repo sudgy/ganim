@@ -33,9 +33,24 @@ void Script::compile()
         try {
             bool pushed = false;
             switch (token.type) {
-            case Token::Int:
+            case Token::Decimal:
                 pushed = parser.push(parser.Int_token(
                     {std::stol(std::string(token.string)),
+                    token.line_number, token.column_number}));
+                break;
+            case Token::Hex:
+                pushed = parser.push(parser.Int_token(
+                    {std::stol(std::string(token.string.substr(2)),nullptr, 16),
+                    token.line_number, token.column_number}));
+                break;
+            case Token::Octal:
+                pushed = parser.push(parser.Int_token(
+                    {std::stol(std::string(token.string), nullptr, 8),
+                    token.line_number, token.column_number}));
+                break;
+            case Token::Binary:
+                pushed = parser.push(parser.Int_token(
+                    {std::stol(std::string(token.string.substr(2)), nullptr, 2),
                     token.line_number, token.column_number}));
                 break;
             case Token::Double:
@@ -45,7 +60,11 @@ void Script::compile()
                 break;
             case Token::String:
                 pushed = parser.push(parser.String_token(
-                    {token.string, token.line_number, token.column_number}));
+                    {
+                        token.string.substr(1, token.string.size() - 2),
+                        token.line_number,
+                        token.column_number
+                    }));
                 break;
             case Token::Else:
                 pushed = parser.push(parser.builtin_token(token.string));
