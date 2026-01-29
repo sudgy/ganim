@@ -55,6 +55,7 @@ var b = 0xFF;
 var c = 010;
 var d = 0b11;
 var e = 0.5;
+var f = 0;
     )");
     script.compile();
     script.execute();
@@ -63,6 +64,7 @@ var e = 0.5;
     auto c = script.symbol_table().get_variable("c");
     auto d = script.symbol_table().get_variable("d");
     auto e = script.symbol_table().get_variable("e");
+    auto f = script.symbol_table().get_variable("f");
     REQUIRE( a->value().get_as<std::int64_t>());
     REQUIRE(*a->value().get_as<std::int64_t>() == 523);
     REQUIRE( b->value().get_as<std::int64_t>());
@@ -73,6 +75,8 @@ var e = 0.5;
     REQUIRE(*d->value().get_as<std::int64_t>() == 0b11);
     REQUIRE( e->value().get_as<double>());
     REQUIRE(*e->value().get_as<double>() == 0.5);
+    REQUIRE( f->value().get_as<std::int64_t>());
+    REQUIRE(*f->value().get_as<std::int64_t>() == 0);
 }
 
 TEST_CASE("String expressions", "[script]") {

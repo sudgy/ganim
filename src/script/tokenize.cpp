@@ -201,9 +201,16 @@ std::vector<Token> ganim::tokenize(std::string_view string)
             else if (codepoint == '.') {
                 state = Float1;
             }
-            else {
+            else if (identifier_character) {
                 throw CompileError(start_line, start_column,
                         "Invalid numeric literal");
+            }
+            else if (codepoint == '8' or codepoint == '9') {
+                throw CompileError(start_line, start_column,
+                        "Invalid octal literal");
+            }
+            else {
+                add_token(false, Token::Decimal);
             }
             break;
         case Hex1:
