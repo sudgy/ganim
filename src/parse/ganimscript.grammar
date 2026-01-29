@@ -18,6 +18,7 @@ $token Prod ProdToken
 
 $nterm statement_list std::vector<Statement>
 $nterm optional_statement_list std::vector<Statement>
+$nterm braced_statements std::vector<Statement>
 $nterm statement Statement
 $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
@@ -62,6 +63,7 @@ statement_list =
 optional_statement_list =
     statement_list { std::move($1) }
   | { std::vector<Statement>() } ;
+braced_statements = "{" optional_statement_list "}" { std::move($2) } ;
 statement =
     expr_statement { std::move($1) }
   | var_statement { std::move($1) }
@@ -86,16 +88,16 @@ set_statement =
             SetStatement::Operation(-1)
         ) } ;
 if_statement =
-    "if" expression "{" optional_statement_list "}" optional_else {
-        IfStatement(std::move(*$2), std::move($4), std::move($6))
+    "if" expression braced_statements optional_else {
+        IfStatement(std::move(*$2), std::move($3), std::move($4))
     } ;
 optional_else =
-    "else" "{" optional_statement_list "}" { std::move($3) }
-  | "else" "if" expression "{" optional_statement_list "}" optional_else {
+    "else" braced_statements { std::move($2) }
+  | "else" "if" expression braced_statements optional_else {
         [&]{
             auto result = std::vector<Statement>();
             result.emplace_back(
-                IfStatement(std::move(*$3), std::move($5), std::move($7))
+                IfStatement(std::move(*$3), std::move($4), std::move($5))
             );
             return result;
         }()
