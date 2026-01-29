@@ -24,6 +24,7 @@ $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
 $nterm set_statement SetStatement
 $nterm if_statement IfStatement
+$nterm while_statement WhileStatement
 $nterm optional_else std::vector<Statement>
 $nterm expression std::unique_ptr<Expression>
 $nterm or_expression std::unique_ptr<Expression>
@@ -68,7 +69,8 @@ statement =
     expr_statement { std::move($1) }
   | var_statement { std::move($1) }
   | set_statement { std::move($1) }
-  | if_statement { std::move($1) } ;
+  | if_statement { std::move($1) }
+  | while_statement { std::move($1) } ;
 expr_statement =
     expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
@@ -90,6 +92,10 @@ set_statement =
 if_statement =
     "if" expression braced_statements optional_else {
         IfStatement(std::move(*$2), std::move($3), std::move($4))
+    } ;
+while_statement =
+    "while" expression braced_statements {
+        WhileStatement(std::move(*$2), std::move($3))
     } ;
 optional_else =
     "else" braced_statements { std::move($2) }

@@ -110,6 +110,7 @@ void Script::compile()
                     "let",
                     "if",
                     "else",
+                    "while"
                 };
                 if (keywords.contains(token.string)) {
                     pushed = parser.push(parser.builtin_token(token.string));

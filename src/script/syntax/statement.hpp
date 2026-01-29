@@ -28,12 +28,17 @@ namespace ganim::syntax {
         std::vector<Statement> true_statements;
         std::vector<Statement> false_statements;
     };
+    struct WhileStatement {
+        Expression condition;
+        std::vector<Statement> loop_statements;
+    };
     struct Statement {
         std::variant<
             ExprStatement,
             VarStatement,
             SetStatement,
-            IfStatement
+            IfStatement,
+            WhileStatement
         > value;
     };
 }

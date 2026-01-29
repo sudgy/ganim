@@ -4,6 +4,7 @@
 #include "declare_variable.hpp"
 #include "set.hpp"
 #include "if.hpp"
+#include "while.hpp"
 
 using namespace ganim;
 
@@ -34,6 +35,10 @@ std::unique_ptr<Command> Command::from_ast(
         [&](const syntax::IfStatement& value) -> std::unique_ptr<Command>
         {
             return std::make_unique<commands::If>(table, value);
+        },
+        [&](const syntax::WhileStatement& value) -> std::unique_ptr<Command>
+        {
+            return std::make_unique<commands::While>(table, value);
         }
     }, statement.value);
 }
