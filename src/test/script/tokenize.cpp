@@ -311,3 +311,26 @@ TEST_CASE("Tokenize compound operators") {
     REQUIRE(tokens[7].string == "==");
     REQUIRE(tokens[8].string == "=");
 }
+
+TEST_CASE("Tokenize numeric literals") {
+    auto tokens = tokenize("0x5 0XFf 0b101 0B0 05 010");
+    REQUIRE(tokens.size() == 6);
+    REQUIRE(tokens[0].type == Token::Hex);
+    REQUIRE(tokens[0].string == "0x5");
+    REQUIRE(tokens[1].type == Token::Hex);
+    REQUIRE(tokens[1].string == "0XFf");
+    REQUIRE(tokens[2].type == Token::Binary);
+    REQUIRE(tokens[2].string == "0b101");
+    REQUIRE(tokens[3].type == Token::Binary);
+    REQUIRE(tokens[3].string == "0B0");
+    REQUIRE(tokens[4].type == Token::Octal);
+    REQUIRE(tokens[4].string == "05");
+    REQUIRE(tokens[5].type == Token::Octal);
+    REQUIRE(tokens[5].string == "010");
+
+    REQUIRE_THROWS(tokenize("0x"));
+    REQUIRE_THROWS(tokenize("0b"));
+    REQUIRE_THROWS(tokenize("0xG"));
+    REQUIRE_THROWS(tokenize("0b2"));
+    REQUIRE_THROWS(tokenize("08"));
+}
