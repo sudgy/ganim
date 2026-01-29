@@ -110,6 +110,7 @@ void Script::compile()
                     "let",
                     "if",
                     "else",
+                    "loop",
                     "while"
                 };
                 if (keywords.contains(token.string)) {

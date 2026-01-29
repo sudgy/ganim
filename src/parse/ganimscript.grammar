@@ -25,6 +25,7 @@ $nterm expr_statement ExprStatement
 $nterm var_statement VarStatement
 $nterm set_statement SetStatement
 $nterm if_statement IfStatement
+$nterm loop_statement LoopStatement
 $nterm while_statement WhileStatement
 $nterm word_statement WordStatement
 $nterm optional_else std::vector<Statement>
@@ -72,6 +73,7 @@ statement =
   | var_statement { std::move($1) }
   | set_statement { std::move($1) }
   | if_statement { std::move($1) }
+  | loop_statement { std::move($1) }
   | while_statement { std::move($1) }
   | word_statement { std::move($1) } ;
 expr_statement =
@@ -95,6 +97,10 @@ set_statement =
 if_statement =
     "if" expression braced_statements optional_else {
         IfStatement(std::move(*$2), std::move($3), std::move($4))
+    } ;
+loop_statement =
+    "loop" braced_statements {
+        LoopStatement(std::move($2))
     } ;
 while_statement =
     "while" expression braced_statements {

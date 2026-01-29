@@ -6,6 +6,7 @@
 #include "declare_variable.hpp"
 #include "set.hpp"
 #include "if.hpp"
+#include "loop.hpp"
 #include "while.hpp"
 #include "break.hpp"
 #include "continue.hpp"
@@ -53,6 +54,10 @@ std::unique_ptr<Command> Command::from_ast(
                 return std::make_unique<commands::Continue>();
             }
             std::unreachable();
-        }
+        },
+        [&](const syntax::LoopStatement& value) -> std::unique_ptr<Command>
+        {
+            return std::make_unique<commands::Loop>(table, value);
+        },
     }, statement.value);
 }

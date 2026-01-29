@@ -28,6 +28,9 @@ namespace ganim::syntax {
         std::vector<Statement> true_statements;
         std::vector<Statement> false_statements;
     };
+    struct LoopStatement {
+        std::vector<Statement> loop_statements;
+    };
     struct WhileStatement {
         Expression condition;
         std::vector<Statement> loop_statements;
@@ -44,6 +47,7 @@ namespace ganim::syntax {
             VarStatement,
             SetStatement,
             IfStatement,
+            LoopStatement,
             WhileStatement,
             WordStatement
         > value;
