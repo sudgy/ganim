@@ -9,6 +9,12 @@ $token Double DoubleToken
 $token Boolean BooleanToken
 $token String StringToken
 $token Identifier IdentifierToken
+$token Assignment AssignmentToken
+$token BoolOp BoolOpToken
+$token Eq EqToken
+$token Rel RelToken
+$token Sum SumToken
+$token Prod ProdToken
 
 $nterm statement_list std::vector<Statement>
 $nterm optional_statement_list std::vector<Statement>
@@ -71,15 +77,14 @@ var_statement =
 set_statement =
     expression "=" expression ";"
         { SetStatement(std::move(*$1), std::move(*$3), SetStatement::None) }
-  | expression "+=" expression ";"
-        { SetStatement(std::move(*$1), std::move(*$3), SetStatement::Plus) }
-  | expression "-=" expression ";"
-        { SetStatement(std::move(*$1), std::move(*$3), SetStatement::Minus) }
-  | expression "*=" expression ";"
-        { SetStatement(std::move(*$1), std::move(*$3), SetStatement::Times) }
-  | expression "/=" expression ";"
-        { SetStatement(std::move(*$1), std::move(*$3), SetStatement::Divide) }
-    ;
+  | expression Assignment expression ";"
+        { SetStatement(std::move(*$1), std::move(*$3),
+            $2.value == "+=" ? SetStatement::Plus :
+            $2.value == "-=" ? SetStatement::Minus :
+            $2.value == "*=" ? SetStatement::Times :
+            $2.value == "/=" ? SetStatement::Divide :
+            SetStatement::Operation(-1)
+        ) } ;
 if_statement =
     "if" expression "{" optional_statement_list "}" optional_else {
         IfStatement(std::move(*$2), std::move($4), std::move($6))
@@ -122,137 +127,70 @@ and_expression =
     }
   | bool_expression { std::move($1) } ;
 bool_expression =
-    eq_expression "^" eq_expression {
+    eq_expression BoolOp eq_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
                 std::move($3),
-                BinaryExpression::Xor
-            )
-        )
-    }
-  | eq_expression "nand" eq_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::Nand
-            )
-        )
-    }
-  | eq_expression "nor" eq_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::Nor
+                $2.value == "^" ? BinaryExpression::Xor :
+                $2.value == "nand" ? BinaryExpression::Nand :
+                $2.value == "nor" ? BinaryExpression::Nor :
+                BinaryExpression::Operation(-1)
             )
         )
     }
   | eq_expression { std::move($1) } ;
 eq_expression =
-    rel_expression "==" rel_expression {
+    rel_expression Eq rel_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
                 std::move($3),
-                BinaryExpression::Equal
-            )
-        )
-    }
-  | rel_expression "!=" rel_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::NotEqual
+                $2.value == "==" ? BinaryExpression::Equal :
+                $2.value == "!=" ? BinaryExpression::NotEqual :
+                BinaryExpression::Operation(-1)
             )
         )
     }
   | rel_expression { std::move($1) } ;
 rel_expression =
-    sum_expression "<" sum_expression {
+    sum_expression Rel sum_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
                 std::move($3),
-                BinaryExpression::LT
-            )
-        )
-    }
-  | sum_expression "<=" sum_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::LE
-            )
-        )
-    }
-  | sum_expression ">" sum_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::GT
-            )
-        )
-    }
-  | sum_expression ">=" sum_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::GE
+                $2.value == "<" ? BinaryExpression::LT :
+                $2.value == ">" ? BinaryExpression::GT :
+                $2.value == "<=" ? BinaryExpression::LE :
+                $2.value == ">=" ? BinaryExpression::GE :
+                BinaryExpression::Operation(-1)
             )
         )
     }
   | sum_expression { std::move($1) } ;
 sum_expression =
-    sum_expression "+" prod_expression {
+    sum_expression Sum prod_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
                 std::move($3),
-                BinaryExpression::Plus
-            )
-        )
-    }
-  | sum_expression "-" prod_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::Minus
+                $2.value == "+" ? BinaryExpression::Plus :
+                $2.value == "-" ? BinaryExpression::Minus :
+                BinaryExpression::Operation(-1)
             )
         )
     }
   | prod_expression { std::move($1) } ;
 prod_expression =
-    prod_expression "*" base_expression {
+    prod_expression Prod base_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
                 std::move($3),
-                BinaryExpression::Times
-            )
-        )
-    }
-  | prod_expression "/" base_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::Divide
-            )
-        )
-    }
-  | prod_expression "%" base_expression {
-        std::make_unique<Expression>(
-            BinaryExpression(
-                std::move($1),
-                std::move($3),
-                BinaryExpression::Modulo
+                $2.value == "*" ? BinaryExpression::Times :
+                $2.value == "/" ? BinaryExpression::Divide :
+                $2.value == "%" ? BinaryExpression::Modulo :
+                BinaryExpression::Operation(-1)
             )
         )
     }
@@ -268,19 +206,13 @@ base_expression =
             )
         )
     }
-  | "+" base_expression {
+  | Sum base_expression {
         std::make_unique<Expression>(
             UnaryExpression(
                 std::move($2),
-                UnaryExpression::Plus
-            )
-        )
-    }
-  | "-" base_expression {
-        std::make_unique<Expression>(
-            UnaryExpression(
-                std::move($2),
-                UnaryExpression::Minus
+                $1.value == "+" ? UnaryExpression::Plus :
+                $1.value == "-" ? UnaryExpression::Minus :
+                UnaryExpression::Operation(-1)
             )
         )
     }

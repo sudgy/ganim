@@ -67,7 +67,39 @@ void Script::compile()
                     }));
                 break;
             case Token::Else:
-                pushed = parser.push(parser.builtin_token(token.string));
+                if (token.string == "+=" or token.string == "-=" or
+                    token.string == "*=" or token.string == "/=")
+                {
+                    pushed = parser.push(parser.Assignment_token(
+                       {token.string, token.line_number, token.column_number}));
+                }
+                else if (token.string == "^") {
+                    pushed = parser.push(parser.BoolOp_token(
+                       {token.string, token.line_number, token.column_number}));
+                }
+                else if (token.string == "==" or token.string == "!=") {
+                    pushed = parser.push(parser.Eq_token(
+                       {token.string, token.line_number, token.column_number}));
+                }
+                else if (token.string == "<" or token.string == "<=" or
+                    token.string == ">" or token.string == ">=")
+                {
+                    pushed = parser.push(parser.Rel_token(
+                       {token.string, token.line_number, token.column_number}));
+                }
+                else if (token.string == "+" or token.string == "-") {
+                    pushed = parser.push(parser.Sum_token(
+                       {token.string, token.line_number, token.column_number}));
+                }
+                else if (token.string == "*" or token.string == "/" or
+                    token.string == "%")
+                {
+                    pushed = parser.push(parser.Prod_token(
+                       {token.string, token.line_number, token.column_number}));
+                }
+                else {
+                    pushed = parser.push(parser.builtin_token(token.string));
+                }
                 break;
             case Token::Identifier:
                 auto keywords = std::unordered_set<std::string_view>{
@@ -75,11 +107,13 @@ void Script::compile()
                     "let",
                     "if",
                     "else",
-                    "nor",
-                    "nand"
                 };
                 if (keywords.contains(token.string)) {
                     pushed = parser.push(parser.builtin_token(token.string));
+                }
+                else if (token.string == "nor" or token.string == "nand") {
+                    pushed = parser.push(parser.BoolOp_token(
+                       {token.string, token.line_number, token.column_number}));
                 }
                 else if (token.string == "true") {
                     pushed = parser.push(parser.Boolean_token(

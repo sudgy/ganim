@@ -30,6 +30,36 @@ namespace ganim::syntax {
         int line_number = -1;
         int column_number = -1;
     };
+    struct AssignmentToken { // +=, -=, *=, /=
+        std::string_view value;
+        int line_number = -1;
+        int column_number = -1;
+    };
+    struct BoolOpToken { // ^, nand, nor
+        std::string_view value;
+        int line_number = -1;
+        int column_number = -1;
+    };
+    struct EqToken { // ==, !=
+        std::string_view value;
+        int line_number = -1;
+        int column_number = -1;
+    };
+    struct RelToken { // <, <=, >, >=
+        std::string_view value;
+        int line_number = -1;
+        int column_number = -1;
+    };
+    struct SumToken { // +, -
+        std::string_view value;
+        int line_number = -1;
+        int column_number = -1;
+    };
+    struct ProdToken { // *, /, %
+        std::string_view value;
+        int line_number = -1;
+        int column_number = -1;
+    };
 }
 
 #endif
