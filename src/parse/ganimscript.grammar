@@ -39,13 +39,6 @@ $nterm type Type
 $nterm type_specifier Type
 $nterm optional_type_specifier std::optional<Type>
 
-$nterm and_symbol std::monostate
-$nterm or_symbol std::monostate
-$nterm not_symbol std::monostate
-$nterm xor_symbol std::monostate
-$nterm nand_symbol std::monostate
-$nterm nor_symbol std::monostate
-
 $grammar
 
 statement_list =
@@ -107,7 +100,7 @@ optional_else =
 
 expression = or_expression { std::move($1) } ;
 or_expression =
-    and_expression or_symbol and_expression {
+    and_expression "||" and_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -118,7 +111,7 @@ or_expression =
     }
   | and_expression { std::move($1) } ;
 and_expression =
-    bool_expression and_symbol bool_expression {
+    bool_expression "&&" bool_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -129,7 +122,7 @@ and_expression =
     }
   | bool_expression { std::move($1) } ;
 bool_expression =
-    eq_expression xor_symbol eq_expression {
+    eq_expression "^" eq_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -138,7 +131,7 @@ bool_expression =
             )
         )
     }
-  | eq_expression nand_symbol eq_expression {
+  | eq_expression "nand" eq_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -147,7 +140,7 @@ bool_expression =
             )
         )
     }
-  | eq_expression nor_symbol eq_expression {
+  | eq_expression "nor" eq_expression {
         std::make_unique<Expression>(
             BinaryExpression(
                 std::move($1),
@@ -291,7 +284,7 @@ base_expression =
             )
         )
     }
-  | not_symbol base_expression {
+  | "!" base_expression {
         std::make_unique<Expression>(
             UnaryExpression(
                 std::move($2),
@@ -367,26 +360,3 @@ type_specifier = ":" type {
 optional_type_specifier =
     type_specifier { std::move($1) }
   | { std::nullopt } ;
-
-
-and_symbol =
-    "and" { std::monostate() }
-  | "∧" { std::monostate() }
-  | "&&" { std::monostate() }
-;
-or_symbol =
-    "or" { std::monostate() }
-  | "∨" { std::monostate() }
-  | "||" { std::monostate() }
-;
-not_symbol =
-    "not" { std::monostate() }
-  | "¬" { std::monostate() }
-  | "!" { std::monostate() }
-;
-xor_symbol =
-    "xor" { std::monostate() }
-  | "^" { std::monostate() }
-;
-nand_symbol = "nand" { std::monostate() } ;
-nor_symbol = "nor" { std::monostate() } ;

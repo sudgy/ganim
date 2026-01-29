@@ -93,8 +93,32 @@ std::vector<Token> ganim::tokenize(std::string_view string)
     {
         auto size = lookahead_byte - start_byte;
         if (include_current_character) size += byte_size;
+        auto new_token = full_string_view.substr(start_byte, size);
+        if (type == Token::Identifier) {
+            if (new_token == "and") {
+                new_token = "&&";
+                type = Token::Else;
+            }
+            else if (new_token == "or") {
+                new_token = "||";
+                type = Token::Else;
+            }
+            else if (new_token == "not") {
+                new_token = "!";
+                type = Token::Else;
+            }
+            else if (new_token == "xor") {
+                new_token = "^";
+                type = Token::Else;
+            }
+        }
+        else if (type == Token::Else) {
+            if (new_token == "¬") {
+                new_token = "!";
+            }
+        }
         result.push_back({
-            full_string_view.substr(start_byte, size),
+            new_token,
             start_line,
             start_column,
             start_byte,

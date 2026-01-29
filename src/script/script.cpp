@@ -75,10 +75,6 @@ void Script::compile()
                     "let",
                     "if",
                     "else",
-                    "and",
-                    "not",
-                    "or",
-                    "xor",
                     "nor",
                     "nand"
                 };
