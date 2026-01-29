@@ -4,6 +4,7 @@
 #include "command.hpp"
 
 #include "script/expression/expression.hpp"
+#include "script/symbol_table.hpp"
 
 namespace ganim::commands {
     class If : public Command {
@@ -15,6 +16,8 @@ namespace ganim::commands {
             std::unique_ptr<Expression> M_condition;
             std::vector<std::unique_ptr<Command>> M_true_commands;
             std::vector<std::unique_ptr<Command>> M_false_commands;
+            SymbolTable M_true_table;
+            SymbolTable M_false_table;
     };
 }
 

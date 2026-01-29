@@ -15,13 +15,17 @@ If::If(SymbolTable& table, const syntax::IfStatement& ast)
         );
     }
     M_true_commands.reserve(ast.true_statements.size());
+    table.push(M_true_table);
     for (auto& statement : ast.true_statements) {
         M_true_commands.push_back(Command::from_ast(table, statement));
     }
+    table.pop();
+    table.push(M_false_table);
     M_false_commands.reserve(ast.false_statements.size());
     for (auto& statement : ast.false_statements) {
         M_false_commands.push_back(Command::from_ast(table, statement));
     }
+    table.pop();
 }
 
 void If::execute() const

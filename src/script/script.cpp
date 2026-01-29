@@ -10,7 +10,10 @@
 using namespace ganim;
 
 Script::Script(std::string script)
-: M_script(std::move(script)) {}
+: M_script(std::move(script))
+{
+    M_table.add_builtins();
+}
 
 void Script::compile()
 {

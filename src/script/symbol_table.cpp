@@ -1,5 +1,7 @@
 #include "symbol_table.hpp"
 
+#include <ranges>
+
 #include "script_exception.hpp"
 
 #include "function/assignment.hpp"
@@ -18,6 +20,11 @@ namespace {
 }
 
 SymbolTable::SymbolTable()
+{
+    M_stack.push_back(this);
+}
+
+void SymbolTable::add_builtins()
 {
     add_function("__plus__", std::make_unique<functions::Add<std::int64_t>>());
     add_function("__plus__", std::make_unique<functions::Add<double>>());
@@ -95,12 +102,13 @@ void SymbolTable::add_variable(
     int column_number
 )
 {
+    auto table = M_stack.back();
     auto name_string = std::string(name);
-    if (M_variables.contains(name_string)) {
+    if (table->M_variables.contains(name_string)) {
         throw CompileError(line_number, column_number, std::format(
                 "A variable by the name \"{}\" already exists.", name));
     }
-    M_variables[name_string] = std::move(variable);
+    table->M_variables[name_string] = std::move(variable);
 }
 
 void SymbolTable::add_function(
@@ -110,8 +118,9 @@ void SymbolTable::add_function(
     int column_number
 )
 {
+    auto table = M_stack.back();
     auto name_string = std::string(name);
-    auto& functions = M_functions[name_string];
+    auto& functions = table->M_functions[name_string];
     for (auto& f : functions) {
         if (f->get_result_type() == function->get_result_type() and
             f->get_input_types() == function->get_input_types())
@@ -144,19 +153,34 @@ Type SymbolTable::get_type(const syntax::Type& type) const
 
 Value* SymbolTable::get_variable(const std::string& name) const
 {
-    auto it = M_variables.find(name);
-    if (it == M_variables.end()) return nullptr;
-    else return it->second.get();
+    for (auto table : std::views::reverse(M_stack)) {
+        auto it = table->M_variables.find(name);
+        if (it != table->M_variables.end()) return it->second.get();
+    }
+    return nullptr;
 }
 
 std::vector<Function*> SymbolTable::get_functions(const std::string& name) const
 {
-    if (!M_functions.contains(name)) return {};
-    auto& results = M_functions.at(name);
-    auto result = std::vector<Function*>();
-    result.resize(results.size());
-    for (int i = 0; i < ssize(results); ++i) {
-        result[i] = results[i].get();
+    for (auto table : std::views::reverse(M_stack)) {
+        if (!table->M_functions.contains(name)) continue;
+        auto& results = table->M_functions.at(name);
+        auto result = std::vector<Function*>();
+        result.resize(results.size());
+        for (int i = 0; i < ssize(results); ++i) {
+            result[i] = results[i].get();
+        }
+        return result;
     }
-    return result;
+    return {};
+}
+
+void SymbolTable::push(SymbolTable& table)
+{
+    M_stack.push_back(&table);
+}
+
+void SymbolTable::pop()
+{
+    M_stack.pop_back();
 }
