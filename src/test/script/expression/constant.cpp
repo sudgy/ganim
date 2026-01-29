@@ -2,6 +2,8 @@
 
 #include "script/expression/constant.hpp"
 
+#include "script/script.hpp"
+
 using namespace ganim;
 using namespace ganim::expressions;
 
@@ -44,4 +46,42 @@ TEST_CASE("Constant from ast", "[script]") {
     REQUIRE(*test4->value().get_as<std::string>() == "test");
     REQUIRE(test4->line_number() == 4);
     REQUIRE(test4->column_number() == 5);
+}
+
+TEST_CASE("Numeric expressions", "[script]") {
+    auto script = Script(R"(
+var a = 523;
+var b = 0xFF;
+var c = 010;
+var d = 0b11;
+var e = 0.5;
+    )");
+    script.compile();
+    script.execute();
+    auto a = script.symbol_table().get_variable("a");
+    auto b = script.symbol_table().get_variable("b");
+    auto c = script.symbol_table().get_variable("c");
+    auto d = script.symbol_table().get_variable("d");
+    auto e = script.symbol_table().get_variable("e");
+    REQUIRE( a->value().get_as<std::int64_t>());
+    REQUIRE(*a->value().get_as<std::int64_t>() == 523);
+    REQUIRE( b->value().get_as<std::int64_t>());
+    REQUIRE(*b->value().get_as<std::int64_t>() == 0xFF);
+    REQUIRE( c->value().get_as<std::int64_t>());
+    REQUIRE(*c->value().get_as<std::int64_t>() == 010);
+    REQUIRE( d->value().get_as<std::int64_t>());
+    REQUIRE(*d->value().get_as<std::int64_t>() == 0b11);
+    REQUIRE( e->value().get_as<double>());
+    REQUIRE(*e->value().get_as<double>() == 0.5);
+}
+
+TEST_CASE("String expressions", "[script]") {
+    auto script = Script(R"(
+var a = "ab\"\\c";
+    )");
+    script.compile();
+    script.execute();
+    auto a = script.symbol_table().get_variable("a");
+    REQUIRE( a->value().get_as<std::string>());
+    REQUIRE(*a->value().get_as<std::string>() == "ab\"\\c");
 }

@@ -61,7 +61,7 @@ void Script::compile()
             case Token::String:
                 pushed = parser.push(parser.String_token(
                     {
-                        token.string.substr(1, token.string.size() - 2),
+                        modify_string_literal(token.string),
                         token.line_number,
                         token.column_number
                     }));
@@ -119,4 +119,17 @@ void Script::execute()
     for (auto& command : M_commands) {
         command->execute();
     }
+}
+
+std::string_view Script::modify_string_literal(std::string_view literal)
+{
+    literal.remove_prefix(1);
+    literal.remove_suffix(1);
+    auto& result = M_modified_string_literals.emplace_back(literal);
+    for (auto i = 0UZ; i < result.size(); ++i) {
+        if (result[i] == '\\') {
+            result.erase(i, 1);
+        }
+    }
+    return result;
 }
