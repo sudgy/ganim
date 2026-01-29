@@ -32,13 +32,20 @@ namespace ganim::syntax {
         Expression condition;
         std::vector<Statement> loop_statements;
     };
+    // Statements made up of a single word, currently just break and continue
+    struct WordStatement {
+        std::string_view statement;
+        int line_number = -1;
+        int column_number = -1;
+    };
     struct Statement {
         std::variant<
             ExprStatement,
             VarStatement,
             SetStatement,
             IfStatement,
-            WhileStatement
+            WhileStatement,
+            WordStatement
         > value;
     };
 }

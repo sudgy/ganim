@@ -119,6 +119,10 @@ void Script::compile()
                     pushed = parser.push(parser.BoolOp_token(
                        {token.string, token.line_number, token.column_number}));
                 }
+                else if (token.string == "break" or token.string == "continue"){
+                    pushed = parser.push(parser.Word_token(
+                       {token.string, token.line_number, token.column_number}));
+                }
                 else if (token.string == "true") {
                     pushed = parser.push(parser.Boolean_token(
                         {true, token.line_number, token.column_number}));

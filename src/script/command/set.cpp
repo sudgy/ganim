@@ -64,8 +64,9 @@ Set::Set(
     }
 }
 
-void Set::execute() const
+Command::ExecuteResult Set::execute() const
 {
     if (M_lhs) M_lhs->modify(*M_value); // Normal assignment
     else M_value->value(); // Arithmetic assignment
+    return Nothing;
 }

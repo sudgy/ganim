@@ -60,6 +60,12 @@ namespace ganim::syntax {
         int line_number = -1;
         int column_number = -1;
     };
+    // Single word statements like break and continue
+    struct WordToken {
+        std::string_view value;
+        int line_number = -1;
+        int column_number = -1;
+    };
 }
 
 #endif

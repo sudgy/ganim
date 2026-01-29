@@ -28,16 +28,19 @@ If::If(SymbolTable& table, const syntax::IfStatement& ast)
     table.pop();
 }
 
-void If::execute() const
+Command::ExecuteResult If::execute() const
 {
     if (*M_condition->value().get_as<bool>()) {
         for (auto& command : M_true_commands) {
-            command->execute();
+            auto result = command->execute();
+            if (result != Nothing) return result;
         }
     }
     else {
         for (auto& command : M_false_commands) {
-            command->execute();
+            auto result = command->execute();
+            if (result != Nothing) return result;
         }
     }
+    return Nothing;
 }

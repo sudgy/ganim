@@ -22,11 +22,15 @@ While::While(SymbolTable& table, const syntax::WhileStatement& ast)
     table.pop();
 }
 
-void While::execute() const
+Command::ExecuteResult While::execute() const
 {
+    auto result = ExecuteResult::Nothing;
     while (*M_condition->value().get_as<bool>()) {
         for (auto& command : M_loop_commands) {
-            command->execute();
+            result = command->execute();
+            if (result != Nothing) break;
         }
+        if (result == Break) break;
     }
+    return Nothing;
 }

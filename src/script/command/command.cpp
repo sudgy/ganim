@@ -1,10 +1,14 @@
 #include "command.hpp"
 
+#include <utility>
+
 #include "expression.hpp"
 #include "declare_variable.hpp"
 #include "set.hpp"
 #include "if.hpp"
 #include "while.hpp"
+#include "break.hpp"
+#include "continue.hpp"
 
 using namespace ganim;
 
@@ -39,6 +43,16 @@ std::unique_ptr<Command> Command::from_ast(
         [&](const syntax::WhileStatement& value) -> std::unique_ptr<Command>
         {
             return std::make_unique<commands::While>(table, value);
+        },
+        [&](const syntax::WordStatement& value) -> std::unique_ptr<Command>
+        {
+            if (value.statement == "break") {
+                return std::make_unique<commands::Break>();
+            }
+            else if (value.statement == "continue") {
+                return std::make_unique<commands::Continue>();
+            }
+            std::unreachable();
         }
     }, statement.value);
 }

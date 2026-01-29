@@ -88,7 +88,8 @@ DeclareVariable::DeclareVariable(
     );
 }
 
-void DeclareVariable::execute() const
+Command::ExecuteResult DeclareVariable::execute() const
 {
     M_on_execute();
+    return Nothing;
 }

@@ -13,7 +13,7 @@ namespace ganim::commands {
                 SymbolTable& table,
                 const syntax::VarStatement& ast
             );
-            virtual void execute() const override;
+            virtual ExecuteResult execute() const override;
 
         private:
             mutable std::move_only_function<void()> M_on_execute;

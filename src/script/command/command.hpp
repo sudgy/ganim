@@ -18,7 +18,12 @@ namespace ganim {
             static std::unique_ptr<Command>
             from_ast(SymbolTable& table, const syntax::Statement& statement);
 
-            virtual void execute() const=0;
+            enum ExecuteResult {
+                Nothing,
+                Break,
+                Continue
+            };
+            virtual ExecuteResult execute() const=0;
     };
 }
 

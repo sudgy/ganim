@@ -10,7 +10,7 @@ namespace ganim::commands {
     class While : public Command {
         public:
             While(SymbolTable& table, const syntax::WhileStatement& ast);
-            virtual void execute() const override;
+            virtual ExecuteResult execute() const override;
 
         private:
             std::unique_ptr<Expression> M_condition;

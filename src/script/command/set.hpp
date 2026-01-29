@@ -11,7 +11,7 @@ namespace ganim::commands {
     class Set : public Command {
         public:
             Set(SymbolTable& table, const syntax::SetStatement& ast);
-            virtual void execute() const override;
+            virtual ExecuteResult execute() const override;
 
         private:
             std::unique_ptr<ganim::Expression> M_lhs;

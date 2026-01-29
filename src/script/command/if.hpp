@@ -10,7 +10,7 @@ namespace ganim::commands {
     class If : public Command {
         public:
             If(SymbolTable& table, const syntax::IfStatement& ast);
-            virtual void execute() const override;
+            virtual ExecuteResult execute() const override;
 
         private:
             std::unique_ptr<Expression> M_condition;
