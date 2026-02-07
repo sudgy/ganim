@@ -10,8 +10,8 @@ void ganim::indicate(
 {
     auto new_args = AnimationArgs(
         args.duration,
-        [f = std::move(args.rate_function)](double t){
-            return rf::there_and_back(t, f);
+        [](double t){
+            return rf::there_and_back(t);
         }
     );
     auto& indicated = animate(scene, std::move(object), new_args);

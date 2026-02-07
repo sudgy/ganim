@@ -13,6 +13,7 @@ double gex::get_accent_offset(std::uint32_t codepoint)
         case 0x1D45D: return 0.05; // 𝑝
         case 0x1D462: return 0.05; // 𝑢
         case 0x1D463: return 0.05; // 𝑣
+        case 0x1D464: return 0.05; // 𝑤
         default: return 0.0;
     }
 }

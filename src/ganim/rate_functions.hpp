@@ -27,14 +27,10 @@ namespace ganim::rf {
     double smoothererstep(double t);
     /** @brief The first half of the cosine, but flipped and scaled. */
     double cosine(double t);
-    /** @brief Goes from zero to one and then back to zero.  It will use the
-     * passed in function (which defaults to smoothererstep), squished to [0,
-     * 0.5] to go there and back.
+    /** @brief Goes from zero to one and then back to zero.  It will use
+     * smoothererstep, squished to [0, 0.5] to go there and back.
      */
-    double there_and_back(
-        double t,
-        std::function<double(double)> rate_func = smoothererstep
-    );
+    double there_and_back(double t);
     double rush_into(double t);
     double rush_out(double t);
 }

@@ -31,14 +31,11 @@ double rf::cosine(double t)
     return (1 - std::cos(t*τ/2)) / 2;
 }
 
-double rf::there_and_back(
-    double t,
-    std::function<double(double)> rate_func
-)
+double rf::there_and_back(double t)
 {
     t *= 2;
-    if (t < 1) return rate_func(t);
-    else return 1 - rate_func(t - 1);
+    if (t < 1) return smoothererstep(t);
+    else return 1 - smoothererstep(t - 1);
 }
 
 double rf::rush_into(double t)
