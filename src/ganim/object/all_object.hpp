@@ -9,6 +9,7 @@
 #include "ganim/object/scene_object.hpp"
 #include "ganim/object/value.hpp"
 #include "ganim/object/path.hpp"
+#include "ganim/object/arc.hpp"
 #include "ganim/object/vector.hpp"
 #include "ganim/object/polygon_shape.hpp"
 #include "ganim/object/arrow_path.hpp"
