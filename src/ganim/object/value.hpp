@@ -48,8 +48,8 @@ class Value : public Animatable {
         operator T() const {return M_value;}
 
         /** @brief Copy the object for the sake of transformations */
-        ObjectPtr<Value> polymorphic_copy() const
-            {return ObjectPtr<Value>::from_new(polymorphic_copy_impl());}
+        ObjectPtr<Value> copy() const
+            {return ObjectPtr<Value>::from_new(copy_impl());}
         /** @brief Interpolate between two Values
          *
          * This requires the value type to be addable and scalable.
@@ -74,7 +74,7 @@ class Value : public Animatable {
         }
 
     private:
-        virtual Value* polymorphic_copy_impl() const
+        virtual Value* copy_impl() const
         {
             return new Value(*this);
         }

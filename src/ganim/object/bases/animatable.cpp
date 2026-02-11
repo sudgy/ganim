@@ -7,12 +7,12 @@ void Animatable::set_fps(int fps)
     M_fps = fps;
 }
 
-ObjectPtr<Animatable> Animatable::polymorphic_copy() const
+ObjectPtr<Animatable> Animatable::copy() const
 {
-    return ObjectPtr<Animatable>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Animatable>::from_new(copy_impl());
 }
 
-Animatable* Animatable::polymorphic_copy_impl() const
+Animatable* Animatable::copy_impl() const
 {
     return new Animatable(*this);
 }

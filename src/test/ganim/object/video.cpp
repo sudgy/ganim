@@ -19,9 +19,9 @@ void video()
     auto scene = Scene("test_video.mp4", 64, 64, 2, 2, 4);
     using namespace vga2;
     auto shape1 = make_polygon_shape({0*e1, e1, e1 + e2, e2});
-    auto shape2 = shape1->polymorphic_copy();
-    auto shape3 = shape1->polymorphic_copy();
-    auto shape4 = shape1->polymorphic_copy();
+    auto shape2 = shape1->copy();
+    auto shape3 = shape1->copy();
+    auto shape4 = shape1->copy();
     shape1->shift(-e1);
     shape3->shift(-e1 - e2);
     shape4->shift(-e2);

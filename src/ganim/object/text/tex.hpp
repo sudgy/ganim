@@ -37,10 +37,10 @@ class Tex : public Group, public DVIConsumer {
         virtual void process_special(std::string_view special) override;
         void set_colors(const std::unordered_map<std::string, Color>& colors);
 
-        ObjectPtr<Tex> polymorphic_copy() const;
+        ObjectPtr<Tex> copy() const;
 
     private:
-        virtual Tex* polymorphic_copy_impl() const override;
+        virtual Tex* copy_impl() const override;
 
         double M_magnification = 0.0;
         struct tex_vertex {
@@ -65,8 +65,8 @@ class Tex : public Group, public DVIConsumer {
                 virtual Box get_original_logical_bounding_box() const override;
                 Box logical_bounding_box;
 
-                ObjectPtr<TexPiece> polymorphic_copy() const;
-                virtual TexPiece* polymorphic_copy_impl() const;
+                ObjectPtr<TexPiece> copy() const;
+                virtual TexPiece* copy_impl() const;
         };
 
         std::vector<ObjectPtr<TexPiece>> M_shapes;

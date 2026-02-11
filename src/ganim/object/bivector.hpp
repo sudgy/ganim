@@ -119,10 +119,10 @@ namespace ganim {
                 {return get<1>();}
             virtual Bivector& set_color(Color color) override;
 
-            ObjectPtr<Bivector> polymorphic_copy() const;
+            ObjectPtr<Bivector> copy() const;
 
         private:
-            virtual Bivector* polymorphic_copy_impl() const;
+            virtual Bivector* copy_impl() const;
 
             void common_construct(
                 const std::vector<pga2::Bivec>& pga_points,

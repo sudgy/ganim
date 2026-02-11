@@ -692,7 +692,7 @@ TEST_CASE("Group copy rotor", "[object]") {
     auto obj2 = ObjectPtr<TestObject>();
     auto group = make_group(obj1, obj2);
     group->shift(vga2::e1);
-    auto group2 = group->polymorphic_copy();
+    auto group2 = group->copy();
     REQUIRE_THAT(group->get_rotor(), GAEquals(group2->get_rotor()));
 }
 

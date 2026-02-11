@@ -55,10 +55,10 @@ namespace ganim {
                 ArrowPathArgs args = {}
             );
 
-            ObjectPtr<ArrowPath> polymorphic_copy() const;
+            ObjectPtr<ArrowPath> copy() const;
 
         private:
-            virtual ArrowPath* polymorphic_copy_impl() const;
+            virtual ArrowPath* copy_impl() const;
     };
     /** @brief Make an ArrowPath in an ObjectPtr.
      *

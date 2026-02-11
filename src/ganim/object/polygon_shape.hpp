@@ -25,10 +25,10 @@ namespace ganim {
              */
             explicit PolygonShape(const std::vector<pga3::Trivec>& vertices);
 
-            ObjectPtr<PolygonShape> polymorphic_copy() const;
+            ObjectPtr<PolygonShape> copy() const;
 
         private:
-            virtual PolygonShape* polymorphic_copy_impl() const;
+            virtual PolygonShape* copy_impl() const;
     };
     /** @brief Make a PolygonShape in an ObjectPtr.
      *

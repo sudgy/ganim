@@ -43,22 +43,22 @@ class StaticGroup : public Group {
         template <int i>
         auto get() const {return std::get<i>(M_objects);}
 
-        ObjectPtr<StaticGroup> polymorphic_copy() const
+        ObjectPtr<StaticGroup> copy() const
         {
-            return ObjectPtr<StaticGroup>::from_new(polymorphic_copy_impl());
+            return ObjectPtr<StaticGroup>::from_new(copy_impl());
         }
 
     private:
         std::tuple<ObjectPtr<Ts>...> M_objects;
 
-        virtual StaticGroup* polymorphic_copy_impl() const override
+        virtual StaticGroup* copy_impl() const override
         {
             return new StaticGroup(*this);
         }
         template <std::size_t... Is>
         auto copy_impl(std::index_sequence<Is...>) const
         {
-            return std::make_tuple(std::get<Is>(M_objects)->polymorphic_copy()...);
+            return std::make_tuple(std::get<Is>(M_objects)->copy()...);
         }
         template <std::size_t... Is>
         auto add_all(std::index_sequence<Is...>)

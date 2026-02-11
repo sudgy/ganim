@@ -125,10 +125,10 @@ namespace ganim {
             virtual ShaderFeature get_shader_flags() override;
             virtual void set_subclass_uniforms(gl::Shader& shader) override;
 
-            ObjectPtr<Path> polymorphic_copy() const;
+            ObjectPtr<Path> copy() const;
 
         private:
-            virtual Path* polymorphic_copy_impl() const;
+            virtual Path* copy_impl() const;
 
             double M_dash_on_time = 0;
             double M_dash_off_time = 0;

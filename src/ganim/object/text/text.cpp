@@ -78,12 +78,12 @@ std::vector<Glyph> Text::get_glyphs(
     return result;
 }
 
-ObjectPtr<Text> Text::polymorphic_copy() const
+ObjectPtr<Text> Text::copy() const
 {
-    return ObjectPtr<Text>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Text>::from_new(copy_impl());
 }
 
-Text* Text::polymorphic_copy_impl() const
+Text* Text::copy_impl() const
 {
     return new Text(*this);
 }

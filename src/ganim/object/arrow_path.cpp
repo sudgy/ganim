@@ -95,12 +95,12 @@ void ArrowPath::recreate(
     recreate(pga_points, args);
 }
 
-ObjectPtr<ArrowPath> ArrowPath::polymorphic_copy() const
+ObjectPtr<ArrowPath> ArrowPath::copy() const
 {
-    return ObjectPtr<ArrowPath>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<ArrowPath>::from_new(copy_impl());
 }
 
-ArrowPath* ArrowPath::polymorphic_copy_impl() const
+ArrowPath* ArrowPath::copy_impl() const
 {
     return new ArrowPath(*this);
 }

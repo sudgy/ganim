@@ -17,14 +17,14 @@ class Gex : public TextBase {
 
         void set_colors(const std::unordered_map<std::string, Color>& colors);
 
-        ObjectPtr<Gex> polymorphic_copy() const;
+        ObjectPtr<Gex> copy() const;
 
         inline thread_local static auto default_color_map
             = std::unordered_map<std::string, Color>();
         inline thread_local static auto default_scale = 1.0;
 
     private:
-        virtual Gex* polymorphic_copy_impl() const override;
+        virtual Gex* copy_impl() const override;
 
         virtual std::vector<Glyph> get_glyphs(
                 const std::vector<std::string_view>& strings) override;

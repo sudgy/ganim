@@ -62,12 +62,12 @@ std::vector<Glyph> Gex::get_glyphs(
     return result;
 }
 
-ObjectPtr<Gex> Gex::polymorphic_copy() const
+ObjectPtr<Gex> Gex::copy() const
 {
-    return ObjectPtr<Gex>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Gex>::from_new(copy_impl());
 }
 
-Gex* Gex::polymorphic_copy_impl() const
+Gex* Gex::copy_impl() const
 {
     return new Gex(*this);
 }

@@ -12,14 +12,14 @@ class TypedGroup : public Group {
         TypedGroup(const TypedGroup& other)
         :   Group(other, nullptr)
         {
-            for (auto& obj : other.M_subobjects) add(obj->polymorphic_copy());
+            for (auto& obj : other.M_subobjects) add(obj->copy());
         }
         TypedGroup& operator=(const TypedGroup& other)
         {
             Object::operator=(other);
             copy_members(other);
             clear();
-            for (auto& obj : other.M_subobjects) add(obj->polymorphic_copy());
+            for (auto& obj : other.M_subobjects) add(obj->copy());
             return *this;
         }
         TypedGroup(TypedGroup&&) noexcept=default;
@@ -68,9 +68,9 @@ class TypedGroup : public Group {
             (remove(objects), ...);
         }
 
-        ObjectPtr<TypedGroup> polymorphic_copy() const
+        ObjectPtr<TypedGroup> copy() const
         {
-            return ObjectPtr<TypedGroup>::from_new(polymorphic_copy_impl());
+            return ObjectPtr<TypedGroup>::from_new(copy_impl());
         }
 
         auto begin() {return M_subobjects.begin();}
@@ -133,7 +133,7 @@ class TypedGroup : public Group {
     private:
         std::vector<ObjectPtr<T>> M_subobjects;
 
-        virtual TypedGroup* polymorphic_copy_impl() const override
+        virtual TypedGroup* copy_impl() const override
         {
             return new TypedGroup(*this);
         }

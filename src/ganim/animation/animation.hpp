@@ -66,7 +66,7 @@ struct AnimationArgs {
 template <animatable T>
 class Animation {
     using copy_type = std::remove_reference_t<
-        decltype(*std::declval<T>().polymorphic_copy())>;
+        decltype(*std::declval<T>().copy())>;
     public:
         /** @brief constructor
          *
@@ -93,8 +93,8 @@ class Animation {
                 object->set_animating(true);
             }
             scene.add(object);
-            M_starting_object = object->polymorphic_copy();
-            M_ending_object = object->polymorphic_copy();
+            M_starting_object = object->copy();
+            M_ending_object = object->copy();
             auto fps = object->get_fps();
             if (fps == -1) {
                 throw std::logic_error("An animation was run without setting "

@@ -439,12 +439,12 @@ void Path::set_subclass_uniforms(gl::Shader& shader)
     }
 }
 
-ObjectPtr<Path> Path::polymorphic_copy() const
+ObjectPtr<Path> Path::copy() const
 {
-    return ObjectPtr<Path>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Path>::from_new(copy_impl());
 }
 
-Path* Path::polymorphic_copy_impl() const
+Path* Path::copy_impl() const
 {
     return new Path(*this);
 }

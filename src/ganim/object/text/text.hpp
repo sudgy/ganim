@@ -36,10 +36,10 @@ namespace ganim {
                 const std::vector<std::string_view>& strings
             );
 
-            ObjectPtr<Text> polymorphic_copy() const;
+            ObjectPtr<Text> copy() const;
 
         private:
-            virtual Text* polymorphic_copy_impl() const override;
+            virtual Text* copy_impl() const override;
 
             virtual std::vector<Glyph> get_glyphs(
                     const std::vector<std::string_view>& strings) override;

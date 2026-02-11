@@ -228,7 +228,7 @@ namespace ganim {
                 const Animatable& end,
                 double t
             ) override;
-            ObjectPtr<Object> polymorphic_copy() const;
+            ObjectPtr<Object> copy() const;
 
             /** @brief Set whether or not this object is being created.
              *
@@ -532,7 +532,7 @@ namespace ganim {
             GANIM_TRANSFORMABLE_CHAIN_DECLS(Object);
 
         private:
-            virtual Object* polymorphic_copy_impl() const override;
+            virtual Object* copy_impl() const override;
             virtual std::pair<pga3::Trivec, pga3::Trivec> get_box()
                 const override final;
 

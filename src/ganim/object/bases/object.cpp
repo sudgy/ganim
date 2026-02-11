@@ -92,12 +92,12 @@ void Object::set_squish(
     M_squish_axis = axis.normalized();
 }
 
-ObjectPtr<Object> Object::polymorphic_copy() const
+ObjectPtr<Object> Object::copy() const
 {
-    return ObjectPtr<Object>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Object>::from_new(copy_impl());
 }
 
-Object* Object::polymorphic_copy_impl() const
+Object* Object::copy_impl() const
 {
     class FakeObject : public Object {
         public:

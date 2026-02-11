@@ -123,12 +123,12 @@ void Transformable::interpolate(
     apply_rotor(~M_rotor * final_rotor);
 }
 
-ObjectPtr<Transformable> Transformable::polymorphic_copy() const
+ObjectPtr<Transformable> Transformable::copy() const
 {
-    return ObjectPtr<Transformable>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Transformable>::from_new(copy_impl());
 }
 
-Transformable* Transformable::polymorphic_copy_impl() const
+Transformable* Transformable::copy_impl() const
 {
     return new Transformable(*this);
 }

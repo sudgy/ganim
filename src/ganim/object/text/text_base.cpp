@@ -94,22 +94,22 @@ Box TextGlyph::get_original_logical_bounding_box() const
     return logical_bounding_box;
 }
 
-ObjectPtr<TextGlyph> TextGlyph::polymorphic_copy() const
+ObjectPtr<TextGlyph> TextGlyph::copy() const
 {
-    return ObjectPtr<TextGlyph>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<TextGlyph>::from_new(copy_impl());
 }
 
-TextGlyph* TextGlyph::polymorphic_copy_impl() const
+TextGlyph* TextGlyph::copy_impl() const
 {
     return new TextGlyph(*this);
 }
 
-ObjectPtr<TextPiece> TextPiece::polymorphic_copy() const
+ObjectPtr<TextPiece> TextPiece::copy() const
 {
-    return ObjectPtr<TextPiece>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<TextPiece>::from_new(copy_impl());
 }
 
-TextPiece* TextPiece::polymorphic_copy_impl() const
+TextPiece* TextPiece::copy_impl() const
 {
     return new TextPiece(*this);
 }

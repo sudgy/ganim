@@ -103,10 +103,10 @@ namespace ganim {
                 const Animatable& end,
                 double t
             ) override;
-            ObjectPtr<Vector> polymorphic_copy() const;
+            ObjectPtr<Vector> copy() const;
 
         private:
-            virtual Vector* polymorphic_copy_impl() const override;
+            virtual Vector* copy_impl() const override;
             gl::Shader* get_shader();
 
             Vector(const Vector& other);

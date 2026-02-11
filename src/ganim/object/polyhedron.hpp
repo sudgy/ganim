@@ -19,7 +19,7 @@ namespace ganim {
                 const std::vector<std::vector<int>>& faces
             );
 
-            ObjectPtr<Polyhedron> polymorphic_copy() const;
+            ObjectPtr<Polyhedron> copy() const;
 
             virtual Polyhedron& set_color(Color color) override;
 
@@ -28,7 +28,7 @@ namespace ganim {
             ObjectPtr<TypedGroup<Path>> get_edges() const {return get<1>();}
 
         private:
-            virtual Polyhedron* polymorphic_copy_impl() const override;
+            virtual Polyhedron* copy_impl() const override;
     };
     inline ObjectPtr<Polyhedron> make_polyhedron(
         const std::vector<vga3::Vec>& vertices,

@@ -26,7 +26,7 @@ namespace ganim {
             );
             Trivector(vga3::Trivec trivector);
 
-            ObjectPtr<Trivector> polymorphic_copy() const;
+            ObjectPtr<Trivector> copy() const;
 
             virtual Trivector& set_color(Color color) override;
 
@@ -36,7 +36,7 @@ namespace ganim {
                 {return get<1>();}
 
         private:
-            virtual Trivector* polymorphic_copy_impl() const override;
+            virtual Trivector* copy_impl() const override;
     };
     inline ObjectPtr<Trivector> make_trivector(
         const std::vector<vga3::Vec>& vertices,

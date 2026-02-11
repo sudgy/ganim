@@ -105,12 +105,12 @@ PolygonShape::PolygonShape(const std::vector<vga3::Vec>& vertices)
 PolygonShape::PolygonShape(const std::vector<pga3::Trivec>& vertices)
 :   Shape(get_shape_vertices(vertices), get_shape_indices(vertices)) {}
 
-ObjectPtr<PolygonShape> PolygonShape::polymorphic_copy() const
+ObjectPtr<PolygonShape> PolygonShape::copy() const
 {
-    return ObjectPtr<PolygonShape>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<PolygonShape>::from_new(copy_impl());
 }
 
-PolygonShape* PolygonShape::polymorphic_copy_impl() const
+PolygonShape* PolygonShape::copy_impl() const
 {
     return new PolygonShape(*this);
 }

@@ -375,22 +375,22 @@ Box Tex::TexPiece::get_original_logical_bounding_box() const
     return logical_bounding_box;
 }
 
-ObjectPtr<Tex> Tex::polymorphic_copy() const
+ObjectPtr<Tex> Tex::copy() const
 {
-    return ObjectPtr<Tex>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Tex>::from_new(copy_impl());
 }
 
-Tex* Tex::polymorphic_copy_impl() const
+Tex* Tex::copy_impl() const
 {
     return new Tex(*this);
 }
 
-ObjectPtr<Tex::TexPiece> Tex::TexPiece::polymorphic_copy() const
+ObjectPtr<Tex::TexPiece> Tex::TexPiece::copy() const
 {
-    return ObjectPtr<Tex::TexPiece>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Tex::TexPiece>::from_new(copy_impl());
 }
 
-Tex::TexPiece* Tex::TexPiece::polymorphic_copy_impl() const
+Tex::TexPiece* Tex::TexPiece::copy_impl() const
 {
     return new Tex::TexPiece(*this);
 }

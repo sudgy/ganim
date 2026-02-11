@@ -134,10 +134,10 @@ class Transformable : public Animatable {
             const Animatable& end,
             double t
         ) override;
-        ObjectPtr<Transformable> polymorphic_copy() const;
+        ObjectPtr<Transformable> copy() const;
 
     private:
-        virtual Transformable* polymorphic_copy_impl() const override;
+        virtual Transformable* copy_impl() const override;
         pga3::Even M_rotor = 1;
 };
 

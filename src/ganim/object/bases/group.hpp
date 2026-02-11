@@ -118,7 +118,7 @@ class Group : public Object {
             const Animatable& end,
             double t
         ) override;
-        ObjectPtr<Group> polymorphic_copy() const;
+        ObjectPtr<Group> copy() const;
 
         virtual void draw(const Camera& camera) override;
         virtual bool is_visible() const override;
@@ -383,7 +383,7 @@ class Group : public Object {
         Group(const Group& other, std::nullptr_t);
 
     private:
-        virtual Group* polymorphic_copy_impl() const override;
+        virtual Group* copy_impl() const override;
 
         std::vector<ObjectPtr<Object>> M_subobjects;
         std::vector<ObjectPtr<Object>> M_new_subobjects;

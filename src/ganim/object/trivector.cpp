@@ -127,12 +127,12 @@ Trivector::Trivector(vga3::Trivec trivector)
         trivector.blade_project<vga3::e123>() < 0
     ) {}
 
-ObjectPtr<Trivector> Trivector::polymorphic_copy() const
+ObjectPtr<Trivector> Trivector::copy() const
 {
-    return ObjectPtr<Trivector>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Trivector>::from_new(copy_impl());
 }
 
-Trivector* Trivector::polymorphic_copy_impl() const
+Trivector* Trivector::copy_impl() const
 {
     return new Trivector(*this);
 }

@@ -289,12 +289,12 @@ TEST_CASE("Bivector color alpha", "[object]") {
     REQUIRE(b->get_inside()->get_color() == "FF00007F");
 }
 
-TEST_CASE("Bivector polymorphic_copy", "[object]") {
+TEST_CASE("Bivector copy", "[object]") {
     using namespace vga2;
     auto b1 = make_bivector(e1, e2);
     b1->shift(e1);
     b1->set_color("FF0000");
-    auto b2 = b1->polymorphic_copy();
+    auto b2 = b1->copy();
     b2->set_color(b2->get_color());
     auto scene = TestScene(32, 32, 4, 4, 1);
     scene.check_draw_equivalent(b1, b2);

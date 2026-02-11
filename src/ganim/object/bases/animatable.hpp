@@ -56,19 +56,19 @@ namespace ganim {
 
             /** @brief Copy the object polymorphically.
              *
-             * You may notice that this object is not virtual.  This is
+             * You may notice that this function is not virtual.  This is
              * intentional!  C++ can't do covariant return types with smart
              * pointers, so you have to use a workaround instead.  There's a
-             * private virtual function called @ref polymorphic_copy_impl that
+             * private virtual function called @ref copy_impl that
              * you must override with a raw pointer that allocates using `new`
              * (I'm sorry).  This function will call that function and wrap it
              * in an ObjectPtr.
              *
-             * In subclasses, define both this and `polymorphic_copy_impl` with
+             * In subclasses, define both this and `copy_impl` with
              * your subclass in the return type and follow this pattern.  You'll
-             * have to use @ref ObjectPtr::from_new in polymorphic_copy.
+             * have to use @ref ObjectPtr::from_new in copy.
              */
-            ObjectPtr<Animatable> polymorphic_copy() const;
+            ObjectPtr<Animatable> copy() const;
             virtual void interpolate(
                 const Animatable& start,
                 const Animatable& end,
@@ -80,9 +80,9 @@ namespace ganim {
              *
              * To support this feature in a subclass, you must override this
              * function.  For more details, see @ref
-             * Animatable::polymorphic_copy.
+             * Animatable::copy.
              */
-            virtual Animatable* polymorphic_copy_impl() const;
+            virtual Animatable* copy_impl() const;
             int M_fps = -1;
             bool M_animating = false;
     };

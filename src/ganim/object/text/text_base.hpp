@@ -15,16 +15,16 @@ class TextGlyph : public TextureShape<Shape> {
         Box logical_bounding_box;
 
     public:
-        ObjectPtr<TextGlyph> polymorphic_copy() const;
-        virtual TextGlyph* polymorphic_copy_impl() const;
+        ObjectPtr<TextGlyph> copy() const;
+        virtual TextGlyph* copy_impl() const;
 };
 class TextPiece : public TypedGroup<TextGlyph> {
     private:
         friend class TextBase;
 
     public:
-        ObjectPtr<TextPiece> polymorphic_copy() const;
-        virtual TextPiece* polymorphic_copy_impl() const;
+        ObjectPtr<TextPiece> copy() const;
+        virtual TextPiece* copy_impl() const;
 };
 class TextBase : public TypedGroup<TextPiece> {
     public:

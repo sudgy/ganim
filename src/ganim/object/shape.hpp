@@ -110,13 +110,13 @@ namespace ganim {
                 const Animatable& end,
                 double t
             ) override;
-            ObjectPtr<Shape> polymorphic_copy() const;
+            ObjectPtr<Shape> copy() const;
             void pixelate(int pixel_size);
 
             GANIM_OBJECT_CHAIN_DECLS(Shape)
 
         private:
-            virtual Shape* polymorphic_copy_impl() const override;
+            virtual Shape* copy_impl() const override;
             /** @brief Sends the vertex data to OpenGL.  It's virtual to allow
              * subclasses to change how this happens.  When the function is
              * called, this shape's vertex array will be bound, and this shape's

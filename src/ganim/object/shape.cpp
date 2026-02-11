@@ -170,12 +170,12 @@ void Shape::interpolate(
     if (start2->M_do_shading) M_do_shading = true;
 }
 
-ObjectPtr<Shape> Shape::polymorphic_copy() const
+ObjectPtr<Shape> Shape::copy() const
 {
-    return ObjectPtr<Shape>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Shape>::from_new(copy_impl());
 }
 
-Shape* Shape::polymorphic_copy_impl() const
+Shape* Shape::copy_impl() const
 {
     return new Shape(*this);
 }

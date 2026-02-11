@@ -14,9 +14,9 @@ namespace {
             {
                 if (on_delete) *on_delete = 1;
             }
-            ObjectPtr<TestAnimatable> polymorphic_copy() const
+            ObjectPtr<TestAnimatable> copy() const
                 {return ObjectPtr<TestAnimatable>(*this);}
-            virtual TestAnimatable* polymorphic_copy_impl() const override
+            virtual TestAnimatable* copy_impl() const override
                 {return new TestAnimatable(*this);}
             using Animatable::interpolate;
             void interpolate(
@@ -41,9 +41,9 @@ namespace {
     class TestAnimatable2 : public TestAnimatable {};
     class TestAnimatable3 : public TestAnimatable {
         public:
-            ObjectPtr<TestAnimatable3> polymorphic_copy() const
+            ObjectPtr<TestAnimatable3> copy() const
                 {return ObjectPtr<TestAnimatable3>(*this);}
-            virtual TestAnimatable3* polymorphic_copy_impl() const override
+            virtual TestAnimatable3* copy_impl() const override
                 {return new TestAnimatable3(*this);}
     };
     class TestObject : public Object {

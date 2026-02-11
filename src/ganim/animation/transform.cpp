@@ -177,7 +177,7 @@ namespace {
             );
             glBindVertexArray(0);
         }
-        ObjectPtr<StaticPart> polymorphic_copy() const
+        ObjectPtr<StaticPart> copy() const
         {
             return ObjectPtr<StaticPart>();
         }
@@ -531,7 +531,7 @@ struct TransformAnimation {
         TransformAnimationArgs args
     )
     :   M_rate_function(std::move(args.rate_function)),
-        M_object(from->polymorphic_copy()),
+        M_object(from->copy()),
         M_from(std::move(from)),
         M_to(std::move(to)),
         M_scene(scene),
@@ -545,7 +545,7 @@ struct TransformAnimation {
         }
         M_to->set_animating(true);
         if (!args.copy) M_from->set_visible(false);
-        M_object = M_from->polymorphic_copy();
+        M_object = M_from->copy();
         scene.add(M_object);
         scene.add(M_to);
         M_object->set_visible(true);

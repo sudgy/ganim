@@ -243,12 +243,12 @@ Bivector& Bivector::set_color(Color color)
     return *this;
 }
 
-ObjectPtr<Bivector> Bivector::polymorphic_copy() const
+ObjectPtr<Bivector> Bivector::copy() const
 {
-    return ObjectPtr<Bivector>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Bivector>::from_new(copy_impl());
 }
 
-Bivector* Bivector::polymorphic_copy_impl() const
+Bivector* Bivector::copy_impl() const
 {
     return new Bivector(*this);
 }

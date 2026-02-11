@@ -17,7 +17,7 @@ Group::Group(const Group& other)
     M_draw_together(other.M_draw_together)
 {
     for (auto& obj : other.M_subobjects) {
-        add(obj->polymorphic_copy());
+        add(obj->copy());
     }
 }
 
@@ -44,7 +44,7 @@ Group& Group::operator=(const Group& other)
     copy_members(other);
     clear();
     for (auto& obj : other.M_subobjects) {
-        add(obj->polymorphic_copy());
+        add(obj->copy());
     }
     return *this;
 }
@@ -71,12 +71,12 @@ void Group::remove(Object& object)
     }
 }
 
-ObjectPtr<Group> Group::polymorphic_copy() const
+ObjectPtr<Group> Group::copy() const
 {
-    return ObjectPtr<Group>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Group>::from_new(copy_impl());
 }
 
-Group* Group::polymorphic_copy_impl() const
+Group* Group::copy_impl() const
 {
     return new Group(*this);
 }

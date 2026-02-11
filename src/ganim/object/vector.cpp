@@ -353,12 +353,12 @@ gl::Shader* Vector::get_shader()
     return &ganim::get_shader(flags);
 }
 
-ObjectPtr<Vector> Vector::polymorphic_copy() const
+ObjectPtr<Vector> Vector::copy() const
 {
-    return ObjectPtr<Vector>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Vector>::from_new(copy_impl());
 }
 
-Vector* Vector::polymorphic_copy_impl() const
+Vector* Vector::copy_impl() const
 {
     return new Vector(*this);
 }

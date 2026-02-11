@@ -75,12 +75,12 @@ Polyhedron& Polyhedron::set_color(Color color)
     return *this;
 }
 
-ObjectPtr<Polyhedron> Polyhedron::polymorphic_copy() const
+ObjectPtr<Polyhedron> Polyhedron::copy() const
 {
-    return ObjectPtr<Polyhedron>::from_new(polymorphic_copy_impl());
+    return ObjectPtr<Polyhedron>::from_new(copy_impl());
 }
 
-Polyhedron* Polyhedron::polymorphic_copy_impl() const
+Polyhedron* Polyhedron::copy_impl() const
 {
     return new Polyhedron(*this);
 }
