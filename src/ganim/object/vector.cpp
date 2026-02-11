@@ -416,6 +416,23 @@ void Vector::interpolate(
     auto start2 = dynamic_cast<const Vector*>(&start);
     auto end2 = dynamic_cast<const Vector*>(&end);
     if (!start2 or !end2) return;
+
+    const auto& r1 = start2->get_rotor();
+    const auto& r2 = end2->get_rotor();
+    auto r = ~r1 * r2;
+    const auto b = r.grade_project<2>();
+    using namespace pga3;
+    if ((b*b).blade_project<e>() != 0) {
+        const auto s = r.grade_project<4>();
+        const auto translation = 1 + s * ga_inv(b);
+        const auto rotation = r * ~translation;
+        auto angle = simple_log(rotation).norm();
+        if (angle > τ/4) {
+            auto final_rotor = r1 * ga_exp(t*ga_log(-r));
+            apply_rotor(~get_rotor() * final_rotor);
+        }
+    }
+
     M_max_tip_to_length_ratio =
         (1 - t) * start2->M_max_tip_to_length_ratio +
         t * end2->M_max_tip_to_length_ratio;

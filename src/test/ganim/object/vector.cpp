@@ -308,3 +308,12 @@ TEST_CASE("Vector animating negative scale", "[object]") {
     REQUIRE(scene.get_pixel(4, 15, 10) == Color("000000"));
     REQUIRE(scene.get_pixel(4, 5, 10) == Color("FFFFFF"));
 }
+
+TEST_CASE("Vector interpolating across -1", "[object]") {
+    using namespace vga2;
+    auto start = make_vector(-e1 + e2);
+    auto end = make_vector(-e1 - e2);
+    auto test = make_vector(e1);
+    test->interpolate(*start, *end, 0.5);
+    REQUIRE(test->get_end_vga2().blade_project<e1>() < 0);
+}

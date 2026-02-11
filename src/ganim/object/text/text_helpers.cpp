@@ -295,7 +295,7 @@ std::vector<Glyph> ganim::shape_delimiter(
 )
 {
     auto variant = 0;
-    auto delim_height = 0;
+    auto delim_height = 0.0;
     auto base_glyph_index = 0U;
     if (!hb_font_get_nominal_glyph(
         font.M_hb_font, codepoint, &base_glyph_index)
@@ -333,14 +333,18 @@ std::vector<Glyph> ganim::shape_delimiter(
 
     auto result = std::vector<Glyph>();
     auto& glyph = result.emplace_back(1);
+    auto scale = 1.0;
+    if (delim_height > 1.2*height) {
+        scale = (1.2*height)/delim_height;
+    }
     glyph.x_pos = 0;
     glyph.y_pos = 0;
     glyph.draw_x = 0;
-    glyph.draw_y = glyph_data->bearing_y;
-    glyph.width = glyph_data->width;
-    glyph.height = glyph_data->height;
-    glyph.y_min = glyph.draw_y - glyph.height;
-    glyph.y_max = glyph.draw_y;
+    glyph.draw_y = glyph_data->bearing_y * scale;
+    glyph.width = glyph_data->width * scale;
+    glyph.height = glyph_data->height * scale;
+    glyph.y_min = (glyph.draw_y - glyph.height) * scale;
+    glyph.y_max = glyph.draw_y * scale;
     glyph.texture_x = glyph_data->texture_x;
     glyph.texture_y = glyph_data->texture_y;
     glyph.texture_width = glyph_data->texture_width;
