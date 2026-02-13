@@ -30,7 +30,7 @@ concept normal_input_range =
 
 struct ArrangeArgs {
     double buff = 0.25;
-    vga2::Vec align = 0*vga2::e1;
+    std::vector<vga2::Vec> align = {};
 };
 /** @brief The class for objects that contains other objects
  *

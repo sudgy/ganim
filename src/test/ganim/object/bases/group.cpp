@@ -613,6 +613,11 @@ TEST_CASE("Group arranging", "[object]") {
     auto obj2 = ObjectPtr<TestObject>();
     auto obj3 = ObjectPtr<TestObject>();
     auto obj4 = ObjectPtr<TestObject>();
+    auto obj5 = ObjectPtr<TestObject>();
+    auto obj6 = ObjectPtr<TestObject>();
+    auto obj7 = ObjectPtr<TestObject>();
+    auto obj8 = ObjectPtr<TestObject>();
+    auto obj9 = ObjectPtr<TestObject>();
     auto group = make_group(obj1, obj2, obj3, obj4);
     using namespace vga2;
     auto simple_box = Box(0*e1, e1 + e2);
@@ -620,6 +625,11 @@ TEST_CASE("Group arranging", "[object]") {
     obj2->logical_bounding_box = simple_box;
     obj3->logical_bounding_box = simple_box;
     obj4->logical_bounding_box = simple_box;
+    obj5->logical_bounding_box = simple_box;
+    obj6->logical_bounding_box = simple_box;
+    obj7->logical_bounding_box = simple_box;
+    obj8->logical_bounding_box = simple_box;
+    obj9->logical_bounding_box = simple_box;
     auto args = ArrangeArgs{.buff = 0.5};
     group->arrange_down(args);
     REQUIRE_THAT(pga2_to_vga2(obj1->get_center()), GAEquals(2.25*e2));
@@ -646,7 +656,7 @@ TEST_CASE("Group arranging", "[object]") {
     REQUIRE_THAT(pga2_to_vga2(obj3->get_center()), GAEquals(e1 + -1.25*e2));
     REQUIRE_THAT(pga2_to_vga2(obj4->get_center()), GAEquals(e1 + -2.75*e2));
 
-    group->arrange_down({.buff = 0.5, .align = e1});
+    group->arrange_down({.buff = 0.5, .align = {e1}});
     REQUIRE_THAT(pga2_to_vga2(obj1->get_center()), GAEquals(e1 + 2.25*e2));
     REQUIRE_THAT(pga2_to_vga2(obj2->get_center()), GAEquals(1.5*e1 + 0.25*e2));
     REQUIRE_THAT(pga2_to_vga2(obj3->get_center()), GAEquals(1.5*e1 + -1.25*e2));
@@ -672,8 +682,8 @@ TEST_CASE("Group arranging", "[object]") {
 
     group->arrange_in_grid(
         2,
-        {.buff = 0.5, .align = -e1},
-        {.buff = 0.5, .align = e2}
+        {.buff = 0.5, .align = {-e1}},
+        {.buff = 0.5, .align = {e2}}
     );
     REQUIRE_THAT(pga2_to_vga2(obj1->get_center()), GAEquals(0.25*e1 + 0.75*e2));
     REQUIRE_THAT(pga2_to_vga2(obj2->get_center()), GAEquals(2.25*e1 + 1.25*e2));
@@ -685,6 +695,44 @@ TEST_CASE("Group arranging", "[object]") {
     REQUIRE_THAT(pga2_to_vga2(obj2->get_center()), GAEquals(1.5*e1 + 0.75*e2));
     REQUIRE_THAT(pga2_to_vga2(obj3->get_center()), GAEquals(3*e1 + 0.75*e2));
     REQUIRE_THAT(pga2_to_vga2(obj4->get_center()), GAEquals(-0.5*e1 - 1.25*e2));
+
+    group->arrange_down({.buff = 0.0, .align = {e1, e1, -e1, e1}});
+    REQUIRE_THAT(obj1->get_center<VGA2>(), GAEquals(1.0*e1 + 1.5*e2));
+    REQUIRE_THAT(obj2->get_center<VGA2>(), GAEquals(1.5*e1));
+    REQUIRE_THAT(obj3->get_center<VGA2>(), GAEquals(-e2 + 0.5*e1));
+    REQUIRE_THAT(obj4->get_center<VGA2>(), GAEquals(-2*e2 + 1.5*e1));
+
+    group->arrange_right({.buff = 0.0, .align = {e2, e2, -e2, e2}});
+    REQUIRE_THAT(obj1->get_center<VGA2>(), GAEquals(-0.5*e1));
+    REQUIRE_THAT(obj2->get_center<VGA2>(), GAEquals(1*e1 + 0.5*e2));
+    REQUIRE_THAT(obj3->get_center<VGA2>(), GAEquals(2*e1 - 0.5*e2));
+    REQUIRE_THAT(obj4->get_center<VGA2>(), GAEquals(3*e1 + 0.5*e2));
+
+    group = make_group(obj1, obj2, obj3, obj4, obj5, obj6, obj7, obj8, obj9);
+    group->shift(e1);
+    obj1->logical_bounding_box = simple_box;
+    obj2->logical_bounding_box = simple_box;
+    obj3->logical_bounding_box = bigger_box;
+    obj4->logical_bounding_box = simple_box;
+    obj5->logical_bounding_box = simple_box;
+    obj6->logical_bounding_box = bigger_box;
+    obj7->logical_bounding_box = bigger_box;
+    obj8->logical_bounding_box = bigger_box;
+    obj9->logical_bounding_box = bigger_box;
+    group->arrange_in_grid(
+        3,
+        {.buff = 0.0, .align = {-e1, e1, e1}},
+        {.buff = 0.0, .align = {-e2, e2, e2}}
+    );
+    REQUIRE_THAT(obj1->get_center<VGA2>(), GAEquals(-1.5*e1 + 1.5*e2));
+    REQUIRE_THAT(obj2->get_center<VGA2>(), GAEquals( 1.5*e1 + 1.5*e2));
+    REQUIRE_THAT(obj3->get_center<VGA2>(), GAEquals( 3.0*e1 + 2.0*e2));
+    REQUIRE_THAT(obj4->get_center<VGA2>(), GAEquals(-1.5*e1 + 0.5*e2));
+    REQUIRE_THAT(obj5->get_center<VGA2>(), GAEquals( 1.5*e1 + 0.5*e2));
+    REQUIRE_THAT(obj6->get_center<VGA2>(), GAEquals( 3.0*e1 + 0.0*e2));
+    REQUIRE_THAT(obj7->get_center<VGA2>(), GAEquals(-1.0*e1 - 2.0*e2));
+    REQUIRE_THAT(obj8->get_center<VGA2>(), GAEquals( 1.0*e1 - 2.0*e2));
+    REQUIRE_THAT(obj9->get_center<VGA2>(), GAEquals( 3.0*e1 - 2.0*e2));
 }
 
 TEST_CASE("Group copy rotor", "[object]") {

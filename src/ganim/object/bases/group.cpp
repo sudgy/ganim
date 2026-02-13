@@ -537,9 +537,17 @@ Group& Group::arrange_down(ArrangeArgs args)
         next->next_to(*current, -vga2::e2, buff);
         current = next;
     }
-    if (align != 0) {
+    if (align.size() == 1) {
         for (auto& obj : M_subobjects) {
-            obj->align_to(*this, align);
+            obj->align_to(*this, align[0]);
+        }
+    }
+    else if (align.size() > 1) {
+        if (align.size() != M_subobjects.size()) {
+            throw std::invalid_argument("Incorrect number of align arguments");
+        }
+        for (int i = 0; i < ssize(M_subobjects); ++i) {
+            M_subobjects[i]->align_to(*this, align[i]);
         }
     }
     auto fake_group = Group();
@@ -563,9 +571,17 @@ Group& Group::arrange_right(ArrangeArgs args)
         next->next_to(*current, vga2::e1, buff);
         current = next;
     }
-    if (align != 0) {
+    if (align.size() == 1) {
         for (auto& obj : M_subobjects) {
-            obj->align_to(*this, align);
+            obj->align_to(*this, align[0]);
+        }
+    }
+    else if (align.size() > 1) {
+        if (align.size() != M_subobjects.size()) {
+            throw std::invalid_argument("Incorrect number of align arguments");
+        }
+        for (int i = 0; i < ssize(M_subobjects); ++i) {
+            M_subobjects[i]->align_to(*this, align[i]);
         }
     }
     auto fake_group = Group();
@@ -644,17 +660,39 @@ Group& Group::arrange_in_grid(
         M_subobjects[i]->shift(final_pos - current_pos);
     }
 
-    if (ver_args.align != 0) {
+    if (ver_args.align.size() == 1) {
         for (int i = 0; i < rows; ++i) {
             for (auto obj : row_groups[i]) {
-                obj->align_to(row_groups[i], ver_args.align);
+                obj->align_to(row_groups[i], ver_args.align[0]);
             }
         }
     }
-    if (hor_args.align != 0) {
+    else if (ver_args.align.size() > 1) {
+        if (ssize(ver_args.align) != rows) {
+            throw std::invalid_argument(
+                "Incorrect number of vertical align arguments");
+        }
+        for (int i = 0; i < rows; ++i) {
+            for (auto obj : row_groups[i]) {
+                obj->align_to(row_groups[i], ver_args.align[i]);
+            }
+        }
+    }
+    if (hor_args.align.size() == 1) {
         for (int i = 0; i < columns; ++i) {
             for (auto obj : col_groups[i]) {
-                obj->align_to(col_groups[i], hor_args.align);
+                obj->align_to(col_groups[i], hor_args.align[0]);
+            }
+        }
+    }
+    else if (hor_args.align.size() > 1) {
+        if (ssize(hor_args.align) != columns) {
+            throw std::invalid_argument(
+                "Incorrect number of horizontal align arguments");
+        }
+        for (int i = 0; i < columns; ++i) {
+            for (auto obj : col_groups[i]) {
+                obj->align_to(col_groups[i], hor_args.align[i]);
             }
         }
     }
