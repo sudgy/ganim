@@ -6,7 +6,7 @@
 using namespace ganim;
 using namespace bytecode;
 
-TEST_CASE("Interpreter parameters", "[script]") {
+TEST_CASE("Interpreter constant parameters", "[script]") {
     auto code = std::vector<std::byte>{
         test_output_byte,
         std::byte(42),
@@ -105,11 +105,22 @@ TEST_CASE("Interpreter parameters", "[script]") {
         std::byte(0xFF),
         std::byte(0xFF),
         std::byte(0xFF),
+
+        test_output_double,
+        std::byte(0b10000011),
+        std::byte(0x00),
+        std::byte(0x00),
+        std::byte(0x00),
+        std::byte(0x00),
+        std::byte(0x00),
+        std::byte(0x00),
+        std::byte(0xE0),
+        std::byte(0xBF),
     };
     auto test = Interpreter(code);
     test.execute();
     auto& output = test.get_test_output();
-    REQUIRE(output.size() == 18);
+    REQUIRE(output.size() == 19);
 
     REQUIRE(get<std::byte>(output[0]) == std::byte(42));
     REQUIRE(get<std::byte>(output[1]) == std::byte(200));
@@ -131,4 +142,6 @@ TEST_CASE("Interpreter parameters", "[script]") {
     REQUIRE(get<std::uint64_t>(output[15]) == 0xFFFFFFFDULL);
     REQUIRE(get<std::uint64_t>(output[16]) == 0x200000000000000ULL);
     REQUIRE(get<std::uint64_t>(output[17]) == 0xFFFFFFFFFFFFFFFCULL);
+
+    REQUIRE(get<double>(output[18]) == -0.5);
 }

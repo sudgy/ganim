@@ -34,7 +34,7 @@ namespace ganim {
             std::int64_t read_int_parameter();
             std::uint64_t read_uint_parameter();
             double read_double_parameter();
-            void safe_increase_program_counter();
+            void safe_increase_program_counter(int amount = 1);
     };
 }
 
