@@ -28,13 +28,13 @@ namespace ganim {
             std::size_t M_program_counter = 0;
             std::size_t M_stack_frame = 0;
             std::size_t M_stack_top = 0;
+            std::vector<TestType> M_test_output;
 
             std::byte read_byte_parameter();
             std::int64_t read_int_parameter();
             std::uint64_t read_uint_parameter();
             double read_double_parameter();
-
-            std::vector<TestType> M_test_output;
+            void safe_increase_program_counter();
     };
 }
 
