@@ -22,6 +22,9 @@ void Interpreter::execute()
         case test_output_int:
             M_test_output.emplace_back(read_int_parameter());
             break;
+        case test_output_uint:
+            M_test_output.emplace_back(read_uint_parameter());
+            break;
         default:
             throw std::runtime_error("Illegal instruction");
         }
@@ -84,6 +87,57 @@ std::int64_t Interpreter::read_int_parameter()
                 bytes[i] = std::byte(0xFF);
             }
         }
+    }
+    else if (parameter == std::byte(0b10000011)) {
+        safe_increase_program_counter();
+        bytes[0] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[1] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[2] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[3] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[4] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[5] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[6] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[7] = M_code[M_program_counter];
+    }
+    else throw std::runtime_error("Malformed instruction");
+    return result;
+}
+
+std::uint64_t Interpreter::read_uint_parameter()
+{
+    safe_increase_program_counter();
+    auto result = std::uint64_t(0);
+    auto bytes = reinterpret_cast<std::byte*>(&result);
+    auto parameter = M_code[M_program_counter];
+    if (parameter < std::byte(128)) {
+        bytes[0] = parameter;
+    }
+    else if (parameter == std::byte(0b10000000)) {
+        safe_increase_program_counter();
+        bytes[0] = M_code[M_program_counter];
+    }
+    else if (parameter == std::byte(0b10000001)) {
+        safe_increase_program_counter();
+        bytes[0] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[1] = M_code[M_program_counter];
+    }
+    else if (parameter == std::byte(0b10000010)) {
+        safe_increase_program_counter();
+        bytes[0] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[1] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[2] = M_code[M_program_counter];
+        safe_increase_program_counter();
+        bytes[3] = M_code[M_program_counter];
     }
     else if (parameter == std::byte(0b10000011)) {
         safe_increase_program_counter();

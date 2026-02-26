@@ -40,6 +40,7 @@ Bytecode reference:
 namespace ganim::bytecode {
     constexpr auto test_output_byte = std::byte(0b11111100);
     constexpr auto test_output_int = std::byte(0b11111101);
+    constexpr auto test_output_uint = std::byte(0b11111110);
 }
 
 #endif
