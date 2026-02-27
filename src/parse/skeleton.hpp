@@ -20,7 +20,7 @@ namespace $NAMESPACE {
             // True if it ate the token, false otherwise
             bool push(token_type token);
             bool finished() const {return M_finished;}
-            const result_type& get_result() const;
+            result_type take_result();
             $TOKEN_FUNC_DECLS
 
         private:

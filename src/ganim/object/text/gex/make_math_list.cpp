@@ -478,7 +478,7 @@ double Processor::read_dimension()
                 "Syntax error while parsing a dimension");
         }
     }
-    return parser.get_result() / 10.0;
+    return parser.take_result() / 10.0;
 }
 
 double Processor::read_number()
@@ -532,7 +532,7 @@ double Processor::read_number()
                 "Syntax error while parsing a dimension");
         }
     }
-    return parser.get_result();
+    return parser.take_result();
 }
 
 std::pair<std::uint32_t, int> Processor::read_delim()

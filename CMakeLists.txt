@@ -38,41 +38,51 @@ endif()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED 23)
 
-add_executable(sample_parse src/parse/parse.cpp)
+add_executable(parse src/parse/parse.cpp)
 add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/sample_parser.cpp
            ${PROJECT_BINARY_DIR}/sample_parser.hpp
-    DEPENDS sample_parse src/parse/sample_grammar.grammar
-    COMMAND sample_parse ${PROJECT_SOURCE_DIR}/src/parse/sample_grammar.grammar
-                         ${PROJECT_SOURCE_DIR}/src/parse/skeleton
-                         ${PROJECT_BINARY_DIR}/sample_parser
+    DEPENDS parse src/parse/sample_grammar.grammar
+                  src/parse/skeleton.hpp
+                  src/parse/skeleton.cpp
+    COMMAND parse ${PROJECT_SOURCE_DIR}/src/parse/sample_grammar.grammar
+                  ${PROJECT_SOURCE_DIR}/src/parse/skeleton
+                  ${PROJECT_BINARY_DIR}/sample_parser
 )
 
 add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/gex_dimension_parser.cpp
            ${PROJECT_BINARY_DIR}/gex_dimension_parser.hpp
-    DEPENDS sample_parse src/parse/gex_dimension.grammar
-    COMMAND sample_parse ${PROJECT_SOURCE_DIR}/src/parse/gex_dimension.grammar
-                         ${PROJECT_SOURCE_DIR}/src/parse/skeleton
-                         ${PROJECT_BINARY_DIR}/gex_dimension_parser
+    DEPENDS parse src/parse/gex_dimension.grammar
+                  src/parse/skeleton.hpp
+                  src/parse/skeleton.cpp
+    COMMAND parse ${PROJECT_SOURCE_DIR}/src/parse/gex_dimension.grammar
+                  ${PROJECT_SOURCE_DIR}/src/parse/skeleton
+                  ${PROJECT_BINARY_DIR}/gex_dimension_parser
 )
 
 add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/gex_number_parser.cpp
            ${PROJECT_BINARY_DIR}/gex_number_parser.hpp
-    DEPENDS sample_parse src/parse/gex_number.grammar
-    COMMAND sample_parse ${PROJECT_SOURCE_DIR}/src/parse/gex_number.grammar
-                         ${PROJECT_SOURCE_DIR}/src/parse/skeleton
-                         ${PROJECT_BINARY_DIR}/gex_number_parser
+    DEPENDS parse src/parse/gex_number.grammar
+                  src/parse/skeleton.hpp
+                  src/parse/skeleton.cpp
+    COMMAND parse ${PROJECT_SOURCE_DIR}/src/parse/gex_number.grammar
+                  ${PROJECT_SOURCE_DIR}/src/parse/skeleton
+                  ${PROJECT_BINARY_DIR}/gex_number_parser
 )
 
 add_custom_command(
     OUTPUT ${PROJECT_BINARY_DIR}/ganimscript_parser.cpp
            ${PROJECT_BINARY_DIR}/ganimscript_parser.hpp
-    DEPENDS sample_parse src/parse/ganimscript.grammar
-    COMMAND sample_parse ${PROJECT_SOURCE_DIR}/src/parse/ganimscript.grammar
-                         ${PROJECT_SOURCE_DIR}/src/parse/skeleton
-                         ${PROJECT_BINARY_DIR}/ganimscript_parser
+    DEPENDS parse src/parse/ganimscript.grammar
+                  src/parse/skeleton.hpp
+                  src/parse/skeleton.cpp
+                  src/script/parse/token.hpp
+                  src/script/parse/statement.hpp
+    COMMAND parse ${PROJECT_SOURCE_DIR}/src/parse/ganimscript.grammar
+                  ${PROJECT_SOURCE_DIR}/src/parse/skeleton
+                  ${PROJECT_BINARY_DIR}/ganimscript_parser
 )
 
 find_package(Catch2 3 REQUIRED)

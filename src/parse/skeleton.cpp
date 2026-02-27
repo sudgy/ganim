@@ -27,9 +27,9 @@ bool $CLASS_NAME::push(token_type token)
     }
 }
 
-const $CLASS_NAME::result_type& $CLASS_NAME::get_result() const
+$CLASS_NAME::result_type $CLASS_NAME::take_result()
 {
-    return get<result_type>(M_states.back().value);
+    return std::move(get<result_type>(M_states.back().value));
 }
 
 $TOKEN_FUNC_DEFS

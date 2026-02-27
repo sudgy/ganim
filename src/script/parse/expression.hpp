@@ -9,7 +9,7 @@
 
 namespace ganim::syntax {
     struct ConstantExpression {
-        std::variant<std::int64_t, double, bool, std::string_view> value = 0L;
+        std::variant<std::int64_t, double, bool, std::string> value = 0L;
         int line_number = -1;
         int column_number = -1;
     };

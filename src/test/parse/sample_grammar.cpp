@@ -25,7 +25,7 @@ TEST_CASE("Parser sample grammar", "[parse]") {
     REQUIRE(!parser.finished());
     REQUIRE(!parser.push(sample::parser::end_token()));
     REQUIRE(parser.finished());
-    REQUIRE(parser.get_result() == 21.0);
+    REQUIRE(parser.take_result() == 21.0);
 
     auto parser2 = sample::parser();
     REQUIRE_THROWS(parser2.push(sample::parser::builtin_token("+")));
@@ -35,5 +35,5 @@ TEST_CASE("Parser sample grammar", "[parse]") {
     REQUIRE(!parser3.finished());
     REQUIRE(!parser3.push(sample::parser::builtin_token("(")));
     REQUIRE(parser3.finished());
-    REQUIRE(parser3.get_result() == 1.0);
+    REQUIRE(parser3.take_result() == 1.0);
 }

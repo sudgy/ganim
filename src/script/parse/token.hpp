@@ -21,7 +21,7 @@ namespace ganim::syntax {
         int column_number = -1;
     };
     struct StringToken {
-        std::string_view value;
+        std::string value;
         int line_number = -1;
         int column_number = -1;
     };

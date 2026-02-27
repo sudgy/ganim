@@ -15,7 +15,7 @@ namespace ganim {
             const SymbolTable& symbol_table() const {return M_table;}
 
         private:
-            std::string_view modify_string_literal(std::string_view literal);
+            std::string modify_string_literal(std::string_view literal);
 
             std::string M_script;
             std::vector<std::unique_ptr<Command>> M_commands;
