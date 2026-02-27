@@ -4,7 +4,7 @@
 #include "command.hpp"
 
 #include "script/value.hpp"
-#include "script/syntax/statement.hpp"
+#include "script/parse/statement.hpp"
 #include "script/expression/expression.hpp"
 
 namespace ganim::commands {

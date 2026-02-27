@@ -5,7 +5,7 @@
 
 #include "script/value.hpp"
 
-#include "script/syntax/expression.hpp"
+#include "script/parse/expression.hpp"
 
 namespace ganim {
     class SymbolTable;
