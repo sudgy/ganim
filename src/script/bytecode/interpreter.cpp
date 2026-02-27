@@ -9,23 +9,52 @@ using namespace ganim;
 Interpreter::Interpreter(std::vector<std::byte> code)
 :   M_code(code) {}
 
+using namespace bytecode;
 
 void Interpreter::execute()
 {
-    using namespace bytecode;
     while (M_program_counter < M_code.size()) {
         auto opcode = M_code[M_program_counter];
         switch (opcode) {
-        case test_output_byte:
+        case push_byte:
+        {
+            auto byte = read_byte_parameter();
+            push_bytes({&byte, 1});
+            break;
+        }
+        case push_int:
+        {
+            auto bytes = read_int_parameter();
+            push_bytes({reinterpret_cast<std::byte*>(&bytes), 8});
+            break;
+        }
+        case push_uint:
+        {
+            auto bytes = read_uint_parameter();
+            push_bytes({reinterpret_cast<std::byte*>(&bytes), 8});
+            break;
+        }
+        case push_double:
+        {
+            auto bytes = read_double_parameter();
+            push_bytes({reinterpret_cast<std::byte*>(&bytes), 8});
+            break;
+        }
+        case bytecode::pop:
+        {
+            pop(read_uint_parameter());
+            break;
+        }
+        case test_byte:
             M_test_output.emplace_back(read_byte_parameter());
             break;
-        case test_output_int:
+        case test_int:
             M_test_output.emplace_back(read_int_parameter());
             break;
-        case test_output_uint:
+        case test_uint:
             M_test_output.emplace_back(read_uint_parameter());
             break;
-        case test_output_double:
+        case test_double:
             M_test_output.emplace_back(read_double_parameter());
             break;
         default:
@@ -40,11 +69,17 @@ std::byte Interpreter::read_byte_parameter()
     safe_increase_program_counter();
     auto parameter = M_code[M_program_counter];
     if (parameter < std::byte(128)) return parameter;
-    if (parameter == std::byte(0b10000000)) {
+    switch (parameter) {
+    case param_byte1:
         safe_increase_program_counter();
         return M_code[M_program_counter];
+    case param_stack1:
+        return M_stack[M_stack.size() - 8];
+    case param_stack2:
+        return M_stack[M_stack.size() - 16];
+    default:
+        throw std::runtime_error("Malformed instruction");
     }
-    throw std::runtime_error("Malformed instruction");
 }
 
 std::int64_t Interpreter::read_int_parameter()
@@ -56,7 +91,8 @@ std::int64_t Interpreter::read_int_parameter()
     if (parameter < std::byte(128)) {
         bytes[0] = parameter;
     }
-    else if (parameter == std::byte(0b10000000)) {
+    else switch (parameter) {
+    case param_byte1:
         safe_increase_program_counter();
         bytes[0] = M_code[M_program_counter];
         if (bytes[0] >= std::byte(128)) {
@@ -64,8 +100,8 @@ std::int64_t Interpreter::read_int_parameter()
                 bytes[i] = std::byte(0xFF);
             }
         }
-    }
-    else if (parameter == std::byte(0b10000001)) {
+        break;
+    case param_byte2:
         safe_increase_program_counter(2);
         bytes[0] = M_code[M_program_counter-1];
         bytes[1] = M_code[M_program_counter];
@@ -74,8 +110,8 @@ std::int64_t Interpreter::read_int_parameter()
                 bytes[i] = std::byte(0xFF);
             }
         }
-    }
-    else if (parameter == std::byte(0b10000010)) {
+        break;
+    case param_byte4:
         safe_increase_program_counter(4);
         bytes[0] = M_code[M_program_counter-3];
         bytes[1] = M_code[M_program_counter-2];
@@ -86,8 +122,8 @@ std::int64_t Interpreter::read_int_parameter()
                 bytes[i] = std::byte(0xFF);
             }
         }
-    }
-    else if (parameter == std::byte(0b10000011)) {
+        break;
+    case param_byte8:
         safe_increase_program_counter(8);
         bytes[0] = M_code[M_program_counter-7];
         bytes[1] = M_code[M_program_counter-6];
@@ -97,8 +133,14 @@ std::int64_t Interpreter::read_int_parameter()
         bytes[5] = M_code[M_program_counter-2];
         bytes[6] = M_code[M_program_counter-1];
         bytes[7] = M_code[M_program_counter];
+        break;
+    case param_stack1:
+        return *reinterpret_cast<std::int64_t*>(&M_stack[M_stack.size() - 8]);
+    case param_stack2:
+        return *reinterpret_cast<std::int64_t*>(&M_stack[M_stack.size() - 16]);
+    default:
+        throw std::runtime_error("Malformed instruction");
     }
-    else throw std::runtime_error("Malformed instruction");
     return result;
 }
 
@@ -111,23 +153,24 @@ std::uint64_t Interpreter::read_uint_parameter()
     if (parameter < std::byte(128)) {
         bytes[0] = parameter;
     }
-    else if (parameter == std::byte(0b10000000)) {
+    else switch (parameter) {
+    case param_byte1:
         safe_increase_program_counter();
         bytes[0] = M_code[M_program_counter];
-    }
-    else if (parameter == std::byte(0b10000001)) {
+        break;
+    case param_byte2:
         safe_increase_program_counter(2);
         bytes[0] = M_code[M_program_counter-1];
         bytes[1] = M_code[M_program_counter];
-    }
-    else if (parameter == std::byte(0b10000010)) {
+        break;
+    case param_byte4:
         safe_increase_program_counter(4);
         bytes[0] = M_code[M_program_counter-3];
         bytes[1] = M_code[M_program_counter-2];
         bytes[2] = M_code[M_program_counter-1];
         bytes[3] = M_code[M_program_counter];
-    }
-    else if (parameter == std::byte(0b10000011)) {
+        break;
+    case param_byte8:
         safe_increase_program_counter(8);
         bytes[0] = M_code[M_program_counter-7];
         bytes[1] = M_code[M_program_counter-6];
@@ -137,8 +180,14 @@ std::uint64_t Interpreter::read_uint_parameter()
         bytes[5] = M_code[M_program_counter-2];
         bytes[6] = M_code[M_program_counter-1];
         bytes[7] = M_code[M_program_counter];
+        break;
+    case param_stack1:
+        return *reinterpret_cast<std::uint64_t*>(&M_stack[M_stack.size() - 8]);
+    case param_stack2:
+        return *reinterpret_cast<std::uint64_t*>(&M_stack[M_stack.size() - 16]);
+    default:
+        throw std::runtime_error("Malformed instruction");
     }
-    else throw std::runtime_error("Malformed instruction");
     return result;
 }
 
@@ -148,7 +197,8 @@ double Interpreter::read_double_parameter()
     auto result = double(0);
     auto bytes = reinterpret_cast<std::byte*>(&result);
     auto parameter = M_code[M_program_counter];
-    if (parameter == std::byte(0b10000011)) {
+    switch (parameter) {
+    case param_byte8:
         safe_increase_program_counter(8);
         bytes[0] = M_code[M_program_counter-7];
         bytes[1] = M_code[M_program_counter-6];
@@ -158,9 +208,39 @@ double Interpreter::read_double_parameter()
         bytes[5] = M_code[M_program_counter-2];
         bytes[6] = M_code[M_program_counter-1];
         bytes[7] = M_code[M_program_counter];
+        break;
+    case param_stack1:
+        return *reinterpret_cast<double*>(&M_stack[M_stack.size() - 8]);
+    case param_stack2:
+        return *reinterpret_cast<double*>(&M_stack[M_stack.size() - 16]);
+    default:
+        throw std::runtime_error("Malformed instruction");
     }
-    else throw std::runtime_error("Malformed instruction");
     return result;
+}
+
+void Interpreter::push_bytes(std::span<std::byte> bytes)
+{
+    auto size_plus = bytes.size();
+    auto padding = size_plus % 8;
+    if (padding != 0) {
+        padding = 8 - padding;
+        size_plus += padding;
+    }
+    auto start = M_stack.size();
+    M_stack.resize(M_stack.size() + size_plus);
+    for (auto i = 0UZ; i < bytes.size(); ++i) {
+        M_stack[start + i] = bytes[i];
+    }
+}
+
+void Interpreter::pop(std::size_t amount)
+{
+    auto byte_amount = amount * 8;
+    if (byte_amount > M_stack.size()) {
+        throw std::runtime_error("Stack underflow");
+    }
+    M_stack.resize(M_stack.size() - byte_amount);
 }
 
 void Interpreter::safe_increase_program_counter(int amount)

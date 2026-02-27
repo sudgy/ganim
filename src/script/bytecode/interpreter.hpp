@@ -4,6 +4,7 @@
 #include <vector>
 #include <variant>
 #include <cstdint>
+#include <span>
 
 namespace ganim {
     class Interpreter {
@@ -24,16 +25,17 @@ namespace ganim {
 
         private:
             std::vector<std::byte> M_code;
-            std::vector<std::uint64_t> M_stack;
+            std::vector<std::byte> M_stack;
             std::size_t M_program_counter = 0;
             std::size_t M_stack_frame = 0;
-            std::size_t M_stack_top = 0;
             std::vector<TestType> M_test_output;
 
             std::byte read_byte_parameter();
             std::int64_t read_int_parameter();
             std::uint64_t read_uint_parameter();
             double read_double_parameter();
+            void push_bytes(std::span<std::byte> bytes);
+            void pop(std::size_t amount);
             void safe_increase_program_counter(int amount = 1);
     };
 }
