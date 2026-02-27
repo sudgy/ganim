@@ -13,7 +13,8 @@ namespace {
     {
         if (codepoint < 0x80) {
             return ('a' <= codepoint and codepoint <= 'z') or
-                   ('A' <= codepoint and codepoint <= 'Z');
+                   ('A' <= codepoint and codepoint <= 'Z') or
+                   codepoint == '_';
         }
         else return C_xid_start.contains(codepoint);
     }
@@ -22,7 +23,8 @@ namespace {
         if (codepoint < 0x80) {
             return ('a' <= codepoint and codepoint <= 'z') or
                    ('A' <= codepoint and codepoint <= 'Z') or
-                   ('0' <= codepoint and codepoint <= '9');
+                   ('0' <= codepoint and codepoint <= '9') or
+                   codepoint == '_';
         }
         else return C_xid_continue.contains(codepoint);
     }
