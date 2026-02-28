@@ -45,6 +45,21 @@ void Interpreter::execute()
             pop(read_uint_parameter());
             break;
         }
+        case bytecode::unary_minus_int:
+        {
+            auto& val = reinterpret_cast<std::int64_t&>(
+                M_stack[M_stack.size()-8]);
+            val = -val;
+            break;
+        }
+        case bytecode::nop:
+            break;
+        case bytecode::unary_minus_double:
+        {
+            auto& val = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            val = -val;
+            break;
+        }
         case test_byte:
             M_test_output.emplace_back(get_stack_byte());
             break;

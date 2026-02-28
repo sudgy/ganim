@@ -56,6 +56,7 @@ namespace ganim::bytecode {
 
     constexpr auto pop = std::byte(0b00000100);
     constexpr auto unary_minus_int = std::byte(0b00000101);
+    constexpr auto nop = std::byte(0b00000110);
     constexpr auto unary_minus_double = std::byte(0b00000111);
 
     constexpr auto param_byte1 = std::byte(0b10000000);
