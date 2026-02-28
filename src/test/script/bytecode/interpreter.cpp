@@ -221,3 +221,34 @@ TEST_CASE("Interpreter push_pop", "[script]") {
     REQUIRE(get<uint64_t>(output[6]) == 46);
     REQUIRE(get<double>(output[7]) == -0.5);
 }
+
+TEST_CASE("Interpreter stack frame parameters", "[script]") {
+    auto code = std::vector<byte>{
+        push_int,
+        byte(12),
+        push_uint,
+        byte(13),
+        push_byte,
+        byte(14),
+        push_int,
+        param_stack_frame,
+        byte(0),
+        test_int,
+        push_uint,
+        param_stack_frame,
+        byte(1),
+        test_uint,
+        push_byte,
+        param_stack_frame,
+        byte(2),
+        test_byte,
+    };
+    auto test = Interpreter(code);
+    test.execute();
+    auto& output = test.get_test_output();
+    REQUIRE(output.size() == 3);
+
+    REQUIRE(get<int64_t>(output[0]) == 12);
+    REQUIRE(get<uint64_t>(output[1]) == 13);
+    REQUIRE(get<byte>(output[2]) == byte(14));
+}

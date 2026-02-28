@@ -91,6 +91,8 @@ byte Interpreter::read_byte_parameter()
         return M_stack[M_stack.size() - 8];
     case param_stack2:
         return M_stack[M_stack.size() - 16];
+    case param_stack_frame:
+        return M_stack[M_stack_frame + read_uint_parameter()*8];
     default:
         throw std::runtime_error("Malformed instruction");
     }
@@ -149,9 +151,12 @@ int64_t Interpreter::read_int_parameter()
         bytes[7] = M_code[M_program_counter];
         break;
     case param_stack1:
-        return *reinterpret_cast<int64_t*>(&M_stack[M_stack.size() - 8]);
+        return reinterpret_cast<int64_t&>(M_stack[M_stack.size() - 8]);
     case param_stack2:
-        return *reinterpret_cast<int64_t*>(&M_stack[M_stack.size() - 16]);
+        return reinterpret_cast<int64_t&>(M_stack[M_stack.size() - 16]);
+    case param_stack_frame:
+        return reinterpret_cast<int64_t&>(
+            M_stack[M_stack_frame + read_uint_parameter()*8]);
     default:
         throw std::runtime_error("Malformed instruction");
     }
@@ -196,9 +201,12 @@ uint64_t Interpreter::read_uint_parameter()
         bytes[7] = M_code[M_program_counter];
         break;
     case param_stack1:
-        return *reinterpret_cast<uint64_t*>(&M_stack[M_stack.size() - 8]);
+        return reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - 8]);
     case param_stack2:
-        return *reinterpret_cast<uint64_t*>(&M_stack[M_stack.size() - 16]);
+        return reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - 16]);
+    case param_stack_frame:
+        return reinterpret_cast<uint64_t&>(
+            M_stack[M_stack_frame + read_uint_parameter()*8]);
     default:
         throw std::runtime_error("Malformed instruction");
     }
@@ -224,9 +232,12 @@ double Interpreter::read_double_parameter()
         bytes[7] = M_code[M_program_counter];
         break;
     case param_stack1:
-        return *reinterpret_cast<double*>(&M_stack[M_stack.size() - 8]);
+        return reinterpret_cast<double&>(M_stack[M_stack.size() - 8]);
     case param_stack2:
-        return *reinterpret_cast<double*>(&M_stack[M_stack.size() - 16]);
+        return reinterpret_cast<double&>(M_stack[M_stack.size() - 16]);
+    case param_stack_frame:
+        return reinterpret_cast<double&>(
+            M_stack[M_stack_frame + read_uint_parameter()*8]);
     default:
         throw std::runtime_error("Malformed instruction");
     }

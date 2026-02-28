@@ -71,6 +71,7 @@ namespace ganim::bytecode {
     constexpr auto param_byte8 = byte(0b10000011);
     constexpr auto param_stack1 = byte(0b10000100);
     constexpr auto param_stack2 = byte(0b10000101);
+    constexpr auto param_stack_frame = byte(0b10000110);
 }
 
 #endif
