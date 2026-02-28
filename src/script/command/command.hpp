@@ -9,7 +9,7 @@
 #include "script/parse/statement.hpp"
 
 namespace ganim {
-    class SymbolTable;
+    inline namespace old {class SymbolTable;}
     class Command {
         public:
             Command()=default;

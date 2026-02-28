@@ -13,6 +13,7 @@ namespace ganim {
     struct CustomType;
 
     struct Type {
+        Type() : value(TypeID(nullptr)) {}
         std::variant<
             TypeID,
             const FunctionType*,
@@ -24,6 +25,7 @@ namespace ganim {
         Type(std::nullptr_t) : value({TypeID(nullptr)}) {}
 
         std::uint64_t size() const; // In bytes
+        std::uint64_t size8() const; // Number of 8-byte segments needed to fit
     };
 
     const Type void_type = Type({TypeID(nullptr)});

@@ -7,6 +7,7 @@
 #include "script/parse/type.hpp"
 
 namespace ganim {
+    inline namespace old {
     class SymbolTable {
         public:
             SymbolTable();
@@ -36,6 +37,7 @@ namespace ganim {
                 std::vector<std::unique_ptr<Function>>> M_functions;
             std::vector<SymbolTable*> M_stack;
     };
+    }
 }
 
 #endif

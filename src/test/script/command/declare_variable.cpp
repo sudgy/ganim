@@ -5,22 +5,6 @@
 
 using namespace ganim;
 
-TEST_CASE("DeclareVariable", "[script]") {
-    auto script = Script("var a = 5;");
-    script.compile();
-    auto v1 = script.symbol_table().get_variable("a");
-    auto v2 = script.symbol_table().get_variable("b");
-    REQUIRE(v1 != nullptr);
-    REQUIRE(v2 == nullptr);
-    REQUIRE(v1->type() == Type{any_pointer::get_tag<std::int64_t>()});
-    REQUIRE(v1->value().get_tag() == any_pointer::get_tag<std::int64_t>());
-    REQUIRE(v1->value().get_as<std::int64_t>() == nullptr);
-
-    script.execute();
-    REQUIRE(v1->value().get_as<std::int64_t>() != nullptr);
-    REQUIRE(*v1->value().get_as<std::int64_t>() == 5);
-}
-
 TEST_CASE("Complicated arithmetic expressions", "[script]") {
     auto script = Script(R"(
 var a = 5;

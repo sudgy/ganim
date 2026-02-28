@@ -49,3 +49,14 @@ std::uint64_t Type::size() const
         }
     }, value);
 }
+
+std::uint64_t Type::size8() const
+{
+    auto size = this->size();
+    if (size % 8 == 0) size /= 8;
+    else {
+        size /= 8;
+        ++size;
+    }
+    return size;
+}

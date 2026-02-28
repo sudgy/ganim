@@ -8,7 +8,7 @@
 #include "script/parse/expression.hpp"
 
 namespace ganim {
-    class SymbolTable;
+    inline namespace old {class SymbolTable;}
     class Expression : public Value {
         public:
             static std::unique_ptr<Expression> from_ast(
