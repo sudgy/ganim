@@ -20,20 +20,20 @@ Type compile_function_expression(
 
             std::visit(overloaded{
                 [&](TypeID id) {
-                    if (id == any_pointer::get_tag<std::int64_t>()) {
+                    if (id == any_pointer::get_tag<int64_t>()) {
                         state.bytecode.push_back(bytecode::test_int);
                         state.bytecode.push_back(bytecode::pop);
-                        state.bytecode.push_back(std::byte(1));
+                        state.bytecode.push_back(byte(1));
                     }
                     else if (id == any_pointer::get_tag<double>()) {
                         state.bytecode.push_back(bytecode::test_double);
                         state.bytecode.push_back(bytecode::pop);
-                        state.bytecode.push_back(std::byte(1));
+                        state.bytecode.push_back(byte(1));
                     }
                     else if (id == any_pointer::get_tag<bool>()) {
                         state.bytecode.push_back(bytecode::test_byte);
                         state.bytecode.push_back(bytecode::pop);
-                        state.bytecode.push_back(std::byte(1));
+                        state.bytecode.push_back(byte(1));
                     }
                     else {
                         throw std::runtime_error("Unable to test output this type");

@@ -13,10 +13,10 @@ Type compile_constant_expression(
 )
 {
     return std::visit(overloaded{
-        [&](std::int64_t value) -> Type {
+        [&](int64_t value) -> Type {
             state.bytecode.push_back(bytecode::push_int);
             state.write_parameter(value);
-            return Type(any_pointer::get_tag<std::int64_t>());
+            return Type(any_pointer::get_tag<int64_t>());
         },
         [&](double value) -> Type {
             state.bytecode.push_back(bytecode::push_double);
@@ -25,7 +25,7 @@ Type compile_constant_expression(
         },
         [&](bool value) -> Type {
             state.bytecode.push_back(bytecode::push_byte);
-            state.write_parameter(std::byte(value));
+            state.write_parameter(byte(value));
             return Type(any_pointer::get_tag<bool>());
         },
         [&](const std::string&) -> Type {

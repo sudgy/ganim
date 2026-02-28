@@ -5,9 +5,9 @@
 using namespace ganim;
 using namespace ganim::bytecode;
 
-void CompilerState::write_parameter(std::byte value)
+void CompilerState::write_parameter(byte value)
 {
-    if (value < std::byte(128)) {
+    if (value < byte(128)) {
         bytecode.push_back(value);
     }
     else {
@@ -16,9 +16,9 @@ void CompilerState::write_parameter(std::byte value)
     }
 }
 
-void CompilerState::write_parameter(std::int64_t value)
+void CompilerState::write_parameter(int64_t value)
 {
-    auto bytes = reinterpret_cast<std::byte*>(&value);
+    auto bytes = reinterpret_cast<byte*>(&value);
     if (0LL <= value and value < 128LL) {
         bytecode.push_back(bytes[0]);
     }
@@ -51,9 +51,9 @@ void CompilerState::write_parameter(std::int64_t value)
     }
 }
 
-void CompilerState::write_parameter(std::uint64_t value)
+void CompilerState::write_parameter(uint64_t value)
 {
-    auto bytes = reinterpret_cast<std::byte*>(&value);
+    auto bytes = reinterpret_cast<byte*>(&value);
     if (value and value < 128ULL) {
         bytecode.push_back(bytes[0]);
     }
@@ -88,7 +88,7 @@ void CompilerState::write_parameter(std::uint64_t value)
 
 void CompilerState::write_parameter(double value)
 {
-    auto bytes = reinterpret_cast<std::byte*>(&value);
+    auto bytes = reinterpret_cast<byte*>(&value);
     bytecode.push_back(param_byte8);
     bytecode.push_back(bytes[0]);
     bytecode.push_back(bytes[1]);

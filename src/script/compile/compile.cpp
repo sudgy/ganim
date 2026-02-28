@@ -4,7 +4,7 @@
 
 namespace ganim {
 
-std::vector<std::byte> compile(const std::vector<syntax::Statement>& ast)
+std::vector<byte> compile(const std::vector<syntax::Statement>& ast)
 {
     auto state = CompilerState();
     // I picked 8 randomly, maybe come back to this number later when you have

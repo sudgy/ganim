@@ -5,6 +5,9 @@
 #include <cstdint>
 
 namespace ganim {
+    using std::byte;
+    using std::int64_t;
+    using std::uint64_t;
     struct CompilerState {
         std::vector<std::byte> bytecode;
 

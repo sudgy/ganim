@@ -2,6 +2,7 @@
 #define GANIM_SCRIPT_BYTECODES_HPP
 
 #include <cstddef>
+#include <cstdint>
 
 /*
 There are four data types known to ganimscript bytecode:
@@ -43,28 +44,33 @@ Bytecode reference:
     00000111 - Unary minus double (top of stack)
  */
 
+namespace ganim {
+    using std::byte;
+    using std::int64_t;
+    using std::uint64_t;
+}
 namespace ganim::bytecode {
-    constexpr auto test_byte = std::byte(0b11111100);
-    constexpr auto test_int = std::byte(0b11111101);
-    constexpr auto test_uint = std::byte(0b11111110);
-    constexpr auto test_double = std::byte(0b11111111);
+    constexpr auto test_byte = byte(0b11111100);
+    constexpr auto test_int = byte(0b11111101);
+    constexpr auto test_uint = byte(0b11111110);
+    constexpr auto test_double = byte(0b11111111);
 
-    constexpr auto push_byte = std::byte(0b00000000);
-    constexpr auto push_int = std::byte(0b00000001);
-    constexpr auto push_uint = std::byte(0b00000010);
-    constexpr auto push_double = std::byte(0b00000011);
+    constexpr auto push_byte = byte(0b00000000);
+    constexpr auto push_int = byte(0b00000001);
+    constexpr auto push_uint = byte(0b00000010);
+    constexpr auto push_double = byte(0b00000011);
 
-    constexpr auto pop = std::byte(0b00000100);
-    constexpr auto unary_minus_int = std::byte(0b00000101);
-    constexpr auto nop = std::byte(0b00000110);
-    constexpr auto unary_minus_double = std::byte(0b00000111);
+    constexpr auto pop = byte(0b00000100);
+    constexpr auto unary_minus_int = byte(0b00000101);
+    constexpr auto nop = byte(0b00000110);
+    constexpr auto unary_minus_double = byte(0b00000111);
 
-    constexpr auto param_byte1 = std::byte(0b10000000);
-    constexpr auto param_byte2 = std::byte(0b10000001);
-    constexpr auto param_byte4 = std::byte(0b10000010);
-    constexpr auto param_byte8 = std::byte(0b10000011);
-    constexpr auto param_stack1 = std::byte(0b10000100);
-    constexpr auto param_stack2 = std::byte(0b10000101);
+    constexpr auto param_byte1 = byte(0b10000000);
+    constexpr auto param_byte2 = byte(0b10000001);
+    constexpr auto param_byte4 = byte(0b10000010);
+    constexpr auto param_byte8 = byte(0b10000011);
+    constexpr auto param_stack1 = byte(0b10000100);
+    constexpr auto param_stack2 = byte(0b10000101);
 }
 
 #endif

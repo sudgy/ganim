@@ -6,7 +6,7 @@
 
 using namespace ganim;
 
-Interpreter::Interpreter(std::vector<std::byte> code)
+Interpreter::Interpreter(std::vector<byte> code)
 :   M_code(code) {}
 
 using namespace bytecode;
@@ -25,19 +25,19 @@ void Interpreter::execute()
         case push_int:
         {
             auto bytes = read_int_parameter();
-            push_bytes({reinterpret_cast<std::byte*>(&bytes), 8});
+            push_bytes({reinterpret_cast<byte*>(&bytes), 8});
             break;
         }
         case push_uint:
         {
             auto bytes = read_uint_parameter();
-            push_bytes({reinterpret_cast<std::byte*>(&bytes), 8});
+            push_bytes({reinterpret_cast<byte*>(&bytes), 8});
             break;
         }
         case push_double:
         {
             auto bytes = read_double_parameter();
-            push_bytes({reinterpret_cast<std::byte*>(&bytes), 8});
+            push_bytes({reinterpret_cast<byte*>(&bytes), 8});
             break;
         }
         case bytecode::pop:
@@ -47,8 +47,7 @@ void Interpreter::execute()
         }
         case bytecode::unary_minus_int:
         {
-            auto& val = reinterpret_cast<std::int64_t&>(
-                M_stack[M_stack.size()-8]);
+            auto& val = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
             val = -val;
             break;
         }
@@ -79,11 +78,11 @@ void Interpreter::execute()
     }
 }
 
-std::byte Interpreter::read_byte_parameter()
+byte Interpreter::read_byte_parameter()
 {
     safe_increase_program_counter();
     auto parameter = M_code[M_program_counter];
-    if (parameter < std::byte(128)) return parameter;
+    if (parameter < byte(128)) return parameter;
     switch (parameter) {
     case param_byte1:
         safe_increase_program_counter();
@@ -97,22 +96,22 @@ std::byte Interpreter::read_byte_parameter()
     }
 }
 
-std::int64_t Interpreter::read_int_parameter()
+int64_t Interpreter::read_int_parameter()
 {
     safe_increase_program_counter();
-    auto result = std::int64_t(0);
-    auto bytes = reinterpret_cast<std::byte*>(&result);
+    auto result = int64_t(0);
+    auto bytes = reinterpret_cast<byte*>(&result);
     auto parameter = M_code[M_program_counter];
-    if (parameter < std::byte(128)) {
+    if (parameter < byte(128)) {
         bytes[0] = parameter;
     }
     else switch (parameter) {
     case param_byte1:
         safe_increase_program_counter();
         bytes[0] = M_code[M_program_counter];
-        if (bytes[0] >= std::byte(128)) {
+        if (bytes[0] >= byte(128)) {
             for (int i = 1; i < 8; ++i) {
-                bytes[i] = std::byte(0xFF);
+                bytes[i] = byte(0xFF);
             }
         }
         break;
@@ -120,9 +119,9 @@ std::int64_t Interpreter::read_int_parameter()
         safe_increase_program_counter(2);
         bytes[0] = M_code[M_program_counter-1];
         bytes[1] = M_code[M_program_counter];
-        if (bytes[0] >= std::byte(128)) {
+        if (bytes[0] >= byte(128)) {
             for (int i = 2; i < 8; ++i) {
-                bytes[i] = std::byte(0xFF);
+                bytes[i] = byte(0xFF);
             }
         }
         break;
@@ -132,9 +131,9 @@ std::int64_t Interpreter::read_int_parameter()
         bytes[1] = M_code[M_program_counter-2];
         bytes[2] = M_code[M_program_counter-1];
         bytes[3] = M_code[M_program_counter];
-        if (bytes[0] >= std::byte(128)) {
+        if (bytes[0] >= byte(128)) {
             for (int i = 4; i < 8; ++i) {
-                bytes[i] = std::byte(0xFF);
+                bytes[i] = byte(0xFF);
             }
         }
         break;
@@ -150,22 +149,22 @@ std::int64_t Interpreter::read_int_parameter()
         bytes[7] = M_code[M_program_counter];
         break;
     case param_stack1:
-        return *reinterpret_cast<std::int64_t*>(&M_stack[M_stack.size() - 8]);
+        return *reinterpret_cast<int64_t*>(&M_stack[M_stack.size() - 8]);
     case param_stack2:
-        return *reinterpret_cast<std::int64_t*>(&M_stack[M_stack.size() - 16]);
+        return *reinterpret_cast<int64_t*>(&M_stack[M_stack.size() - 16]);
     default:
         throw std::runtime_error("Malformed instruction");
     }
     return result;
 }
 
-std::uint64_t Interpreter::read_uint_parameter()
+uint64_t Interpreter::read_uint_parameter()
 {
     safe_increase_program_counter();
-    auto result = std::uint64_t(0);
-    auto bytes = reinterpret_cast<std::byte*>(&result);
+    auto result = uint64_t(0);
+    auto bytes = reinterpret_cast<byte*>(&result);
     auto parameter = M_code[M_program_counter];
-    if (parameter < std::byte(128)) {
+    if (parameter < byte(128)) {
         bytes[0] = parameter;
     }
     else switch (parameter) {
@@ -197,9 +196,9 @@ std::uint64_t Interpreter::read_uint_parameter()
         bytes[7] = M_code[M_program_counter];
         break;
     case param_stack1:
-        return *reinterpret_cast<std::uint64_t*>(&M_stack[M_stack.size() - 8]);
+        return *reinterpret_cast<uint64_t*>(&M_stack[M_stack.size() - 8]);
     case param_stack2:
-        return *reinterpret_cast<std::uint64_t*>(&M_stack[M_stack.size() - 16]);
+        return *reinterpret_cast<uint64_t*>(&M_stack[M_stack.size() - 16]);
     default:
         throw std::runtime_error("Malformed instruction");
     }
@@ -210,7 +209,7 @@ double Interpreter::read_double_parameter()
 {
     safe_increase_program_counter();
     auto result = double(0);
-    auto bytes = reinterpret_cast<std::byte*>(&result);
+    auto bytes = reinterpret_cast<byte*>(&result);
     auto parameter = M_code[M_program_counter];
     switch (parameter) {
     case param_byte8:
@@ -234,19 +233,19 @@ double Interpreter::read_double_parameter()
     return result;
 }
 
-std::byte Interpreter::get_stack_byte(int from_top)
+byte Interpreter::get_stack_byte(int from_top)
 {
     return M_stack[M_stack.size() - from_top*8];
 }
 
-std::int64_t Interpreter::get_stack_int(int from_top)
+int64_t Interpreter::get_stack_int(int from_top)
 {
-    return reinterpret_cast<std::int64_t&>(M_stack[M_stack.size() - from_top*8]);
+    return reinterpret_cast<int64_t&>(M_stack[M_stack.size() - from_top*8]);
 }
 
-std::uint64_t Interpreter::get_stack_uint(int from_top)
+uint64_t Interpreter::get_stack_uint(int from_top)
 {
-    return reinterpret_cast<std::uint64_t&>(M_stack[M_stack.size() - from_top*8]);
+    return reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - from_top*8]);
 }
 
 double Interpreter::get_stack_double(int from_top)
@@ -254,7 +253,7 @@ double Interpreter::get_stack_double(int from_top)
     return reinterpret_cast<double&>(M_stack[M_stack.size() - from_top*8]);
 }
 
-void Interpreter::push_bytes(std::span<std::byte> bytes)
+void Interpreter::push_bytes(std::span<byte> bytes)
 {
     auto size_plus = bytes.size();
     auto padding = size_plus % 8;
