@@ -22,6 +22,8 @@ namespace ganim {
         Type(const FunctionType* value) : value(value) {}
         Type(const CustomType* value) : value(value) {}
         Type(std::nullptr_t) : value({TypeID(nullptr)}) {}
+
+        std::uint64_t size() const; // In bytes
     };
 
     const Type void_type = Type({TypeID(nullptr)});
