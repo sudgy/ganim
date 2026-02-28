@@ -16,6 +16,8 @@ Type compile_unary_expression(
 {
     auto type = compile_expression(state, *ast.subexpression);
     switch (ast.op) {
+        case syntax::UnaryExpression::Plus:
+            break;
         case syntax::UnaryExpression::Minus:
             if (type == any_pointer::get_tag<int64_t>()) {
                 state.bytecode.push_back(bytecode::unary_minus_int);
