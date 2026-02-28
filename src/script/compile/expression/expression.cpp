@@ -2,6 +2,7 @@
 
 #include "overloaded.hpp"
 
+#include "binary.hpp"
 #include "constant.hpp"
 #include "function.hpp"
 #include "unary.hpp"
@@ -12,6 +13,9 @@ namespace ganim {
 Type compile_expression(CompilerState& state, const syntax::Expression& ast)
 {
     return std::visit(overloaded{
+        [&](const syntax::BinaryExpression& value) -> Type {
+            return compile_binary_expression(state, value);
+        },
         [&](const syntax::ConstantExpression& value) -> Type {
             return compile_constant_expression(state, value);
         },
