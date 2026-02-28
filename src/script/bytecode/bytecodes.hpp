@@ -42,6 +42,22 @@ Bytecode reference:
     00000101 - Unary minus int (top of stack)
     00000110 - Nop
     00000111 - Unary minus double (top of stack)
+    000010XX - Plus
+    000011XX - Minus
+    000100XX - Mult
+    000101XX - Div
+    000110XX - Mod (no double)
+    00011011 - Unused
+    000111XX - And (no double)
+    00011111 - Unused
+    001000XX - Or (no double)
+    00100011 - Unused
+    001001XX - Xor (no double)
+    00100111 - Unused
+    001010XX - Left shift (no double)
+    00101011 - Unused
+    001011XX - Right shift (no double)
+    00101111 - Unused
  */
 
 namespace ganim {
@@ -64,6 +80,41 @@ namespace ganim::bytecode {
     constexpr auto unary_minus_int = byte(0b00000101);
     constexpr auto nop = byte(0b00000110);
     constexpr auto unary_minus_double = byte(0b00000111);
+
+    constexpr auto plus_byte = byte(0b00001000);
+    constexpr auto plus_int = byte(0b00001001);
+    constexpr auto plus_uint = byte(0b00001010);
+    constexpr auto plus_double = byte(0b00001011);
+    constexpr auto minus_byte = byte(0b00001100);
+    constexpr auto minus_int = byte(0b00001101);
+    constexpr auto minus_uint = byte(0b00001110);
+    constexpr auto minus_double = byte(0b00001111);
+    constexpr auto mult_byte = byte(0b00010000);
+    constexpr auto mult_int = byte(0b00010001);
+    constexpr auto mult_uint = byte(0b00010010);
+    constexpr auto mult_double = byte(0b00010011);
+    constexpr auto div_byte = byte(0b00010100);
+    constexpr auto div_int = byte(0b00010101);
+    constexpr auto div_uint = byte(0b00010110);
+    constexpr auto div_double = byte(0b00010111);
+    constexpr auto mod_byte = byte(0b00011000);
+    constexpr auto mod_int = byte(0b00011001);
+    constexpr auto mod_uint = byte(0b00011010);
+    constexpr auto and_byte = byte(0b00011100);
+    constexpr auto and_int = byte(0b00011101);
+    constexpr auto and_uint = byte(0b00011110);
+    constexpr auto or_byte = byte(0b00100000);
+    constexpr auto or_int = byte(0b00100001);
+    constexpr auto or_uint = byte(0b00100010);
+    constexpr auto xor_byte = byte(0b00100100);
+    constexpr auto xor_int = byte(0b00100101);
+    constexpr auto xor_uint = byte(0b00100110);
+    constexpr auto left_shift_byte = byte(0b00101000);
+    constexpr auto left_shift_int = byte(0b00101001);
+    constexpr auto left_shift_uint = byte(0b00101010);
+    constexpr auto right_shift_byte = byte(0b00101100);
+    constexpr auto right_shift_int = byte(0b00101101);
+    constexpr auto right_shift_uint = byte(0b00101110);
 
     constexpr auto param_byte1 = byte(0b10000000);
     constexpr auto param_byte2 = byte(0b10000001);

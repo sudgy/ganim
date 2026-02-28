@@ -45,18 +45,189 @@ void Interpreter::execute()
             pop(read_uint_parameter());
             break;
         }
-        case bytecode::unary_minus_int:
+        case unary_minus_int:
         {
             auto& val = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
             val = -val;
             break;
         }
-        case bytecode::nop:
+        case nop:
             break;
-        case bytecode::unary_minus_double:
+        case unary_minus_double:
         {
             auto& val = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
             val = -val;
+            break;
+        }
+        case plus_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = byte((unsigned char)val1 + (unsigned char)val2);
+            break;
+        }
+        case plus_int:
+        {
+            auto val1 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<int64_t&>(M_stack[M_stack.size() - 8])
+                = val1 + val2;
+            break;
+        }
+        case plus_uint:
+        {
+            auto val1 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - 8])
+                = val1 + val2;
+            break;
+        }
+        case plus_double:
+        {
+            auto val1 = reinterpret_cast<double&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<double&>(M_stack[M_stack.size() - 8])
+                = val1 + val2;
+            break;
+        }
+        case minus_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = byte((unsigned char)val1 - (unsigned char)val2);
+            break;
+        }
+        case minus_int:
+        {
+            auto val1 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<int64_t&>(M_stack[M_stack.size() - 8])
+                = val1 - val2;
+            break;
+        }
+        case minus_uint:
+        {
+            auto val1 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - 8])
+                = val1 - val2;
+            break;
+        }
+        case minus_double:
+        {
+            auto val1 = reinterpret_cast<double&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<double&>(M_stack[M_stack.size() - 8])
+                = val1 - val2;
+            break;
+        }
+        case mult_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = byte((unsigned char)val1 * (unsigned char)val2);
+            break;
+        }
+        case mult_int:
+        {
+            auto val1 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<int64_t&>(M_stack[M_stack.size() - 8])
+                = val1 * val2;
+            break;
+        }
+        case mult_uint:
+        {
+            auto val1 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - 8])
+                = val1 * val2;
+            break;
+        }
+        case mult_double:
+        {
+            auto val1 = reinterpret_cast<double&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<double&>(M_stack[M_stack.size() - 8])
+                = val1 * val2;
+            break;
+        }
+        case div_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = byte((unsigned char)val1 / (unsigned char)val2);
+            break;
+        }
+        case div_int:
+        {
+            auto val1 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<int64_t&>(M_stack[M_stack.size() - 8])
+                = val1 / val2;
+            break;
+        }
+        case div_uint:
+        {
+            auto val1 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - 8])
+                = val1 / val2;
+            break;
+        }
+        case div_double:
+        {
+            auto val1 = reinterpret_cast<double&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<double&>(M_stack[M_stack.size() - 8])
+                = val1 / val2;
+            break;
+        }
+        case mod_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = byte((unsigned char)val1 % (unsigned char)val2);
+            break;
+        }
+        case mod_int:
+        {
+            auto val1 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<int64_t&>(M_stack[M_stack.size() - 8])
+                = val1 % val2;
+            break;
+        }
+        case mod_uint:
+        {
+            auto val1 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            reinterpret_cast<uint64_t&>(M_stack[M_stack.size() - 8])
+                = val1 % val2;
             break;
         }
         case test_byte:
