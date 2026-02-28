@@ -4,6 +4,8 @@
 
 using namespace ganim;
 
+// 2 + 3
+
 TEST_CASE("compile test_output", "[script]") {
     auto output = run_script(R"(
 test_output(2);

@@ -2,17 +2,21 @@
 
 #include "overloaded.hpp"
 
+#include "constant.hpp"
 #include "function.hpp"
 
 namespace ganim {
 
-void compile_expression(CompilerState& state, const syntax::Expression& ast)
+Type compile_expression(CompilerState& state, const syntax::Expression& ast)
 {
-    std::visit(overloaded{
-        [&](const syntax::FunctionExpression& value) {
-            compile_function_expression(state, value);
+    return std::visit(overloaded{
+        [&](const syntax::ConstantExpression& value) -> Type {
+            return compile_constant_expression(state, value);
         },
-        [&](const auto&) {
+        [&](const syntax::FunctionExpression& value) -> Type {
+            return compile_function_expression(state, value);
+        },
+        [&](const auto&) -> Type {
             throw std::runtime_error("Unimplemented expression");
         }
     }, ast.value);

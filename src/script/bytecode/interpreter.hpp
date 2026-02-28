@@ -34,6 +34,10 @@ namespace ganim {
             std::int64_t read_int_parameter();
             std::uint64_t read_uint_parameter();
             double read_double_parameter();
+            std::byte get_stack_byte(int from_top = 1);
+            std::int64_t get_stack_int(int from_top = 1);
+            std::uint64_t get_stack_uint(int from_top = 1);
+            double get_stack_double(int from_top = 1);
             void push_bytes(std::span<std::byte> bytes);
             void pop(std::size_t amount);
             void safe_increase_program_counter(int amount = 1);

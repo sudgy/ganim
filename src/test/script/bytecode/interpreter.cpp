@@ -8,38 +8,46 @@ using namespace bytecode;
 
 TEST_CASE("Interpreter constant parameters", "[script]") {
     auto code = std::vector<std::byte>{
-        test_byte,
+        push_byte,
         std::byte(42),
         test_byte,
+        push_byte,
         std::byte(0b10000000),
         std::byte(200),
+        test_byte,
 
-        test_int,
+        push_int,
         std::byte(42),
         test_int,
+        push_int,
         std::byte(0b10000000),
         std::byte(0xFF),
         test_int,
+        push_int,
         std::byte(0b10000001),
         std::byte(0x00),
         std::byte(0x02),
         test_int,
+        push_int,
         std::byte(0b10000001),
         std::byte(0xFE),
         std::byte(0xFF),
         test_int,
+        push_int,
         std::byte(0b10000010),
         std::byte(0x00),
         std::byte(0x00),
         std::byte(0x00),
         std::byte(0x02),
         test_int,
+        push_int,
         std::byte(0b10000010),
         std::byte(0xFD),
         std::byte(0xFF),
         std::byte(0xFF),
         std::byte(0xFF),
         test_int,
+        push_int,
         std::byte(0b10000011),
         std::byte(0x00),
         std::byte(0x00),
@@ -50,6 +58,7 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
         std::byte(0x00),
         std::byte(0x02),
         test_int,
+        push_int,
         std::byte(0b10000011),
         std::byte(0xFC),
         std::byte(0xFF),
@@ -59,33 +68,40 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
         std::byte(0xFF),
         std::byte(0xFF),
         std::byte(0xFF),
+        test_int,
 
-        test_uint,
+        push_uint,
         std::byte(42),
         test_uint,
+        push_uint,
         std::byte(0b10000000),
         std::byte(0xFF),
         test_uint,
+        push_uint,
         std::byte(0b10000001),
         std::byte(0x00),
         std::byte(0x02),
         test_uint,
+        push_uint,
         std::byte(0b10000001),
         std::byte(0xFE),
         std::byte(0xFF),
         test_uint,
+        push_uint,
         std::byte(0b10000010),
         std::byte(0x00),
         std::byte(0x00),
         std::byte(0x00),
         std::byte(0x02),
         test_uint,
+        push_uint,
         std::byte(0b10000010),
         std::byte(0xFD),
         std::byte(0xFF),
         std::byte(0xFF),
         std::byte(0xFF),
         test_uint,
+        push_uint,
         std::byte(0b10000011),
         std::byte(0x00),
         std::byte(0x00),
@@ -96,6 +112,7 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
         std::byte(0x00),
         std::byte(0x02),
         test_uint,
+        push_uint,
         std::byte(0b10000011),
         std::byte(0xFC),
         std::byte(0xFF),
@@ -105,8 +122,9 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
         std::byte(0xFF),
         std::byte(0xFF),
         std::byte(0xFF),
+        test_uint,
 
-        test_double,
+        push_double,
         std::byte(0b10000011),
         std::byte(0x00),
         std::byte(0x00),
@@ -116,6 +134,7 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
         std::byte(0x00),
         std::byte(0xE0),
         std::byte(0xBF),
+        test_double,
     };
     auto test = Interpreter(code);
     test.execute();
@@ -150,18 +169,16 @@ TEST_CASE("Interpreter push_pop", "[script]") {
     auto code = std::vector<std::byte>{
         push_int,
         std::byte(42),
+        test_int,
         push_int,
         std::byte(43),
         test_int,
-        param_stack1,
-        test_int,
-        param_stack2,
         pop,
         std::byte(1),
         test_int,
-        param_stack1,
         push_byte,
         std::byte(44),
+        test_byte,
         push_byte,
         std::byte(45),
         push_int,
@@ -169,18 +186,15 @@ TEST_CASE("Interpreter push_pop", "[script]") {
         pop,
         std::byte(1),
         test_byte,
-        param_stack1,
-        test_byte,
-        param_stack2,
         pop,
         std::byte(2),
         test_int,
-        param_stack1,
         pop,
         std::byte(1),
 
         push_uint,
         std::byte(46),
+        test_uint,
         push_double,
         std::byte(0b10000011),
         std::byte(0x00),
@@ -191,21 +205,18 @@ TEST_CASE("Interpreter push_pop", "[script]") {
         std::byte(0x00),
         std::byte(0xE0),
         std::byte(0xBF),
-        test_uint,
-        param_stack2,
         test_double,
-        param_stack1
     };
     auto test = Interpreter(code);
     test.execute();
     auto& output = test.get_test_output();
     REQUIRE(output.size() == 8);
 
-    REQUIRE(get<std::int64_t>(output[0]) == 43);
-    REQUIRE(get<std::int64_t>(output[1]) == 42);
+    REQUIRE(get<std::int64_t>(output[0]) == 42);
+    REQUIRE(get<std::int64_t>(output[1]) == 43);
     REQUIRE(get<std::int64_t>(output[2]) == 42);
-    REQUIRE(get<std::byte>(output[3]) == std::byte(45));
-    REQUIRE(get<std::byte>(output[4]) == std::byte(44));
+    REQUIRE(get<std::byte>(output[3]) == std::byte(44));
+    REQUIRE(get<std::byte>(output[4]) == std::byte(45));
     REQUIRE(get<std::int64_t>(output[5]) == 42);
     REQUIRE(get<std::uint64_t>(output[6]) == 46);
     REQUIRE(get<double>(output[7]) == -0.5);

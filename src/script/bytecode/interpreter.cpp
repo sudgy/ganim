@@ -46,16 +46,16 @@ void Interpreter::execute()
             break;
         }
         case test_byte:
-            M_test_output.emplace_back(read_byte_parameter());
+            M_test_output.emplace_back(get_stack_byte());
             break;
         case test_int:
-            M_test_output.emplace_back(read_int_parameter());
+            M_test_output.emplace_back(get_stack_int());
             break;
         case test_uint:
-            M_test_output.emplace_back(read_uint_parameter());
+            M_test_output.emplace_back(get_stack_uint());
             break;
         case test_double:
-            M_test_output.emplace_back(read_double_parameter());
+            M_test_output.emplace_back(get_stack_double());
             break;
         default:
             throw std::runtime_error("Illegal instruction");
@@ -217,6 +217,26 @@ double Interpreter::read_double_parameter()
         throw std::runtime_error("Malformed instruction");
     }
     return result;
+}
+
+std::byte Interpreter::get_stack_byte(int from_top)
+{
+    return M_stack[M_stack.size() - from_top*8];
+}
+
+std::int64_t Interpreter::get_stack_int(int from_top)
+{
+    return reinterpret_cast<std::int64_t&>(M_stack[M_stack.size() - from_top*8]);
+}
+
+std::uint64_t Interpreter::get_stack_uint(int from_top)
+{
+    return reinterpret_cast<std::uint64_t&>(M_stack[M_stack.size() - from_top*8]);
+}
+
+double Interpreter::get_stack_double(int from_top)
+{
+    return reinterpret_cast<double&>(M_stack[M_stack.size() - from_top*8]);
 }
 
 void Interpreter::push_bytes(std::span<std::byte> bytes)

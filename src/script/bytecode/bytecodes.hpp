@@ -36,8 +36,11 @@ Parameter reference:
 Bytecode reference:
 
     111111xx - Test output
-    000000xx - Push
+    000000xx - Push (has parameter)
     00000100 - Pop
+    00000101 - Unary minus int (top of stack)
+    00000110 - Nop
+    00000111 - Unary minus double (top of stack)
  */
 
 namespace ganim::bytecode {
@@ -52,6 +55,8 @@ namespace ganim::bytecode {
     constexpr auto push_double = std::byte(0b00000011);
 
     constexpr auto pop = std::byte(0b00000100);
+    constexpr auto unary_minus_int = std::byte(0b00000101);
+    constexpr auto unary_minus_double = std::byte(0b00000111);
 
     constexpr auto param_byte1 = std::byte(0b10000000);
     constexpr auto param_byte2 = std::byte(0b10000001);

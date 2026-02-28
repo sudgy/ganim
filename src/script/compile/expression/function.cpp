@@ -4,10 +4,11 @@
 
 #include "function.hpp"
 #include "script/bytecode/bytecodes.hpp"
+#include "script/any_pointer.hpp"
 
 namespace ganim {
 
-void compile_function_expression(
+Type compile_function_expression(
     CompilerState& state,
     const syntax::FunctionExpression& ast
 )
@@ -15,27 +16,37 @@ void compile_function_expression(
     auto name = get<syntax::IdentifierExpression>(ast.name->value).name;
     if (name == "test_output") {
         for (auto& param : ast.parameters) {
-            auto constant = get<syntax::ConstantExpression>(param->value);
+            auto p = compile_expression(state, *param);
+
             std::visit(overloaded{
-                [&](std::int64_t value) {
-                    state.bytecode.push_back(bytecode::test_int);
-                    state.write_parameter(value);
+                [&](TypeID id) {
+                    if (id == any_pointer::get_tag<std::int64_t>()) {
+                        state.bytecode.push_back(bytecode::test_int);
+                        state.bytecode.push_back(bytecode::pop);
+                        state.bytecode.push_back(std::byte(1));
+                    }
+                    else if (id == any_pointer::get_tag<double>()) {
+                        state.bytecode.push_back(bytecode::test_double);
+                        state.bytecode.push_back(bytecode::pop);
+                        state.bytecode.push_back(std::byte(1));
+                    }
+                    else if (id == any_pointer::get_tag<bool>()) {
+                        state.bytecode.push_back(bytecode::test_byte);
+                        state.bytecode.push_back(bytecode::pop);
+                        state.bytecode.push_back(std::byte(1));
+                    }
+                    else {
+                        throw std::runtime_error("Unable to test output this type");
+                    }
                 },
-                [&](double value) {
-                    state.bytecode.push_back(bytecode::test_double);
-                    state.write_parameter(value);
-                },
-                [&](bool value) {
-                    state.bytecode.push_back(bytecode::test_byte);
-                    state.write_parameter(std::byte(value));
-                },
-                [&](const std::string&) {
-                    throw std::runtime_error("Unable to test output string");
-                },
-            }, constant.value);
+                [&](const auto*) {
+                    throw std::runtime_error("Unable to test output this type");
+                }
+            }, p.value);
         }
     }
     else throw std::runtime_error("Not yet implemented");
+    return void_type;
 }
 
 }

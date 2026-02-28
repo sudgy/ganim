@@ -3,9 +3,10 @@
 
 #include "script/compile/compiler_state.hpp"
 #include "script/parse/expression.hpp"
+#include "script/type.hpp"
 
 namespace ganim {
-    void compile_function_expression(
+    Type compile_function_expression(
         CompilerState& state,
         const syntax::FunctionExpression& ast
     );
