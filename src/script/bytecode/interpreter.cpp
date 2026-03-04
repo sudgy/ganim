@@ -288,14 +288,14 @@ void Interpreter::execute()
             break;
         case jump_lt:
             safe_increase_program_counter();
-            if (M_stack[M_stack.size() - 8] == byte(-1)) {
+            if (M_stack[M_stack.size() - 8] == byte(0xFF)) {
                 M_program_counter += char(M_code[M_program_counter]);
             }
             M_stack.resize(M_stack.size() - 8);
             break;
         case jump_le:
             safe_increase_program_counter();
-            if (M_stack[M_stack.size() - 8] == byte(-1) or
+            if (M_stack[M_stack.size() - 8] == byte(0xFF) or
                 M_stack[M_stack.size() - 8] == byte(0))
             {
                 M_program_counter += char(M_code[M_program_counter]);
