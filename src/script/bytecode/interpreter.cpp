@@ -231,6 +231,62 @@ void Interpreter::execute()
                 = val1 % val2;
             break;
         }
+        case compare_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = (unsigned char)val1 < (unsigned char)val2 ? byte(0xFF) :
+                    val1 == val2 ? byte(0) : byte(1);
+            break;
+        }
+        case jump_eq:
+            safe_increase_program_counter();
+            if (M_stack[M_stack.size() - 8] == byte(0)) {
+                M_program_counter += char(M_code[M_program_counter]);
+            }
+            M_stack.resize(M_stack.size() - 8);
+            break;
+        case jump_neq:
+            safe_increase_program_counter();
+            if (M_stack[M_stack.size() - 8] != byte(0)) {
+                M_program_counter += char(M_code[M_program_counter]);
+            }
+            M_stack.resize(M_stack.size() - 8);
+            break;
+        case jump_lt:
+            safe_increase_program_counter();
+            if (M_stack[M_stack.size() - 8] == byte(-1)) {
+                M_program_counter += char(M_code[M_program_counter]);
+            }
+            M_stack.resize(M_stack.size() - 8);
+            break;
+        case jump_le:
+            safe_increase_program_counter();
+            if (M_stack[M_stack.size() - 8] == byte(-1) or
+                M_stack[M_stack.size() - 8] == byte(0))
+            {
+                M_program_counter += char(M_code[M_program_counter]);
+            }
+            M_stack.resize(M_stack.size() - 8);
+            break;
+        case jump_gt:
+            safe_increase_program_counter();
+            if (M_stack[M_stack.size() - 8] == byte(1)) {
+                M_program_counter += char(M_code[M_program_counter]);
+            }
+            M_stack.resize(M_stack.size() - 8);
+            break;
+        case jump_ge:
+            safe_increase_program_counter();
+            if (M_stack[M_stack.size() - 8] == byte(1) or
+                M_stack[M_stack.size() - 8] == byte(0))
+            {
+                M_program_counter += char(M_code[M_program_counter]);
+            }
+            M_stack.resize(M_stack.size() - 8);
+            break;
         case jump_short:
             safe_increase_program_counter();
             M_program_counter += char(M_code[M_program_counter]);
