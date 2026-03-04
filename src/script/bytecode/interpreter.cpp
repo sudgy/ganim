@@ -231,6 +231,36 @@ void Interpreter::execute()
                 = val1 % val2;
             break;
         }
+        case and_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8] = val1 & val2;
+            break;
+        }
+        case or_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8] = val1 | val2;
+            break;
+        }
+        case xor_byte:
+        {
+            auto val1 = M_stack[M_stack.size() - 16];
+            auto val2 = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8] = val1 ^ val2;
+            break;
+        }
+        case not_bool:
+        {
+            auto val = M_stack[M_stack.size() - 8];
+            M_stack[M_stack.size() - 8] = val == byte(0) ? byte(1) : byte(0);
+            break;
+        }
         case compare_byte:
         {
             auto val1 = M_stack[M_stack.size() - 16];

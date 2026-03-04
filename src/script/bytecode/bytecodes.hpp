@@ -49,11 +49,11 @@ Bytecode reference:
     000110XX - Mod (no double)
     00011011 - Unused
     000111XX - And (no double)
-    00011111 - And bool
+    00011111 - Unused
     001000XX - Or (no double)
-    00100011 - Or bool
+    00100011 - Unused
     001001XX - Xor (no double)
-    00100111 - Xor bool
+    00100111 - Unused
     001010XX - Not (no double)
     00101011 - Not bool
     001011XX - Unused
@@ -119,15 +119,12 @@ namespace ganim::bytecode {
     constexpr auto and_byte = byte(0b00011100);
     constexpr auto and_int = byte(0b00011101);
     constexpr auto and_uint = byte(0b00011110);
-    constexpr auto and_bool = byte(0b00011111);
     constexpr auto or_byte = byte(0b00100000);
     constexpr auto or_int = byte(0b00100001);
     constexpr auto or_uint = byte(0b00100010);
-    constexpr auto or_bool = byte(0b00100011);
     constexpr auto xor_byte = byte(0b00100100);
     constexpr auto xor_int = byte(0b00100101);
     constexpr auto xor_uint = byte(0b00100110);
-    constexpr auto xor_bool = byte(0b00100111);
     constexpr auto not_byte = byte(0b00101000);
     constexpr auto not_int = byte(0b00101001);
     constexpr auto not_uint = byte(0b00101010);
