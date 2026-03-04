@@ -73,6 +73,8 @@ Bytecode reference:
     01000011 - Unused
     010001XX - Right shift (no double)
     01000111 - Unused
+    01001000 - Move to stack frame
+    01001001 - Move to absolute address
  */
 
 namespace ganim {
@@ -145,6 +147,9 @@ namespace ganim::bytecode {
     constexpr auto jump_long = byte(0b00111100);
     constexpr auto jsr = byte(0b00111101);
     constexpr auto ret = byte(0b00111110);
+
+    constexpr auto move_stack = byte(0b01001000);
+    constexpr auto move_abs = byte(0b01001001);
 
 
     constexpr auto param_byte1 = byte(0b10000000);

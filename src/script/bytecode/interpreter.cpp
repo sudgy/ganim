@@ -365,6 +365,11 @@ void Interpreter::execute()
             std::memcpy(&M_program_counter, &M_code[M_program_counter-7], 8);
             --M_program_counter;
             break;
+        case move_stack:
+            M_stack[M_stack_frame + read_uint_parameter()*8]
+                = M_stack[M_stack.size() - 8];
+            M_stack.resize(M_stack.size() - 8);
+            break;
         case test_byte:
             M_test_output.emplace_back(get_stack_byte());
             break;
