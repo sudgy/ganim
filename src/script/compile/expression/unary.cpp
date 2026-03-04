@@ -17,6 +17,12 @@ Type compile_unary_expression(
     auto type = compile_expression(state, *ast.subexpression);
     switch (ast.op) {
         case syntax::UnaryExpression::Plus:
+            if (type != any_pointer::get_tag<int64_t>() and
+                type != any_pointer::get_tag<double>())
+            {
+                throw CompileError(ast.line_number, ast.column_number,
+                    "Unable to find this operation for this type");
+            }
             break;
         case syntax::UnaryExpression::Minus:
             if (type == any_pointer::get_tag<int64_t>()) {
