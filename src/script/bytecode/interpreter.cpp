@@ -292,7 +292,7 @@ int64_t Interpreter::read_int_parameter()
         safe_increase_program_counter(2);
         bytes[0] = M_code[M_program_counter-1];
         bytes[1] = M_code[M_program_counter];
-        if (bytes[0] >= byte(128)) {
+        if (bytes[1] >= byte(128)) {
             for (int i = 2; i < 8; ++i) {
                 bytes[i] = byte(0xFF);
             }
@@ -304,7 +304,7 @@ int64_t Interpreter::read_int_parameter()
         bytes[1] = M_code[M_program_counter-2];
         bytes[2] = M_code[M_program_counter-1];
         bytes[3] = M_code[M_program_counter];
-        if (bytes[0] >= byte(128)) {
+        if (bytes[3] >= byte(128)) {
             for (int i = 4; i < 8; ++i) {
                 bytes[i] = byte(0xFF);
             }

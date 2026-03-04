@@ -69,6 +69,11 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
         byte(0xFF),
         byte(0xFF),
         test_int,
+        push_int,
+        param_byte2,
+        byte(0xFF),
+        byte(0),
+        test_int,
 
         push_uint,
         byte(42),
@@ -139,7 +144,7 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
     auto test = Interpreter(code);
     test.execute();
     auto& output = test.get_test_output();
-    REQUIRE(output.size() == 19);
+    REQUIRE(output.size() == 20);
 
     REQUIRE(get<byte>(output[0]) == byte(42));
     REQUIRE(get<byte>(output[1]) == byte(200));
@@ -152,17 +157,18 @@ TEST_CASE("Interpreter constant parameters", "[script]") {
     REQUIRE(get<int64_t>(output[7]) == -3LL);
     REQUIRE(get<int64_t>(output[8]) == 0x200000000000000LL);
     REQUIRE(get<int64_t>(output[9]) == -4LL);
+    REQUIRE(get<int64_t>(output[10]) == 0xFF);
 
-    REQUIRE(get<uint64_t>(output[10]) == 42ULL);
-    REQUIRE(get<uint64_t>(output[11]) == 0xFFULL);
-    REQUIRE(get<uint64_t>(output[12]) == 0x200ULL);
-    REQUIRE(get<uint64_t>(output[13]) == 0xFFFEULL);
-    REQUIRE(get<uint64_t>(output[14]) == 0x2000000ULL);
-    REQUIRE(get<uint64_t>(output[15]) == 0xFFFFFFFDULL);
-    REQUIRE(get<uint64_t>(output[16]) == 0x200000000000000ULL);
-    REQUIRE(get<uint64_t>(output[17]) == 0xFFFFFFFFFFFFFFFCULL);
+    REQUIRE(get<uint64_t>(output[11]) == 42ULL);
+    REQUIRE(get<uint64_t>(output[12]) == 0xFFULL);
+    REQUIRE(get<uint64_t>(output[13]) == 0x200ULL);
+    REQUIRE(get<uint64_t>(output[14]) == 0xFFFEULL);
+    REQUIRE(get<uint64_t>(output[15]) == 0x2000000ULL);
+    REQUIRE(get<uint64_t>(output[16]) == 0xFFFFFFFDULL);
+    REQUIRE(get<uint64_t>(output[17]) == 0x200000000000000ULL);
+    REQUIRE(get<uint64_t>(output[18]) == 0xFFFFFFFFFFFFFFFCULL);
 
-    REQUIRE(get<double>(output[18]) == -0.5);
+    REQUIRE(get<double>(output[19]) == -0.5);
 }
 
 TEST_CASE("Interpreter push_pop", "[script]") {
