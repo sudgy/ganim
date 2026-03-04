@@ -241,6 +241,37 @@ void Interpreter::execute()
                     val1 == val2 ? byte(0) : byte(1);
             break;
         }
+        case compare_int:
+        {
+            auto val1 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<int64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = val1 < val2 ? byte(0xFF) :
+                  val1 == val2 ? byte(0) : byte(1);
+            break;
+        }
+        case compare_uint:
+        {
+            auto val1 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<uint64_t&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = val1 < val2 ? byte(0xFF) :
+                  val1 == val2 ? byte(0) : byte(1);
+            break;
+        }
+        case compare_double:
+        {
+            auto val1 = reinterpret_cast<double&>(M_stack[M_stack.size()-16]);
+            auto val2 = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            M_stack.resize(M_stack.size() - 8);
+            M_stack[M_stack.size() - 8]
+                = val1 < val2 ? byte(0xFF) :
+                  val1 == val2 ? byte(0) :
+                  val1 > val2 ? byte(1) : byte(2);
+            break;
+        }
         case jump_eq:
             safe_increase_program_counter();
             if (M_stack[M_stack.size() - 8] == byte(0)) {
