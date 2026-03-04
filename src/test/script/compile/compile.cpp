@@ -50,7 +50,7 @@ b = 7;
 test_output(a);
 test_output(b);
 test_output(c);
-)");
+)", 24);
     REQUIRE(test.size() == 3);
     REQUIRE(get<int64_t>(test[0]) == 5);
     REQUIRE(get<int64_t>(test[1]) == 6);

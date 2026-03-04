@@ -49,15 +49,14 @@ Bytecode reference:
     000110XX - Mod (no double)
     00011011 - Unused
     000111XX - And (no double)
-    00011111 - Unused
+    00011111 - And bool
     001000XX - Or (no double)
-    00100011 - Unused
+    00100011 - Or bool
     001001XX - Xor (no double)
-    00100111 - Unused
-    001010XX - Left shift (no double)
-    00101011 - Unused
-    001011XX - Right shift (no double)
-    00101111 - Unused
+    00100111 - Xor bool
+    001010XX - Not (no double)
+    00101011 - Not bool
+    001011XX - Unused
     001100XX - Compare
     00110100 - Jump if equal (short)
     00110101 - Jump if not equal (short)
@@ -70,6 +69,10 @@ Bytecode reference:
     00111100 - Jump long
     00111101 - Jump to subroutine
     00111110 - Return
+    010000XX - Left shift (no double)
+    01000011 - Unused
+    010001XX - Right shift (no double)
+    01000111 - Unused
  */
 
 namespace ganim {
@@ -116,19 +119,19 @@ namespace ganim::bytecode {
     constexpr auto and_byte = byte(0b00011100);
     constexpr auto and_int = byte(0b00011101);
     constexpr auto and_uint = byte(0b00011110);
+    constexpr auto and_bool = byte(0b00011111);
     constexpr auto or_byte = byte(0b00100000);
     constexpr auto or_int = byte(0b00100001);
     constexpr auto or_uint = byte(0b00100010);
+    constexpr auto or_bool = byte(0b00100011);
     constexpr auto xor_byte = byte(0b00100100);
     constexpr auto xor_int = byte(0b00100101);
     constexpr auto xor_uint = byte(0b00100110);
-
-    constexpr auto left_shift_byte = byte(0b00101000);
-    constexpr auto left_shift_int = byte(0b00101001);
-    constexpr auto left_shift_uint = byte(0b00101010);
-    constexpr auto right_shift_byte = byte(0b00101100);
-    constexpr auto right_shift_int = byte(0b00101101);
-    constexpr auto right_shift_uint = byte(0b00101110);
+    constexpr auto xor_bool = byte(0b00100111);
+    constexpr auto not_byte = byte(0b00101000);
+    constexpr auto not_int = byte(0b00101001);
+    constexpr auto not_uint = byte(0b00101010);
+    constexpr auto not_bool = byte(0b00101011);
 
     constexpr auto compare_byte = byte(0b00110000);
     constexpr auto compare_int = byte(0b00110001);

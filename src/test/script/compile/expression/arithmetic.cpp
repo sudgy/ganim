@@ -59,7 +59,7 @@ TEST_CASE("Complicated arithmetic expressions", "[script]") {
 var a = 5;
 var b = 3;
 test_output(b + (a + 3) * b + 4 / (5 % 3) - 3);
-    )");
+    )", 16);
     REQUIRE(test.size() == 1);
     REQUIRE(get<int64_t>(test[0]) == 26);
 }

@@ -22,6 +22,7 @@ namespace ganim {
             >;
             const std::vector<TestType>& get_test_output() const
                 {return M_test_output;}
+            std::size_t current_stack_size() const {return M_stack.size();}
 
         private:
             std::vector<std::byte> M_code;
