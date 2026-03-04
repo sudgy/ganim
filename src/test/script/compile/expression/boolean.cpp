@@ -72,3 +72,55 @@ test_output(false != true);
     REQUIRE(get<std::byte>(test[28]) == std::byte(0));
     REQUIRE(get<std::byte>(test[29]) == std::byte(1));
 }
+
+TEST_CASE("Boolean operators", "[script]") {
+    auto test = run_script(R"(
+test_output(true  and true);
+test_output(true  and false);
+test_output(false and false);
+test_output(true  or true);
+test_output(true  or false);
+test_output(false or false);
+test_output(not true);
+test_output(not false);
+test_output(true  xor true);
+test_output(true  xor false);
+test_output(false xor false);
+test_output(true  nand true);
+test_output(true  nand false);
+test_output(false nand false);
+test_output(true  nor true);
+test_output(true  nor false);
+test_output(false nor false);
+test_output(¬true);
+test_output(true && false);
+test_output(true || false);
+test_output(!true);
+test_output(true ^ false);
+    )");
+    REQUIRE_THROWS(run_script("true and 4;"));
+
+    REQUIRE(test.size() == 22);
+    REQUIRE(get<std::byte>(test[0]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[1]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[2]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[3]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[4]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[5]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[6]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[7]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[8]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[9]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[10]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[11]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[12]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[13]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[14]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[15]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[16]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[17]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[18]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[19]) == std::byte(1));
+    REQUIRE(get<std::byte>(test[20]) == std::byte(0));
+    REQUIRE(get<std::byte>(test[21]) == std::byte(1));
+}

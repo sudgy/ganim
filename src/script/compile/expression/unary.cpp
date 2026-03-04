@@ -15,13 +15,16 @@ Type compile_unary_expression(
 )
 {
     auto type = compile_expression(state, *ast.subexpression);
+    auto error = [&]{
+        throw CompileError(ast.line_number, ast.column_number,
+            "Unable to find this operation for this type");
+    };
     switch (ast.op) {
         case syntax::UnaryExpression::Plus:
             if (type != any_pointer::get_tag<int64_t>() and
                 type != any_pointer::get_tag<double>())
             {
-                throw CompileError(ast.line_number, ast.column_number,
-                    "Unable to find this operation for this type");
+                error();
             }
             break;
         case syntax::UnaryExpression::Minus:
@@ -31,13 +34,12 @@ Type compile_unary_expression(
             else if (type == any_pointer::get_tag<double>()) {
                 state.bytecode.push_back(bytecode::unary_minus_double);
             }
-            else {
-                throw CompileError(ast.line_number, ast.column_number,
-                    "Unable to find this operation for this type");
-            }
+            else error();
             break;
-        default:
-            throw std::runtime_error("Not yet implemented");
+        case syntax::UnaryExpression::Not:
+            if (type != any_pointer::get_tag<bool>()) error();
+            state.bytecode.push_back(bytecode::not_bool);
+            break;
     }
     return type;
 }

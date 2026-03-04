@@ -68,10 +68,7 @@ Type compile_binary_expression(
         }
         break;
     case syntax::BinaryExpression::Modulo:
-        if (type == Double) {
-            throw CompileError(line_number, column_number,
-                "Unable to find this operation for this type");
-        }
+        if (type == Double) error();
         state.bytecode.push_back(mod_int);
         break;
     case syntax::BinaryExpression::LT:
@@ -125,9 +122,34 @@ Type compile_binary_expression(
         state.bytecode.push_back(push_byte);
         state.bytecode.push_back(byte(1));
         return any_pointer::get_tag<bool>();
+    case syntax::BinaryExpression::And:
+    case syntax::BinaryExpression::Or:
+    case syntax::BinaryExpression::Xor:
+    case syntax::BinaryExpression::Nand:
+    case syntax::BinaryExpression::Nor:
+        if (type != Bool) error();
+        switch (ast.op) {
+            case syntax::BinaryExpression::And:
+                state.bytecode.push_back(and_byte);
+                break;
+            case syntax::BinaryExpression::Or:
+                state.bytecode.push_back(or_byte);
+                break;
+            case syntax::BinaryExpression::Xor:
+                state.bytecode.push_back(xor_byte);
+                break;
+            case syntax::BinaryExpression::Nand:
+                state.bytecode.push_back(and_byte);
+                state.bytecode.push_back(not_bool);
+                break;
+            case syntax::BinaryExpression::Nor:
+                state.bytecode.push_back(or_byte);
+                state.bytecode.push_back(not_bool);
+            default: break; // Provably impossible
+        }
+        break;
     default:
-        throw CompileError(line_number, column_number,
-            "Unable to find this operation for this type");
+        error();
     }
     return lhs;
 }
