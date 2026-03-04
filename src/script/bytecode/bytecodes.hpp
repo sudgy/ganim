@@ -58,6 +58,18 @@ Bytecode reference:
     00101011 - Unused
     001011XX - Right shift (no double)
     00101111 - Unused
+    001100XX - Compare
+    00110100 - Jump if equal (short)
+    00110101 - Jump if not equal (short)
+    00110110 - Jump if less than (short)
+    00110111 - Jump if less than or equal (short)
+    00111000 - Jump if greater than (short)
+    00111001 - Jump if greater than or equal (short)
+    00111010 - Jump short
+    00111011 - Jump medium
+    00111100 - Jump long
+    00111101 - Jump to subroutine
+    00111110 - Return
  */
 
 namespace ganim {
@@ -100,6 +112,7 @@ namespace ganim::bytecode {
     constexpr auto mod_byte = byte(0b00011000);
     constexpr auto mod_int = byte(0b00011001);
     constexpr auto mod_uint = byte(0b00011010);
+
     constexpr auto and_byte = byte(0b00011100);
     constexpr auto and_int = byte(0b00011101);
     constexpr auto and_uint = byte(0b00011110);
@@ -109,12 +122,30 @@ namespace ganim::bytecode {
     constexpr auto xor_byte = byte(0b00100100);
     constexpr auto xor_int = byte(0b00100101);
     constexpr auto xor_uint = byte(0b00100110);
+
     constexpr auto left_shift_byte = byte(0b00101000);
     constexpr auto left_shift_int = byte(0b00101001);
     constexpr auto left_shift_uint = byte(0b00101010);
     constexpr auto right_shift_byte = byte(0b00101100);
     constexpr auto right_shift_int = byte(0b00101101);
     constexpr auto right_shift_uint = byte(0b00101110);
+
+    constexpr auto compare_byte = byte(0b00110000);
+    constexpr auto compare_int = byte(0b00110001);
+    constexpr auto compare_uint = byte(0b00110010);
+    constexpr auto compare_double = byte(0b00110011);
+    constexpr auto jump_eq = byte(0b00110100);
+    constexpr auto jump_neq = byte(0b00110101);
+    constexpr auto jump_lt = byte(0b00110110);
+    constexpr auto jump_le = byte(0b00110111);
+    constexpr auto jump_gt = byte(0b00111000);
+    constexpr auto jump_ge = byte(0b00111001);
+    constexpr auto jump_short = byte(0b00111010);
+    constexpr auto jump_medium = byte(0b00111011);
+    constexpr auto jump_long = byte(0b00111100);
+    constexpr auto jsr = byte(0b00111101);
+    constexpr auto ret = byte(0b00111110);
+
 
     constexpr auto param_byte1 = byte(0b10000000);
     constexpr auto param_byte2 = byte(0b10000001);

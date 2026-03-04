@@ -1,6 +1,7 @@
 #include "interpreter.hpp"
 
 #include <stdexcept>
+#include <cstring>
 
 #include "bytecodes.hpp"
 
@@ -230,6 +231,23 @@ void Interpreter::execute()
                 = val1 % val2;
             break;
         }
+        case jump_short:
+            safe_increase_program_counter();
+            M_program_counter += char(M_code[M_program_counter]);
+            break;
+        case jump_medium:
+        {
+            safe_increase_program_counter(2);
+            auto amount = std::int16_t();
+            std::memcpy(&amount, &M_code[M_program_counter-1], 2);
+            M_program_counter += amount;
+            break;
+        }
+        case jump_long:
+            safe_increase_program_counter(8);
+            std::memcpy(&M_program_counter, &M_code[M_program_counter-7], 8);
+            --M_program_counter;
+            break;
         case test_byte:
             M_test_output.emplace_back(get_stack_byte());
             break;
