@@ -8,7 +8,7 @@
 
 namespace ganim {
 
-Type compile_function_expression(
+Value compile_function_expression(
     CompilerState& state,
     const syntax::FunctionExpression& ast
 )
@@ -42,11 +42,11 @@ Type compile_function_expression(
                 [&](const auto*) {
                     throw std::runtime_error("Unable to test output this type");
                 }
-            }, p.value);
+            }, p.type.value);
         }
     }
     else throw std::runtime_error("Not yet implemented");
-    return void_type;
+    return {void_type, Value::rvalue()};
 }
 
 }

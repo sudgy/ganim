@@ -7,6 +7,7 @@ namespace ganim {
     struct Variable {
         Type type;
         std::size_t stack_frame_offset = -1;
+        bool modifiable = true;
     };
 }
 

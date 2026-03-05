@@ -1,9 +1,10 @@
 #ifndef GANIM_SCRIPT_ANY_POINTER_HPP
 #define GANIM_SCRIPT_ANY_POINTER_HPP
 
-#include "type.hpp"
+#include <cstdint>
 
 namespace ganim {
+    using TypeID = std::uintptr_t;
     namespace detail {
         template <typename T>
         struct any_pointer_helper {

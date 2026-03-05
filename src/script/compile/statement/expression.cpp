@@ -12,7 +12,7 @@ void compile_expression_statement(
     const syntax::ExprStatement& ast
 )
 {
-    auto size = compile_expression(state, ast.expression).size();
+    auto size = compile_expression(state, ast.expression).type.size();
     if (size != 0) {
         if (size % 8 == 0) size /= 8;
         else {

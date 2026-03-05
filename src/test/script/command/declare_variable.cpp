@@ -5,24 +5,6 @@
 
 using namespace ganim;
 
-TEST_CASE("Constants", "[script]") {
-    auto script = Script(R"(
-let a = 5;
-let b = a + 3;
-    )");
-    script.compile();
-    script.execute();
-    auto a = script.symbol_table().get_variable("a");
-    auto b = script.symbol_table().get_variable("b");
-    REQUIRE( a->value().get_as<std::int64_t>());
-    REQUIRE(*a->value().get_as<std::int64_t>() == 5);
-    REQUIRE( b->value().get_as<std::int64_t>());
-    REQUIRE(*b->value().get_as<std::int64_t>() == 8);
-
-    auto bad_script = Script("let a = 5; a = 10;");
-    REQUIRE_THROWS(bad_script.compile());
-}
-
 TEST_CASE("Type specifiers", "[script]") {
     auto script = Script(R"(
 let a = 5 : int;

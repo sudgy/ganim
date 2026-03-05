@@ -3,10 +3,10 @@
 
 #include "script/compile/compiler_state.hpp"
 #include "script/parse/expression.hpp"
-#include "script/type.hpp"
+#include "script/compile/value.hpp"
 
 namespace ganim {
-    Type compile_unary_expression(
+    Value compile_unary_expression(
         CompilerState& state,
         const syntax::UnaryExpression& ast
     );

@@ -2,8 +2,10 @@
 #define GANIM_SCRIPT_VALUE_HPP
 
 #include "script/any_pointer.hpp"
+#include "script/type.hpp"
 
 namespace ganim {
+    inline namespace old {
     class Value {
         public:
             virtual ~Value()=default;
@@ -13,6 +15,7 @@ namespace ganim {
             virtual bool modifiable() const {return false;}
             virtual void modify(Value&) {}
     };
+    }
 }
 
 #endif

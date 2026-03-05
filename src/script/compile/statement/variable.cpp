@@ -1,9 +1,6 @@
 #include "variable.hpp"
 
-//#include "overloaded.hpp"
-
 #include "script/compile/expression/expression.hpp"
-//#include "script/bytecode/bytecodes.hpp"
 
 namespace ganim {
 
@@ -13,11 +10,14 @@ void compile_variable_statement(
 )
 {
     auto name = ast.variable;
-    auto type = compile_expression(state, ast.value);
+    // Compiling the expression already puts it at the top of the stack, which
+    // is where its new storage is
+    auto value = compile_expression(state, ast.value);
     // Type check
     state.symbols.add_variable(
         name.name,
-        type,
+        value.type,
+        !ast.constant,
         name.line_number,
         name.column_number
     );

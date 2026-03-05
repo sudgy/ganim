@@ -9,39 +9,39 @@
 
 namespace ganim {
 
-Type compile_unary_expression(
+Value compile_unary_expression(
     CompilerState& state,
     const syntax::UnaryExpression& ast
 )
 {
-    auto type = compile_expression(state, *ast.subexpression);
+    auto value = compile_expression(state, *ast.subexpression);
     auto error = [&]{
         throw CompileError(ast.line_number, ast.column_number,
             "Unable to find this operation for this type");
     };
     switch (ast.op) {
         case syntax::UnaryExpression::Plus:
-            if (type != any_pointer::get_tag<int64_t>() and
-                type != any_pointer::get_tag<double>())
+            if (value.type != any_pointer::get_tag<int64_t>() and
+                value.type != any_pointer::get_tag<double>())
             {
                 error();
             }
             break;
         case syntax::UnaryExpression::Minus:
-            if (type == any_pointer::get_tag<int64_t>()) {
+            if (value.type == any_pointer::get_tag<int64_t>()) {
                 state.bytecode.push_back(bytecode::unary_minus_int);
             }
-            else if (type == any_pointer::get_tag<double>()) {
+            else if (value.type == any_pointer::get_tag<double>()) {
                 state.bytecode.push_back(bytecode::unary_minus_double);
             }
             else error();
             break;
         case syntax::UnaryExpression::Not:
-            if (type != any_pointer::get_tag<bool>()) error();
+            if (value.type != any_pointer::get_tag<bool>()) error();
             state.bytecode.push_back(bytecode::not_bool);
             break;
     }
-    return type;
+    return value;
 }
 
 }

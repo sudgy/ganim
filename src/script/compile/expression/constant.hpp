@@ -3,10 +3,10 @@
 
 #include "script/compile/compiler_state.hpp"
 #include "script/parse/expression.hpp"
-#include "script/type.hpp"
+#include "script/compile/value.hpp"
 
 namespace ganim {
-    Type compile_constant_expression(
+    Value compile_constant_expression(
         CompilerState& state,
         const syntax::ConstantExpression& ast
     );

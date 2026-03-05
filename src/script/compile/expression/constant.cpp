@@ -7,28 +7,28 @@
 
 namespace ganim {
 
-Type compile_constant_expression(
+Value compile_constant_expression(
     CompilerState& state,
     const syntax::ConstantExpression& ast
 )
 {
     return std::visit(overloaded{
-        [&](int64_t value) -> Type {
+        [&](int64_t value) -> Value {
             state.bytecode.push_back(bytecode::push_int);
             state.write_parameter(value);
-            return Type(any_pointer::get_tag<int64_t>());
+            return {any_pointer::get_tag<int64_t>(), Value::rvalue()};
         },
-        [&](double value) -> Type {
+        [&](double value) -> Value {
             state.bytecode.push_back(bytecode::push_double);
             state.write_parameter(value);
-            return Type(any_pointer::get_tag<double>());
+            return {any_pointer::get_tag<double>(), Value::rvalue()};
         },
-        [&](bool value) -> Type {
+        [&](bool value) -> Value {
             state.bytecode.push_back(bytecode::push_byte);
             state.write_parameter(byte(value));
-            return Type(any_pointer::get_tag<bool>());
+            return {any_pointer::get_tag<bool>(), Value::rvalue()};
         },
-        [&](const std::string&) -> Type {
+        [&](const std::string&) -> Value {
             throw std::runtime_error("Unable to push string (for now)");
         },
     }, ast.value);

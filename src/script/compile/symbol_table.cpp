@@ -7,6 +7,7 @@ using namespace ganim;
 void SymbolTable::add_variable(
     std::string_view name,
     Type type,
+    bool modifiable,
     int line_number,
     int column_number
 )
@@ -16,13 +17,8 @@ void SymbolTable::add_variable(
         throw CompileError(line_number, column_number, std::format(
                 "A variable by the name \"{}\" already exists.", name));
     }
-    M_variables[name_string] = {type, M_stack_frame_size};
-    auto size = type.size();
-    if (size % 8 == 0) size /= 8;
-    else {
-        size /= 8;
-        ++size;
-    }
+    M_variables[name_string] = {type, M_stack_frame_size, modifiable};
+    auto size = type.size8();
     M_stack_frame_size += size;
 }
 

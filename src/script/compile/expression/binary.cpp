@@ -11,7 +11,7 @@ namespace ganim {
 
 using namespace bytecode;
 
-Type compile_binary_expression(
+Value compile_binary_expression(
     CompilerState& state,
     const syntax::BinaryExpression& ast
 )
@@ -24,7 +24,7 @@ Type compile_binary_expression(
         throw CompileError(line_number, column_number,
             "Unable to find this operation for this type");
     };
-    if (lhs != rhs) {
+    if (lhs.type != rhs.type) {
         throw CompileError(line_number, column_number,
             "Unable to do this operation on different types");
     }
@@ -34,9 +34,9 @@ Type compile_binary_expression(
         Bool
     };
     auto type = T();
-    if (lhs == any_pointer::get_tag<int64_t>()) type = Int;
-    else if (lhs == any_pointer::get_tag<double>()) type = Double;
-    else if (lhs == any_pointer::get_tag<bool>()) type = Bool;
+    if (lhs.type == any_pointer::get_tag<int64_t>()) type = Int;
+    else if (lhs.type == any_pointer::get_tag<double>()) type = Double;
+    else if (lhs.type == any_pointer::get_tag<bool>()) type = Bool;
     else error();
     switch (ast.op) {
     case syntax::BinaryExpression::Plus:
@@ -121,7 +121,7 @@ Type compile_binary_expression(
         state.bytecode.push_back(byte(2));
         state.bytecode.push_back(push_byte);
         state.bytecode.push_back(byte(1));
-        return any_pointer::get_tag<bool>();
+        return {any_pointer::get_tag<bool>(), Value::rvalue()};
     case syntax::BinaryExpression::And:
     case syntax::BinaryExpression::Or:
     case syntax::BinaryExpression::Xor:

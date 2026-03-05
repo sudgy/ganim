@@ -14,6 +14,7 @@ namespace ganim {
             void add_variable(
                 std::string_view name,
                 Type type,
+                bool modifiable = true,
                 int line_number = -1,
                 int column_number = -1
             );

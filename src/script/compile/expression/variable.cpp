@@ -8,7 +8,7 @@
 
 namespace ganim {
 
-Type compile_variable_expression(
+Value compile_variable_expression(
     CompilerState& state,
     const syntax::IdentifierExpression& ast
 )
@@ -24,7 +24,11 @@ Type compile_variable_expression(
         state.bytecode.push_back(bytecode::param_stack_frame);
         state.write_parameter(variable->stack_frame_offset + i);
     }
-    return variable->type;
+    return {
+        variable->type,
+        Value::stack_frame(variable->stack_frame_offset),
+        variable->modifiable
+    };
 }
 
 }

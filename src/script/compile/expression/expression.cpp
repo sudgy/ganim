@@ -10,25 +10,25 @@
 
 namespace ganim {
 
-Type compile_expression(CompilerState& state, const syntax::Expression& ast)
+Value compile_expression(CompilerState& state, const syntax::Expression& ast)
 {
     return std::visit(overloaded{
-        [&](const syntax::BinaryExpression& value) -> Type {
+        [&](const syntax::BinaryExpression& value) -> Value {
             return compile_binary_expression(state, value);
         },
-        [&](const syntax::ConstantExpression& value) -> Type {
+        [&](const syntax::ConstantExpression& value) -> Value {
             return compile_constant_expression(state, value);
         },
-        [&](const syntax::FunctionExpression& value) -> Type {
+        [&](const syntax::FunctionExpression& value) -> Value {
             return compile_function_expression(state, value);
         },
-        [&](const syntax::UnaryExpression& value) -> Type {
+        [&](const syntax::UnaryExpression& value) -> Value {
             return compile_unary_expression(state, value);
         },
-        [&](const syntax::IdentifierExpression& value) -> Type {
+        [&](const syntax::IdentifierExpression& value) -> Value {
             return compile_variable_expression(state, value);
         },
-        [&](const auto&) -> Type {
+        [&](const auto&) -> Value {
             throw std::runtime_error("Unimplemented expression");
         }
     }, ast.value);
