@@ -115,7 +115,7 @@ void CompilerState::resolve_labels()
     auto new_label_map = std::unordered_map<LabelType, uint64_t>();
     while (i1 < ssize(labels) or i2 < ssize(jumps)) {
         auto pos1 = i1 < ssize(labels) ? labels[i1].first : -1;
-        auto pos2 = i2 < ssize(jumps) ? jumps[i1].first : -1;
+        auto pos2 = i2 < ssize(jumps) ? jumps[i2].first : -1;
         if (pos1 <= pos2) {
             new_label_map[labels[i1].second] = labels[i1].first - bytes_removed;
             ++i1;
@@ -126,10 +126,16 @@ void CompilerState::resolve_labels()
                 bytecode.begin() + jumps[i2].first,
                 std::back_inserter(new_bytecode)
             );
-            pos = jumps[i2].first + 9;
+            auto this_code = bytecode[jumps[i2].first];
+            if (this_code == jump_long) pos = jumps[i2].first + 9;
+            else pos = jumps[i2].first + 2;
             auto diff = int64_t(label_map[jumps[i2].second]) - int64_t(pos);
             jumps[i2].first = new_bytecode.size();
-            if (-0x80 <= diff and diff <= 0x7F) {
+            if (this_code != jump_long) {
+                new_bytecode.push_back(this_code);
+                new_bytecode.push_back(byte(0));
+            }
+            else if (-0x80 <= diff and diff <= 0x7F) {
                 new_bytecode.push_back(jump_short);
                 new_bytecode.push_back(byte(0));
                 bytes_removed += 7;
@@ -147,25 +153,38 @@ void CompilerState::resolve_labels()
             ++i2;
         }
     }
+    if (pos < bytecode.size()) {
+        std::copy(
+            bytecode.begin() + pos,
+            bytecode.end(),
+            std::back_inserter(new_bytecode)
+        );
+
+    }
     for (auto [pos, label] : jumps) {
         auto diff = int64_t(new_label_map[label]) - int64_t(pos);
-        if (new_bytecode[pos] == jump_short) {
-            diff -= 2;
-            auto bytes = reinterpret_cast<byte*>(&diff);
-            new_bytecode[pos+1] = bytes[0];
-        }
-        else if (new_bytecode[pos] == jump_medium) {
+        if (new_bytecode[pos] == jump_medium) {
             diff -= 3;
             auto bytes = reinterpret_cast<byte*>(&diff);
             new_bytecode[pos+1] = bytes[0];
             new_bytecode[pos+2] = bytes[1];
         }
-        else { // jump_long
+        else if (new_bytecode[pos] == jump_long) {
             auto bytes = reinterpret_cast<byte*>(&new_label_map[label]);
             for (int i = 0; i < 8; ++i) {
                 new_bytecode[pos+1+i] = bytes[i];
             }
         }
+        else { // Either jump_short or one of the conditional jumps
+            diff -= 2;
+            auto bytes = reinterpret_cast<byte*>(&diff);
+            new_bytecode[pos+1] = bytes[0];
+        }
     }
     bytecode = std::move(new_bytecode);
+}
+
+CompilerState::LabelType CompilerState::get_next_label()
+{
+    return M_label++;
 }

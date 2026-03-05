@@ -13,6 +13,7 @@ std::vector<byte> compile(const std::vector<syntax::Statement>& ast)
     for (auto& statement : ast) {
         compile_statement(state, statement);
     }
+    state.resolve_labels();
     return std::move(state.bytecode);
 }
 

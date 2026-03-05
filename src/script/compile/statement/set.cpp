@@ -38,7 +38,6 @@ void compile_set_statement(
                 "Attempt to write to an rvalue");
         }
     }, lhs.location);
-
 }
 
 }
