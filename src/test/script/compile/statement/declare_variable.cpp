@@ -31,3 +31,13 @@ test_output(b);
 
     REQUIRE_THROWS(run_script("let a = 5; a = 10;"));
 }
+
+TEST_CASE("Type specifiers", "[script]") {
+    REQUIRE_NOTHROW(run_script(R"(
+let a = 5 : int;
+let b = 4.0 : double;
+let c = true : bool;
+    )", 24));
+    REQUIRE_THROWS(run_script("let a = 5 : bool;"));
+    REQUIRE_THROWS(run_script("let a = 5 : foo;"));
+}

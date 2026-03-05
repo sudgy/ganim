@@ -1,6 +1,7 @@
 #include "variable.hpp"
 
 #include "script/compile/expression/expression.hpp"
+#include "script/script_exception.hpp"
 
 namespace ganim {
 
@@ -13,7 +14,15 @@ void compile_variable_statement(
     // Compiling the expression already puts it at the top of the stack, which
     // is where its new storage is
     auto value = compile_expression(state, ast.value);
-    // Type check
+    if (ast.type) {
+        if (state.symbols.get_type(*ast.type) != value.type) {
+            throw CompileError(
+                ast.type->name.line_number,
+                ast.type->name.column_number,
+                "Type specifier does not match expression"
+            );
+        }
+    }
     state.symbols.add_variable(
         name.name,
         value.type,
