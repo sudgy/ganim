@@ -366,10 +366,15 @@ void Interpreter::execute()
             --M_program_counter;
             break;
         case move_stack:
-            M_stack[M_stack_frame + read_uint_parameter()*8]
-                = M_stack[M_stack.size() - 8];
+        {
+            auto size = read_uint_parameter();
+            for (int i = 0; i < 8; ++i) {
+                M_stack[M_stack_frame + size*8+i]
+                    = M_stack[M_stack.size() - 8+i];
+            }
             M_stack.resize(M_stack.size() - 8);
             break;
+        }
         case test_byte:
             M_test_output.emplace_back(get_stack_byte());
             break;
