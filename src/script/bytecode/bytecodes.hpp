@@ -145,7 +145,7 @@ namespace ganim::bytecode {
     constexpr auto jump_short = byte(0b00111010);
     constexpr auto jump_medium = byte(0b00111011);
     constexpr auto jump_long = byte(0b00111100);
-    constexpr auto jsr = byte(0b00111101);
+    constexpr auto call = byte(0b00111101);
     constexpr auto ret = byte(0b00111110);
 
     constexpr auto move_stack = byte(0b01001000);

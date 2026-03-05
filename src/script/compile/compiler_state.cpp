@@ -99,3 +99,73 @@ void CompilerState::write_parameter(double value)
     bytecode.push_back(bytes[6]);
     bytecode.push_back(bytes[7]);
 }
+
+void CompilerState::resolve_labels()
+{
+    auto label_map = std::unordered_map<LabelType, uint64_t>();
+    for (auto [pos, label] : labels) {
+        label_map.emplace(label, pos);
+    }
+    auto new_bytecode = std::vector<byte>();
+    new_bytecode.reserve(bytecode.size());
+    uint64_t pos = 0;
+    uint64_t bytes_removed = 0;
+    int i1 = 0;
+    int i2 = 0;
+    auto new_label_map = std::unordered_map<LabelType, uint64_t>();
+    while (i1 < ssize(labels) or i2 < ssize(jumps)) {
+        auto pos1 = i1 < ssize(labels) ? labels[i1].first : -1;
+        auto pos2 = i2 < ssize(jumps) ? jumps[i1].first : -1;
+        if (pos1 <= pos2) {
+            new_label_map[labels[i1].second] = labels[i1].first - bytes_removed;
+            ++i1;
+        }
+        else {
+            std::copy(
+                bytecode.begin() + pos,
+                bytecode.begin() + jumps[i2].first,
+                std::back_inserter(new_bytecode)
+            );
+            pos = jumps[i2].first + 9;
+            auto diff = int64_t(label_map[jumps[i2].second]) - int64_t(pos);
+            jumps[i2].first = new_bytecode.size();
+            if (-0x80 <= diff and diff <= 0x7F) {
+                new_bytecode.push_back(jump_short);
+                new_bytecode.push_back(byte(0));
+                bytes_removed += 7;
+            }
+            else if (-0x8000 <= diff and diff <= 0x7FFF) {
+                new_bytecode.push_back(jump_medium);
+                new_bytecode.push_back(byte(0));
+                new_bytecode.push_back(byte(0));
+                bytes_removed += 6;
+            }
+            else {
+                new_bytecode.push_back(jump_long);
+                for (int i = 0; i < 8; ++i) new_bytecode.push_back(byte(0));
+            }
+            ++i2;
+        }
+    }
+    for (auto [pos, label] : jumps) {
+        auto diff = int64_t(new_label_map[label]) - int64_t(pos);
+        if (new_bytecode[pos] == jump_short) {
+            diff -= 2;
+            auto bytes = reinterpret_cast<byte*>(&diff);
+            new_bytecode[pos+1] = bytes[0];
+        }
+        else if (new_bytecode[pos] == jump_medium) {
+            diff -= 3;
+            auto bytes = reinterpret_cast<byte*>(&diff);
+            new_bytecode[pos+1] = bytes[0];
+            new_bytecode[pos+2] = bytes[1];
+        }
+        else { // jump_long
+            auto bytes = reinterpret_cast<byte*>(&new_label_map[label]);
+            for (int i = 0; i < 8; ++i) {
+                new_bytecode[pos+1+i] = bytes[i];
+            }
+        }
+    }
+    bytecode = std::move(new_bytecode);
+}
