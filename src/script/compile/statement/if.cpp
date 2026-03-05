@@ -57,8 +57,15 @@ void compile_if_statement(
         state.bytecode.push_back(bytecode::jump_long);
         for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
         state.labels.emplace_back(state.bytecode.size(), true_branch);
+        auto true_table = SymbolTable();
+        state.symbols.push(true_table);
         for (auto& statement : ast.true_statements) {
             compile_statement(state, statement);
+        }
+        auto pop_amount = state.symbols.pop();
+        if (pop_amount > 0) {
+            state.bytecode.push_back(bytecode::pop);
+            state.write_parameter(pop_amount);
         }
         state.labels.emplace_back(state.bytecode.size(), end_branch);
     }
@@ -72,8 +79,15 @@ void compile_if_statement(
         state.bytecode.push_back(bytecode::jump_long);
         for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
         state.labels.emplace_back(state.bytecode.size(), false_branch);
+        auto false_table = SymbolTable();
+        state.symbols.push(false_table);
         for (auto& statement : ast.false_statements) {
             compile_statement(state, statement);
+        }
+        auto pop_amount = state.symbols.pop();
+        if (pop_amount > 0) {
+            state.bytecode.push_back(bytecode::pop);
+            state.write_parameter(pop_amount);
         }
         state.labels.emplace_back(state.bytecode.size(), end_branch);
     }
@@ -88,15 +102,29 @@ void compile_if_statement(
         state.bytecode.push_back(bytecode::jump_long);
         for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
         state.labels.emplace_back(state.bytecode.size(), true_branch);
+        auto true_table = SymbolTable();
+        state.symbols.push(true_table);
         for (auto& statement : ast.true_statements) {
             compile_statement(state, statement);
+        }
+        auto pop_amount = state.symbols.pop();
+        if (pop_amount > 0) {
+            state.bytecode.push_back(bytecode::pop);
+            state.write_parameter(pop_amount);
         }
         state.jumps.emplace_back(state.bytecode.size(), end_branch);
         state.bytecode.push_back(bytecode::jump_long);
         for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
         state.labels.emplace_back(state.bytecode.size(), false_branch);
+        auto false_table = SymbolTable();
+        state.symbols.push(false_table);
         for (auto& statement : ast.false_statements) {
             compile_statement(state, statement);
+        }
+        pop_amount = state.symbols.pop();
+        if (pop_amount > 0) {
+            state.bytecode.push_back(bytecode::pop);
+            state.write_parameter(pop_amount);
         }
         state.labels.emplace_back(state.bytecode.size(), end_branch);
     }

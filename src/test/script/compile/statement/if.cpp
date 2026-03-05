@@ -97,3 +97,36 @@ else {
     REQUIRE(get<int64_t>(test[1]) == 4);
     REQUIRE(get<int64_t>(test[2]) == 7);
 }
+
+TEST_CASE("If scope", "[script]") {
+    auto test = run_script(R"(
+var a1 = 5;
+var a2 = 5;
+if true {
+    var a1 = 6;
+    a1 = 7;
+}
+else {
+    var b = 8;
+}
+var b = 9;
+if false {}
+else {
+    var b = 10;
+    a2 = 4;
+}
+test_output(a1);
+test_output(a2);
+test_output(b);
+    )", 24);
+    REQUIRE(test.size() == 3);
+    REQUIRE(get<int64_t>(test[0]) == 5);
+    REQUIRE(get<int64_t>(test[1]) == 4);
+    REQUIRE(get<int64_t>(test[2]) == 9);
+    REQUIRE_THROWS(run_script(R"(
+if true {
+    var a = 5;
+}
+a = 6;
+    )"));
+}
