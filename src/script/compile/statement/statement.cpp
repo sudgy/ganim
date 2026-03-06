@@ -6,6 +6,7 @@
 #include "if.hpp"
 #include "set.hpp"
 #include "variable.hpp"
+#include "while.hpp"
 
 namespace ganim {
 
@@ -23,6 +24,9 @@ void compile_statement(CompilerState& state, const syntax::Statement& ast)
         },
         [&](const syntax::VarStatement& value) {
             compile_variable_statement(state, value);
+        },
+        [&](const syntax::WhileStatement& value) {
+            compile_while_statement(state, value);
         },
         [&](const auto&) {
             throw std::runtime_error("Unimplemented statement");
