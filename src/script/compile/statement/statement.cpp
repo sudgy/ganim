@@ -4,6 +4,7 @@
 
 #include "expression.hpp"
 #include "if.hpp"
+#include "loop.hpp"
 #include "set.hpp"
 #include "variable.hpp"
 #include "while.hpp"
@@ -19,6 +20,9 @@ void compile_statement(Compiler& compiler, const syntax::Statement& ast)
         },
         [&](const syntax::IfStatement& value) {
             compile_if_statement(compiler, value);
+        },
+        [&](const syntax::LoopStatement& value) {
+            compile_loop_statement(compiler, value);
         },
         [&](const syntax::SetStatement& value) {
             compile_set_statement(compiler, value);
