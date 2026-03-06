@@ -42,6 +42,7 @@ void compile_while_statement(
 
     compiler.add_label_reference(loop_body);
     compiler.push_symbols();
+    compiler.set_loop_labels(loop_start, loop_end);
     for (auto& statement : ast.loop_statements) {
         compile_statement(compiler, statement);
     }

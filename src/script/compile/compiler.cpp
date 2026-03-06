@@ -246,6 +246,28 @@ void Compiler::add_label_reference(std::uint64_t pos, LabelType label)
 {
     M_labels.emplace_back(pos, label);
 }
+void Compiler::set_loop_labels(LabelType continue_label, LabelType break_label)
+{
+    auto& table = M_stack.back();
+    table.M_continue_label = continue_label;
+    table.M_break_label = break_label;
+}
+
+std::optional<Compiler::LabelType> Compiler::get_continue_label() const
+{
+    for (auto& table : std::views::reverse(M_stack)) {
+        if (table.M_continue_label != -1) return table.M_continue_label;
+    }
+    return std::nullopt;
+}
+
+std::optional<Compiler::LabelType> Compiler::get_break_label() const
+{
+    for (auto& table : std::views::reverse(M_stack)) {
+        if (table.M_break_label != -1) return table.M_break_label;
+    }
+    return std::nullopt;
+}
 
 void Compiler::add_variable(
     std::string_view name,
@@ -270,7 +292,7 @@ void Compiler::add_variable(
 std::optional<Variable>
 Compiler::get_variable(const std::string& name) const
 {
-    for (auto table : std::views::reverse(M_stack)) {
+    for (auto& table : std::views::reverse(M_stack)) {
         auto it = table.M_variables.find(name);
         if (it != table.M_variables.end()) return it->second;
     }
@@ -308,5 +330,20 @@ uint64_t Compiler::pop_symbols()
     auto old_frame_size = M_stack.back().M_stack_frame_size;
     M_stack.pop_back();
     auto new_frame_size = M_stack.back().M_stack_frame_size;
+    return old_frame_size - new_frame_size;
+}
+
+uint64_t Compiler::get_loop_pop_size()
+{
+    auto old_frame_size = M_stack.back().M_stack_frame_size;
+    int i = ssize(M_stack);
+    for (auto& table : std::views::reverse(M_stack)) {
+        --i;
+        if (table.M_break_label != -1) {
+            --i;
+            break;
+        }
+    }
+    auto new_frame_size = M_stack[i].M_stack_frame_size;
     return old_frame_size - new_frame_size;
 }

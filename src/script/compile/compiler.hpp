@@ -32,6 +32,12 @@ namespace ganim {
             void resolve_labels();
             void add_label_reference(LabelType label);
             void add_label_reference(std::uint64_t position, LabelType label);
+            void set_loop_labels(
+                LabelType continue_label,
+                LabelType break_label
+            );
+            std::optional<LabelType> get_continue_label() const;
+            std::optional<LabelType> get_break_label() const;
 
             void add_variable(
                 std::string_view name,
@@ -44,11 +50,14 @@ namespace ganim {
             Type get_type(const syntax::Type& type) const;
             void push_symbols();
             uint64_t pop_symbols();
+            uint64_t get_loop_pop_size();
 
         private:
             struct SymbolTable {
                 std::unordered_map<std::string, Variable> M_variables;
                 std::size_t M_stack_frame_size = 0;
+                LabelType M_continue_label = -1;
+                LabelType M_break_label = -1;
             };
 
             std::vector<byte> M_bytecode;
