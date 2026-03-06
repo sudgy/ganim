@@ -5,35 +5,33 @@
 #include "function.hpp"
 #include "script/bytecode/bytecodes.hpp"
 #include "script/any_pointer.hpp"
+#include "script/compile/compiler.hpp"
 
 namespace ganim {
 
 Value compile_function_expression(
-    CompilerState& state,
+    Compiler& compiler,
     const syntax::FunctionExpression& ast
 )
 {
     auto name = get<syntax::IdentifierExpression>(ast.name->value).name;
     if (name == "test_output") {
         for (auto& param : ast.parameters) {
-            auto p = compile_expression(state, *param);
+            auto p = compile_expression(compiler, *param);
 
             std::visit(overloaded{
                 [&](TypeID id) {
                     if (id == any_pointer::get_tag<int64_t>()) {
-                        state.bytecode.push_back(bytecode::test_int);
-                        state.bytecode.push_back(bytecode::pop);
-                        state.bytecode.push_back(byte(1));
+                        compiler.write_byte(bytecode::test_int);
+                        compiler.write_pop(1);
                     }
                     else if (id == any_pointer::get_tag<double>()) {
-                        state.bytecode.push_back(bytecode::test_double);
-                        state.bytecode.push_back(bytecode::pop);
-                        state.bytecode.push_back(byte(1));
+                        compiler.write_byte(bytecode::test_double);
+                        compiler.write_pop(1);
                     }
                     else if (id == any_pointer::get_tag<bool>()) {
-                        state.bytecode.push_back(bytecode::test_byte);
-                        state.bytecode.push_back(bytecode::pop);
-                        state.bytecode.push_back(byte(1));
+                        compiler.write_byte(bytecode::test_byte);
+                        compiler.write_pop(1);
                     }
                     else {
                         throw std::runtime_error("Unable to test output this type");

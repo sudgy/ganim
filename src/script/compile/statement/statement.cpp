@@ -10,23 +10,23 @@
 
 namespace ganim {
 
-void compile_statement(CompilerState& state, const syntax::Statement& ast)
+void compile_statement(Compiler& compiler, const syntax::Statement& ast)
 {
     std::visit(overloaded{
         [&](const syntax::ExprStatement& value) {
-            compile_expression_statement(state, value);
+            compile_expression_statement(compiler, value);
         },
         [&](const syntax::IfStatement& value) {
-            compile_if_statement(state, value);
+            compile_if_statement(compiler, value);
         },
         [&](const syntax::SetStatement& value) {
-            compile_set_statement(state, value);
+            compile_set_statement(compiler, value);
         },
         [&](const syntax::VarStatement& value) {
-            compile_variable_statement(state, value);
+            compile_variable_statement(compiler, value);
         },
         [&](const syntax::WhileStatement& value) {
-            compile_while_statement(state, value);
+            compile_while_statement(compiler, value);
         },
         [&](const auto&) {
             throw std::runtime_error("Unimplemented statement");

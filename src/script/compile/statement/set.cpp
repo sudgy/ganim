@@ -6,24 +6,24 @@
 #include "script/script_exception.hpp"
 #include "script/bytecode/bytecodes.hpp"
 #include "script/any_pointer.hpp"
+#include "script/compile/compiler.hpp"
 
 namespace ganim {
 
 void compile_set_statement(
-    CompilerState& state,
+    Compiler& compiler,
     const syntax::SetStatement& ast
 )
 {
-    auto lhs = compile_expression(state, ast.lhs);
+    auto lhs = compile_expression(compiler, ast.lhs);
     if (!lhs.modifiable) {
         throw CompileError(ast.lhs.line_number, ast.lhs.column_number,
             "Attempt to modify a constant");
     }
     if (ast.op == syntax::SetStatement::None) {
-        state.bytecode.push_back(bytecode::pop);
-        state.write_parameter(lhs.type.size8());
+        compiler.write_pop(lhs.type.size8());
     }
-    auto value = compile_expression(state, ast.value);
+    auto value = compile_expression(compiler, ast.value);
     if (lhs.type != value.type) {
         throw CompileError(ast.lhs.line_number, ast.lhs.column_number,
             "Attempt to set an incorrect type");
@@ -40,29 +40,29 @@ void compile_set_statement(
         break;
     case syntax::SetStatement::Plus:
         switch (type) {
-            case Int: state.bytecode.push_back(bytecode::plus_int); break;
-            case Double: state.bytecode.push_back(bytecode::plus_double); break;
+            case Int: compiler.write_byte(bytecode::plus_int); break;
+            case Double: compiler.write_byte(bytecode::plus_double); break;
             default: error();
         }
         break;
     case syntax::SetStatement::Minus:
         switch (type) {
-            case Int: state.bytecode.push_back(bytecode::minus_int); break;
-            case Double: state.bytecode.push_back(bytecode::minus_double);break;
+            case Int: compiler.write_byte(bytecode::minus_int); break;
+            case Double: compiler.write_byte(bytecode::minus_double);break;
             default: error();
         }
         break;
     case syntax::SetStatement::Times:
         switch (type) {
-            case Int: state.bytecode.push_back(bytecode::mult_int); break;
-            case Double: state.bytecode.push_back(bytecode::mult_double); break;
+            case Int: compiler.write_byte(bytecode::mult_int); break;
+            case Double: compiler.write_byte(bytecode::mult_double); break;
             default: error();
         }
         break;
     case syntax::SetStatement::Divide:
         switch (type) {
-            case Int: state.bytecode.push_back(bytecode::div_int); break;
-            case Double: state.bytecode.push_back(bytecode::div_double); break;
+            case Int: compiler.write_byte(bytecode::div_int); break;
+            case Double: compiler.write_byte(bytecode::div_double); break;
             default: error();
         }
         break;
@@ -71,8 +71,8 @@ void compile_set_statement(
         [&](Value::stack_frame offset) {
             auto size = lhs.type.size8();
             for (auto i = 0UZ; i < size; ++i) {
-                state.bytecode.push_back(bytecode::move_stack);
-                state.write_parameter(offset + size - i - 1);
+                compiler.write_byte(bytecode::move_stack);
+                compiler.write_parameter(offset + size - i - 1);
             }
         },
         [&](Value::rvalue) {

@@ -7,11 +7,12 @@
 #include "script/script_exception.hpp"
 #include "script/bytecode/bytecodes.hpp"
 #include "script/any_pointer.hpp"
+#include "script/compile/compiler.hpp"
 
 namespace ganim {
 
 void compile_while_statement(
-    CompilerState& state,
+    Compiler& compiler,
     const syntax::WhileStatement& ast
 )
 {
@@ -24,40 +25,30 @@ void compile_while_statement(
     //      [pop the stack]
     //      jump loop_start
     // loop_end:
-    auto loop_start = state.get_next_label();
-    auto loop_body = state.get_next_label();
-    auto loop_end = state.get_next_label();
-    state.labels.emplace_back(state.bytecode.size(), loop_start);
-    auto condition = compile_expression(state, ast.condition);
+    auto loop_start = compiler.get_next_label();
+    auto loop_body = compiler.get_next_label();
+    auto loop_end = compiler.get_next_label();
+
+    compiler.add_label_reference(loop_start);
+    auto condition = compile_expression(compiler, ast.condition);
     if (condition.type != any_pointer::get_tag<bool>()) {
         throw CompileError(
             ast.condition.line_number, ast.condition.column_number,
             "Expected boolean expression"
         );
     }
-    state.jumps.emplace_back(state.bytecode.size(), loop_body);
-    state.bytecode.push_back(bytecode::jump_gt);
-    state.bytecode.push_back(byte(0));
-    state.jumps.emplace_back(state.bytecode.size(), loop_end);
-    state.bytecode.push_back(bytecode::jump_long);
-    for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
+    compiler.write_jump(bytecode::jump_gt, loop_body);
+    compiler.write_jump(loop_end);
 
-    state.labels.emplace_back(state.bytecode.size(), loop_body);
-    auto table = SymbolTable();
-    state.symbols.push(table);
+    compiler.add_label_reference(loop_body);
+    compiler.push_symbols();
     for (auto& statement : ast.loop_statements) {
-        compile_statement(state, statement);
+        compile_statement(compiler, statement);
     }
-    auto pop_amount = state.symbols.pop();
-    if (pop_amount > 0) {
-        state.bytecode.push_back(bytecode::pop);
-        state.write_parameter(pop_amount);
-    }
-    state.jumps.emplace_back(state.bytecode.size(), loop_start);
-    state.bytecode.push_back(bytecode::jump_long);
-    for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
+    compiler.write_pop(compiler.pop_symbols());
+    compiler.write_jump(loop_start);
 
-    state.labels.emplace_back(state.bytecode.size(), loop_end);
+    compiler.add_label_reference(loop_end);
 }
 
 }

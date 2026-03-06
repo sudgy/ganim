@@ -1,13 +1,13 @@
 #ifndef GANIM_SCRIPT_COMPILE_FUNCTION_EXPRESSION_HPP
 #define GANIM_SCRIPT_COMPILE_FUNCTION_EXPRESSION_HPP
 
-#include "script/compile/compiler_state.hpp"
 #include "script/parse/expression.hpp"
 #include "script/compile/value.hpp"
 
 namespace ganim {
+    class Compiler;
     Value compile_function_expression(
-        CompilerState& state,
+        Compiler& compiler,
         const syntax::FunctionExpression& ast
     );
 }

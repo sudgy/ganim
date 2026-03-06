@@ -7,15 +7,16 @@
 #include "script/script_exception.hpp"
 #include "script/bytecode/bytecodes.hpp"
 #include "script/any_pointer.hpp"
+#include "script/compile/compiler.hpp"
 
 namespace ganim {
 
 void compile_if_statement(
-    CompilerState& state,
+    Compiler& compiler,
     const syntax::IfStatement& ast
 )
 {
-    auto condition = compile_expression(state, ast.condition);
+    auto condition = compile_expression(compiler, ast.condition);
     if (condition.type != any_pointer::get_tag<bool>()) {
         throw CompileError(
             ast.condition.line_number, ast.condition.column_number,
@@ -48,89 +49,57 @@ void compile_if_statement(
     auto has_true_branch = !ast.true_statements.empty();
     auto has_false_branch = !ast.false_statements.empty();
     if (has_true_branch and not has_false_branch) {
-        auto true_branch = state.get_next_label();
-        auto end_branch = state.get_next_label();
-        state.jumps.emplace_back(state.bytecode.size(), true_branch);
-        state.bytecode.push_back(bytecode::jump_gt);
-        state.bytecode.push_back(byte(0));
-        state.jumps.emplace_back(state.bytecode.size(), end_branch);
-        state.bytecode.push_back(bytecode::jump_long);
-        for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
-        state.labels.emplace_back(state.bytecode.size(), true_branch);
-        auto true_table = SymbolTable();
-        state.symbols.push(true_table);
+        auto true_branch = compiler.get_next_label();
+        auto end_branch = compiler.get_next_label();
+        compiler.write_jump(bytecode::jump_gt, true_branch);
+        compiler.write_jump(end_branch);
+        compiler.add_label_reference(true_branch);
+        compiler.push_symbols();
         for (auto& statement : ast.true_statements) {
-            compile_statement(state, statement);
+            compile_statement(compiler, statement);
         }
-        auto pop_amount = state.symbols.pop();
-        if (pop_amount > 0) {
-            state.bytecode.push_back(bytecode::pop);
-            state.write_parameter(pop_amount);
-        }
-        state.labels.emplace_back(state.bytecode.size(), end_branch);
+        compiler.write_pop(compiler.pop_symbols());
+        compiler.add_label_reference(end_branch);
     }
     else if (not has_true_branch and has_false_branch) {
-        auto false_branch = state.get_next_label();
-        auto end_branch = state.get_next_label();
-        state.jumps.emplace_back(state.bytecode.size(), false_branch);
-        state.bytecode.push_back(bytecode::jump_eq);
-        state.bytecode.push_back(byte(0));
-        state.jumps.emplace_back(state.bytecode.size(), end_branch);
-        state.bytecode.push_back(bytecode::jump_long);
-        for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
-        state.labels.emplace_back(state.bytecode.size(), false_branch);
-        auto false_table = SymbolTable();
-        state.symbols.push(false_table);
+        auto false_branch = compiler.get_next_label();
+        auto end_branch = compiler.get_next_label();
+        compiler.write_jump(bytecode::jump_eq, false_branch);
+        compiler.write_jump(end_branch);
+        compiler.add_label_reference(false_branch);
+        compiler.push_symbols();
         for (auto& statement : ast.false_statements) {
-            compile_statement(state, statement);
+            compile_statement(compiler, statement);
         }
-        auto pop_amount = state.symbols.pop();
-        if (pop_amount > 0) {
-            state.bytecode.push_back(bytecode::pop);
-            state.write_parameter(pop_amount);
-        }
-        state.labels.emplace_back(state.bytecode.size(), end_branch);
+        compiler.write_pop(compiler.pop_symbols());
+        compiler.add_label_reference(end_branch);
     }
     else if (has_true_branch  and has_false_branch) {
-        auto true_branch = state.get_next_label();
-        auto false_branch = state.get_next_label();
-        auto end_branch = state.get_next_label();
-        state.jumps.emplace_back(state.bytecode.size(), true_branch);
-        state.bytecode.push_back(bytecode::jump_gt);
-        state.bytecode.push_back(byte(0));
-        state.jumps.emplace_back(state.bytecode.size(), false_branch);
-        state.bytecode.push_back(bytecode::jump_long);
-        for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
-        state.labels.emplace_back(state.bytecode.size(), true_branch);
-        auto true_table = SymbolTable();
-        state.symbols.push(true_table);
+        auto true_branch = compiler.get_next_label();
+        auto false_branch = compiler.get_next_label();
+        auto end_branch = compiler.get_next_label();
+        compiler.write_jump(bytecode::jump_gt, true_branch);
+        compiler.write_jump(false_branch);
+
+        compiler.add_label_reference(true_branch);
+        compiler.push_symbols();
         for (auto& statement : ast.true_statements) {
-            compile_statement(state, statement);
+            compile_statement(compiler, statement);
         }
-        auto pop_amount = state.symbols.pop();
-        if (pop_amount > 0) {
-            state.bytecode.push_back(bytecode::pop);
-            state.write_parameter(pop_amount);
-        }
-        state.jumps.emplace_back(state.bytecode.size(), end_branch);
-        state.bytecode.push_back(bytecode::jump_long);
-        for (int i = 0; i < 8; ++i) state.bytecode.push_back(byte(0));
-        state.labels.emplace_back(state.bytecode.size(), false_branch);
-        auto false_table = SymbolTable();
-        state.symbols.push(false_table);
+        compiler.write_pop(compiler.pop_symbols());
+        compiler.write_jump(end_branch);
+
+        compiler.add_label_reference(false_branch);
+        compiler.push_symbols();
         for (auto& statement : ast.false_statements) {
-            compile_statement(state, statement);
+            compile_statement(compiler, statement);
         }
-        pop_amount = state.symbols.pop();
-        if (pop_amount > 0) {
-            state.bytecode.push_back(bytecode::pop);
-            state.write_parameter(pop_amount);
-        }
-        state.labels.emplace_back(state.bytecode.size(), end_branch);
+        compiler.write_pop(compiler.pop_symbols());
+
+        compiler.add_label_reference(end_branch);
     }
     else {
-        state.bytecode.push_back(bytecode::pop);
-        state.bytecode.push_back(byte(1));
+        compiler.write_pop(1);
     }
 }
 

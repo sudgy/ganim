@@ -2,7 +2,7 @@
 
 #include "script/parse/tokenize.hpp"
 #include "script/parse/parse.hpp"
-#include "script/compile/compile.hpp"
+#include "script/compile/compiler.hpp"
 
 #include <catch2/catch_test_macros.hpp>
 
@@ -15,7 +15,7 @@ std::vector<Interpreter::TestType> ganim::run_script(
 {
     auto tokens = tokenize(script);
     auto ast = parse(tokens);
-    auto bytecode = compile(ast);
+    auto bytecode = Compiler(ast).take_bytecode();
     auto interp = Interpreter(bytecode);
     interp.execute();
     INFO("All interpreter tests must leave a clean stack.");
