@@ -1,10 +1,9 @@
-#include "expression.hpp"
+#include "function.hpp"
 
 #include "overloaded.hpp"
 
-#include "function.hpp"
+#include "expression.hpp"
 #include "script/bytecode/bytecodes.hpp"
-#include "script/any_pointer.hpp"
 #include "script/compile/compiler.hpp"
 
 namespace ganim {
@@ -21,15 +20,15 @@ Value compile_function_expression(
 
             std::visit(overloaded{
                 [&](TypeID id) {
-                    if (id == any_pointer::get_tag<int64_t>()) {
+                    if (id == Type::get_tag<int64_t>()) {
                         compiler.write_byte(bytecode::test_int);
                         compiler.write_pop(1);
                     }
-                    else if (id == any_pointer::get_tag<double>()) {
+                    else if (id == Type::get_tag<double>()) {
                         compiler.write_byte(bytecode::test_double);
                         compiler.write_pop(1);
                     }
-                    else if (id == any_pointer::get_tag<bool>()) {
+                    else if (id == Type::get_tag<bool>()) {
                         compiler.write_byte(bytecode::test_byte);
                         compiler.write_pop(1);
                     }

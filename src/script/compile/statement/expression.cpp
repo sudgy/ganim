@@ -3,7 +3,6 @@
 #include "overloaded.hpp"
 
 #include "script/compile/expression/expression.hpp"
-#include "script/bytecode/bytecodes.hpp"
 #include "script/compile/compiler.hpp"
 
 namespace ganim {

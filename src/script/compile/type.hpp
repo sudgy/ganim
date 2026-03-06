@@ -8,6 +8,12 @@
 
 namespace ganim {
     using TypeID = std::uintptr_t;
+    namespace detail {
+        template <typename T>
+        struct type_helper {
+            inline static char tag = 0;
+        };
+    }
 
     struct FunctionType;
     struct CustomType;
@@ -26,6 +32,13 @@ namespace ganim {
 
         std::uint64_t size() const; // In bytes
         std::uint64_t size8() const; // Number of 8-byte segments needed to fit
+
+        template <typename T>
+        static TypeID get_tag() noexcept
+        {
+            return reinterpret_cast<TypeID>(
+                    &detail::type_helper<T>::tag);
+        }
     };
 
     const Type void_type = Type({TypeID(nullptr)});

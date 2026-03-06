@@ -1,9 +1,6 @@
 #include "variable.hpp"
 
-#include "overloaded.hpp"
-
 #include "script/bytecode/bytecodes.hpp"
-#include "script/any_pointer.hpp"
 #include "script/script_exception.hpp"
 #include "script/compile/compiler.hpp"
 

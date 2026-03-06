@@ -2,7 +2,10 @@
 
 #include <fstream>
 
-#include "script.hpp"
+#include "script/parse/tokenize.hpp"
+#include "script/parse/parse.hpp"
+#include "script/compile/compiler.hpp"
+#include "script/bytecode/interpreter.hpp"
 
 void ganim::execute_file(std::string_view filename)
 {
@@ -22,7 +25,9 @@ void ganim::execute_file(std::string_view filename)
     }
     contents.append(buf, 0, stream.gcount());
 
-    auto script = Script(contents);
-    script.compile();
-    script.execute();
+    auto tokens = tokenize(contents);
+    auto ast = parse(tokens);
+    auto bytecode = Compiler(ast).take_bytecode();
+    auto interp = Interpreter(bytecode);
+    interp.execute();
 }

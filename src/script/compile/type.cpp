@@ -1,6 +1,5 @@
 #include "type.hpp"
 
-#include "any_pointer.hpp"
 #include "overloaded.hpp"
 
 using namespace ganim;
@@ -37,9 +36,9 @@ std::uint64_t Type::size() const
     return std::visit(overloaded{
         [](TypeID type) -> std::uint64_t {
             if (type == TypeID(nullptr)) return 0;
-            else if (type == any_pointer::get_tag<std::int64_t>()) return 8;
-            else if (type == any_pointer::get_tag<double>()) return 8;
-            else if (type == any_pointer::get_tag<bool>()) return 1;
+            else if (type == Type::get_tag<std::int64_t>()) return 8;
+            else if (type == Type::get_tag<double>()) return 8;
+            else if (type == Type::get_tag<bool>()) return 1;
             else {
                 throw std::runtime_error("The size of this type is not known");
             }

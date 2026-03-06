@@ -4,7 +4,6 @@
 
 #include "expression.hpp"
 #include "script/bytecode/bytecodes.hpp"
-#include "script/any_pointer.hpp"
 #include "script/script_exception.hpp"
 #include "script/compile/compiler.hpp"
 
@@ -22,23 +21,23 @@ Value compile_unary_expression(
     };
     switch (ast.op) {
         case syntax::UnaryExpression::Plus:
-            if (value.type != any_pointer::get_tag<int64_t>() and
-                value.type != any_pointer::get_tag<double>())
+            if (value.type != Type::get_tag<int64_t>() and
+                value.type != Type::get_tag<double>())
             {
                 error();
             }
             break;
         case syntax::UnaryExpression::Minus:
-            if (value.type == any_pointer::get_tag<int64_t>()) {
+            if (value.type == Type::get_tag<int64_t>()) {
                 compiler.write_byte(bytecode::unary_minus_int);
             }
-            else if (value.type == any_pointer::get_tag<double>()) {
+            else if (value.type == Type::get_tag<double>()) {
                 compiler.write_byte(bytecode::unary_minus_double);
             }
             else error();
             break;
         case syntax::UnaryExpression::Not:
-            if (value.type != any_pointer::get_tag<bool>()) error();
+            if (value.type != Type::get_tag<bool>()) error();
             compiler.write_byte(bytecode::not_bool);
             break;
     }

@@ -1,7 +1,7 @@
 #ifndef GANIM_SCRIPT_COMPILE_VARIABLE_HPP
 #define GANIM_SCRIPT_COMPILE_VARIABLE_HPP
 
-#include "script/type.hpp"
+#include "type.hpp"
 
 namespace ganim {
     struct Variable {

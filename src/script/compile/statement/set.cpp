@@ -5,7 +5,6 @@
 #include "script/compile/expression/expression.hpp"
 #include "script/script_exception.hpp"
 #include "script/bytecode/bytecodes.hpp"
-#include "script/any_pointer.hpp"
 #include "script/compile/compiler.hpp"
 
 namespace ganim {
@@ -29,8 +28,8 @@ void compile_set_statement(
             "Attempt to set an incorrect type");
     }
     enum Type {Int, Double, Other} type = Other;
-    if (lhs.type == any_pointer::get_tag<int64_t>()) type = Int;
-    else if (lhs.type == any_pointer::get_tag<double>()) type = Double;
+    if (lhs.type == ganim::Type::get_tag<int64_t>()) type = Int;
+    else if (lhs.type == ganim::Type::get_tag<double>()) type = Double;
     auto error = [&]{
         throw CompileError(ast.lhs.line_number, ast.lhs.column_number,
             "Invalid assignment operation");

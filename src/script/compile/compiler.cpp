@@ -4,7 +4,6 @@
 
 #include "script/bytecode/bytecodes.hpp"
 #include "script/script_exception.hpp"
-#include "script/any_pointer.hpp"
 #include "statement/statement.hpp"
 
 using namespace ganim;
@@ -303,16 +302,16 @@ Type Compiler::get_type(const syntax::Type& type) const
 {
     // This function will change later
     if (type.name.name == "int") {
-        return any_pointer::get_tag<std::int64_t>();
+        return Type::get_tag<std::int64_t>();
     }
     else if (type.name.name == "double") {
-        return any_pointer::get_tag<double>();
+        return Type::get_tag<double>();
     }
     else if (type.name.name == "string") {
-        return any_pointer::get_tag<std::string>();
+        return Type::get_tag<std::string>();
     }
     else if (type.name.name == "bool") {
-        return any_pointer::get_tag<bool>();
+        return Type::get_tag<bool>();
     }
     throw CompileError(type.name.line_number, type.name.column_number,
         std::format("Unknown type \"{}\"", type.name.name));

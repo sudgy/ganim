@@ -1,10 +1,7 @@
 #include "binary.hpp"
 
-#include "overloaded.hpp"
-
 #include "expression.hpp"
 #include "script/bytecode/bytecodes.hpp"
-#include "script/any_pointer.hpp"
 #include "script/script_exception.hpp"
 #include "script/compile/compiler.hpp"
 
@@ -35,9 +32,9 @@ Value compile_binary_expression(
         Bool
     };
     auto type = T();
-    if (lhs.type == any_pointer::get_tag<int64_t>()) type = Int;
-    else if (lhs.type == any_pointer::get_tag<double>()) type = Double;
-    else if (lhs.type == any_pointer::get_tag<bool>()) type = Bool;
+    if (lhs.type == Type::get_tag<int64_t>()) type = Int;
+    else if (lhs.type == Type::get_tag<double>()) type = Double;
+    else if (lhs.type == Type::get_tag<bool>()) type = Bool;
     else error();
     switch (ast.op) {
     case syntax::BinaryExpression::Plus:
@@ -122,7 +119,7 @@ Value compile_binary_expression(
         compiler.write_byte(byte(2));
         compiler.write_byte(push_byte);
         compiler.write_byte(byte(1));
-        return {any_pointer::get_tag<bool>(), Value::rvalue()};
+        return {Type::get_tag<bool>(), Value::rvalue()};
     case syntax::BinaryExpression::And:
     case syntax::BinaryExpression::Or:
     case syntax::BinaryExpression::Xor:

@@ -1,7 +1,7 @@
 #ifndef GANIM_COMPILE_VALUE_HPP
 #define GANIM_COMPILE_VALUE_HPP
 
-#include "script/type.hpp"
+#include "type.hpp"
 
 namespace ganim {
     struct Value {

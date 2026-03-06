@@ -6,7 +6,6 @@
 #include "script/compile/statement/statement.hpp"
 #include "script/script_exception.hpp"
 #include "script/bytecode/bytecodes.hpp"
-#include "script/any_pointer.hpp"
 #include "script/compile/compiler.hpp"
 
 namespace ganim {
@@ -31,7 +30,7 @@ void compile_while_statement(
 
     compiler.add_label_reference(loop_start);
     auto condition = compile_expression(compiler, ast.condition);
-    if (condition.type != any_pointer::get_tag<bool>()) {
+    if (condition.type != Type::get_tag<bool>()) {
         throw CompileError(
             ast.condition.line_number, ast.condition.column_number,
             "Expected boolean expression"
