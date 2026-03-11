@@ -399,6 +399,7 @@ TEST_CASE("GeX render_math_list radical", "[object][text][gex]") {
     REQUIRE(box.glyphs[0].x_pos < box.glyphs[1].x_pos);
     REQUIRE(box.glyphs[0].x_pos < box.glyphs[2].x_pos);
     REQUIRE(box.glyphs[1].y_pos > box.glyphs[2].y_pos);
+    REQUIRE(box.glyphs[1].height < 0.1);
 }
 
 TEST_CASE("GeX render_math_list \\text", "[object][text][gex]") {
@@ -541,4 +542,17 @@ TEST_CASE("GeX render_math_list boundary atom spacing", "[object][text][gex]") {
     auto box1 = render_math_list(list1, Style::Display);
     auto box2 = render_math_list(list2, Style::Display);
     REQUIRE(box1.glyphs[3].x_pos > box2.glyphs[3].x_pos);
+}
+
+TEST_CASE("GeX render_math_list radical bug", "[object][text][gex]") {
+    // \sqrt{|}
+    auto list = MathList();
+    list.emplace_back(Atom(Box(), AtomType::Rad, AtomRadical(
+        std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'|')),
+        U'√',
+        0
+    )));
+    auto box = render_math_list(list, Style::Display);
+    REQUIRE(box.glyphs.size() == 3);
+    REQUIRE(box.glyphs[1].height < 0.1);
 }
