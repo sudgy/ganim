@@ -17,7 +17,7 @@ namespace {
         result.reserve(128);
         auto start = e1 * ga_exp(e12*start_angle) * radius;
         auto angle = end_angle - start_angle;
-        for (int i = 0; i < 128; ++i) {
+        for (int i = 0; i <= 128; ++i) {
             result.push_back(start * ga_exp(e12*angle*i/128.0));
         }
         return result;
