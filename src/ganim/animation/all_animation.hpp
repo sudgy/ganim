@@ -5,3 +5,4 @@
 #include "ganim/animation/scaling.hpp"
 #include "ganim/animation/transform.hpp"
 #include "ganim/animation/color_stack.hpp"
+#include "ganim/animation/group_animate.hpp"
