@@ -19,6 +19,8 @@ class Gex : public TextBase {
 
         ObjectPtr<Gex> copy() const;
 
+        double get_axis_y() const;
+
         inline thread_local static auto default_color_map
             = std::unordered_map<std::string, Color>();
         inline thread_local static auto default_scale = 1.0;

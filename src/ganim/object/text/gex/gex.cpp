@@ -10,8 +10,7 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-std::vector<Glyph>
-ganim::gex_render(bool math, const std::vector<std::string_view>& input)
+Box ganim::gex_render(bool math, const std::vector<std::string_view>& input)
 {
     auto tokens = preprocess(math, input);
     auto sections = split(tokens);
@@ -20,5 +19,5 @@ ganim::gex_render(bool math, const std::vector<std::string_view>& input)
         [&](const auto& section) {
             return section_render(section);
         });
-    return section_combine(rendered_sections).glyphs;
+    return section_combine(rendered_sections);
 }

@@ -315,7 +315,14 @@ void Processor::render_atom_script(
                 }
             }
             auto δ = 0.0; // Italic correction
-            horizontal_shift_box(x, δ);
+            if (auto symbol = get_if<AtomSymbol>(&nucleus->value)) {
+                switch (symbol->codepoint) {
+                case U'f':
+                    δ = -0.2;
+                    break;
+                }
+            }
+            horizontal_shift_box(y, δ);
             auto distance = (x.height + u + y.depth + v)
                 - (x.height + x.depth + y.height + y.depth);
             auto kern = Box(0, 0, distance, {});

@@ -48,18 +48,18 @@ std::vector<Glyph> Gex::get_glyphs(
     auto result = gex_render(M_math, strings);
     auto x_min = double(INFINITY);
     auto x_max = -double(INFINITY);
-    for (auto& glyph : result) {
+    for (auto& glyph : result.glyphs) {
         x_min = std::min(x_min, glyph.draw_x);
         x_min = std::min(x_min, glyph.draw_x + glyph.width);
         x_max = std::max(x_max, glyph.draw_x);
         x_max = std::max(x_max, glyph.draw_x + glyph.width);
     }
     const auto x_shift = -(x_min + x_max) / 2;
-    for (auto& glyph : result) {
+    for (auto& glyph : result.glyphs) {
         glyph.x_pos += x_shift;
         glyph.draw_x += x_shift;
     }
-    return result;
+    return result.glyphs;
 }
 
 ObjectPtr<Gex> Gex::copy() const
@@ -83,4 +83,10 @@ void Gex::set_colors(const std::unordered_map<std::string, Color>& colors)
             }
         }
     }
+}
+
+double Gex::get_axis_y() const
+{
+    return get_origin().undual().blade_project<pga3::e2>()
+        + get_font_axis_height(*M_font);
 }
