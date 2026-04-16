@@ -27,6 +27,7 @@ namespace ganim {
         private:
             std::vector<std::byte> M_code;
             std::vector<std::byte> M_stack;
+            std::vector<std::uint64_t> M_call_stack;
             std::size_t M_program_counter = 0;
             std::size_t M_stack_frame = 0;
             std::vector<TestType> M_test_output;

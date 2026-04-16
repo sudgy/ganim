@@ -365,6 +365,29 @@ void Interpreter::execute()
             std::memcpy(&M_program_counter, &M_code[M_program_counter-7], 8);
             --M_program_counter;
             break;
+        case call_medium:
+        {
+            safe_increase_program_counter(2);
+            auto jump_amount = std::int16_t();
+            std::memcpy(&jump_amount, &M_code[M_program_counter-1], 2);
+            M_call_stack.push_back(M_program_counter);
+            M_program_counter += jump_amount;
+            break;
+        }
+        case call_param:
+        {
+            auto new_address = read_uint_parameter();
+            M_call_stack.push_back(M_program_counter);
+            M_program_counter = new_address;
+            --M_program_counter;
+            break;
+        }
+        case ret:
+        {
+            M_program_counter = M_call_stack.back();
+            M_call_stack.pop_back();
+            break;
+        }
         case move_stack:
         {
             auto size = read_uint_parameter();
@@ -413,6 +436,18 @@ byte Interpreter::read_byte_parameter()
         throw std::runtime_error("Malformed instruction");
     }
 }
+
+// ENTER
+//      Push old stack frame, new stack frame starts here (or +2)
+// Push parameters
+// CALL
+//      Push next address onto call stack
+//      Jump
+// LEAVE
+//
+// Callee:
+//      Use parameters/pop them
+//      RET
 
 int64_t Interpreter::read_int_parameter()
 {
