@@ -50,9 +50,20 @@ Value compile_function_expression(
             throw CompileError(ast.line_number, ast.column_number, std::format(
                 "Unknown function \"{}\"", name));
         }
+        if (function->input_types.size() != ast.parameters.size()) {
+            throw CompileError(ast.line_number, ast.column_number, std::format(
+                "Incorrect number of arguments passed to function \"{}\"",
+                name));
+        }
         auto size = uint64_t(0);
-        for (auto& param : ast.parameters) {
+        for (int i = 0; i < ssize(ast.parameters); ++i) {
+            auto& param = ast.parameters[i];
+            auto& input_type = function->input_types[i];
             auto p = compile_expression(compiler, *param);
+            if (p.type != input_type) {
+                throw CompileError(ast.line_number, ast.column_number,
+                    std::format("Incorrect argument type"));
+            }
             size += p.type.size8();
         }
         compiler.write_enter(size);

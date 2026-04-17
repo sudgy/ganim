@@ -26,8 +26,21 @@ f3(3, 4);
     REQUIRE(get<int64_t>(test[0]) == 1);
     REQUIRE(get<int64_t>(test[1]) == 2);
     REQUIRE(get<int64_t>(test[2]) == 7);
+
+    REQUIRE_THROWS(run_script(R"(
+function f(a : int, b : int) : void {}
+f(5);
+    )"));
+    REQUIRE_THROWS(run_script(R"(
+function f(a : int) : void {}
+f(5, 6);
+    )"));
+    REQUIRE_THROWS(run_script(R"(
+function f(a : bool) : void {}
+f(5);
+    )"));
 }
 
 // Check for type matching
-// Test scoping and access rules
 // Add return types
+// Test scoping and access rules
