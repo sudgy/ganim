@@ -28,7 +28,9 @@ $nterm if_statement IfStatement
 $nterm loop_statement LoopStatement
 $nterm while_statement WhileStatement
 $nterm word_statement WordStatement
+$nterm function_statement FunctionStatement
 $nterm optional_else std::vector<Statement>
+
 $nterm expression std::unique_ptr<Expression>
 $nterm or_expression std::unique_ptr<Expression>
 $nterm and_expression std::unique_ptr<Expression>
@@ -43,6 +45,9 @@ $nterm identifier_expression std::unique_ptr<Expression>
 
 $nterm expression_list std::vector<std::unique_ptr<Expression>>
 $nterm nonempty_expression_list std::vector<std::unique_ptr<Expression>>
+$nterm function_parameter_list std::vector<FunctionParameter>
+$nterm nonempty_function_parameter_list std::vector<FunctionParameter>
+$nterm function_parameter FunctionParameter
 
 $nterm identifier IdentifierExpression
 
@@ -75,7 +80,8 @@ statement =
   | if_statement { std::move($1) }
   | loop_statement { std::move($1) }
   | while_statement { std::move($1) }
-  | word_statement { std::move($1) } ;
+  | word_statement { std::move($1) }
+  | function_statement { std::move($1) } ;
 expr_statement =
     expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
@@ -108,6 +114,11 @@ while_statement =
     } ;
 word_statement =
     Word ";" { WordStatement($1.value, $1.line_number, $1.column_number) } ;
+function_statement =
+    "function" identifier "(" function_parameter_list ")"
+    type_specifier braced_statements {
+        FunctionStatement($2.name, std::move($6), std::move($4), std::move($7))
+    } ;
 optional_else =
     "else" braced_statements { std::move($2) }
   | "else" "if" expression braced_statements optional_else {
@@ -258,6 +269,25 @@ nonempty_expression_list =
     }
   | expression_list "," expression {
         $1.emplace_back(std::move($3)), std::move($1)
+    } ;
+function_parameter_list =
+    nonempty_function_parameter_list { std::move($1) }
+  | { std::vector<FunctionParameter>() } ;
+nonempty_function_parameter_list =
+    function_parameter {
+        /* See above */
+        [&]{
+            auto result = std::vector<FunctionParameter>();
+            result.emplace_back(std::move($1));
+            return result;
+        }()
+    }
+  | function_parameter_list "," function_parameter {
+        $1.emplace_back(std::move($3)), std::move($1)
+    } ;
+function_parameter =
+    identifier type_specifier {
+        FunctionParameter($1.name, std::move($2))
     } ;
 
 constant_expression =

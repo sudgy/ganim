@@ -41,6 +41,16 @@ namespace ganim::syntax {
         int line_number = -1;
         int column_number = -1;
     };
+    struct FunctionParameter {
+        std::string_view name;
+        Type type;
+    };
+    struct FunctionStatement {
+        std::string_view name;
+        Type type;
+        std::vector<FunctionParameter> parameters;
+        std::vector<Statement> body;
+    };
     struct Statement {
         std::variant<
             ExprStatement,
@@ -49,7 +59,8 @@ namespace ganim::syntax {
             IfStatement,
             LoopStatement,
             WhileStatement,
-            WordStatement
+            WordStatement,
+            FunctionStatement
         > value;
     };
 }

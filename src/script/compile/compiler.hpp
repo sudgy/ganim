@@ -27,6 +27,7 @@ namespace ganim {
             void write_pop(uint64_t size);
             void write_jump(LabelType label);
             void write_jump(byte jump_bytecode, LabelType label);
+            void write_call(LabelType label);
 
             LabelType get_next_label();
             void resolve_labels();
@@ -47,6 +48,19 @@ namespace ganim {
                 int column_number = -1
             );
             std::optional<Variable> get_variable(const std::string& name) const;
+            LabelType add_function(
+                std::string_view name,
+                std::vector<Type> input_types,
+                Type result_type,
+                int line_number = -1,
+                int column_number = -1
+            );
+            struct Function {
+                LabelType label;
+                Type result_type;
+                std::vector<Type> input_types;
+            };
+            std::optional<Function> get_function(const std::string& name) const;
             Type get_type(const syntax::Type& type) const;
             void push_symbols();
             uint64_t pop_symbols();
@@ -55,6 +69,7 @@ namespace ganim {
         private:
             struct SymbolTable {
                 std::unordered_map<std::string, Variable> M_variables;
+                std::unordered_map<std::string, Function> M_functions;
                 std::size_t M_stack_frame_size = 0;
                 LabelType M_continue_label = -1;
                 LabelType M_break_label = -1;

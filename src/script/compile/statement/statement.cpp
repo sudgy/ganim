@@ -3,6 +3,7 @@
 #include "overloaded.hpp"
 
 #include "expression.hpp"
+#include "function.hpp"
 #include "if.hpp"
 #include "loop.hpp"
 #include "set.hpp"
@@ -36,8 +37,8 @@ void compile_statement(Compiler& compiler, const syntax::Statement& ast)
         [&](const syntax::WordStatement& value) {
             compile_word_statement(compiler, value);
         },
-        [&](const auto&) {
-            throw std::runtime_error("Unimplemented statement");
+        [&](const syntax::FunctionStatement& value) {
+            compile_function_statement(compiler, value);
         }
     }, ast.value);
 }

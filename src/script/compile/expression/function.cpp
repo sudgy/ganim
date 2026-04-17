@@ -5,6 +5,7 @@
 #include "expression.hpp"
 #include "script/bytecode/bytecodes.hpp"
 #include "script/compile/compiler.hpp"
+#include "script/script_exception.hpp"
 
 namespace ganim {
 
@@ -41,9 +42,18 @@ Value compile_function_expression(
                 }
             }, p.type.value);
         }
+        return {void_type, Value::rvalue()};
     }
-    else throw std::runtime_error("Not yet implemented");
-    return {void_type, Value::rvalue()};
+    else {
+        // No parameters yet
+        auto function = compiler.get_function(std::string(name));
+        if (!function) {
+            throw CompileError(ast.line_number, ast.column_number, std::format(
+                "Unknown function \"{}\"", name));
+        }
+        compiler.write_call(function->label);
+        return {void_type, Value::rvalue()};
+    }
 }
 
 }

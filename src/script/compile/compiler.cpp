@@ -139,6 +139,14 @@ void Compiler::write_jump(LabelType label)
     for (int i = 0; i < 8; ++i) M_bytecode.push_back(byte(0));
 }
 
+void Compiler::write_call(LabelType label)
+{
+    M_jumps.emplace_back(M_bytecode.size(), label);
+    M_bytecode.push_back(bytecode::call_param);
+    M_bytecode.push_back(bytecode::param_byte8);
+    for (int i = 0; i < 8; ++i) M_bytecode.push_back(byte(0));
+}
+
 void Compiler::write_jump(byte jump_bytecode, LabelType label)
 {
     M_jumps.emplace_back(M_bytecode.size(), label);
@@ -180,27 +188,43 @@ void Compiler::resolve_labels()
             );
             auto this_code = M_bytecode[M_jumps[i2].first];
             if (this_code == jump_long) pos = M_jumps[i2].first + 9;
+            else if (this_code == call_param) pos = M_jumps[i2].first + 10;
             else pos = M_jumps[i2].first + 2;
             auto diff = int64_t(label_map[M_jumps[i2].second]) - int64_t(pos);
             M_jumps[i2].first = new_bytecode.size();
-            if (this_code != jump_long) {
-                new_bytecode.push_back(this_code);
-                new_bytecode.push_back(byte(0));
+            if (this_code == jump_long) {
+                if (-0x80 <= diff and diff <= 0x7F) {
+                    new_bytecode.push_back(jump_short);
+                    new_bytecode.push_back(byte(0));
+                    bytes_removed += 7;
+                }
+                else if (-0x8000 <= diff and diff <= 0x7FFF) {
+                    new_bytecode.push_back(jump_medium);
+                    new_bytecode.push_back(byte(0));
+                    new_bytecode.push_back(byte(0));
+                    bytes_removed += 6;
+                }
+                else {
+                    new_bytecode.push_back(jump_long);
+                    for (int i = 0; i < 8; ++i) new_bytecode.push_back(byte(0));
+                }
             }
-            else if (-0x80 <= diff and diff <= 0x7F) {
-                new_bytecode.push_back(jump_short);
-                new_bytecode.push_back(byte(0));
-                bytes_removed += 7;
-            }
-            else if (-0x8000 <= diff and diff <= 0x7FFF) {
-                new_bytecode.push_back(jump_medium);
-                new_bytecode.push_back(byte(0));
-                new_bytecode.push_back(byte(0));
-                bytes_removed += 6;
+            else if (this_code == call_param) {
+                if (-0x8000 <= diff and diff <= 0x7FFF) {
+                    new_bytecode.push_back(call_medium);
+                    new_bytecode.push_back(byte(0));
+                    new_bytecode.push_back(byte(0));
+                    bytes_removed += 7;
+                }
+                else {
+                    new_bytecode.push_back(call_param);
+                    M_bytecode.push_back(bytecode::param_byte8);
+                    for (int i = 0; i < 8; ++i) M_bytecode.push_back(byte(0));
+                }
             }
             else {
-                new_bytecode.push_back(jump_long);
-                for (int i = 0; i < 8; ++i) new_bytecode.push_back(byte(0));
+                new_bytecode.push_back(this_code);
+                new_bytecode.push_back(byte(0));
             }
             ++i2;
         }
@@ -225,6 +249,18 @@ void Compiler::resolve_labels()
             auto bytes = reinterpret_cast<byte*>(&new_label_map[label]);
             for (int i = 0; i < 8; ++i) {
                 new_bytecode[pos+1+i] = bytes[i];
+            }
+        }
+        else if (new_bytecode[pos] == call_medium) {
+            diff -= 3;
+            auto bytes = reinterpret_cast<byte*>(&diff);
+            new_bytecode[pos+1] = bytes[0];
+            new_bytecode[pos+2] = bytes[1];
+        }
+        else if (new_bytecode[pos] == call_param) {
+            auto bytes = reinterpret_cast<byte*>(&new_label_map[label]);
+            for (int i = 0; i < 8; ++i) {
+                new_bytecode[pos+2+i] = bytes[i];
             }
         }
         else { // Either jump_short or one of the conditional jumps
@@ -298,6 +334,36 @@ Compiler::get_variable(const std::string& name) const
     return std::nullopt;
 }
 
+Compiler::LabelType Compiler::add_function(
+    std::string_view name,
+    std::vector<Type> input_types,
+    Type result_type,
+    int line_number,
+    int column_number
+)
+{
+    auto label = get_next_label();
+    auto& table = M_stack.back();
+    auto name_string = std::string(name);
+    if (table.M_functions.contains(name_string)) {
+        throw CompileError(line_number, column_number, std::format(
+                "A function by the name \"{}\" already exists.", name));
+    }
+    table.M_functions[name_string]
+        = {label, std::move(result_type), std::move(input_types)};
+    return label;
+}
+
+std::optional<Compiler::Function>
+Compiler::get_function(const std::string& name) const
+{
+    for (auto& table : std::views::reverse(M_stack)) {
+        auto it = table.M_functions.find(name);
+        if (it != table.M_functions.end()) return it->second;
+    }
+    return std::nullopt;
+}
+
 Type Compiler::get_type(const syntax::Type& type) const
 {
     // This function will change later
@@ -312,6 +378,9 @@ Type Compiler::get_type(const syntax::Type& type) const
     }
     else if (type.name.name == "bool") {
         return Type::get_tag<bool>();
+    }
+    else if (type.name.name == "void") {
+        return void_type;
     }
     throw CompileError(type.name.line_number, type.name.column_number,
         std::format("Unknown type \"{}\"", type.name.name));

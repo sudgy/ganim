@@ -115,7 +115,8 @@ std::vector<syntax::Statement> parse(const std::vector<Token>& tokens)
                     "if",
                     "else",
                     "loop",
-                    "while"
+                    "while",
+                    "function"
                 };
                 if (keywords.contains(token.string)) {
                     pushed = parser.push(parser.builtin_token(token.string));

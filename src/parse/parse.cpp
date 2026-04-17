@@ -501,7 +501,13 @@ void read_grammar_file(std::istream& file)
     grammar.symbols.emplace_back(SymbolID::End, true);
     bool made_start = false;
     while (file >> input) {
-        auto new_nonterminal = symbol_map.at(input);
+        auto it = symbol_map.find(input);
+        if (it == symbol_map.end()) {
+            std::cerr << "Nonterminal \"" << input << "\" does not have a "
+                "corresponding $nterm directive.\n";
+            std::terminate();
+        }
+        auto new_nonterminal = it->second;
         if (!made_start) {
             made_start = true;
             grammar.nonterminals[SymbolID::Start] = {
