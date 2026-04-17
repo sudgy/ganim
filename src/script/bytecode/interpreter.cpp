@@ -365,6 +365,21 @@ void Interpreter::execute()
             std::memcpy(&M_program_counter, &M_code[M_program_counter-7], 8);
             --M_program_counter;
             break;
+        case enter:
+            M_stack_frames.push_back(M_stack_frame);
+            M_stack_frame = M_stack.size() - read_uint_parameter()*8;
+            break;
+        case leave:
+            pop(read_uint_parameter());
+            M_stack_frame = M_stack_frames.back();
+            M_stack_frames.pop_back();
+            break;
+        case ret:
+        {
+            M_program_counter = M_call_stack.back();
+            M_call_stack.pop_back();
+            break;
+        }
         case call_medium:
         {
             safe_increase_program_counter(2);
@@ -380,12 +395,6 @@ void Interpreter::execute()
             M_call_stack.push_back(M_program_counter);
             M_program_counter = new_address;
             --M_program_counter;
-            break;
-        }
-        case ret:
-        {
-            M_program_counter = M_call_stack.back();
-            M_call_stack.pop_back();
             break;
         }
         case move_stack:

@@ -75,3 +75,34 @@ TEST_CASE("Interpreter call recursion", "[script]") {
     REQUIRE(get<int64_t>(output[10]) == 1);
     REQUIRE(get<int64_t>(output[11]) == 0);
 }
+
+TEST_CASE("Interpreter Enter/leave", "[script]") {
+    auto code = std::vector<byte>{
+        // Frame 0:
+        push_int, byte(1),
+        // Frame 1:
+        push_int, byte(2),
+        push_int, byte(3),
+        enter, byte(2),
+        // Frame 2:
+        push_int, byte(4),
+        push_int, byte(5),
+        enter, byte(2),
+        push_int, param_stack_frame, byte(0), test_int, pop, byte(1), // 4
+        push_int, param_stack_frame, byte(1), test_int, pop, byte(1), // 5
+        leave, byte(2),
+        push_int, param_stack_frame, byte(0), test_int, pop, byte(1), // 2
+        push_int, param_stack_frame, byte(1), test_int, pop, byte(1), // 3
+        leave, byte(2),
+        push_int, param_stack_frame, byte(0), test_int, pop, byte(1), // 1
+    };
+    auto test = Interpreter(code);
+    test.execute();
+    auto& output = test.get_test_output();
+    REQUIRE(output.size() == 5);
+    REQUIRE(get<int64_t>(output[0]) == 4);
+    REQUIRE(get<int64_t>(output[1]) == 5);
+    REQUIRE(get<int64_t>(output[2]) == 2);
+    REQUIRE(get<int64_t>(output[3]) == 3);
+    REQUIRE(get<int64_t>(output[4]) == 1);
+}
