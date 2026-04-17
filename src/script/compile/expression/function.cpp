@@ -45,13 +45,19 @@ Value compile_function_expression(
         return {void_type, Value::rvalue()};
     }
     else {
-        // No parameters yet
         auto function = compiler.get_function(std::string(name));
         if (!function) {
             throw CompileError(ast.line_number, ast.column_number, std::format(
                 "Unknown function \"{}\"", name));
         }
+        auto size = uint64_t(0);
+        for (auto& param : ast.parameters) {
+            auto p = compile_expression(compiler, *param);
+            size += p.type.size8();
+        }
+        compiler.write_enter(size);
         compiler.write_call(function->label);
+        compiler.write_leave(0);
         return {void_type, Value::rvalue()};
     }
 }

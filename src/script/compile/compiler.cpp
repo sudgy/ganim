@@ -147,6 +147,22 @@ void Compiler::write_call(LabelType label)
     for (int i = 0; i < 8; ++i) M_bytecode.push_back(byte(0));
 }
 
+void Compiler::write_enter(uint64_t size)
+{
+    if (size > 0) {
+        M_bytecode.push_back(bytecode::enter);
+        write_parameter(size);
+    }
+}
+
+void Compiler::write_leave(uint64_t size)
+{
+    if (size > 0) {
+        M_bytecode.push_back(bytecode::leave);
+        write_parameter(size);
+    }
+}
+
 void Compiler::write_jump(byte jump_bytecode, LabelType label)
 {
     M_jumps.emplace_back(M_bytecode.size(), label);

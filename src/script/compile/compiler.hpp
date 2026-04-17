@@ -28,6 +28,8 @@ namespace ganim {
             void write_jump(LabelType label);
             void write_jump(byte jump_bytecode, LabelType label);
             void write_call(LabelType label);
+            void write_enter(uint64_t size);
+            void write_leave(uint64_t size);
 
             LabelType get_next_label();
             void resolve_labels();

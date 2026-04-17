@@ -22,9 +22,13 @@ void ganim::compile_function_statement(
         compiler.get_type(ast.type)
     );
     auto end_of_function = compiler.get_next_label();
+
     compiler.write_jump(end_of_function);
     compiler.add_label_reference(function_label);
     compiler.push_symbols();
+    for (auto& [name, type] : ast.parameters) {
+        compiler.add_variable(name, compiler.get_type(type));
+    }
     for (auto& statement : ast.body) {
         compile_statement(compiler, statement);
     }

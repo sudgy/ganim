@@ -10,22 +10,24 @@ function f1() : void
 {
     test_output(1);
 }
-/*
 function f2(a : int) : void
 {
     test_output(a);
 }
+f1();
 function f3(a : int, b : int) : void
 {
     test_output(a + b);
 }
-*/
-f1();
-//f2(2);
-//f3(3, 4);
+f2(2);
+f3(3, 4);
     )");
-    REQUIRE(test.size() == 1);
+    REQUIRE(test.size() == 3);
     REQUIRE(get<int64_t>(test[0]) == 1);
-    //REQUIRE(get<int64_t>(test[1]) == 2);
-    //REQUIRE(get<int64_t>(test[2]) == 7);
+    REQUIRE(get<int64_t>(test[1]) == 2);
+    REQUIRE(get<int64_t>(test[2]) == 7);
 }
+
+// Check for type matching
+// Test scoping and access rules
+// Add return types
