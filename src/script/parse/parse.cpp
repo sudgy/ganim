@@ -129,6 +129,10 @@ std::vector<syntax::Statement> parse(const std::vector<Token>& tokens)
                     pushed = parser.push(parser.Word_token(
                        {token.string, token.line_number, token.column_number}));
                 }
+                else if (token.string == "return"){
+                    pushed = parser.push(parser.Return_token(
+                       {token.line_number, token.column_number}));
+                }
                 else if (token.string == "true") {
                     pushed = parser.push(parser.Boolean_token(
                         {true, token.line_number, token.column_number}));

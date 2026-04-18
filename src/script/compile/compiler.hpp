@@ -43,6 +43,7 @@ namespace ganim {
             );
             std::optional<LabelType> get_continue_label() const;
             std::optional<LabelType> get_break_label() const;
+            const std::optional<Type>& get_current_function_type() const;
 
             void add_variable(
                 std::string_view name,
@@ -68,9 +69,10 @@ namespace ganim {
             Type get_type(const syntax::Type& type) const;
             void push_symbols();
             uint64_t pop_symbols();
-            void push_frame();
+            void push_frame(Type type);
             uint64_t pop_frame();
             uint64_t get_loop_pop_size();
+            uint64_t get_function_pop_size();
 
         private:
             struct SymbolTable {
@@ -80,11 +82,16 @@ namespace ganim {
                 LabelType M_continue_label = -1;
                 LabelType M_break_label = -1;
             };
+            struct StackFrame {
+                std::vector<SymbolTable> tables;
+                std::optional<Type> type;
+            };
 
             std::vector<byte> M_bytecode;
             // The outer vector is for each nested function, while the inner
-            // vector is each new scope within a function (or in global code)
-            std::vector<std::vector<SymbolTable>> M_stacks;
+            // vector in StackFrame is each new scope within a function (or in
+            // global code)
+            std::vector<StackFrame> M_stacks;
             std::vector<std::pair<uint64_t, LabelType>> M_labels;
             std::vector<std::pair<uint64_t, LabelType>> M_jumps;
             int M_label = 0;

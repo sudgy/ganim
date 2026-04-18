@@ -16,6 +16,7 @@ $token Rel RelToken
 $token Sum SumToken
 $token Prod ProdToken
 $token Word WordToken
+$token Return ReturnToken
 
 $nterm statement_list std::vector<Statement>
 $nterm optional_statement_list std::vector<Statement>
@@ -29,6 +30,7 @@ $nterm loop_statement LoopStatement
 $nterm while_statement WhileStatement
 $nterm word_statement WordStatement
 $nterm function_statement FunctionStatement
+$nterm return_statement ReturnStatement
 $nterm optional_else std::vector<Statement>
 
 $nterm expression std::unique_ptr<Expression>
@@ -43,6 +45,7 @@ $nterm base_expression std::unique_ptr<Expression>
 $nterm constant_expression std::unique_ptr<Expression>
 $nterm identifier_expression std::unique_ptr<Expression>
 
+$nterm optional_expression std::unique_ptr<Expression>
 $nterm expression_list std::vector<std::unique_ptr<Expression>>
 $nterm nonempty_expression_list std::vector<std::unique_ptr<Expression>>
 $nterm function_parameter_list std::vector<FunctionParameter>
@@ -81,7 +84,8 @@ statement =
   | loop_statement { std::move($1) }
   | while_statement { std::move($1) }
   | word_statement { std::move($1) }
-  | function_statement { std::move($1) } ;
+  | function_statement { std::move($1) }
+  | return_statement { std::move($1) } ;
 expr_statement =
     expression ";" { ExprStatement(std::move(*$1)) } ;
 var_statement =
@@ -118,6 +122,10 @@ function_statement =
     "function" identifier "(" function_parameter_list ")"
     type_specifier braced_statements {
         FunctionStatement($2.name, std::move($6), std::move($4), std::move($7))
+    } ;
+return_statement =
+    Return optional_expression ";" {
+        ReturnStatement(std::move($2), $1.line_number, $1.column_number)
     } ;
 optional_else =
     "else" braced_statements { std::move($2) }
@@ -255,6 +263,10 @@ base_expression =
         )
     }
   | "(" expression ")" { std::move($2) } ;
+
+optional_expression =
+    expression { std::move($1) }
+  | { nullptr } ;
 expression_list =
     nonempty_expression_list { std::move($1) }
   | { std::vector<std::unique_ptr<Expression>>() } ;

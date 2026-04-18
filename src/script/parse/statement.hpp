@@ -51,6 +51,11 @@ namespace ganim::syntax {
         std::vector<FunctionParameter> parameters;
         std::vector<Statement> body;
     };
+    struct ReturnStatement {
+        std::unique_ptr<Expression> value;
+        int line_number = -1;
+        int column_number = -1;
+    };
     struct Statement {
         std::variant<
             ExprStatement,
@@ -60,7 +65,8 @@ namespace ganim::syntax {
             LoopStatement,
             WhileStatement,
             WordStatement,
-            FunctionStatement
+            FunctionStatement,
+            ReturnStatement
         > value;
     };
 }

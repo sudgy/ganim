@@ -69,7 +69,7 @@ Value compile_function_expression(
         compiler.write_enter(size);
         compiler.write_call(function->label);
         compiler.write_leave(0);
-        return {void_type, Value::RValue};
+        return {function->result_type, Value::RValue};
     }
 }
 

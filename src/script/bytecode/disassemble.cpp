@@ -237,6 +237,16 @@ namespace {
                         "move global[ " + read_uint_parameter() + "]", a
                     );
                     break;
+                case move_stack2:
+                {
+                    auto dest = read_uint_parameter();
+                    auto source = read_uint_parameter();
+                    result.emplace_back(
+                        std::format("move stack[{}], stack[{}]", dest, source),
+                        a
+                    );
+                    break;
+                }
                 case test_byte:
                     result.emplace_back("test_byte");
                     break;

@@ -12,7 +12,7 @@ using namespace ganim::bytecode;
 Compiler::Compiler(const std::vector<syntax::Statement>& ast)
 {
     M_stacks.emplace_back();
-    M_stacks.back().emplace_back();
+    M_stacks.back().tables.emplace_back();
     M_bytecode.reserve(ast.size() * 8);
     for (auto& statement : ast) {
         compile_statement(*this, statement);
@@ -296,7 +296,7 @@ void Compiler::add_label_reference(std::uint64_t pos, LabelType label)
 }
 void Compiler::set_loop_labels(LabelType continue_label, LabelType break_label)
 {
-    auto& table = M_stacks.back().back();
+    auto& table = M_stacks.back().tables.back();
     table.M_continue_label = continue_label;
     table.M_break_label = break_label;
 }
@@ -321,6 +321,11 @@ std::optional<Compiler::LabelType> Compiler::get_break_label() const
     return std::nullopt;
 }
 
+const std::optional<Type>& Compiler::get_current_function_type() const
+{
+    return M_stacks.back().type;
+}
+
 void Compiler::add_variable(
     std::string_view name,
     Type type,
@@ -329,13 +334,13 @@ void Compiler::add_variable(
     int column_number
 )
 {
-    auto& table = M_stacks.back().back();
+    auto& table = M_stacks.back().tables.back();
     auto name_string = std::string(name);
     if (table.M_variables.contains(name_string)) {
         throw CompileError(line_number, column_number, std::format(
                 "A variable by the name \"{}\" already exists.", name));
     }
-    auto is_global = M_stacks.size() == 1 and M_stacks[0].size() == 1;
+    auto is_global = M_stacks.size() == 1 and M_stacks[0].tables.size() == 1;
     auto location = is_global ? Variable::Global : Variable::StackFrame;
     table.M_variables[name_string]
         = {type, table.M_stack_frame_size, location, modifiable};
@@ -363,7 +368,7 @@ Compiler::LabelType Compiler::add_function(
     int column_number
 )
 {
-    auto& table = M_stacks.back().back();
+    auto& table = M_stacks.back().tables.back();
     auto label = get_next_label();
     auto name_string = std::string(name);
     if (table.M_functions.contains(name_string)) {
@@ -411,7 +416,7 @@ Type Compiler::get_type(const syntax::Type& type) const
 
 void Compiler::push_symbols()
 {
-    auto& frame = M_stacks.back();
+    auto& frame = M_stacks.back().tables;
     auto& new_table = frame.emplace_back();
     auto& current_table = frame[frame.size()-2];
     new_table.M_stack_frame_size = current_table.M_stack_frame_size;
@@ -419,7 +424,7 @@ void Compiler::push_symbols()
 
 uint64_t Compiler::pop_symbols()
 {
-    auto& frame = M_stacks.back();
+    auto& frame = M_stacks.back().tables;
     auto old_frame_size = frame.back().M_stack_frame_size;
     frame.pop_back();
     auto new_frame_size = uint64_t(0);
@@ -427,22 +432,25 @@ uint64_t Compiler::pop_symbols()
     return old_frame_size - new_frame_size;
 }
 
-void Compiler::push_frame()
+void Compiler::push_frame(Type type)
 {
-    auto& frame = M_stacks.emplace_back();
-    frame.emplace_back();
+    auto& frame = M_stacks.emplace_back(
+        std::vector<SymbolTable>{},
+        std::move(type)
+    );
+    frame.tables.emplace_back();
 }
 
 uint64_t Compiler::pop_frame()
 {
-    auto pop_amount = M_stacks.back().back().M_stack_frame_size;
+    auto pop_amount = M_stacks.back().tables.back().M_stack_frame_size;
     M_stacks.pop_back();
     return pop_amount;
 }
 
 uint64_t Compiler::get_loop_pop_size()
 {
-    auto& frame = M_stacks.back();
+    auto& frame = M_stacks.back().tables;
     auto old_frame_size = frame.back().M_stack_frame_size;
     int i = ssize(frame);
     for (auto& table : std::views::reverse(frame)) {
@@ -456,18 +464,23 @@ uint64_t Compiler::get_loop_pop_size()
     return old_frame_size - new_frame_size;
 }
 
+uint64_t Compiler::get_function_pop_size()
+{
+    return M_stacks.back().tables.back().M_stack_frame_size;
+}
+
 Generator<const Compiler::SymbolTable*> Compiler::iterate_tables() const
 {
-    for (auto& table : std::views::reverse(M_stacks.back())) {
+    for (auto& table : std::views::reverse(M_stacks.back().tables)) {
         co_yield &table;
     }
-    if (M_stacks.size() > 1) co_yield &M_stacks[0][0];
+    if (M_stacks.size() > 1) co_yield &M_stacks[0].tables[0];
 }
 
 Generator<Compiler::SymbolTable*> Compiler::iterate_tables()
 {
-    for (auto& table : std::views::reverse(M_stacks.back())) {
+    for (auto& table : std::views::reverse(M_stacks.back().tables)) {
         co_yield &table;
     }
-    if (M_stacks.size() > 1) co_yield &M_stacks[0][0];
+    if (M_stacks.size() > 1) co_yield &M_stacks[0].tables[0];
 }

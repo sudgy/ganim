@@ -399,9 +399,9 @@ void Interpreter::execute()
         }
         case move_stack:
         {
-            auto size = read_uint_parameter();
+            auto offset = read_uint_parameter();
             for (int i = 0; i < 8; ++i) {
-                M_stack[M_stack_frame + size*8+i]
+                M_stack[M_stack_frame + offset*8+i]
                     = M_stack[M_stack.size() - 8+i];
             }
             M_stack.resize(M_stack.size() - 8);
@@ -409,12 +409,22 @@ void Interpreter::execute()
         }
         case move_global:
         {
-            auto size = read_uint_parameter();
+            auto offset = read_uint_parameter();
             for (int i = 0; i < 8; ++i) {
-                M_stack[size*8+i]
+                M_stack[offset*8+i]
                     = M_stack[M_stack.size() - 8+i];
             }
             M_stack.resize(M_stack.size() - 8);
+            break;
+        }
+        case move_stack2:
+        {
+            auto destination = read_uint_parameter();
+            auto source = read_uint_parameter();
+            for (int i = 0; i < 8; ++i) {
+                M_stack[M_stack_frame + destination*8 + i]
+                    = M_stack[M_stack_frame + source*8 + i];
+            }
             break;
         }
         case test_byte:

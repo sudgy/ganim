@@ -16,16 +16,17 @@ void ganim::compile_function_statement(
     [&](auto& p) {
         return compiler.get_type(p.type);
     });
+    auto type = compiler.get_type(ast.type);
     auto function_label = compiler.add_function(
         ast.name,
         params,
-        compiler.get_type(ast.type)
+        type
     );
     auto end_of_function = compiler.get_next_label();
 
     compiler.write_jump(end_of_function);
     compiler.add_label_reference(function_label);
-    compiler.push_frame();
+    compiler.push_frame(type);
     for (auto& [name, type] : ast.parameters) {
         compiler.add_variable(name, compiler.get_type(type));
     }

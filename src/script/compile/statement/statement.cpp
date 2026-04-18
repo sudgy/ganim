@@ -6,6 +6,7 @@
 #include "function.hpp"
 #include "if.hpp"
 #include "loop.hpp"
+#include "return.hpp"
 #include "set.hpp"
 #include "variable.hpp"
 #include "while.hpp"
@@ -39,6 +40,9 @@ void compile_statement(Compiler& compiler, const syntax::Statement& ast)
         },
         [&](const syntax::FunctionStatement& value) {
             compile_function_statement(compiler, value);
+        },
+        [&](const syntax::ReturnStatement& value) {
+            compile_return_statement(compiler, value);
         }
     }, ast.value);
 }

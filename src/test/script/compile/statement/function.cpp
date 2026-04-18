@@ -134,4 +134,63 @@ g(8);
     REQUIRE(get<int64_t>(test[7]) == 13);
 }
 
-// Add return types
+TEST_CASE("Functions returning values", "[script]") {
+    auto test = run_script(R"(
+function f(a : int, b : bool) : int
+{
+    if b {
+        return a + 3;
+    }
+    else {
+        return a + 2;
+    }
+}
+test_output(f(1, true));
+test_output(f(1, false));
+var a = 5;
+test_output(f(a, true));
+test_output(f(a, false));
+    )", 8);
+    REQUIRE(test.size() == 4);
+    REQUIRE(get<int64_t>(test[0]) == 4);
+    REQUIRE(get<int64_t>(test[1]) == 3);
+    REQUIRE(get<int64_t>(test[2]) == 8);
+    REQUIRE(get<int64_t>(test[3]) == 7);
+}
+
+TEST_CASE("Void functions returning early", "[script]") {
+    auto test = run_script(R"(
+function f(a : int, b : bool) : void
+{
+    if b {
+        test_output(a + 3);
+        return;
+    }
+    test_output(a + 2);
+}
+f(1, true);
+f(1, false);
+    )");
+    REQUIRE(test.size() == 2);
+    REQUIRE(get<int64_t>(test[0]) == 4);
+    REQUIRE(get<int64_t>(test[1]) == 3);
+}
+
+TEST_CASE("Return a void function", "[script]") {
+    REQUIRE_NOTHROW(run_script(R"(
+function f() : void {}
+function g() : void {return f();}
+    )"));
+}
+
+TEST_CASE("Wrong returns", "[script]") {
+    REQUIRE_THROWS(run_script(R"(function f() : void {return 5;})"));
+    REQUIRE_THROWS(run_script(R"(function f() : int {return true;})"));
+    REQUIRE_THROWS(run_script(R"(function f() : int {return;})"));
+    REQUIRE_THROWS(run_script(R"(return 5;)"));
+    REQUIRE_THROWS(run_script(R"(return;)"));
+    REQUIRE_THROWS(run_script(R"(
+function f() : void {}
+function g() : int {return f();}
+    )"));
+}

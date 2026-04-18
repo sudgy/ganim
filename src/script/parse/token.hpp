@@ -66,6 +66,10 @@ namespace ganim::syntax {
         int line_number = -1;
         int column_number = -1;
     };
+    struct ReturnToken {
+        int line_number = -1;
+        int column_number = -1;
+    };
 }
 
 #endif
