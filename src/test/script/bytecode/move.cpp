@@ -25,3 +25,43 @@ TEST_CASE("Interpreter moving onto the stack", "[script]") {
     REQUIRE(get<int64_t>(output[0]) == 4);
     REQUIRE(get<int64_t>(output[1]) == 3);
 }
+
+TEST_CASE("Interpreter moving globally", "[script]") {
+    auto code = std::vector<byte>{
+        push_int, byte(1),
+        push_int, byte(2),
+        enter, byte(0),
+        push_int, byte(3),
+        move_global, byte(1),
+        test_int,
+        pop, byte(1),
+        test_int
+    };
+    auto test = Interpreter(code);
+    test.execute();
+    auto& output = test.get_test_output();
+    REQUIRE(output.size() == 2);
+    REQUIRE(get<int64_t>(output[0]) == 3);
+    REQUIRE(get<int64_t>(output[1]) == 1);
+}
+
+TEST_CASE("Interpreter moving between two stack values", "[script]") {
+    auto code = std::vector<byte>{
+        push_int, byte(1),
+        push_int, byte(2),
+        push_int, byte(3),
+        move_stack2, byte(1), byte(0),
+        test_int,
+        pop, byte(1),
+        test_int,
+        pop, byte(1),
+        test_int
+    };
+    auto test = Interpreter(code);
+    test.execute();
+    auto& output = test.get_test_output();
+    REQUIRE(output.size() == 3);
+    REQUIRE(get<int64_t>(output[0]) == 3);
+    REQUIRE(get<int64_t>(output[1]) == 1);
+    REQUIRE(get<int64_t>(output[2]) == 1);
+}
