@@ -6,9 +6,12 @@
 namespace ganim {
     struct Value {
         Type type;
-        using stack_frame = std::uint64_t;
-        using rvalue = std::monostate;
-        std::variant<stack_frame, rvalue> location;
+        enum {
+            Global,
+            StackFrame,
+            RValue
+        } location;
+        uint64_t address = -1;
         bool modifiable = false;
     };
 }

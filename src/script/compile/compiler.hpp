@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <optional>
 
+#include "ganim/coroutine.hpp"
+
 #include "script/parse/type.hpp"
 #include "variable.hpp"
 #include "script/parse/statement.hpp"
@@ -66,6 +68,8 @@ namespace ganim {
             Type get_type(const syntax::Type& type) const;
             void push_symbols();
             uint64_t pop_symbols();
+            void push_frame();
+            uint64_t pop_frame();
             uint64_t get_loop_pop_size();
 
         private:
@@ -78,10 +82,15 @@ namespace ganim {
             };
 
             std::vector<byte> M_bytecode;
-            std::vector<SymbolTable> M_stack;
+            // The outer vector is for each nested function, while the inner
+            // vector is each new scope within a function (or in global code)
+            std::vector<std::vector<SymbolTable>> M_stacks;
             std::vector<std::pair<uint64_t, LabelType>> M_labels;
             std::vector<std::pair<uint64_t, LabelType>> M_jumps;
             int M_label = 0;
+
+            Generator<const SymbolTable*> iterate_tables() const;
+            Generator<SymbolTable*> iterate_tables();
     };
 }
 

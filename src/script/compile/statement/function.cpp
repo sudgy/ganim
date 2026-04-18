@@ -25,14 +25,14 @@ void ganim::compile_function_statement(
 
     compiler.write_jump(end_of_function);
     compiler.add_label_reference(function_label);
-    compiler.push_symbols();
+    compiler.push_frame();
     for (auto& [name, type] : ast.parameters) {
         compiler.add_variable(name, compiler.get_type(type));
     }
     for (auto& statement : ast.body) {
         compile_statement(compiler, statement);
     }
-    compiler.write_pop(compiler.pop_symbols());
+    compiler.write_pop(compiler.pop_frame());
     compiler.write_byte(bytecode::ret);
     compiler.add_label_reference(end_of_function);
 }

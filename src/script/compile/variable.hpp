@@ -6,7 +6,8 @@
 namespace ganim {
     struct Variable {
         Type type;
-        std::size_t stack_frame_offset = -1;
+        std::size_t address = -1;
+        enum {StackFrame, Global} location;
         bool modifiable = true;
     };
 }

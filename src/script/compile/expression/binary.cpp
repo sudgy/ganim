@@ -119,7 +119,7 @@ Value compile_binary_expression(
         compiler.write_byte(byte(2));
         compiler.write_byte(push_byte);
         compiler.write_byte(byte(1));
-        return {Type::get_tag<bool>(), Value::rvalue()};
+        return {Type::get_tag<bool>(), Value::RValue};
     case syntax::BinaryExpression::And:
     case syntax::BinaryExpression::Or:
     case syntax::BinaryExpression::Xor:

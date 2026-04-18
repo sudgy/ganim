@@ -8,7 +8,8 @@
 namespace ganim {
     std::vector<Interpreter::TestType> run_script(
         std::string_view script,
-        std::size_t final_stack_size = 0
+        std::size_t final_stack_size = 0,
+        bool output_disassembly = false
     );
 }
 

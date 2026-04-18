@@ -66,19 +66,29 @@ void compile_set_statement(
         }
         break;
     }
-    std::visit(overloaded{
-        [&](Value::stack_frame offset) {
+    switch (lhs.location) {
+        case Value::Global:
+        {
+            auto size = lhs.type.size8();
+            for (auto i = 0UZ; i < size; ++i) {
+                compiler.write_byte(bytecode::move_global);
+                compiler.write_parameter(lhs.address + size - i - 1);
+            }
+            break;
+        }
+        case Value::StackFrame:
+        {
             auto size = lhs.type.size8();
             for (auto i = 0UZ; i < size; ++i) {
                 compiler.write_byte(bytecode::move_stack);
-                compiler.write_parameter(offset + size - i - 1);
+                compiler.write_parameter(lhs.address + size - i - 1);
             }
-        },
-        [&](Value::rvalue) {
+            break;
+        }
+        case Value::RValue:
             throw CompileError(ast.lhs.line_number, ast.lhs.column_number,
                 "Attempt to write to an rvalue");
-        }
-    }, lhs.location);
+    }
 }
 
 }

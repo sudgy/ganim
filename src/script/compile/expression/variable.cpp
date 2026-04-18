@@ -19,12 +19,23 @@ Value compile_variable_expression(
     auto size = variable->type.size8();
     for (uint64_t i = 0; i < size; ++i) {
         compiler.write_byte(bytecode::push_uint);
-        compiler.write_byte(bytecode::param_stack_frame);
-        compiler.write_parameter(variable->stack_frame_offset + i);
+        switch (variable->location) {
+        case Variable::Global:
+            compiler.write_byte(bytecode::param_global);
+            compiler.write_parameter(variable->address + i);
+            break;
+        case Variable::StackFrame:
+            compiler.write_byte(bytecode::param_stack_frame);
+            compiler.write_parameter(variable->address + i);
+            break;
+        }
     }
     return {
         variable->type,
-        Value::stack_frame(variable->stack_frame_offset),
+        variable->location == Variable::Global
+            ? Value::Global
+            : Value::StackFrame,
+        variable->address,
         variable->modifiable
     };
 }

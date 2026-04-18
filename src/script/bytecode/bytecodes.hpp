@@ -153,7 +153,7 @@ namespace ganim::bytecode {
     constexpr auto call_param = byte(0b01000001);
 
     constexpr auto move_stack = byte(0b01001000);
-    constexpr auto move_abs = byte(0b01001001);
+    constexpr auto move_global = byte(0b01001001);
 
     constexpr auto param_byte1 = byte(0b10000000);
     constexpr auto param_byte2 = byte(0b10000001);
@@ -162,6 +162,7 @@ namespace ganim::bytecode {
     constexpr auto param_stack1 = byte(0b10000100);
     constexpr auto param_stack2 = byte(0b10000101);
     constexpr auto param_stack_frame = byte(0b10000110);
+    constexpr auto param_global = byte(0b10000111);
 }
 
 #endif

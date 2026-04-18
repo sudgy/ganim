@@ -16,17 +16,17 @@ Value compile_constant_expression(
         [&](int64_t value) -> Value {
             compiler.write_byte(bytecode::push_int);
             compiler.write_parameter(value);
-            return {Type::get_tag<int64_t>(), Value::rvalue()};
+            return {Type::get_tag<int64_t>(), Value::RValue};
         },
         [&](double value) -> Value {
             compiler.write_byte(bytecode::push_double);
             compiler.write_parameter(value);
-            return {Type::get_tag<double>(), Value::rvalue()};
+            return {Type::get_tag<double>(), Value::RValue};
         },
         [&](bool value) -> Value {
             compiler.write_byte(bytecode::push_byte);
             compiler.write_parameter(byte(value));
-            return {Type::get_tag<bool>(), Value::rvalue()};
+            return {Type::get_tag<bool>(), Value::RValue};
         },
         [&](const std::string&) -> Value {
             throw std::runtime_error("Unable to push string (for now)");
