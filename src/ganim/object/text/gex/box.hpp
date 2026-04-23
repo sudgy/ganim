@@ -14,7 +14,7 @@ namespace ganim::gex {
     };
     Box combine_boxes_horizontally(
         const std::vector<Box>& boxes,
-        double buff = 0
+        double min_buff = 0
     );
     Box combine_boxes_vertically(
         const std::vector<Box>& boxes,

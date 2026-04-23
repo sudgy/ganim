@@ -5,18 +5,33 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-Box gex::combine_boxes_horizontally(const std::vector<Box>& boxes, double buff)
+Box gex::combine_boxes_horizontally(
+    const std::vector<Box>& boxes,
+    double min_buff
+)
 {
     auto result = Box();
+    double previous_right = -std::numeric_limits<double>::infinity();
     for (auto& box : boxes) {
+        double this_left = std::numeric_limits<double>::infinity();
+        double this_right = -std::numeric_limits<double>::infinity();
+        for (const auto& glyph : box.glyphs) {
+            this_left = std::min(glyph.x_pos + result.width, this_left);
+            this_right = std::max(glyph.x_pos + glyph.width + result.width, this_right);
+        }
+        if (previous_right + min_buff > this_left) {
+            result.width += min_buff;
+            this_right += min_buff;
+        }
         for (const auto& glyph : box.glyphs) {
             auto& new_glyph = result.glyphs.emplace_back(glyph);
             new_glyph.x_pos += result.width;
             new_glyph.draw_x += result.width;
         }
-        result.width += box.width + buff;
+        result.width += box.width;
         result.height = std::max(result.height, box.height);
         result.depth = std::max(result.depth, box.depth);
+        previous_right = this_right;
     }
     return result;
 }
