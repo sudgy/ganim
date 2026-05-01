@@ -39,9 +39,10 @@ namespace {
 
     class Processor {
         public:
-            Processor(MathList& list) :
+            Processor(MathList& list, int pixel_size) :
                 M_list(list),
-                M_font(&get_font("fonts/NewCMMath-Regular.otf")) {}
+                M_pixel_size(pixel_size),
+                M_font(&get_font("fonts/NewCMMath-Regular.otf", pixel_size)) {}
             void do_preprocessing();
             void do_rendering(Style style);
             Box do_combine(Style style);
@@ -65,6 +66,7 @@ namespace {
                 std::uint32_t codepoint, int group, double height, Style style);
 
             MathList& M_list;
+            int M_pixel_size = 128;
             MathList M_rendered_list;
             Font* M_font = nullptr;
     };
@@ -218,7 +220,7 @@ void Processor::render_atom_symbol(
 
 void Processor::render_atom_list(Atom& atom, AtomList& list, Style style)
 {
-    atom.box = render_math_list(list.list, style);
+    atom.box = render_math_list(list.list, M_pixel_size, style);
     atom.value = AtomBox();
 }
 
@@ -442,7 +444,9 @@ void Processor::render_atom_tokens(
     auto sections = split(tokens.list);
     auto rendered_sections = fmap(
         sections,
-        [&](const auto& section) {return section_render(section, style);}
+        [&](const auto& section) {
+            return section_render(section, M_pixel_size, style);
+        }
     );
     atom.box = section_combine(rendered_sections);
 }
@@ -453,10 +457,12 @@ Noad Processor::render_fraction(FractionNoad& fraction, Style style)
     if (θ < 0.0) θ = get_font_default_rule_thickness(*M_font);
     auto x = render_math_list(
         fraction.numerator,
+        M_pixel_size,
         get_numerator_style(style)
     );
     auto z = render_math_list(
         fraction.denominator,
+        M_pixel_size,
         get_denominator_style(style)
     );
     if (x.width > z.width) {
@@ -530,6 +536,7 @@ Noad Processor::render_boundary(BoundaryNoad& boundary, Style style)
 {
     auto inside = render_math_list(
         boundary.inside,
+        M_pixel_size,
         style
     );
     auto a = get_font_axis_height(*M_font);
@@ -603,10 +610,10 @@ Box Processor::do_combine(Style style)
     return combine_boxes_horizontally(result_boxes);
 }
 
-Box gex::render_math_list(MathList list, Style style)
+Box gex::render_math_list(MathList list, int pixel_size, Style style)
 {
     using enum AtomType;
-    auto processor = Processor(list);
+    auto processor = Processor(list, pixel_size);
     processor.do_preprocessing();
     processor.do_rendering(style);
     return processor.do_combine(style);

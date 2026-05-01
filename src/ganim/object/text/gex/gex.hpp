@@ -5,7 +5,11 @@
 #include "box.hpp"
 
 namespace ganim {
-    gex::Box gex_render(bool math, const std::vector<std::string_view>& input);
+    gex::Box gex_render(
+        bool math,
+        int pixel_size,
+        const std::vector<std::string_view>& input
+    );
 }
 
 #endif

@@ -6,7 +6,7 @@
 #include "style.hpp"
 
 namespace ganim::gex {
-    Box render_math_list(MathList list, Style style);
+    Box render_math_list(MathList list, int pixel_size, Style style);
 }
 
 #endif

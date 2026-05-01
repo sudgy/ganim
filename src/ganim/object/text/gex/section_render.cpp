@@ -6,10 +6,10 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-Box gex::section_render(Section section, Style style)
+Box gex::section_render(Section section, int pixel_size, Style style)
 {
     if (section.type == Section::Text) {
-        auto& font = get_font("fonts/NewCM10-Regular.otf");
+        auto& font = get_font("fonts/NewCM10-Regular.otf", pixel_size);
         double space_amount = 0.0;
         while (!section.tokens.empty()) {
             if (auto tok=get_if<CharacterToken>(&section.tokens.back().value)) {
@@ -47,6 +47,10 @@ Box gex::section_render(Section section, Style style)
     else {
         auto new_style = section.type == Section::InlineMath
             ? style : Style::Display;
-        return render_math_list(make_math_list(section.tokens), new_style);
+        return render_math_list(
+            make_math_list(section.tokens),
+            pixel_size,
+            new_style
+        );
     }
 }

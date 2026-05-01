@@ -26,13 +26,14 @@ namespace {
     }
 }
 
-Gex::Gex(bool math, const std::vector<std::string_view>& strings)
-:   M_math(math)
+Gex::Gex(bool math, int pixel_size,const std::vector<std::string_view>& strings)
+:   M_math(math),
+    M_pixel_size(pixel_size)
 {
     M_tex_strings = split_tex_strings(strings);
     draw_together();
     set_draw_subobject_ratio(0.2);
-    M_font = &get_font("fonts/NewCM10-Regular.otf", 128);
+    M_font = &get_font("fonts/NewCM10-Regular.otf", pixel_size);
     auto string_views = std::vector<std::string_view>();
     string_views.reserve(M_tex_strings.size());
     for (auto& str : M_tex_strings) string_views.push_back(str);
@@ -45,7 +46,7 @@ Gex::Gex(bool math, const std::vector<std::string_view>& strings)
 std::vector<Glyph> Gex::get_glyphs(
         const std::vector<std::string_view>& strings)
 {
-    auto result = gex_render(M_math, strings);
+    auto result = gex_render(M_math, M_pixel_size, strings);
     auto x_min = double(INFINITY);
     auto x_max = -double(INFINITY);
     for (auto& glyph : result.glyphs) {

@@ -7,6 +7,7 @@
 namespace ganim::gex {
     Box section_render(
         Section section,
+        int pixel_size,
         Style style = Style::Text
     );
 }

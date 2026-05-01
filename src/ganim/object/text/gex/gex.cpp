@@ -10,14 +10,18 @@
 using namespace ganim;
 using namespace ganim::gex;
 
-Box ganim::gex_render(bool math, const std::vector<std::string_view>& input)
+Box ganim::gex_render(
+    bool math,
+    int pixel_size,
+    const std::vector<std::string_view>& input
+)
 {
     auto tokens = preprocess(math, input);
     auto sections = split(tokens);
     auto rendered_sections = fmap(
         sections,
         [&](const auto& section) {
-            return section_render(section);
+            return section_render(section, pixel_size);
         });
     return section_combine(rendered_sections);
 }

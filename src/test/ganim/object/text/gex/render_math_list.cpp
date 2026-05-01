@@ -32,25 +32,25 @@ TEST_CASE("GeX render_math_list basic spacing", "[object][text][gex]") {
     add_to_list(list1, Ord, U'b', 2);
     add_to_list(list1, Rel, U'=', 3);
     add_to_list(list1, Ord, U'c', 4);
-    auto box1 = render_math_list(list1, Style::Text);
+    auto box1 = render_math_list(list1, 128, Style::Text);
     auto list2 = MathList();
     add_to_list(list2, Bin, U'+', 0);
     add_to_list(list2, Ord, U'a', 1);
     add_to_list(list2, Bin, U'+', 2);
-    auto box2 = render_math_list(list2, Style::Text);
+    auto box2 = render_math_list(list2, 128, Style::Text);
     auto list3 = MathList();
     add_to_list(list3, Ord, U'a', 0);
     add_to_list(list3, Bin, U'+', 1);
     add_to_list(list3, Bin, U'+', 2);
     add_to_list(list3, Ord, U'b', 3);
-    auto box3 = render_math_list(list3, Style::Text);
+    auto box3 = render_math_list(list3, 128, Style::Text);
     auto list4 = MathList();
     add_to_list(list4, Ord, U'a', 0);
     add_to_list(list4, Bin, U'+', 1);
     add_to_list(list4, Rel, U'=', 2);
     add_to_list(list4, Bin, U'+', 3);
     add_to_list(list4, Ord, U'b', 4);
-    auto box4 = render_math_list(list4, Style::Text);
+    auto box4 = render_math_list(list4, 128, Style::Text);
 
     REQUIRE(box1.height == 0.703125);
     REQUIRE(box1.depth == 0.09375);
@@ -160,7 +160,7 @@ TEST_CASE("GeX render_math_list style changes", "[object][text][gex]") {
     add_to_list(list, Ord, U'a', 1);
     list.emplace_back(CommandNoad("displaystyle", 2, 0));
     add_to_list(list, Ord, U'a', 2);
-    auto box = render_math_list(list, Style::Text);
+    auto box = render_math_list(list, 128, Style::Text);
 
     REQUIRE(box.height == 0.453125);
     REQUIRE(box.depth == 0.015625);
@@ -205,7 +205,7 @@ TEST_CASE("GeX render_math_list groups/styles", "[object][text][gex]") {
         }))
     );
     list.emplace_back(a_noad);
-    auto box = render_math_list(list, Style::Text);
+    auto box = render_math_list(list, 128, Style::Text);
 
     REQUIRE(box.glyphs.size() == 6);
     REQUIRE(box.glyphs[0].width >  box.glyphs[1].width);
@@ -236,7 +236,7 @@ TEST_CASE("GeX render_math_list sub/superscripts", "[object][text][gex]") {
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'1')),
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'2'))
     )));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
     auto check_later = [&](int i, int j) {
         INFO("Comparing " << i << " and " << j);
         auto& glyph1 = box.glyphs[i];
@@ -306,7 +306,7 @@ TEST_CASE("GeX render_math_list accents", "[object][text][gex]") {
         std::make_unique<Atom>(Box(), AtomType::Ord, AtomSymbol(U'b'))
     )));
     list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'b')));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
 
     REQUIRE(box.glyphs.size() == 4);
 }
@@ -323,7 +323,7 @@ TEST_CASE("GeX render_math_list fractions", "[object][text][gex]") {
         {FractionNoad({{a}}, {{a}}, U'(', U')', 1, 0)}
     })));
     list.emplace_back(Atom(Box(), AtomType::Ord, AtomSymbol(U'=')));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
 
     REQUIRE(box.glyphs.size() == 10);
     REQUIRE(box.glyphs[0].texture_x == box.glyphs[1].texture_x);
@@ -376,7 +376,7 @@ TEST_CASE("GeX render_math_list mskip", "[object][text][gex]") {
     list.emplace_back(a);
     list.emplace_back(GlueNoad(-1));
     list.emplace_back(a);
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
 
     auto dif = [&](int a, int b) {
         return box.glyphs[a].x_pos - box.glyphs[b].x_pos;
@@ -394,7 +394,7 @@ TEST_CASE("GeX render_math_list radical", "[object][text][gex]") {
         U'√',
         0
     )));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
     REQUIRE(box.glyphs.size() == 3);
     REQUIRE(box.glyphs[0].x_pos < box.glyphs[1].x_pos);
     REQUIRE(box.glyphs[0].x_pos < box.glyphs[2].x_pos);
@@ -409,7 +409,7 @@ TEST_CASE("GeX render_math_list \\text", "[object][text][gex]") {
     list.emplace_back(Atom({}, AtomType::Ord, AtomTokens({
         Token(CharacterToken(U'a'), 0, 0)
     })));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
     REQUIRE(box.glyphs.size() == 2);
     REQUIRE((box.glyphs[0].x_pos != box.glyphs[1].x_pos or
              box.glyphs[0].y_pos != box.glyphs[1].y_pos));
@@ -439,8 +439,8 @@ TEST_CASE("GeX render_math_list \\phantom", "[object][text][gex]") {
     list2.emplace_back(bb_noad);
     list2.emplace_back(a_noad);
 
-    auto box1 = render_math_list(list1, Style::Text);
-    auto box2 = render_math_list(list2, Style::Text);
+    auto box1 = render_math_list(list1, 128, Style::Text);
+    auto box2 = render_math_list(list2, 128, Style::Text);
     REQUIRE(box1.glyphs.size() == 4);
     REQUIRE(box2.glyphs.size() == 4);
     REQUIRE(box2.glyphs[1].invisible);
@@ -478,7 +478,7 @@ TEST_CASE("GeX render_math_list fraction line bug", "[object][text][gex]") {
     den.emplace_back(one_noad);
     auto list = MathList();
     list.emplace_back(FractionNoad(num, den, 0, 0, 0.1));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
 
     REQUIRE(box.glyphs[1].x_pos + box.glyphs[1].width > box.glyphs[4].x_pos);
 }
@@ -510,7 +510,7 @@ TEST_CASE("GeX render_math_list boundaries", "[object][text][gex]") {
             U')'
         )
     ));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
 
     REQUIRE(box.glyphs.size() == 6);
     REQUIRE(box.glyphs[0].x_pos < box.glyphs[1].x_pos);
@@ -539,8 +539,8 @@ TEST_CASE("GeX render_math_list boundary atom spacing", "[object][text][gex]") {
         plus_ord,
         a
     };
-    auto box1 = render_math_list(list1, Style::Display);
-    auto box2 = render_math_list(list2, Style::Display);
+    auto box1 = render_math_list(list1, 128, Style::Display);
+    auto box2 = render_math_list(list2, 128, Style::Display);
     REQUIRE(box1.glyphs[3].x_pos > box2.glyphs[3].x_pos);
 }
 
@@ -552,7 +552,7 @@ TEST_CASE("GeX render_math_list radical bug", "[object][text][gex]") {
         U'√',
         0
     )));
-    auto box = render_math_list(list, Style::Display);
+    auto box = render_math_list(list, 128, Style::Display);
     REQUIRE(box.glyphs.size() == 3);
     REQUIRE(box.glyphs[1].height < 0.1);
 }

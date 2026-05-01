@@ -45,10 +45,10 @@ namespace {
 
 TEST_CASE("GeX text section render", "[object][text][gex]") {
     auto section1 = section_render(
-        Section(convert_to_tokens("a"), Section::Text)
+        Section(convert_to_tokens("a"), Section::Text), 128
     );
     auto section2 = section_render(
-        Section(convert_to_tokens("ag"), Section::Text)
+        Section(convert_to_tokens("ag"), Section::Text), 128
     );
 
     REQUIRE(section1.width == 0.46875);
@@ -68,6 +68,6 @@ TEST_CASE("GeX text section render", "[object][text][gex]") {
 
 TEST_CASE("GeX section_render braces in text mode", "[object][text][gex]") {
     auto section = section_render(
-            Section(convert_to_tokens("a{bc}"), Section::Text));
+            Section(convert_to_tokens("a{bc}"), Section::Text), 128);
     REQUIRE(section.glyphs.size() == 3);
 }
