@@ -156,6 +156,13 @@ namespace ganim {
         return ObjectPtr<Shape>(vertices, indices);
     }
     inline ObjectPtr<Shape> make_shape() {return ObjectPtr<Shape>();}
+
+    ObjectPtr<Shape> make_cube(double width);
+    ObjectPtr<Shape> make_sphere(
+        double radius,
+        int horizontal_precision = 32,
+        int vertical_precision = 32
+    );
 }
 
 #endif

@@ -3,12 +3,9 @@
 #include <ranges>
 
 #include "ganim/gl/gl.hpp"
-
-#include "shaders.hpp"
-
+#include "ganim/ga/exp.hpp"
 #include "ganim/rate_functions.hpp"
-
-#include <iostream>
+#include "shaders.hpp"
 
 using namespace ganim;
 
@@ -247,4 +244,115 @@ Box Shape::get_original_true_bounding_box() const
             *std::ranges::max_element(zs)
         }
     );
+}
+
+ObjectPtr<Shape> ganim::make_cube(double width)
+{
+    auto r = float(width/2);
+    auto points = std::vector<Shape::Vertex>{
+        {-r, -r, -r, 0},
+        {+r, -r, -r, 1},
+        {-r, +r, -r, 2},
+        {+r, +r, -r, 3},
+        {-r, -r, +r, 4},
+        {+r, -r, +r, 5},
+        {-r, +r, +r, 6},
+        {+r, +r, +r, 7},
+    };
+    auto indices = std::vector<unsigned>{
+        0, 2, 1,
+        1, 2, 3,
+        0, 5, 4,
+        0, 1, 5,
+        1, 7, 5,
+        1, 3, 7,
+        2, 6, 7,
+        2, 7, 3,
+        0, 4, 6,
+        0, 6, 2,
+        4, 5, 6,
+        5, 7, 6
+    };
+    return make_shape(std::move(points), std::move(indices));
+}
+
+ObjectPtr<Shape> ganim::make_sphere(
+    double radius,
+    int horizontal_precision,
+    int vertical_precision
+)
+{
+    using namespace vga3;
+    auto points = std::vector<Vec>();
+    auto indices = std::vector<unsigned>();
+    points.reserve(horizontal_precision * vertical_precision);
+    indices.reserve(horizontal_precision * vertical_precision * 3);
+
+    points.push_back(radius*e3);
+    for (int i = 1; i < vertical_precision; ++i) {
+        auto starting_index = ssize(points);
+        auto start_point = e3 * ga_exp(e31 * τ/2 * i / vertical_precision);
+        auto extra_rot = i % 2 == 0 ? 0 : 0.5;
+        for (int j = 0; j < horizontal_precision; ++j) {
+            auto r = ga_exp(e12 * τ/2 * (j + extra_rot) / horizontal_precision);
+            auto this_point = (~r * start_point * r).grade_project<1>();
+            points.push_back(radius*this_point);
+        }
+        if (i == 1) {
+            for (int j = 0; j < horizontal_precision; ++j) {
+                indices.push_back(0);
+                indices.push_back(j+1);
+                indices.push_back((j+1)%horizontal_precision + 1);
+            }
+        }
+        else {
+            auto p = starting_index - horizontal_precision; // Previous
+            auto c = starting_index; // Current
+            for (int j = 0; j < horizontal_precision; ++j) {
+                auto j0 = j;
+                auto j1 = (j+1)%horizontal_precision;
+                // This row is to the left of the previous row
+                if (i % 2 == 0) {
+                    indices.push_back(p+j0);
+                    indices.push_back(c+j0);
+                    indices.push_back(c+j1);
+
+                    indices.push_back(p+j0);
+                    indices.push_back(c+j1);
+                    indices.push_back(p+j1);
+                }
+                // This row is to the right of the previous row
+                else {
+                    indices.push_back(p+j0);
+                    indices.push_back(c+j0);
+                    indices.push_back(p+j1);
+
+                    indices.push_back(p+j1);
+                    indices.push_back(c+j0);
+                    indices.push_back(c+j1);
+                }
+            }
+        }
+    }
+    auto c = ssize(points) - horizontal_precision;
+    auto f = ssize(points)-1;
+    points.push_back(-radius*e3);
+    for (int j = 0; j < horizontal_precision; ++j) {
+        indices.push_back(j+c);
+        indices.push_back(f);
+        indices.push_back((j+1)%horizontal_precision + c);
+    }
+
+    auto vertices = std::vector<Shape::Vertex>();
+    vertices.reserve(points.size());
+    int t = 0;
+    for (auto& p : points) {
+        vertices.push_back({
+            static_cast<float>(p.blade_project<e1>()),
+            static_cast<float>(p.blade_project<e2>()),
+            static_cast<float>(p.blade_project<e3>()),
+            static_cast<float>(++t)
+        });
+    }
+    return make_shape(std::move(vertices), std::move(indices));
 }
