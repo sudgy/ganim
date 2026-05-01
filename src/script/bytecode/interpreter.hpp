@@ -44,6 +44,8 @@ namespace ganim {
             void push_bytes(std::span<std::byte> bytes);
             void pop(std::size_t amount);
             void safe_increase_program_counter(int amount = 1);
+
+            void run_builtin(std::uint16_t function);
     };
 }
 

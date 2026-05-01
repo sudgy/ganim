@@ -227,6 +227,19 @@ namespace {
                     }
                     break;
                 }
+                case call_builtin:
+                {
+                    auto function = std::uint16_t();
+                    std::memcpy(&function, &code[i], 2);
+                    i += 2;
+                    auto functions = std::array{
+                        "sin", "cos", "tan", "exp", "log"
+                    };
+                    result.emplace_back(
+                        std::string("call ") + functions[function]
+                    );
+                    break;
+                }
                 case move_stack:
                     result.emplace_back(
                         "move stack[ " + read_uint_parameter() + "]", a

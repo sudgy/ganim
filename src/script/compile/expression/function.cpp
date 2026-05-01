@@ -66,9 +66,17 @@ Value compile_function_expression(
             }
             size += p.type.size8();
         }
-        compiler.write_enter(size);
-        compiler.write_call(function->label);
-        compiler.write_leave(0);
+        if (function->builtin) {
+            auto bytes = reinterpret_cast<byte*>(&function->label);
+            compiler.write_byte(bytecode::call_builtin);
+            compiler.write_byte(bytes[0]);
+            compiler.write_byte(bytes[1]);
+        }
+        else {
+            compiler.write_enter(size);
+            compiler.write_call(function->label);
+            compiler.write_leave(0);
+        }
         return {function->result_type, Value::RValue};
     }
 }

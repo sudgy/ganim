@@ -151,6 +151,7 @@ namespace ganim::bytecode {
     constexpr auto ret = byte(0b00111111);
     constexpr auto call_medium = byte(0b01000000);
     constexpr auto call_param = byte(0b01000001);
+    constexpr auto call_builtin = byte(0b01000010);
 
     constexpr auto move_stack = byte(0b01001000);
     constexpr auto move_global = byte(0b01001001);

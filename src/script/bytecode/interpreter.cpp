@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 #include <cstring>
+#include <cmath>
+#include <utility>
 
 #include "bytecodes.hpp"
 
@@ -397,6 +399,14 @@ void Interpreter::execute()
             --M_program_counter;
             break;
         }
+        case call_builtin:
+        {
+            safe_increase_program_counter(2);
+            auto function = std::uint16_t();
+            std::memcpy(&function, &M_code[M_program_counter-1], 2);
+            run_builtin(function);
+            break;
+        }
         case move_stack:
         {
             auto offset = read_uint_parameter();
@@ -669,5 +679,43 @@ void Interpreter::safe_increase_program_counter(int amount)
     M_program_counter += amount;
     if (M_program_counter >= M_code.size()) {
         throw std::runtime_error("Malformed instruction");
+    }
+}
+
+void Interpreter::run_builtin(std::uint16_t function)
+{
+    switch (function) {
+        case 0: // sin
+        {
+            auto& val = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            val = std::sin(val);
+            break;
+        }
+        case 1: // cos
+        {
+            auto& val = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            val = std::cos(val);
+            break;
+        }
+        case 2: // tan
+        {
+            auto& val = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            val = std::tan(val);
+            break;
+        }
+        case 3: // exp
+        {
+            auto& val = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            val = std::exp(val);
+            break;
+        }
+        case 4: // log
+        {
+            auto& val = reinterpret_cast<double&>(M_stack[M_stack.size()-8]);
+            val = std::log(val);
+            break;
+        }
+        default:
+            std::unreachable();
     }
 }

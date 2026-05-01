@@ -61,6 +61,7 @@ namespace ganim {
                 int column_number = -1
             );
             struct Function {
+                bool builtin;
                 LabelType label;
                 Type result_type;
                 std::vector<Type> input_types;

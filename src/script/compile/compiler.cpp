@@ -28,6 +28,19 @@ void Compiler::setup_globals()
         = Variable(double_type, 0, Variable::Builtin, false);
     globals.M_variables["TAU"]
         = Variable(double_type, 0, Variable::Builtin, false);
+    globals.M_variables["e"]
+        = Variable(double_type, 1, Variable::Builtin, false);
+
+    globals.M_functions["sin"]
+        = Function(true, LabelType(0), double_type, {double_type});
+    globals.M_functions["cos"]
+        = Function(true, LabelType(1), double_type, {double_type});
+    globals.M_functions["tan"]
+        = Function(true, LabelType(2), double_type, {double_type});
+    globals.M_functions["exp"]
+        = Function(true, LabelType(3), double_type, {double_type});
+    globals.M_functions["log"]
+        = Function(true, LabelType(4), double_type, {double_type});
 }
 
 std::vector<byte> Compiler::take_bytecode()
@@ -386,7 +399,7 @@ Compiler::LabelType Compiler::add_function(
                 "A function by the name \"{}\" already exists.", name));
     }
     table.M_functions[name_string]
-        = {label, std::move(result_type), std::move(input_types)};
+        = {false, label, std::move(result_type), std::move(input_types)};
     return label;
 }
 

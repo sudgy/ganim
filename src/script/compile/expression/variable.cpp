@@ -10,7 +10,8 @@
 
 namespace {
     constexpr auto double_constants = std::array{
-        τ
+        τ,
+        std::numbers::e
     };
 }
 
