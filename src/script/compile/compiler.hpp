@@ -75,6 +75,8 @@ namespace ganim {
             uint64_t get_function_pop_size();
 
         private:
+            void setup_globals();
+
             struct SymbolTable {
                 std::unordered_map<std::string, Variable> M_variables;
                 std::unordered_map<std::string, Function> M_functions;

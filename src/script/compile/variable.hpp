@@ -7,7 +7,7 @@ namespace ganim {
     struct Variable {
         Type type;
         std::size_t address = -1;
-        enum {StackFrame, Global} location;
+        enum {StackFrame, Global, Builtin} location;
         bool modifiable = true;
     };
 }

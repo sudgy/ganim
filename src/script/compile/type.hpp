@@ -41,6 +41,9 @@ namespace ganim {
         }
     };
 
+    const Type int_type = Type({Type::get_tag<int64_t>()});
+    const Type double_type = Type({Type::get_tag<double>()});
+    const Type bool_type = Type({Type::get_tag<bool>()});
     const Type void_type = Type({TypeID(nullptr)});
 
     struct FunctionType {

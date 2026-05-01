@@ -21,3 +21,18 @@ test_output(0);
     REQUIRE(get<double>(test[4]) == 0.5);
     REQUIRE(get<int64_t>(test[5]) == 0);
 }
+
+TEST_CASE("Built-in constants", "[script]") {
+    auto test = run_script(R"(
+test_output(τ < 7.0);
+test_output(τ > 6.0);
+test_output(TAU < 7.0);
+test_output(TAU > 6.0);
+    )");
+    REQUIRE(test.size() == 4);
+    using std::byte;
+    REQUIRE(get<byte>(test[0]) == byte(1));
+    REQUIRE(get<byte>(test[1]) == byte(1));
+    REQUIRE(get<byte>(test[2]) == byte(1));
+    REQUIRE(get<byte>(test[3]) == byte(1));
+}

@@ -11,13 +11,23 @@ using namespace ganim::bytecode;
 
 Compiler::Compiler(const std::vector<syntax::Statement>& ast)
 {
-    M_stacks.emplace_back();
-    M_stacks.back().tables.emplace_back();
+    setup_globals();
     M_bytecode.reserve(ast.size() * 8);
     for (auto& statement : ast) {
         compile_statement(*this, statement);
     }
     resolve_labels();
+}
+
+void Compiler::setup_globals()
+{
+    M_stacks.emplace_back();
+    M_stacks.back().tables.emplace_back();
+    auto& globals = M_stacks.back().tables.back();
+    globals.M_variables["τ"]
+        = Variable(double_type, 0, Variable::Builtin, false);
+    globals.M_variables["TAU"]
+        = Variable(double_type, 0, Variable::Builtin, false);
 }
 
 std::vector<byte> Compiler::take_bytecode()
