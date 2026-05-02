@@ -183,9 +183,10 @@ class Animation {
  * For example, you can run `animate(object).shift(2*e1)` to animate shifting
  * two units to the right.
  */
+template <animatable Obj>
 auto& animate(
     SceneBase& scene,
-    ObjectPtr<animatable auto> object,
+    ObjectPtr<Obj> object,
     AnimationArgs args = AnimationArgs()
 )
 {
